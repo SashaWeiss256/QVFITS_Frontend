@@ -1,0 +1,38 @@
+/* Bag Row */
+import { Link } from "react-router-dom";
+
+import Photo from "@/components/storefront/Photo";
+import { useCart } from "@/store/context/CartContext";
+import { useCurrency } from "@/store/context/CurrencyContext";
+import { notify } from "@/store/tanstackStore/notices";
+
+// One line in the bag: photo, name, colour and size, stock, quantity
+// stepper (capped at what is in stock), price and Remove.
+export default function BagRow({ row }) {
+  const { line, product: p, total } = row;
+  const { setQty, remove } = useCart();
+  const { money } = useCurrency();
+  const max = p.stock[line.size] || 0;
+
+  const more = () => (line.qty + 1 > max ? notify(`That's all we have in ${line.size}`) : setQty(line, line.qty + 1));
+
+  return (
+    <div className="cart-row">
+      <Link className="cart-row__media" to={`/product/${p.slug}`}><Photo photo={p.photos[0]} label={p.name} /></Link>
+      <div>
+        <Link className="cart-row__name" to={`/product/${p.slug}`}>{p.name}</Link>
+        <div className="cart-row__meta">{line.color} · Size {line.size}</div>
+        <div className={max <= 2 ? "cart-row__meta text-warn" : "cart-row__meta text-ink-4"}>{max <= 2 ? `Only ${max} left in ${line.size}` : "In stock"}</div>
+        <div className="qty mt-2">
+          <button type="button" aria-label={`One less ${p.name}`} onClick={() => setQty(line, line.qty - 1)}>−</button>
+          <span aria-live="polite">{line.qty}</span>
+          <button type="button" aria-label={`One more ${p.name}`} onClick={more}>+</button>
+        </div>
+      </div>
+      <div className="cart-row__right">
+        <strong>{money(total)}</strong>
+        <button type="button" className="remove" onClick={() => remove(line)}>Remove</button>
+      </div>
+    </div>
+  );
+}

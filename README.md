@@ -1,16 +1,34 @@
-# React + Vite
+# QV FITS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The online shop for **QV FITS** (Quivogue): premium seamless and seam-fit activewear, swim and lounge wear, from the showroom at THE CUBE, G17 Kisementi, Kampala. A MERN rebuild of the static site in `Quivogue/quivogue`, keeping its look.
 
-Currently, two official plugins are available:
+- **Storefront** at `/`: shop, product pages, bag, guest checkout, size guide, Vee the fit assistant
+- **Customer account** at `/account`: sign up at `/signup`, orders, saved pieces, addresses
+- **Admin** at `/admin`: catalog, orders, customers, discounts, offers, website content, team, settings
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The API is a separate repo, `qvfits-api` (Express + MongoDB). Until it is live, every screen runs on mock data behind the service layer.
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Vite 8 · React 19 · React Router 7 · Tailwind CSS 4 · TanStack Query · react-hook-form + zod · Lucide · Motion · Recharts. Hosted on DigitalOcean behind Nginx.
 
-## Expanding the ESLint configuration
+## Run
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+cp .env.example .env.local   # mocks on by default
+npm run dev                  # http://localhost:5173
+npm run typecheck && npm run lint && npm run build
+```
+
+Mock sign-ins (development only, removed when the API lands):
+
+| Area | Email | Password |
+|---|---|---|
+| Customer | `shopper@qvfits.com` | `demo123` |
+| Admin (owner) | `owner@qvfits.com` | `demo123` |
+| Admin (staff) | `staff@qvfits.com` | `demo123` |
+
+## Docs
+
+Start at [`docs/README.md`](docs/README.md): the golden rules, the build status, and links to the conventions, folder structure, data layer, design system, backend contract and deployment.

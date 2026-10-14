@@ -1,111 +1,208 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+/* QV fits — Global Styles */
+@import "tailwindcss";
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/* Quivogue's stylesheet: tokens on :root, reset, layout, chrome, sections.
+   In the components layer so Tailwind utilities can still override it. */
+@import "./styles/quivogue.css" layer(components);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/*
+  Tailwind tokens point at the Quivogue variables (docs/04-design-system.md),
+  so `bg-brand-500`, `text-ink-3`, `rounded-r-lg` and `shadow-sh-2` all read
+  the one source of truth in styles/quivogue.css. Never add hex here.
+*/
+@theme inline {
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+  --color-teal-100: var(--teal-100);
+  --color-teal-500: var(--teal-500);
+
+  --color-sand-50: var(--sand-50);
+  --color-sand-100: var(--sand-100);
+  --color-sand-200: var(--sand-200);
+  --color-sand-300: var(--sand-300);
+  --color-sand-400: var(--sand-400);
+
+  --color-cream: var(--cream);
+  --color-cream-2: var(--cream-2);
+  --color-beige: var(--beige);
+  --color-white: var(--white);
+
+  /* Contrast-checked on cream; ink-4 is the lightest text tone allowed. */
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+
+  --color-gold: var(--gold);
+  --color-star: var(--star);
+  --color-success: var(--success);
+  --color-warn: var(--warn);
+
+  /* Third-party brand colours, for payment and contact marks only. */
+  --color-mtn: #ffcb05;
+  --color-airtel: #e40000;
+  --color-whatsapp: #128c4a;
+
+  --font-display: var(--display);
+  --font-body: var(--body);
+  --font-wordmark: "Anton", var(--display), sans-serif;
+
+  --radius-r-sm: var(--r-sm);
+  --radius-r-md: var(--r-md);
+  --radius-r-lg: var(--r-lg);
+  --radius-r-xl: var(--r-xl);
+  --radius-r-pill: var(--r-pill);
+
+  --shadow-sh-1: var(--sh-1);
+  --shadow-sh-2: var(--sh-2);
+  --shadow-sh-3: var(--sh-3);
+  --shadow-sh-4: var(--sh-4);
+
+  --ease-q: var(--ease);
+}
+
+@layer components {
+  /* A form control in the Quivogue look, for the account and admin forms. */
+  .input {
+    width: 100%;
+    min-height: 46px;
+    padding: 0.7em 1em;
+    border-radius: var(--r-md);
+    background: var(--white);
+    border: 1.5px solid var(--line-2);
+    color: var(--ink);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--brand-400);
+    box-shadow: 0 0 0 3px var(--brand-100);
+  }
+  .input[aria-invalid="true"] {
+    border-color: var(--warn);
+  }
+
+  /* A destructive action: delete, sign out of every device. */
+  .btn--danger {
+    background: var(--warn);
+    color: #fff;
+  }
+
+  /* The supplied QV FITS lockup in the header and footer. */
+  .logo__img {
+    height: 44px;
+    width: auto;
+  }
+  .logo__img--ftr {
+    height: 48px;
+  }
+  @media (max-width: 1279px) {
+    .logo__img {
+      height: 36px;
+    }
+    /* The account link moves into the side menu. */
+    .hdr__account {
+      display: none;
+    }
+  }
+  /* Small phones (320 to 380): the row is logo + five icons, so the lockup
+     steps down once more rather than push the menu button off screen. */
+  @media (max-width: 380px) {
+    .logo__img {
+      height: 28px;
+    }
+  }
+  /* No rule before eyebrow labels, anywhere (client request). Covers the
+     base kicker and its campaign, phone and hero-slide variants. */
+  .kicker::before {
+    content: none;
+  }
+  .kicker {
+    gap: 0;
+  }
+
+  /* Filter chips: full 44px on touch screens. The rows sit 7px apart, so an
+     invisible touch area would overlap the next row. */
+  @media (pointer: coarse) {
+    .chip {
+      min-height: 44px;
+    }
+  }
+
+  /* Five footer columns: brand, Shop, Help, Legal, Visit. On a tablet the
+     brand takes its own row above the four link columns; Quivogue's own
+     rules stack them to two (760px) and one (440px) below that. */
+  @media (min-width: 1081px) {
+    .ftr__grid {
+      grid-template-columns: 1.4fr repeat(4, 1fr);
+    }
+  }
+  @media (max-width: 1080px) and (min-width: 761px) {
+    .ftr__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .ftr__brand {
+      grid-column: 1 / -1;
+    }
+  }
+  /* The lockup never gives ground to the nav. */
+  .logo {
+    flex: none;
+  }
+
+  /* The header carries one more icon than Quivogue's (the account) and a
+     wider lockup, so the inline search collapses behind its icon below 1500px
+     rather than 1100px; a small laptop squeezed the field to 51px. Same rules
+     as styles/quivogue.css, new breakpoint. */
+  .search__field {
+    min-width: 200px;
+  }
+  @media (max-width: 1499px) {
+    .hdr__inner {
+      flex-wrap: nowrap;
+    }
+    .hdr.search-open .hdr__inner {
+      flex-wrap: wrap;
+    }
+    .search__toggle {
+      display: grid;
+    }
+    .search__field {
+      display: none;
+      order: 99;
+      flex-basis: 100%;
+      width: auto;
+      margin-bottom: 12px;
+    }
+    .hdr.search-open .search__field {
+      display: flex;
+    }
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+/*
+  Large desktops and TVs. Quivogue's layout caps its column at 1620px, which
+  on a 4K TV leaves type and tap targets far too small to use from a sofa.
+  Zoom scales the whole page instead: a 4K screen lays out like a 1920px
+  desktop at twice the size, a 2560px screen like a 2048px one. Breakpoints
+  still read the real width, so nothing else changes.
+*/
+@media (min-width: 2400px) {
+  html {
+    zoom: 1.25;
   }
 }
-
-body {
-  margin: 0;
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+@media (min-width: 3200px) {
+  html {
+    zoom: 2;
   }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }

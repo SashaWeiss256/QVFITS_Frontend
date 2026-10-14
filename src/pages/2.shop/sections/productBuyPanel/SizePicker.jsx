@@ -1,0 +1,42 @@
+/* Size Picker */
+import { Link } from "react-router-dom";
+
+import { cn } from "@/utils/cn";
+import { inStock, productSizes } from "@/utils/stockLevel";
+
+// Sold-out sizes stay visible but disabled, so the shop is honest about
+// what is gone. The note under the row says how many are left.
+export default function SizePicker({ product, chosen, onChoose }) {
+  const n = chosen ? product.stock[chosen] || 0 : null;
+
+  return (
+    <div className="opt">
+      <div className="opt__head">
+        <h2>Size</h2>
+        <Link to="/size-guide" className="text-[.84rem] text-brand-600 underline">Size guide</Link>
+      </div>
+      <div className="size-row" role="radiogroup" aria-label="Size">
+        {productSizes(product).map((s) => {
+          const out = !inStock(product, s);
+          return (
+            <button
+              key={s}
+              type="button"
+              role="radio"
+              aria-checked={s === chosen}
+              disabled={out}
+              aria-label={out ? `${s}, sold out` : s}
+              className={cn("size-btn", out && "is-out", s === chosen && "is-on")}
+              onClick={() => onChoose(s)}
+            >
+              {s}
+            </button>
+          );
+        })}
+      </div>
+      <p className={cn("stock-note", n !== null && (n <= 2 ? "low" : "ok"))} aria-live="polite">
+        {n === null ? "" : n === 0 ? `Sold out in ${chosen}` : n <= 2 ? `Only ${n} left in ${chosen}. This one moves fast.` : `In stock in ${chosen}`}
+      </p>
+    </div>
+  );
+}

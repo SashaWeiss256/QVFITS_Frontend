@@ -1,0 +1,5 @@
+# Send www to the bare domain
+https://www.qvfits.com/*  https://qvfits.com/:splat  301!
+
+# SPA fallback: let React Router handle every route
+/*  /index.html  200
