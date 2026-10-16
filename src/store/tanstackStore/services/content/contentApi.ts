@@ -1,16 +1,24 @@
 /* Home Content Service */
 import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
+import { logActivity } from "../admin/activityApi";
+import { assertCan } from "../auth/adminSession";
+import { localPhoto } from "../catalog/photos";
 import { createDocument, type DocumentPatch } from "../store/collectionStore";
-import type { FaqItem, Photo } from "../types";
-import { photosFor } from "../catalog/productsApi";
-import { CAMPAIGN, FAQ, HERO_SLIDES, MOVEMENTS, PRESS, SHOP_THE_FEED } from "@/data/shop";
+import type { Photo } from "../types";
+import homeSeed from "@/data/home.json";
 
 /**
- * The editable copy on the storefront: hero slides, the campaign banner, the
- * movement tiles, the press row, the feed, and the FAQ. One document, so the
- * admin's Website module saves a section at a time without touching the rest.
+ * Everything on the home page, top to bottom as the original Quivogue site
+ * lays it out: hero slides, the press row, the two product rails, shop by
+ * movement, the campaign, the feed and the newsletter. One document, so the
+ * admin saves a section at a time without touching the rest.
+ *
+ * A picture is either a photo id in /photos (the brand's shoot) or an
+ * uploaded Photo; `photo` on the view is always the resolved one.
  */
+type Picture = string | Photo | null | undefined;
+
 export interface HeroSlide {
   id: string;
   kicker: string;
@@ -20,51 +28,76 @@ export interface HeroSlide {
   href: string;
   /** The round tag on the picture, e.g. "Sale". */
   sticker?: string;
+  image?: Picture;
+  live: boolean;
+}
+
+export interface Rail {
+  kicker: string;
+  title: string;
+  cta: string;
+  href: string;
+  productIds: string[];
+}
+
+export interface Movement {
+  id: string;
+  label: string;
+  /** The activity ids the tile filters by, comma separated. */
+  occasion: string;
+  image?: Picture;
 }
 
 export interface HomeContent {
   heroSlides: HeroSlide[];
-  campaign: Record<string, unknown>;
-  movements: { id: string; label: string; occasion: string }[];
-  press: Record<string, unknown>;
-  feed: Record<string, unknown>;
-  faq: FaqItem[];
+  rails: { newReleases: Rail; bestSellers: Rail };
+  movements: { title: string; items: Movement[] };
+  campaign: { live: boolean; kicker: string; title: string; text: string; cta: string; href: string; image?: Picture };
+  press: { live: boolean; title: string; items: { name: string; href?: string }[] };
+  feed: { live: boolean; kicker: string; title: string; items: { id: string; label: string; href: string; post?: string }[] };
+  newsletter: { kicker: string; title: string; text: string; cta: string; placeholder: string };
 }
 
-const content = createDocument<HomeContent>("content", {
-  heroSlides: HERO_SLIDES,
-  campaign: CAMPAIGN,
-  movements: MOVEMENTS,
-  press: PRESS,
-  feed: SHOP_THE_FEED,
-  faq: FAQ,
-});
+const content = createDocument<HomeContent>("home", homeSeed as unknown as HomeContent);
 
-/**
- * The document as the storefront reads it: every slide, movement tile and the
- * campaign banner carry their photo's real dimensions, for an accurate srcset.
- */
-export type HomeContentView = Omit<HomeContent, "heroSlides" | "movements" | "campaign"> & {
+const resolve = (picture: Picture, fallbackId: string): Photo | undefined =>
+  picture && typeof picture === "object" ? picture : localPhoto(picture || fallbackId);
+
+/** The document as the storefront reads it: live slides only, every picture resolved. */
+export type HomeContentView = HomeContent & {
   heroSlides: (HeroSlide & { photo?: Photo })[];
-  movements: (HomeContent["movements"][number] & { photo?: Photo })[];
+  movements: HomeContent["movements"] & { items: (Movement & { photo?: Photo })[] };
   campaign: HomeContent["campaign"] & { photo?: Photo };
   /** The studio photo on the About page. */
   aboutPhoto?: Photo;
 };
 
+function view(doc: HomeContent, { all = false } = {}): HomeContentView {
+  return {
+    ...doc,
+    heroSlides: doc.heroSlides.filter((s) => all || s.live !== false).map((s) => ({ ...s, photo: resolve(s.image, s.id) })),
+    movements: { ...doc.movements, items: doc.movements.items.map((m) => ({ ...m, photo: resolve(m.image, `movement-${m.id}`) })) },
+    campaign: { ...doc.campaign, photo: resolve(doc.campaign.image, "banner-campaign") },
+    aboutPhoto: localPhoto("about"),
+  };
+}
+
 export function getContent({ signal }: RequestOptions = {}) {
-  return mockApi<HomeContentView>(() => {
-    const doc = content.get();
-    return {
-      ...doc,
-      heroSlides: doc.heroSlides.map((s) => ({ ...s, photo: photosFor(s.id)[0] })),
-      movements: doc.movements.map((m) => ({ ...m, photo: photosFor(`movement-${m.id}`)[0] })),
-      campaign: { ...doc.campaign, photo: photosFor("banner-campaign")[0] },
-      aboutPhoto: photosFor("about")[0],
-    };
-  }, 100, signal);
+  return mockApi(() => view(content.get()), 100, signal);
+}
+
+/* Admin (realm: admin) */
+
+/** Every slide, live or not, for the editor. */
+export function getContentForEdit({ signal }: RequestOptions = {}) {
+  return mockApi(() => view(content.get(), { all: true }), 100, signal);
 }
 
 export function updateContent(patch: DocumentPatch<HomeContent>) {
-  return mockApi(() => content.update(patch));
+  return mockApi(() => {
+    assertCan("home-content", "edit");
+    const doc = content.update(patch);
+    logActivity({ module: "home-content", action: "update", summary: `Updated the home page (${Object.keys(patch).join(", ")})` });
+    return view(doc, { all: true });
+  });
 }

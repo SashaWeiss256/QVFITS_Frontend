@@ -7,6 +7,7 @@ import { inStock, productSizes } from "@/utils/stockLevel";
 // Sold-out sizes stay visible but disabled, so the shop is honest about
 // what is gone. The note under the row says how many are left.
 export default function SizePicker({ product, chosen, onChoose }) {
+  // Units left in the chosen size; null until a size is picked so no note shows.
   const n = chosen ? product.stock[chosen] || 0 : null;
 
   return (
@@ -34,6 +35,7 @@ export default function SizePicker({ product, chosen, onChoose }) {
           );
         })}
       </div>
+      {/* Stock Note: announced as the size changes. */}
       <p className={cn("stock-note", n !== null && (n <= 2 ? "low" : "ok"))} aria-live="polite">
         {n === null ? "" : n === 0 ? `Sold out in ${chosen}` : n <= 2 ? `Only ${n} left in ${chosen}. This one moves fast.` : `In stock in ${chosen}`}
       </p>

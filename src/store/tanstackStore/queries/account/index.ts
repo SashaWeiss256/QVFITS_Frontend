@@ -5,7 +5,9 @@ import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
 import { getProfile, saveAddresses, updateProfile } from "../../services/customers/customersApi";
 import { getMyOrder, listMyOrders } from "../../services/sales/ordersApi";
-import type { Address, Customer, Id } from "../../services/types";
+import { listMyReturns, requestReturn, returnWindow } from "../../services/sales/returnsApi";
+import type { Address, Customer, Id, ReturnRequest } from "../../services/types";
+import { adminRoot } from "../keys";
 import { customerRoot } from "../keys";
 
 export const accountQueries = {
@@ -21,13 +23,27 @@ export const accountQueries = {
       queryFn: ({ signal }) => listMyOrders(id, { signal }),
       meta: { label: "your orders" },
     }),
+  // Nested under "orders" so refreshing the list also refreshes an open order.
   order: (id: Id, orderId?: Id) =>
     queryOptions({
       queryKey: [...customerRoot(id), "orders", orderId] as const,
       queryFn: ({ signal }) => getMyOrder(id, orderId!, { signal }),
       enabled: Boolean(orderId),
     }),
+  returns: (id: Id) =>
+    queryOptions({ queryKey: [...customerRoot(id), "returns"] as const, queryFn: ({ signal }) => listMyReturns(id, { signal }) }),
 };
+
+export const useMyReturns = (id: Id) => useQuery(accountQueries.returns(id));
+
+// A request shows in the admin's Returns queue straight away.
+export const useRequestReturn = (id: Id) =>
+  useMutation({
+    mutationFn: (input: Pick<ReturnRequest, "orderId" | "lines" | "reason" | "resolution">) => requestReturn(id, input),
+    meta: { invalidates: [customerRoot(id), [...adminRoot, "returns"]], success: "Request sent", handlesErrors: true },
+  });
+
+export { returnWindow };
 
 export const useProfile = (id: Id) => useQuery(accountQueries.profile(id));
 export const useMyOrders = (id: Id) => useQuery(accountQueries.orders(id));

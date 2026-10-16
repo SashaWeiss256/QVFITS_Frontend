@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ACCOUNT_MENU } from "../lib/accountMenuItems";
 
+// A scrolling row of tabs on phones, a vertical list from md up.
 export default function AccountMenu({ onSignOut }) {
   return (
     <nav aria-label="Account" className="flex gap-1 overflow-x-auto md:flex-col">
@@ -21,6 +22,7 @@ export default function AccountMenu({ onSignOut }) {
           {label}
         </NavLink>
       ))}
+      {/* Sign out sits in the menu but is an action, not a route. */}
       <button type="button" onClick={onSignOut} className="flex min-h-11 items-center gap-3 whitespace-nowrap rounded-r-pill px-4 text-left text-[.93rem] text-ink-3 hover:bg-brand-100 hover:text-brand-600">
         <LogOut className="h-[18px] w-[18px]" aria-hidden="true" />
         Sign out

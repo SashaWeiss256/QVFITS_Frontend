@@ -1,27 +1,23 @@
-/* Legal Document */
-import { Link } from "react-router-dom";
+/* Legal */
+import { Link, useLocation } from "react-router-dom";
 
 import PageIntro from "@/components/layout/PageIntro";
 import PageLoader from "@/components/ui/PageLoader";
 import { useSettings } from "@/store/tanstackStore/queries/site";
-import Blocks from "./Blocks";
-
-const OTHERS = [
-  { to: "/privacy", label: "Privacy policy" },
-  { to: "/terms", label: "Terms of sale" },
-  { to: "/returns", label: "Exchanges and returns" },
-  { to: "/delivery", label: "Delivery" },
-];
+import { LEGAL_DOCS, legalDoc } from "./content";
+import Blocks from "./sections/Blocks";
 
 /**
- * One policy page: the intro, a contents list, the numbered sections, and
- * links to the other policies. `build(settings)` returns the document, so the
- * shop's details and fees always match what the admin has set.
+ * /privacy, /terms, /returns and /delivery: the intro, a contents list, the
+ * numbered sections, and links to the other policies. The policy comes from
+ * the URL; the text lives in ./content.
  */
-export default function LegalDocument({ path, build }) {
+export default function LegalPage() {
+  const { pathname: path } = useLocation();
   const { data: settings } = useSettings();
   if (!settings) return <PageLoader />;
-  const doc = build(settings);
+  // Build the page from the path-specific policy and live business settings (e.g. contact details).
+  const doc = legalDoc(path).build(settings);
 
   return (
     <PageIntro kicker="Policies" title={doc.title} lede={doc.lede}>
@@ -52,8 +48,8 @@ export default function LegalDocument({ path, build }) {
           <div className="border-t border-line pt-6">
             <p className="eyebrow mb-2">Other policies</p>
             <div className="flex flex-wrap gap-2">
-              {OTHERS.filter((o) => o.to !== path).map((o) => (
-                <Link key={o.to} to={o.to} className="btn btn--ghost">{o.label}</Link>
+              {LEGAL_DOCS.filter((o) => o.path !== path).map((o) => (
+                <Link key={o.path} to={o.path} className="btn btn--ghost">{o.label}</Link>
               ))}
             </div>
           </div>

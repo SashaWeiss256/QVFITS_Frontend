@@ -1,0 +1,49 @@
+[
+  {
+    "id": "ord_1001",
+    "ref": "QV-1001",
+    "customerId": "cus_demo",
+    "name": "Demo Shopper",
+    "phone": "+256 700 000 000",
+    "email": "shopper@qvfits.com",
+    "region": "kampala",
+    "address": "Plot 1, Kisementi, Kampala",
+    "lines": [
+      {
+        "productId": "sculpt-seamless-set",
+        "name": "Sculpt Seamless Set",
+        "size": "M",
+        "color": "Ivory",
+        "qty": 1,
+        "price": 195000,
+        "colorId": "ivory"
+      }
+    ],
+    "subtotal": 195000,
+    "delivery": 15000,
+    "discount": 0,
+    "total": 210000,
+    "payment": "mtn",
+    "status": "delivered",
+    "createdAt": "2026-10-03T11:20:00.000Z",
+    "paymentStatus": "paid",
+    "history": [
+      {
+        "status": "pending",
+        "at": "2026-10-03T11:20:00.000Z",
+        "by": "Checkout"
+      },
+      {
+        "status": "paid",
+        "at": "2026-10-03T11:40:00.000Z",
+        "by": "QV fits Owner"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-04T15:10:00.000Z",
+        "by": "QV fits Owner"
+      }
+    ],
+    "notes": []
+  }
+]

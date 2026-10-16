@@ -1,10 +1,12 @@
 /* Review Order (step 3) */
-import { PAYMENTS } from "./checkoutSchema";
+import { usePaymentMethods } from "@/store/tanstackStore/queries/site";
 
 // One last look before placing the order. Honest seam: online payment is not
 // switched on yet, so the order is recorded and the team confirms payment.
-export default function ReviewOrder({ bag, details, money, address, onPlace, onBack, placing, error }) {
-  const payLabel = PAYMENTS.find((p) => p.id === details.payment)?.label;
+export default function ReviewStep({ bag, details, money, address, onPlace, onBack, placing, error }) {
+  const { data: methods = [] } = usePaymentMethods();
+  const payLabel = methods.find((p) => p.id === details.payment)?.label;
+  const collect = bag.zone?.collect;
 
   return (
     <div className="info-card">
@@ -12,6 +14,7 @@ export default function ReviewOrder({ bag, details, money, address, onPlace, onB
       <p className="text-[.9rem] text-ink-3">
         Placing the order reserves your reference. Online payment switches on soon; until then our team confirms stock, total and payment with you directly.
       </p>
+      {/* Lines */}
       <div className="mt-[18px] border-t border-line pt-3.5">
         {bag.rows.map(({ line, product, total }) => (
           <div key={`${line.productId}-${line.size}-${line.color}`} className="sum-row">
@@ -20,17 +23,19 @@ export default function ReviewOrder({ bag, details, money, address, onPlace, onB
           </div>
         ))}
       </div>
+      {/* Delivery and Payment */}
       <div className="mt-4 border-t border-line pt-3.5">
         <div className="sum-row"><span>Name</span><span>{details.name}</span></div>
         <div className="sum-row"><span>Phone</span><span>{details.phone}</span></div>
         <div className="sum-row">
-          <span>{details.region === "pickup" ? "Collection" : "Delivery"}</span>
-          <span className="max-w-[60%] text-right">{details.region === "pickup" ? `From the showroom, ${address}` : details.address}</span>
+          <span>{collect ? "Collection" : "Delivery"}</span>
+          <span className="max-w-[60%] text-right">{collect ? `From the showroom, ${address}` : details.address}</span>
         </div>
         <div className="sum-row"><span>Payment</span><span className="text-right">{payLabel}</span></div>
       </div>
       {error && <p role="alert" className="mt-4 text-sm font-semibold text-warn">{error}</p>}
       <div className="mt-5 flex flex-wrap gap-2.5">
+        {/* Both buttons lock while placing so the order can't be sent twice. */}
         <button type="button" className="btn btn--primary" onClick={onPlace} disabled={placing}>{placing ? "Placing order…" : "Place order"}</button>
         <button type="button" className="btn btn--ghost" onClick={onBack} disabled={placing}>Back to delivery</button>
       </div>

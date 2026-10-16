@@ -1,11 +1,14 @@
 /* Track Order Page */
 import PageIntro from "@/components/layout/PageIntro";
-import TrackOrderForm from "./sections/TrackOrderForm";
+import { usePageCopy } from "@/store/tanstackStore/queries/site";
+import LookupForm from "./sections/LookupForm";
 
 export default function TrackOrderPage() {
+  const { data: copy } = usePageCopy("trackOrder");
   return (
-    <PageIntro kicker="Orders" title="Track an order" lede="Enter your order reference and the phone number you ordered with.">
-      <TrackOrderForm />
+    <PageIntro kicker={copy?.kicker} title={copy?.title} lede={copy?.lede}>
+      {/* Lookup stays isolated so the form can own its validation and result state. */}
+      <LookupForm />
     </PageIntro>
   );
 }

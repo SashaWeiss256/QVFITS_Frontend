@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 
+// Points to new arrivals rather than the whole shop, as the bag drawer does.
 export default function BagEmpty() {
   return (
     <div className="empty">

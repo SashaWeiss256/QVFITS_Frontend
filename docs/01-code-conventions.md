@@ -1,4 +1,4 @@
-# 01 — Code Conventions
+# 01: Code Conventions
 
 **Rule:** read like the code around you. Follow these patterns rather than inventing new ones.
 
@@ -6,12 +6,13 @@
 
 | Thing | Convention | Example |
 |---|---|---|
-| Numbered page folder | `<n>.<lowercase>`, from 1: nav or sidebar order, then off-nav pages | `pages/2.shop/`, `AdminDashboard/pages/3.catalog/` |
-| Auth | always `1.auth`, inside the dashboard it belongs to | `CustomerDashboard/pages/1.auth/`, `AdminDashboard/pages/1.auth/` |
-| Folder inside a numbered group | not numbered | `3.catalog/products/`, `4.sales/orders/` |
+| Page folder | every page folder numbered, nav pages first, then the rest | `pages/1.home/`, `pages/3.product/`, `pages/9.legal/` |
+| Dashboard page folder | numbered, `1.auth` first, then sidebar / account-menu order | `AdminDashboard/pages/3.products/`, `CustomerDashboard/pages/3.orders/` |
+| Auth | inside its own dashboard, `pages/1.auth/` | `CustomerDashboard/pages/1.auth/login.jsx`, `AdminDashboard/pages/1.auth/invite.jsx` |
 | Page file | lowercase / kebab-case, default export | `product.jsx`, `order-confirmed.jsx` |
-| Page-private parts | `sections/`, PascalCase components, camelCase helpers | `sections/HeroSlideshow.jsx`, `sections/shopFilters/filterOptions.js` |
-| Feature group inside sections | camelCase folder | `sections/productBuyPanel/`, `sections/checkoutForm/` |
+| Page-level helper | beside the page file | `7.checkout/CheckoutShell.jsx`, `7.checkout/schemas.js`, `2.shop/useShopFilters.js` |
+| Page section | flat in `sections/`, named for what it is, no page prefix, no subfolders | `sections/Hero.jsx`, `sections/SortBar.jsx`, `sections/SizePicker.jsx` |
+| Component folder | entry is `index.jsx` inside the folder; big pieces get a camelCase subfolder of name-prefixed parts | `navbar/index.jsx`, `navbar/MegaMenu.jsx` + `navbar/megaMenu/MegaMenuDesktop.jsx` |
 | Shared component | `PascalCase.jsx` in `src/components/<area>/` | `components/storefront/ProductCard.jsx` |
 | Store file | TypeScript, camelCase | `services/catalog/productsApi.ts`, `queries/site/catalog.ts` |
 | Helper | camelCase `.js`, no React | `utils/formatCurrency.js` |
@@ -20,7 +21,7 @@
 
 Individual files are **never** number-prefixed (no `2.Hero.jsx`). Only folders carry the order.
 
-The number is the position in the nav. A new page or module takes its place in the nav and the folders after it move up by one. Update the nav source (`navbarMenu.js`, `accountMenuItems.js` or `ADMIN_NAV`) and the lazy barrel together.
+The number is the position: nav pages first, then the off-nav pages (or, in a dashboard, `1.auth` then the sidebar order). A new page takes its place and the folders after it move up by one. Update the nav source (`navbarMenu.js`, `accountMenuItems.js` or `ADMIN_NAV`) and the lazy barrel (`routes/pages.js`, `CustomerPages.jsx`, `AdminPages.jsx`) together.
 
 ## 2. Splitting
 
@@ -61,8 +62,32 @@ The number is the position in the nav. A new page or module takes its place in t
 
 ## 7. Comments
 
+Every file reads top to bottom without the reader opening another file. Four kinds of comment, all in plain sentences: no dashes or box-drawing, no emoji.
+
+**File header.** The first line names the file in Title Case: `/* Name */`. Add a source note if it is a port, e.g. `/* Shop Page (port of Quivogue shop.html) */`.
+
+**Block labels.** A Title Case label above each meaningful block in a render: the hero, a form, a list, an empty state, the footer actions.
+
 ```jsx
 {/* Size Picker */}
 ```
 
-Title case, no dashes or box-drawing, no emoji. A file starts with `/* Name */`. Longer comments explain a decision, e.g. why checkout never requires an account.
+**Inline notes.** A full sentence above an element whose behaviour or data source is not obvious from the markup: where the data comes from, what a handler does, why an element is hidden, an accessibility choice.
+
+```jsx
+<div className="news__photo">
+  {/* Reuse the studio photo managed with the site's home-page content. */}
+  <Photo photo={content?.aboutPhoto} label="Inside the studio" wide />
+</div>
+{/* Validation and subscription feedback are handled by onSubmit and shown below. */}
+<form noValidate onSubmit={onSubmit}>
+```
+
+**Logic notes.** A `//` line above a guard, fallback, derived value, effect, query key or invalidation, or anything to do with money and units. Longer comments explain a decision, e.g. why checkout never requires an account.
+
+```js
+// Bounds come from the full catalogue so the price control doesn't shift with filters.
+const bounds = priceBounds(products);
+```
+
+**Don't comment** what the line already says (`// set the name`), trivial presentational components, or plans that are not in the code. Check every comment against the code it describes before keeping it; a wrong comment is worse than none.

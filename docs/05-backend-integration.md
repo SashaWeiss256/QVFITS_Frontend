@@ -1,4 +1,4 @@
-# 05 — Backend Integration
+# 05: Backend Integration
 
 **Rule:** the API is a separate repo, `qvfits-api`. This site is built against the contract below on mock data, and each service switches to HTTP one area at a time, with no screen changes.
 
@@ -36,16 +36,16 @@ An admin route rejects a customer token even when its signature is valid. Guests
 
 | Namespace | Public | Customer | Admin |
 |---|---|---|---|
-| `auth` | — | login, signup, refresh, logout, password reset | login, refresh, logout, invite |
+| `auth` | none | login, signup, refresh, logout, password reset | login, refresh, logout, invite |
 | `catalog` | products (list, filter, detail by slug), categories, collections, size chart, approved reviews | post a review | products, variants, stock per colour/size, photos, categories, collections, reviews moderation |
-| `checkout` | quote (lines, delivery, discount code), create order, start payment | same, linked to the account | — |
-| `payments` | gateway webhook | — | transactions, refunds |
+| `checkout` | quote (lines, delivery, discount code), create order, start payment | same, linked to the account | none |
+| `payments` | gateway webhook | none | transactions, refunds |
 | `orders` | track by reference + phone | own orders | list, detail, status changes (pending, paid, packed, out for delivery, delivered, cancelled, exchanged) |
-| `customers` | — | profile, addresses, wishlist | list, detail, order history |
-| `content` | hero slides, looks, movements, press, FAQ, shop details, delivery fees, exchange rates | — | edit all of these |
-| `marketing` | active sale and promo bar, newsletter sign-up | — | offers, discount codes, subscribers export |
-| `assistant` | fit assistant query over the live catalogue | — | — |
-| `reports` | — | — | overview KPIs, revenue and top products by day, week, month |
+| `customers` | none | profile, addresses, wishlist | list, detail, order history |
+| `content` | hero slides, looks, movements, press, FAQ, shop details, delivery fees, exchange rates | none | edit all of these |
+| `marketing` | active sale and promo bar, newsletter sign-up | none | offers, discount codes, subscribers export |
+| `assistant` | fit assistant query over the live catalogue | none | none |
+| `reports` | none | none | overview KPIs, revenue and top products by day, week, month |
 
 `services/api/routes.ts` lists these as `API_NAMESPACES`. Exact paths and payloads are agreed with the API repo and added there as each goes live.
 

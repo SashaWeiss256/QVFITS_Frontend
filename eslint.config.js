@@ -40,7 +40,7 @@ const SITE = {
 }
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'scripts']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -51,6 +51,11 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    rules: {
+      // Same as the TypeScript files: `_name` is unused on purpose, and
+      // `{ photo: _photo, ...rest }` strips a field.
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true }],
     },
   },
 

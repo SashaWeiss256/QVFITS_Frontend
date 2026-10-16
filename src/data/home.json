@@ -1,0 +1,143 @@
+{
+  "heroSlides": [
+    {
+      "id": "hero-1",
+      "kicker": "Gym · Pilates · Tennis · Golf · Swim · Lifestyle",
+      "title": "Fit that holds.",
+      "text": "Premium seamless and seam-fit pieces curated for training, movement and everyday life.",
+      "cta": "Shop now",
+      "href": "/shop",
+      "live": true
+    },
+    {
+      "id": "hero-3",
+      "kicker": "Latest drop",
+      "title": "Made for your every move.",
+      "text": "Fresh shades. Same QV energy.",
+      "cta": "Shop now",
+      "href": "/shop?occasion=lounge",
+      "live": true
+    },
+    {
+      "id": "hero-4",
+      "kicker": "Lounge & sport",
+      "title": "Beyond Movement.",
+      "text": "Because your day doesn't end when the workout does.",
+      "cta": "Shop now",
+      "href": "/shop?occasion=swim,lounge",
+      "live": true
+    },
+    {
+      "id": "hero-2",
+      "sticker": "Sale",
+      "kicker": "Now's your moment",
+      "title": "Up to 50% off.",
+      "text": "Selected QV favourites, now for less.",
+      "cta": "Shop now",
+      "href": "/shop?sale=1",
+      "live": true
+    }
+  ],
+  "rails": {
+    "newReleases": {
+      "kicker": "Just in",
+      "title": "New releases",
+      "cta": "Shop the new",
+      "href": "/shop?badge=New",
+      "productIds": [
+        "studio-two-piece",
+        "rib-seamless-set",
+        "seamless-longsleeve-set",
+        "highwaist-sculpt-legging"
+      ]
+    },
+    "bestSellers": {
+      "kicker": "Most loved",
+      "title": "Best sellers",
+      "cta": "See more",
+      "href": "/shop?badge=Bestseller",
+      "productIds": [
+        "golf-tennis-skort-dress",
+        "ribbed-lounge-set",
+        "sculpt-seamless-set",
+        "flare-lounge-legging"
+      ]
+    }
+  },
+  "movements": {
+    "title": "Shop by movement",
+    "items": [
+      {
+        "id": "gym",
+        "label": "Gym",
+        "occasion": "gym"
+      },
+      {
+        "id": "pilates",
+        "label": "Pilates",
+        "occasion": "yoga"
+      },
+      {
+        "id": "tennis",
+        "label": "Tennis",
+        "occasion": "golf-tennis"
+      },
+      {
+        "id": "swim-lounge",
+        "label": "Swim & Lounge",
+        "occasion": "swim,lounge"
+      }
+    ]
+  },
+  "campaign": {
+    "live": true,
+    "kicker": "New styles",
+    "title": "Tennis is Sport",
+    "text": "The court range: collared tops, pleated skorts and an inbuilt pant, built for the modern active woman.",
+    "cta": "Shop the court range",
+    "href": "/shop?c=Skorts"
+  },
+  "press": {
+    "live": false,
+    "title": "As seen on",
+    "items": []
+  },
+  "feed": {
+    "live": true,
+    "kicker": "Straight from the feed",
+    "title": "Seen on you",
+    "items": [
+      {
+        "id": "reel-pilates",
+        "label": "Pilates, in pink",
+        "href": "/shop?occasion=yoga",
+        "post": "https://www.instagram.com/quivogue/reel/DQwQl5KDP7h/"
+      },
+      {
+        "id": "reel-class",
+        "label": "BTS: the Pilates class",
+        "href": "/shop?occasion=yoga",
+        "post": "https://www.instagram.com/quivogue/reel/DMa-87foxWC/"
+      },
+      {
+        "id": "reel-studio",
+        "label": "Straight from the studio",
+        "href": "/shop?c=Sets",
+        "post": "https://www.instagram.com/quivogue/reel/DSxOby3jCpJ/"
+      },
+      {
+        "id": "reel-offduty",
+        "label": "Off duty, in mocha",
+        "href": "/product/flare-lounge-legging",
+        "post": "https://www.instagram.com/quivogue/reel/DS5N4xIjGz2/"
+      }
+    ]
+  },
+  "newsletter": {
+    "kicker": "First access",
+    "title": "Get the drop first",
+    "text": "New drops and restocks. No spam. We only send when there is something to send.",
+    "cta": "Join the list",
+    "placeholder": "your@email.com"
+  }
+}

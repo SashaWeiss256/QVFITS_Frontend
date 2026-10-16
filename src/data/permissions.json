@@ -1,0 +1,200 @@
+[
+  {
+    "id": "overview",
+    "label": "Overview",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "products",
+    "label": "Products",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "categories",
+    "label": "Categories",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "attributes",
+    "label": "Colours, sizes and filters",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "inventory",
+    "label": "Inventory",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "collections",
+    "label": "Collections and looks",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "reviews",
+    "label": "Reviews",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "size-guide",
+    "label": "Size guide",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "orders",
+    "label": "Orders",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "returns",
+    "label": "Returns",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "customers",
+    "label": "Customers",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "transactions",
+    "label": "Transactions",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "discounts",
+    "label": "Discount codes",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "offers",
+    "label": "Offers",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "newsletter",
+    "label": "Newsletter",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "home-content",
+    "label": "Home page",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "pages",
+    "label": "Pages and navigation",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "faq",
+    "label": "FAQ",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "messages",
+    "label": "Messages",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "team",
+    "label": "Team and roles",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "settings",
+    "label": "Settings",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  },
+  {
+    "id": "activity",
+    "label": "Activity log",
+    "actions": [
+      "view",
+      "edit",
+      "delete"
+    ]
+  }
+]

@@ -8,6 +8,7 @@ import { useWishlist } from "@/store/context/WishlistContext";
 import { useProductsByIds } from "@/store/tanstackStore/queries/site";
 import Photo from "./Photo";
 
+// The saved pieces drawer. Removing here un-hearts the piece everywhere.
 export default function WishlistPanel() {
   const { ids, toggle } = useWishlist();
   const { money } = useCurrency();

@@ -9,6 +9,7 @@ import { getSizeChart } from "../../services/catalog/sizeChartApi";
 import type { ProductFilters } from "../../services/types";
 import { siteRoot } from "../keys";
 
+// Every key sits under [...siteRoot, "catalog"], so an admin product change refreshes all of them.
 export const catalogQueries = {
   all: () => [...siteRoot, "catalog"] as const,
   products: (filters: ProductFilters = {}) =>
@@ -31,12 +32,14 @@ export const catalogQueries = {
       enabled: Boolean(slug),
       meta: { label: "this piece" },
     }),
+  /** The bag and saved pieces: only the products they hold. */
   byIds: (ids: string[]) =>
     queryOptions({
       queryKey: [...catalogQueries.all(), "by-ids", ids] as const,
       queryFn: ({ signal }) => getProductsByIds(ids, { signal }),
       enabled: ids.length > 0,
     }),
+  // Categories, colours and activities change rarely; fetch once per visit.
   facets: () =>
     queryOptions({
       queryKey: [...catalogQueries.all(), "facets"] as const,
@@ -49,6 +52,7 @@ export const catalogQueries = {
     queryOptions({ queryKey: [...catalogQueries.all(), "looks"] as const, queryFn: ({ signal }) => listLooks({ signal }) }),
   reviews: () =>
     queryOptions({ queryKey: [...catalogQueries.all(), "reviews"] as const, queryFn: ({ signal }) => listReviews({ signal }) }),
+  // The size chart is static for a visit too.
   sizeChart: () =>
     queryOptions({
       queryKey: [...catalogQueries.all(), "size-chart"] as const,

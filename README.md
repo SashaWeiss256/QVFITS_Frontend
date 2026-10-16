@@ -27,7 +27,7 @@ Mock sign-ins (development only, removed when the API lands):
 |---|---|---|
 | Customer | `shopper@qvfits.com` | `demo123` |
 | Admin (owner) | `owner@qvfits.com` | `demo123` |
-| Admin (staff) | `staff@qvfits.com` | `demo123` |
+| Admin (showroom staff: orders, stock, returns, messages; read only elsewhere) | `staff@qvfits.com` | `demo123` |
 
 ## Docs
 

@@ -4,8 +4,9 @@ import { Check } from "lucide-react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { notify } from "@/store/tanstackStore/notices";
+import { usePaymentMethods } from "@/store/tanstackStore/queries/site";
 import { whatsappLink } from "@/utils/whatsapp";
-import { orderMessage } from "./checkoutForm/orderMessage";
+import { orderMessage } from "../orderMessage";
 
 /**
  * After the order is placed: its reference, and the order sent to the team
@@ -14,7 +15,8 @@ import { orderMessage } from "./checkoutForm/orderMessage";
  */
 export default function SendOrder({ order, settings }) {
   const currency = useCurrency();
-  const message = orderMessage(order, currency);
+  const { data: methods = [] } = usePaymentMethods();
+  const message = orderMessage(order, { ...currency, settings, methods });
   const copy = async (quiet) => {
     try {
       await navigator.clipboard.writeText(message);

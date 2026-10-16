@@ -1,6 +1,6 @@
 /* Size Finder Maths (from Quivogue size-guide.html findSize()) */
 
-const SIZES = ["XS", "S", "M", "L", "XL"];
+const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
 
 /**
  * The nearest size band for whatever measurements were given (cm), then
@@ -38,8 +38,8 @@ export function findSize(chart, { bust, waist, hip }, product) {
 
 /** A cm range as cm or inches. */
 export function formatRange(range, unit) {
-  if (unit === "cm") return `${range[0]}–${range[1]} cm`;
-  return `${(range[0] / 2.54).toFixed(1)}–${(range[1] / 2.54).toFixed(1)}"`;
+  if (unit === "cm") return `${range[0]} to ${range[1]} cm`;
+  return `${(range[0] / 2.54).toFixed(1)} to ${(range[1] / 2.54).toFixed(1)}"`;
 }
 
 export const FIT_LABELS = { small: "Runs small", large: "Runs large", relaxed: "Cut relaxed", true: "True to size" };

@@ -1,4 +1,4 @@
-/* Track Order Form */
+/* Lookup Form */
 import { useState } from "react";
 
 import StatusChip from "@/components/ui/StatusChip";
@@ -8,7 +8,7 @@ import { formatDate } from "@/utils/format";
 
 // A guest finds an order by its reference and the phone it was placed with;
 // both must match, so a reference alone reveals nothing.
-export default function TrackOrderForm() {
+export default function LookupForm() {
   const [ref, setRef] = useState("");
   const [phone, setPhone] = useState("");
   const track = useTrackOrder();
@@ -22,6 +22,7 @@ export default function TrackOrderForm() {
         noValidate
         onSubmit={(e) => {
           e.preventDefault();
+          // Both fields are needed for a match, so don't send a half-filled lookup.
           if (ref.trim() && phone.trim()) track.mutate({ ref, phone });
         }}
       >
@@ -37,6 +38,7 @@ export default function TrackOrderForm() {
         <button type="submit" className="btn btn--primary mt-5" disabled={track.isPending}>{track.isPending ? "Looking…" : "Find my order"}</button>
       </form>
 
+      {/* Result: amounts in UGX, as the order was quoted. */}
       {order && (
         <div className="info-card" aria-live="polite">
           <div className="flex flex-wrap items-center justify-between gap-3">

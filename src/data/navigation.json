@@ -1,0 +1,29 @@
+{
+  "header": [
+    { "title": "New in", "path": "/shop?badge=New" },
+    { "title": "Best sellers", "path": "/shop?badge=Bestseller" },
+    { "title": "Swim", "path": "/shop?c=Swim" },
+    { "title": "About", "path": "/about" }
+  ],
+  "shopEdits": [
+    { "title": "Shop everything", "path": "/shop" },
+    { "title": "New in", "path": "/shop?badge=New" },
+    { "title": "Best sellers", "path": "/shop?badge=Bestseller" },
+    { "title": "Shop the kit", "path": "/shop#kits" }
+  ],
+  "help": [
+    { "title": "Size guide", "path": "/size-guide" },
+    { "title": "Contact and FAQ", "path": "/contact" },
+    { "title": "Track an order", "path": "/track-order" },
+    { "title": "Delivery", "path": "/delivery" },
+    { "title": "Exchanges and returns", "path": "/returns" },
+    { "title": "Your account", "path": "/account" }
+  ],
+  "legal": [
+    { "title": "Privacy policy", "path": "/privacy" },
+    { "title": "Terms of sale", "path": "/terms" },
+    { "title": "Exchanges and returns", "path": "/returns" },
+    { "title": "Delivery", "path": "/delivery" }
+  ],
+  "popularSearches": ["Leggings", "Sets", "Sports bra", "Skorts", "Swim", "Lounge"]
+}

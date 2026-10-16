@@ -1,4 +1,4 @@
-# 06 — Deployment (DigitalOcean)
+# 06: Deployment (DigitalOcean)
 
 **Rule:** everything runs in accounts owned by QV fits. We are added as team members; we never own the client's server, database or domain.
 

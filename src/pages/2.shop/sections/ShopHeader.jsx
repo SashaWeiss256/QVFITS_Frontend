@@ -2,26 +2,28 @@
 import { Link } from "react-router-dom";
 
 import { useSeo } from "@/seo/useSeo";
-
-const TITLES = { New: "New in", Bestseller: "Best sellers" };
+import { usePageCopy } from "@/store/tanstackStore/queries/site";
+import { fill } from "@/utils/fill";
 
 // Breadcrumb, eyebrow, the page's one h1 and its lede. The title follows the
 // filter: a search, a single category, or the New / Best Sellers views.
 export default function ShopHeader({ state }) {
+  const { data: copy } = usePageCopy("shop");
+  const t = copy?.titles ?? {};
   const title = state.query
-    ? `Results for “${state.query}”`
+    ? fill(t.search, { query: state.query })
     : state.cats.length === 1
       ? state.cats[0]
-      : TITLES[state.badge] ?? (state.sale ? "The sale" : "Shop everything");
-  useSeo({ title, description: "Every QV FITS piece in the shop right now: seamless and seam-fit activewear, swim and lounge wear." });
+      : t[state.badge] ?? (state.sale ? t.sale : t.all) ?? "";
+  useSeo({ title, description: copy?.seo });
 
   return (
     <>
       <p className="crumbs"><Link to="/">Home</Link> / Shop</p>
       <div className="section-head">
-        <span className="kicker">The full range</span>
+        <span className="kicker">{copy?.kicker}</span>
         <h1 id="shopTitle">{title}</h1>
-        <p className="lede">Every piece we have in the shop right now. Sold-out sizes are marked honestly, so there are no surprises at checkout.</p>
+        <p className="lede">{copy?.lede}</p>
       </div>
     </>
   );

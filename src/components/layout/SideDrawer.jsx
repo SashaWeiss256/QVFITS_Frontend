@@ -7,19 +7,20 @@ import CartPanel from "@/components/storefront/CartPanel";
 import WishlistPanel from "@/components/storefront/WishlistPanel";
 import { useCart } from "@/store/context/CartContext";
 import { cn } from "@/utils/cn";
-import MenuPanel from "./navbar/MenuPanel";
+import { useOverlayFlag } from "./useOverlayFlag";
 
-const TITLES = { cart: "Your bag", wish: "Saved pieces", menu: "Menu" };
+const TITLES = { cart: "Your bag", wish: "Saved pieces" };
 
 /**
- * One drawer for the bag, the saved pieces and the menu, at every width. It
+ * One drawer for the bag and the saved pieces, at every width. It
  * lives beside the header, not inside it, so the header's stacking and blur
  * never apply to it.
  */
 export default function SideDrawer() {
   const { drawer, closeDrawer } = useCart();
   const { pathname, search } = useLocation();
-  const open = Boolean(drawer);
+  const open = drawer === "cart" || drawer === "wish";
+  useOverlayFlag(open);
 
   // Following a link inside the drawer closes it.
   useEffect(() => {
@@ -45,7 +46,6 @@ export default function SideDrawer() {
         </div>
         {drawer === "cart" && <CartPanel />}
         {drawer === "wish" && <WishlistPanel />}
-        {drawer === "menu" && <MenuPanel />}
       </aside>
     </>
   );

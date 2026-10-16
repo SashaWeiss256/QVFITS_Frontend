@@ -1,0 +1,24 @@
+[
+  {
+    "id": "adm_owner",
+    "name": "QV fits Owner",
+    "email": "owner@qvfits.com",
+    "password": "demo123",
+    "roleId": "owner",
+    "overrides": {},
+    "status": "active",
+    "lastSeenAt": null,
+    "createdAt": "2026-10-01T09:00:00.000Z"
+  },
+  {
+    "id": "adm_staff",
+    "name": "Showroom Staff",
+    "email": "staff@qvfits.com",
+    "password": "demo123",
+    "roleId": "staff",
+    "overrides": {},
+    "status": "active",
+    "lastSeenAt": null,
+    "createdAt": "2026-10-01T09:00:00.000Z"
+  }
+]

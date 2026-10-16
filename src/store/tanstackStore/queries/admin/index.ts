@@ -1,18 +1,77 @@
 /* Admin Queries */
 // The admin dashboard's only door to data.
-export { useCollection, useDocument, collectionQueries, documentQueries } from "./collection";
+export { useCollection, useDocument, collectionQueries, documentQueries, crudResource } from "./collection";
 export type { CollectionResource, DocumentResource } from "./collection";
-export { productQueries, productsResource } from "./catalog";
+export {
+  activitiesResource,
+  categoriesResource,
+  colorsResource,
+  filtersResource,
+  looksResource,
+  productQueries,
+  productsResource,
+  reviewsResource,
+  sizeChartResource,
+  sizesResource,
+  useBulkRemoveProducts,
+  useBulkUpdateProducts,
+  useDuplicateProduct,
+  useReassignCategory,
+  useSetVariantStock,
+} from "./catalog";
 export {
   customerQueries,
-  discountQueries,
+  customersResource,
   discountsResource,
+  NEXT_RETURN_STATUS,
+  NEXT_STATUS,
   orderQueries,
   overviewQueries,
+  randomCode,
+  returnQueries,
+  returnWindow,
+  transactionsResource,
+  useAddOrderNote,
+  useCreateManualOrder,
   useCustomers,
+  useMarkOrderPaid,
   useOrders,
   useOverview,
+  useReturns,
   useUpdateOrderStatus,
+  useUpdateReturnStatus,
 } from "./sales";
-export { contentResource, offersResource, settingsResource, subscriberQueries, useSubscribers } from "./website";
-export type { AdminUser, Customer, Discount, Order, OrderStatus, Product } from "../../services/types";
+export {
+  contentResource,
+  faqResource,
+  messagesResource,
+  navigationResource,
+  offersResource,
+  pagesResource,
+  paymentMethodsResource,
+  settingsResource,
+  shippingResource,
+  subscriberQueries,
+  subscribersResource,
+  useSubscribers,
+} from "./website";
+export { activityQueries, rolesResource, staffQueries, staffResource, useActivity, useInviteStaff, usePermissionModules } from "./team";
+export type {
+  ActivityEntry,
+  AdminUser,
+  Category,
+  Color,
+  ContactMessage,
+  Customer,
+  Discount,
+  FaqItem,
+  Order,
+  OrderStatus,
+  Product,
+  ProductRecord,
+  ReturnRequest,
+  Role,
+  ShippingZone,
+  StaffMember,
+  Transaction,
+} from "../../services/types";

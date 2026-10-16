@@ -9,11 +9,13 @@ import adminRoutes from "./routes/AdminRoutes";
 import authRoutes from "./routes/AuthRoutes";
 import siteRoutes from "./routes/SiteRoutes";
 
+// App shell
 function App() {
   return (
     <AppProviders>
       <BrowserRouter>
         <ScrollToTop />
+
         {/* Catches chunks rendered outside a layout: the sign-in doors and the admin shell */}
         <Suspense fallback={<PageLoader className="min-h-dvh" />}>
           <Routes>

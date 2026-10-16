@@ -3,7 +3,8 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { deliverySchema, PAYMENTS } from "./checkoutSchema";
+import { zoneFee } from "@/utils/delivery";
+import { deliverySchema } from "../schemas";
 
 function Err({ error }) {
   return error ? <p role="alert" className="m-0 mt-1 text-xs font-semibold text-warn">{error.message}</p> : null;
@@ -14,10 +15,12 @@ function Err({ error }) {
  * from the last order on this device. Reports the region as it changes, so
  * the summary beside it stays honest.
  */
-export default function DeliveryForm({ defaults, settings, onRegion, onSubmit, onBack }) {
+export default function DeliveryForm({ defaults, settings, methods, subtotal, onRegion, onSubmit, onBack }) {
   const { money } = useCurrency();
-  const { register, handleSubmit, control, formState: { errors } } = useForm({ resolver: zodResolver(deliverySchema), defaultValues: defaults });
+  const zones = settings.zones ?? [];
+  const { register, handleSubmit, control, formState: { errors } } = useForm({ resolver: zodResolver(deliverySchema(zones, methods)), defaultValues: defaults });
   const region = useWatch({ control, name: "region" });
+  const collect = zones.find((z) => z.id === region)?.collect;
   const regionField = register("region");
 
   return (
@@ -41,12 +44,13 @@ export default function DeliveryForm({ defaults, settings, onRegion, onSubmit, o
       <div className="field">
         <label htmlFor="oRegion">Delivery area</label>
         <select id="oRegion" {...regionField} onChange={(e) => { regionField.onChange(e); onRegion(e.target.value); }}>
-          <option value="kampala">Kampala: {money(settings.kampalaDelivery)}</option>
-          <option value="upcountry">Upcountry: {money(settings.upcountryDelivery)}</option>
-          <option value="pickup">I&apos;ll collect from the showroom: free</option>
+          {zones.map((z) => {
+            const fee = zoneFee(z, subtotal, settings);
+            return <option key={z.id} value={z.id}>{z.name}: {fee ? money(fee) : "free"}</option>;
+          })}
         </select>
       </div>
-      {region !== "pickup" && (
+      {!collect && (
         <div className="field">
           <label htmlFor="oAddr">Where should we drop it?</label>
           <textarea id="oAddr" rows={3} placeholder="Area, road, any landmark that helps" aria-invalid={Boolean(errors.address)} {...register("address")} />
@@ -56,12 +60,13 @@ export default function DeliveryForm({ defaults, settings, onRegion, onSubmit, o
       <fieldset className="field m-0 border-0 p-0">
         <legend className="mb-1.5 text-[.8rem] font-medium text-ink-3">How you&apos;d like to pay</legend>
         <div className="grid gap-2">
-          {PAYMENTS.map((p) => (
+          {methods.map((p) => (
             <label key={p.id} className="check-row rounded-r-md border border-line bg-white px-3">
               <input type="radio" value={p.id} {...register("payment")} />
-              {p.label}
+              <span>{p.label}{p.instructions && <span className="block text-xs font-normal text-ink-3">{p.instructions}</span>}</span>
             </label>
           ))}
+          <Err error={errors.payment} />
         </div>
       </fieldset>
       <div className="field">

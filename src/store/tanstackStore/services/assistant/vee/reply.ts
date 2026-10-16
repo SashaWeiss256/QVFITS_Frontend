@@ -53,7 +53,8 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
 
   /* Delivery, exchanges, orders, payment */
   if (has(t, ["delivery", "deliver", "shipping", "ship", "how long", "arrive"])) {
-    return [text(`Within Kampala it's ${ugx(s.kampalaDelivery)}; upcountry is ${ugx(s.upcountryDelivery)}. Anything over ${ugx(s.freeShippingOver)} ships free, or collect from the showroom for nothing.`, "The team confirms the timing when they confirm your order."), link("Delivery details", "/delivery")];
+    const fees = (s.zones ?? []).filter((z) => !z.collect).map((z) => `${z.name} ${ugx(z.fee)}`).join(", ");
+    return [text(`Delivery is ${fees}. Anything over ${ugx(s.freeShippingOver)} ships free, or collect from the showroom for nothing.`, "The team confirms the timing when they confirm your order."), link("Delivery details", "/delivery")];
   }
   if (has(t, ["return", "exchange", "refund", "swap it", "doesn't fit", "does not fit"])) {
     return [text(`We exchange anything unworn with its tags on within ${s.exchangeDays} days. Swim only if the liner is intact: hygiene rules.`, "Want me to help you pick a better size instead? Tell me your bust, waist and hip and I'll do the maths."), link("Exchanges policy", "/returns")];

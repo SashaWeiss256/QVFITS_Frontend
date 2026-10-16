@@ -1,6 +1,7 @@
 /* Bag Totals */
 import { useCart } from "@/store/context/CartContext";
 import { useOffers, useProductsByIds, useSettings } from "@/store/tanstackStore/queries/site";
+import { zoneFee, zoneOf } from "@/utils/delivery";
 import { saleOf } from "@/utils/stockLevel";
 
 /**
@@ -8,7 +9,7 @@ import { saleOf } from "@/utils/stockLevel";
  * region. A preview only: placing the order prices it again in the service
  * (checkoutApi), in UGX.
  */
-export function useBag(region = "kampala") {
+export function useCheckoutBag(region = "kampala") {
   const { lines } = useCart();
   const { data: products = [], isLoading } = useProductsByIds(lines.map((l) => l.productId));
   const { data: settings } = useSettings();
@@ -21,10 +22,8 @@ export function useBag(region = "kampala") {
     .map((r) => ({ ...r, unit: priceOf(r.product), total: priceOf(r.product) * r.line.qty }));
   const subtotal = rows.reduce((n, r) => n + r.total, 0);
 
-  let delivery = 0;
-  if (settings && region !== "pickup" && subtotal < settings.freeShippingOver) {
-    delivery = region === "upcountry" ? settings.upcountryDelivery : settings.kampalaDelivery;
-  }
+  const zone = zoneOf(settings, region);
+  const delivery = zoneFee(zone, subtotal, settings);
 
-  return { rows, subtotal, delivery, total: subtotal + delivery, settings, isLoading: isLoading && lines.length > 0, empty: !lines.length };
+  return { rows, subtotal, delivery, total: subtotal + delivery, settings, zone, isLoading: isLoading && lines.length > 0, empty: !lines.length };
 }

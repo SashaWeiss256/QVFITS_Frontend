@@ -1,7 +1,7 @@
 /* Site Routes */
 import { Route } from "react-router-dom";
 
-import NotFound from "@/components/layout/NotFound";
+import NotFound from "@/pages/not-found";
 import SiteLayout from "./SiteLayout";
 import accountRoutes from "./AccountRoutes";
 import {
@@ -15,11 +15,8 @@ import {
   CheckoutPage,
   OrderConfirmedPage,
   TrackOrderPage,
-  PrivacyPage,
-  TermsPage,
-  ReturnsPage,
-  DeliveryPage,
-} from "./SitePages";
+  LegalPage,
+} from "./pages";
 
 // Returned as a fragment so App keeps one <Routes>. The customer account
 // shares the storefront chrome, so its routes mount inside this layout.
@@ -40,10 +37,9 @@ export default function siteRoutes() {
       <Route path="track-order" element={<TrackOrderPage />} />
 
       {/* Legal */}
-      <Route path="privacy" element={<PrivacyPage />} />
-      <Route path="terms" element={<TermsPage />} />
-      <Route path="returns" element={<ReturnsPage />} />
-      <Route path="delivery" element={<DeliveryPage />} />
+      {["privacy", "terms", "returns", "delivery"].map((doc) => (
+        <Route key={doc} path={doc} element={<LegalPage />} />
+      ))}
 
       {accountRoutes()}
 

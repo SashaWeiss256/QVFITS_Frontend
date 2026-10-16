@@ -1,11 +1,8 @@
 /* Press Row */
-import { useHomeContent } from "@/store/tanstackStore/queries/site";
 
 // Shown only when switched on in the admin AND there is something real to
 // list. Off by default, as on Quivogue: no borrowed press credits.
-export default function Press() {
-  const { data: content } = useHomeContent();
-  const press = content?.press;
+export default function Press({ press }) {
   if (!press?.live || !press.items?.length) return null;
 
   return (

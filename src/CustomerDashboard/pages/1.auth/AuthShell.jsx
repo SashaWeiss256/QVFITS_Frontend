@@ -1,5 +1,7 @@
-/* Customer Auth Shell */
+/* Auth Shell */
 import { Link } from "react-router-dom";
+
+import Logo from "@/components/layout/navbar/Logo";
 
 /**
  * The full-screen frame for /login, /signup and /forgot-password: the logo,
@@ -8,9 +10,7 @@ import { Link } from "react-router-dom";
 export default function AuthShell({ title, lede, children, footer }) {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center bg-cream px-4 py-12">
-      <Link to="/" aria-label="QV FITS home" className="mb-8">
-        <img src="/logo/qvfits-logo-horizontal.svg" alt="" width="173" height="48" className="h-12 w-auto" />
-      </Link>
+      <Logo size="lg" className="mb-8" />
       <section className="w-full max-w-md rounded-r-xl bg-white p-8 shadow-sh-2">
         <h1 className="text-[1.9rem]">{title}</h1>
         {lede && <p className="mt-2 text-ink-3">{lede}</p>}

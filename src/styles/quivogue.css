@@ -9,11 +9,11 @@
 */
 
 /* ==========================================================================
-   QV fits — design system
+   QV fits: design system
    Magenta-to-purple brand accent on warm neutrals.
    The accent is sampled from the brand's actual logo (the QV FITS wave mark,
    EST. 2023), which runs magenta at the tail into deep purple at the head.
-   The neutrals — sand, mocha, cream — come from their product photography.
+   The neutrals (sand, mocha, cream) come from their product photography.
    Teal is kept as a secondary because the golf and tennis range is teal.
    ========================================================================== */
 
@@ -31,11 +31,11 @@
   /* the logo's own gradient, for buttons and accents */
   --brand-grad: linear-gradient(135deg, #c2185b, #96306e 55%, #5d2766);
 
-  /* secondary — the golf and tennis range */
+  /* secondary, the golf and tennis range */
   --teal-100:  #dcebe7;
   --teal-500:  #14625a;
 
-  /* warm sand / mocha — the lounge and seamless ranges */
+  /* warm sand / mocha, the lounge and seamless ranges */
   --sand-50:  #faf6f0;
   --sand-100: #f2ebe0;
   --sand-200: #e6dac8;
@@ -50,36 +50,36 @@
 
   /* ink */
   /* The ink ramp is contrast-checked against the lightest surface it ever
-     sits on (--cream, #fbf8f3). ink-3 was 4.39:1 and ink-4 was 2.42:1 —
+     sits on (--cream, #fbf8f3). ink-3 was 4.39:1 and ink-4 was 2.42:1, 
      both under the 4.5:1 that WCAG AA asks of body text. Darkened to 6.05
      and 4.64 while keeping the same cool-grey hue, so the four-step
      hierarchy still reads. Do not lighten these without re-checking. */
   --ink:       #17211f;   /* 15.6:1 on cream */
   --ink-2:     #3a4643;   /*  9.3:1 */
   --ink-3:     #57615e;   /*  6.1:1 */
-  --ink-4:     #68736f;   /*  4.6:1 — the lightest text tone allowed */
+  --ink-4:     #68736f;   /*  4.6:1, the lightest text tone allowed */
 
   --line:      #e9e2d7;
   --line-2:    #ddd4c6;
 
-  --gold:      #efcb68;   /* accent only — 1.5:1, never use for text */
+  --gold:      #efcb68;   /* accent only, 1.5:1, never use for text */
   --star:      #8e6c0f;   /* the same gold, dark enough to read (4.6:1) */
   --success:   #2f7d5f;
   --warn:      #b4553f;
 
-  /* type — a grotesque with some width to it, not a rounded softie */
+  /* type, a grotesque with some width to it, not a rounded softie */
   --display: 'Archivo', 'Helvetica Neue', system-ui, sans-serif;
   --body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --script: 'Archivo', system-ui, sans-serif;
 
-  /* shape — squarer than the old boutique look */
+  /* shape, squarer than the old boutique look */
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 16px;
   --r-xl: 22px;
   --r-pill: 999px;
 
-  /* elevation — neutral, never pink */
+  /* elevation, neutral, never pink */
   --sh-1: 0 2px 8px rgba(23, 33, 31, .05);
   --sh-2: 0 6px 20px rgba(23, 33, 31, .08);
   --sh-3: 0 14px 40px rgba(23, 33, 31, .12);
@@ -138,7 +138,7 @@ p  { margin: 0 0 1em; }
 .stack > * + * { margin-top: var(--sp, 1rem); }
 
 /* Was a handwriting script for the boutique. For a performance brand it is a
-   tight uppercase eyebrow with a rule — reads as technical, not decorative. */
+   tight uppercase eyebrow; reads as technical, not decorative. */
 .kicker {
   font-family: var(--body);
   font-size: .72rem;
@@ -151,11 +151,6 @@ p  { margin: 0 0 1em; }
   display: inline-flex;
   align-items: center;
   gap: .8em;
-}
-.kicker::before {
-  content: '';
-  width: 26px; height: 1.5px;
-  background: var(--brand-300);
 }
 .center .kicker { justify-content: center; }
 .eyebrow {
@@ -208,7 +203,7 @@ p  { margin: 0 0 1em; }
 /* ------------------------------------------------------- touch targets
    Several controls here are deliberately small: the wishlist heart must not
    cover the product, the slideshow dots are hairlines, the header has six
-   things in 375px. Rather than inflate them — which would undo the look —
+   things in 375px. Rather than inflate them (which would undo the look)
    each one keeps its drawn size and gets an invisible 44px touch area
    centred on it. 44px is the Apple HIG minimum and WCAG 2.5.5 (AAA);
    WCAG 2.5.8 (AA) only asks 24px, so this clears both.
@@ -299,11 +294,11 @@ table.size td a::after,
 }
 /* The frosted glass lives on a pseudo-element, NOT on .hdr itself.
    backdrop-filter makes an element the containing block for its
-   position:fixed descendants — with it on .hdr, the mobile nav drawer was
+   position:fixed descendants, with it on .hdr, the mobile nav drawer was
    being sized and positioned inside the header box and composited into its
    blur, instead of being a full-height drawer over the page. */
 .hdr::before {
-  /* z-index 0 + .hdr__inner above it, rather than a negative z-index —
+  /* z-index 0 + .hdr__inner above it, rather than a negative z-index, 
      iOS Safari can drop negative-z-index pseudo-elements entirely, which
      would leave the header with no background at all. */
   content: ''; position: absolute; inset: 0; z-index: 0;
@@ -324,7 +319,7 @@ table.size td a::after,
 }
 .logo__mark { width: 44px; height: 44px; object-fit: contain; flex: none; }
 .logo__text { display: flex; flex-direction: column; }
-/* The wordmark is set in the brand's own face — the same condensed display
+/* The wordmark is set in the brand's own face, the same condensed display
    cut used in the QV FITS logo mark sitting next to it. */
 .logo__name {
   font-family: 'Anton', var(--display), sans-serif;
@@ -337,8 +332,6 @@ table.size td a::after,
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .logo__sub { font-size: .58rem; letter-spacing: .3em; text-transform: uppercase; color: var(--ink-3); margin-top: 5px; }
-.ftr .logo__mark { width: 48px; height: 48px; }
-@media (max-width: 700px) { .logo__mark { width: 38px; height: 38px; } }
 
 .nav { display: flex; gap: 6px; }
 .nav a {
@@ -374,7 +367,7 @@ table.size td a::after,
   transform: scale(0); transition: transform .3s var(--ease);
 }
 .icon-btn__count.is-on { transform: scale(1); }
-/* Always available — the side menu is reachable on desktop too. */
+/* Always available, the side menu is reachable on desktop too. */
 .burger { display: grid; }
 
 /* Seven links plus the search field need real room. Rather than fall back to a
@@ -392,16 +385,14 @@ table.size td a::after,
    push it over. These numbers bring it to ~698 including gaps. */
 @media (max-width: 880px) and (min-width: 701px) {
   .hdr__inner { gap: 6px; }
-  .logo__mark { width: 36px; height: 36px; }
   .logo__name { font-size: 1.12rem; letter-spacing: .09em; }
-  .logo__sub { font-size: .6rem; letter-spacing: .14em; }
   .nav { gap: 0; }
   .nav a { font-size: .74rem; padding: .5em .3em; }
   .icon-btn { width: 32px; height: 32px; }
   .cur__btn { height: 32px; padding: 0 6px; font-size: .72rem; }
 }
 
-/* Below the breakpoint the inline links go away entirely — the menu button
+/* Below the breakpoint the inline links go away entirely, the menu button
    opens the shared side drawer instead. The nav used to BECOME the drawer,
    which meant it lived inside the header and inherited every one of the
    header's stacking and backdrop-filter problems. The drawer is a body-level
@@ -496,7 +487,7 @@ table.size td a::after,
   position: relative; margin-top: 6px; font-size: .64rem; letter-spacing: .14em;
   text-transform: uppercase; color: var(--ink-4);
 }
-/* <picture> is a wrapper with no box of its own — the rules that used to size
+/* <picture> is a wrapper with no box of its own, the rules that used to size
    the img directly must not be broken by it sitting in between. */
 .ph picture { display: contents; }
 .ph img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;
@@ -504,7 +495,7 @@ table.size td a::after,
 .logo picture { display: contents; }
 .ph.has-photo::before, .ph.has-photo .ph__label, .ph.has-photo .ph__note { display: none; }
 
-/* Thumbnails are too small to carry the label — gradient only. */
+/* Thumbnails are too small to carry the label, gradient only. */
 .look__thumb .ph__label, .look__thumb .ph__note,
 .mini-row__media .ph__label, .mini-row__media .ph__note,
 .asst-card__media .ph__label, .asst-card__media .ph__note,
@@ -526,14 +517,14 @@ table.size td a::after,
 .card__media { aspect-ratio: 3 / 4; position: relative; overflow: hidden; background: var(--brand-50); }
 .card__media .ph { transition: transform .6s var(--ease); }
 .card:hover .card__media .ph { transform: scale(1.045); }
-/* No push-in on product photos — the hero is the only thing that moves. */
+/* No push-in on product photos, the hero is the only thing that moves. */
 .card__body { padding: 14px 16px 18px; display: flex; flex-direction: column; flex: 1; }
 .card__cat { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-4); }
 .card__name {
   font-family: var(--display); font-weight: 700; font-size: 1.02rem;
   margin: 3px 0 6px; line-height: 1.25;
   /* A bare inline link is only as tall as its text (14px). Padding gives it
-     a 24px box — the WCAG AA floor. The photo above is a second, much
+     a 24px box, the WCAG AA floor. The photo above is a second, much
      larger link to the same product, so this is not the only way in. */
   display: block; padding: 3px 0; min-height: 24px;
 }
@@ -566,7 +557,7 @@ table.size td a::after,
 @keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.35); } 100% { transform: scale(1); } }
 .heart.pop, .heart-inline.pop { animation: pop .4s var(--ease); }
 
-/* wishlist button on the product page — same state, button chrome */
+/* wishlist button on the product page, same state, button chrome */
 .heart-inline { color: var(--ink-3); padding: .85em 1.2em; }
 .heart-inline.is-on { color: var(--brand-500); background: var(--brand-100); }
 .heart-inline.is-on svg { fill: currentColor; }
@@ -669,7 +660,7 @@ table.size td a::after,
 .ftr__title { font-size: .86rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-family: var(--body); font-weight: 600; margin-bottom: 14px; }
 .ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .ftr a { color: var(--ink-2); font-size: .9rem; transition: color .2s; }
-/* These rows were 15px tall. Give each link a real box to be tapped in —
+/* These rows were 15px tall. Give each link a real box to be tapped in, 
    32px with a mouse, the full 44px on touch, where it actually matters. */
 .ftr ul a { display: flex; align-items: center; min-height: 32px; }
 @media (hover: none) and (pointer: coarse) {
@@ -714,7 +705,7 @@ table.size td a::after,
 .check-row input { accent-color: var(--brand-500); width: 18px; height: 18px; flex: none; }
 
 .range { width: 100%; accent-color: var(--brand-500); height: 24px; }
-/* The default thumb is small and varies by browser — pin it to 24px so the
+/* The default thumb is small and varies by browser, pin it to 24px so the
    price slider can be dragged with a thumb. */
 .range::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
@@ -1113,7 +1104,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
 @keyframes marq { to { transform: translateX(-50%); } }
 
 /* ==========================================================================
-   PROMOTIONS — campaign banner + deal cards
+   PROMOTIONS: campaign banner + deal cards
    ========================================================================== */
 .campaign {
   position: relative;
@@ -1138,7 +1129,6 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
   max-width: 46ch; color: #fff;
 }
 .campaign__body .kicker { color: #fff; }
-.campaign__body .kicker::before { background: rgba(255,255,255,.65); }
 .campaign__body h2 { color: #fff; margin-bottom: .4em; }
 .campaign__body p { color: rgba(255,255,255,.88); font-size: clamp(.95rem, 1.4vw, 1.06rem); }
 
@@ -1172,7 +1162,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
 
 /* ==========================================================================
    PHONE REFINEMENT
-   Desktop proportions were being carried straight down to a 375px screen —
+   Desktop proportions were being carried straight down to a 375px screen, 
    one full-width tile per screenful, oversized type, a very long scroll.
    This scales the whole thing down and puts the grids on two columns.
    ========================================================================== */
@@ -1196,12 +1186,9 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
   h3 { font-size: 1.02rem; }
   .lede { font-size: .95rem; }
   .kicker { font-size: .8rem; letter-spacing: .14em; margin-bottom: .7em; }
-  .kicker::before { width: 16px; }
 
   /* header chrome */
-  .logo__mark { width: 32px; height: 32px; }
   .logo__name { font-size: 1.05rem; }
-  .logo__sub { font-size: .74rem; letter-spacing: .1em; }
   .logo { gap: 7px; }
   .hdr__inner { padding: 9px var(--gut); gap: 8px; }
   .hdr__acts { gap: 0; }
@@ -1273,7 +1260,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
   .asst-btn { width: 48px; height: 48px; right: 10px; bottom: 74px; }
 }
 
-/* Very small phones — keep two columns but tighten further. */
+/* Very small phones, keep two columns but tighten further. */
 @media (max-width: 380px) {
   :root { --gut: 12px; }
   .grid-products, .grid-collections, .grid-looks { gap: 8px; }
@@ -1281,12 +1268,11 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
 
   /* Raising the header type for legibility pushed the bar to 336px inside a
      320px screen (measured). Give the chrome those 16px back by drawing it
-     smaller — the touch areas are set by the ::after rules above, so they
+     smaller, the touch areas are set by the ::after rules above, so they
      stay at 44px however small the button itself is painted. */
   .hdr__inner { padding-inline: 9px; gap: 5px; }
   .icon-btn { width: 34px; height: 34px; }
   .logo { gap: 6px; }
-  .logo__mark { width: 30px; height: 30px; }
   .cur__btn { height: 32px; padding: 0 6px; font-size: .72rem; gap: 3px; }
 }
 
@@ -1387,7 +1373,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
 
 
 /* ==========================================================================
-   PHONE — side menu and cards
+   PHONE: side menu and cards
    These live at the END of the file on purpose. Media queries add no
    specificity, so when they sat above .drawer-menu__main's base rule the
    base rule won and the phone sizes never applied.
@@ -1417,7 +1403,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
 
 /* ==========================================================================
    HOME: SHOP BY MOVEMENT
-   Four large image tiles with the word over the picture. Deliberately spare —
+   Four large image tiles with the word over the picture. Deliberately spare, 
    the client asked for a home page that is image-led, not busy.
    ========================================================================== */
 .grid-movements {
@@ -1461,7 +1447,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
 }
 
 /* ==========================================================================
-   HERO SLIDESHOW — a rotating canvas with the copy over the picture
+   HERO SLIDESHOW: a rotating canvas with the copy over the picture
    ========================================================================== */
 .hero { padding-block: clamp(14px, 2vw, 26px) 0; }
 
@@ -1473,7 +1459,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
   background: #0b0810;                  /* the black the slides dip through */
 }
 .slideshow__track { position: relative; height: 100%; }
-/* The round tag that sits on the picture — the same device the reference uses,
+/* The round tag that sits on the picture, the same device the reference uses,
    kept out of the top-right corner so it never fights the centred copy. */
 .slide__sticker {
   position: absolute; z-index: 3;
@@ -1489,7 +1475,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
 }
 
 /* Slides stack, and cross-dip through the black backing rather than through
-   each other — only ever one is visible, and for a beat none of them is. */
+   each other, only ever one is visible, and for a beat none of them is. */
 .slide {
   position: absolute; inset: 0;
   display: flex; align-items: flex-end; justify-content: center;
@@ -1509,7 +1495,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
 .slide .ph img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; }
 .slide .ph__label, .slide .ph__note { display: none; }
 
-/* Three scrims, because the copy now sits over the middle panel — which on the
+/* Three scrims, because the copy now sits over the middle panel, which on the
    colour-drop slide is a near-white studio backdrop:
      · a pool behind the words themselves
      · the bottom lift
@@ -1545,12 +1531,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
   display: block; white-space: normal;
   line-height: 1.45;
 }
-.slide__body .kicker::before {
-  display: inline-block; vertical-align: middle;
-  margin-right: .8em; margin-bottom: .18em;
-}
 .slide__body { min-width: 0; }
-.slide__body .kicker::before { background: rgba(255,255,255,.6); }
 .slide__title {
   color: #fff; font-family: var(--display); font-weight: 800; line-height: 1.04;
   font-size: clamp(2rem, 4.6vw, 3.2rem);
@@ -1582,7 +1563,7 @@ table.size td:first-child { font-family: var(--display); font-weight: 700; }
   .slide__body { max-width: none; }
   .slide__sticker { width: 76px; font-size: .68rem; }
   .slide__body .kicker { font-size: .8rem; letter-spacing: .12em; }
-  /* Taller phone banner puts the copy over mid-tone fabric — deepen the scrim. */
+  /* Taller phone banner puts the copy over mid-tone fabric, deepen the scrim. */
   .slide::after {
     background: linear-gradient(to top,
       rgba(18,12,20,.90) 0%, rgba(18,12,20,.72) 34%,
@@ -1621,7 +1602,7 @@ a.press__item:hover { opacity: 1; color: var(--brand-500); }
 .press__item img { height: 24px; width: auto; object-fit: contain; }
 
 /* ==========================================================================
-   OFFER STICKER — dismissible, bottom-left
+   OFFER STICKER: dismissible, bottom-left
    ========================================================================== */
 .sticker {
   position: fixed; z-index: 58;
@@ -1681,7 +1662,7 @@ a.press__item:hover { opacity: 1; color: var(--brand-500); }
 
 
 /* ==========================================================================
-   SHOP THE FEED — the brand's own reels, playing, each one a link
+   SHOP THE FEED: the brand's own reels, playing, each one a link
    ========================================================================== */
 .grid-feed {
   display: grid; gap: clamp(10px, 1.6vw, 18px);
@@ -1724,7 +1705,7 @@ a.press__item:hover { opacity: 1; color: var(--brand-500); }
 .feedtile:focus-visible .feedtile__shop { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
 @media (max-width: 900px) { .grid-feed { grid-template-columns: repeat(2, 1fr); } }
-/* No hover on a touch screen, so the affordance has to be permanent — but a
+/* No hover on a touch screen, so the affordance has to be permanent, but a
    full pill covers too much of a small tile. Shrink it to an arrow button. */
 @media (hover: none) {
   .feedtile__shop {

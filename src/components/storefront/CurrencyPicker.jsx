@@ -5,13 +5,16 @@ import { ChevronDown } from "lucide-react";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useClickOutside } from "@/utils/useClickOutside";
 
+// Changes the display currency only; see CurrencyContext.
 export default function CurrencyPicker() {
   const { currency, currencies, ratesUpdated, setCurrency } = useCurrency();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   useClickOutside(ref, () => setOpen(false), open);
 
+  // Nothing to pick until the admin adds a second currency.
   if (currencies.length < 2) return null;
+  // Settings list the base (UGX) first.
   const base = currencies[0];
 
   return (
@@ -44,6 +47,7 @@ export default function CurrencyPicker() {
             <span>{c.label}</span>
           </button>
         ))}
+        {/* Rates are refreshed by hand and go stale, so show their date. */}
         <p className="cur__note">
           Prices outside {base.code} are approximate, converted at rates from {ratesUpdated ?? "a recent update"}. Orders are settled in {base.label}.
         </p>

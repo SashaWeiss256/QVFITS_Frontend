@@ -1,6 +1,7 @@
 /* Colour Picker */
 import { cn } from "@/utils/cn";
 
+// `swatch` maps a colour name to its CSS colour (from the catalogue facets).
 export default function ColorPicker({ colors, chosen, onChoose, swatch }) {
   return (
     <div className="opt">
@@ -8,6 +9,7 @@ export default function ColorPicker({ colors, chosen, onChoose, swatch }) {
         <h2>Colour</h2>
         <span>{chosen}</span>
       </div>
+      {/* Radio semantics expose the selected colour to assistive technology. */}
       <div className="swatch-row" role="radiogroup" aria-label="Colour">
         {colors.map((c) => (
           <button

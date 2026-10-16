@@ -1,27 +1,30 @@
-/* Home Page (port of Quivogue index.html) */
+/* Home Page (from Quivogue index.html) */
 import { useSeo } from "@/seo/useSeo";
-import BestSellers from "./sections/BestSellers";
+import { useHomeContent } from "@/store/tanstackStore/queries/site";
 import Campaign from "./sections/Campaign";
+import Feed from "./sections/Feed";
 import Hero from "./sections/Hero";
 import Movements from "./sections/Movements";
-import NewReleases from "./sections/NewReleases";
 import Newsletter from "./sections/Newsletter";
 import Press from "./sections/Press";
-import ShopTheFeed from "./sections/ShopTheFeed";
+import ProductRail from "./sections/ProductRail";
 
-// Quivogue's order, one section per file.
+// The original site's order, top to bottom. Every section reads the one
+// home document the admin edits under Website, so nothing here is hardcoded.
 export default function HomePage() {
   useSeo();
+  const { data: content } = useHomeContent();
+
   return (
     <>
-      <Hero />
-      <Press />
-      <NewReleases />
-      <BestSellers />
-      <Movements />
-      <Campaign />
-      <ShopTheFeed />
-      <Newsletter />
+      <Hero slides={content?.heroSlides} />
+      <Press press={content?.press} />
+      <ProductRail rail={content?.rails.newReleases} badge="New" />
+      <ProductRail rail={content?.rails.bestSellers} badge="Bestseller" tight />
+      <Movements movements={content?.movements} />
+      <Campaign campaign={content?.campaign} />
+      <Feed feed={content?.feed} />
+      <Newsletter copy={content?.newsletter} />
     </>
   );
 }

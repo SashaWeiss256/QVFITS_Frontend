@@ -1,0 +1,518 @@
+/* QVFITS Chrome: Navbar, Mega Menu, Search, Mobile Menu */
+
+/* ---------------------------------------------------------------- logo */
+/* The client's format: the supplied artwork (QVFITS under the wave mark) on
+   the left, QVFITS over QUIVOGUE on the right. Sized by height; the width
+   follows the art (about 2.3 : 1). Tall enough that QVFITS under the mark stays readable.
+   Base .logo rules live in quivogue.css; these override them. */
+.logo {
+  flex: none;
+  margin-right: 0;
+}
+.logo__img {
+  display: block;
+  height: 60px;
+  width: auto;
+}
+.logo--lg .logo__img {
+  height: 88px;
+}
+@media (max-width: 1023px) {
+  .logo__img {
+    height: 50px;
+  }
+}
+@media (max-width: 380px) {
+  .logo__img {
+    height: 44px;
+  }
+}
+
+/* ---------------------------------------------------------------- header row */
+/* Laptop and desktop (1024px up): logo | centred links | icons.
+   Phone and tablet: menu button | centred logo | icons. The menu button and
+   the full-height menu exist only below 1024px. */
+.hdr__inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+.hdr__start {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.hdr__acts {
+  justify-self: end;
+  gap: 2px;
+}
+.nav {
+  display: none;
+  gap: 0;
+}
+.hdr__burger {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .nav {
+    display: flex;
+    align-items: center;
+  }
+}
+@media (max-width: 1023px) {
+  /* The start group dissolves into the grid: button left, logo centred. */
+  .hdr__start {
+    display: contents;
+  }
+  .hdr__burger {
+    display: grid;
+    grid-column: 1;
+    justify-self: start;
+  }
+  .hdr__start .logo {
+    grid-column: 2;
+    justify-self: center;
+  }
+  .hdr__acts {
+    grid-column: 3;
+  }
+  .hdr__acts .hdr__wide-only {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .hdr__acts { gap: 0; }
+  .hdr__acts .icon-btn { width: 32px; height: 32px; }
+}
+.nav__shop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+.nav__shop svg {
+  transition: transform 0.3s var(--ease);
+}
+.nav__shop[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+/* ---------------------------------------------------------------- announcement */
+.promo__line {
+  display: block;
+  padding-inline: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100vw;
+  animation: promo-in 0.6s var(--ease);
+}
+@keyframes promo-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* ---------------------------------------------------------------- mega menu */
+.mega {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 2;
+  background: var(--cream);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--sh-3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.3s var(--ease),
+    transform 0.4s var(--ease),
+    visibility 0.3s;
+}
+.mega.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+.mega__inner {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding: clamp(28px, 3vw, 44px) var(--gut) clamp(28px, 3vw, 40px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.4fr);
+  gap: clamp(20px, 3vw, 48px);
+}
+.mega__title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  margin-bottom: 14px;
+}
+.mega__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.mega__list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  font-size: 1rem;
+  color: var(--ink-2);
+  transition:
+    color 0.2s,
+    transform 0.3s var(--ease);
+}
+.mega__list a:hover {
+  color: var(--ink);
+  transform: translateX(4px);
+}
+.mega__feature {
+  position: relative;
+  display: block;
+  min-height: 260px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  color: #fff;
+}
+.mega__feature .ph {
+  position: absolute;
+  inset: 0;
+}
+.mega__feature .ph img {
+  transition: transform 0.9s var(--ease);
+}
+.mega__feature:hover .ph img {
+  transform: scale(1.04);
+}
+.mega__feature .ph__label,
+.mega__feature .ph__note {
+  display: none;
+}
+.mega__feature::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(23, 33, 31, 0.7), rgba(23, 33, 31, 0) 60%);
+}
+.mega__feature-copy {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 20px;
+  z-index: 1;
+}
+.mega__feature-copy strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+}
+.mega__foot {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding: 14px var(--gut);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: var(--ink-3);
+}
+
+/* ---------------------------------------------------------------- overlay sheets */
+/* Search and the phone menu: full-width sheets over a scrim. */
+.sheet {
+  position: fixed;
+  z-index: 90;
+  background: var(--cream);
+  visibility: hidden;
+  transition:
+    transform 0.5s var(--ease),
+    visibility 0.5s;
+}
+.sheet.is-open {
+  visibility: visible;
+  transform: none;
+}
+.sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 89;
+  background: rgba(23, 33, 31, 0.4);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease);
+}
+.sheet-scrim.is-on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Search drops from the top. */
+.search-ov {
+  top: 0;
+  left: 0;
+  right: 0;
+  max-height: 92dvh;
+  overflow-y: auto;
+  transform: translateY(-104%);
+  border-radius: 0 0 var(--r-xl) var(--r-xl);
+}
+.search-ov__inner {
+  max-width: 1080px;
+  margin-inline: auto;
+  padding: clamp(20px, 3vw, 36px) var(--gut) clamp(28px, 4vw, 48px);
+}
+.search-ov__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 10px;
+}
+.search-ov__bar input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  font-family: var(--display);
+  font-size: clamp(1.4rem, 3.4vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.search-ov__bar input::placeholder {
+  color: var(--ink-4);
+}
+.search-ov__bar input::-webkit-search-cancel-button {
+  display: none;
+}
+.search-ov__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  margin: 26px 0 12px;
+}
+.search-ov__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.search-ov__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 18px 14px;
+}
+.search-ov__hit {
+  display: block;
+}
+/* height: auto, or Quivogue's .ph height: 100% overrides the ratio and the
+   card spills out of its grid row over the link below. */
+.search-ov__hit .ph {
+  height: auto;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  position: relative;
+}
+.search-ov__hit .ph__label,
+.search-ov__hit .ph__note {
+  display: none;
+}
+.search-ov__hit strong {
+  display: block;
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.search-ov__hit span {
+  font-size: 0.85rem;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The phone menu comes in from the left, full height. */
+.mmenu {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(100vw, 460px);
+  transform: translateX(-102%);
+  display: flex;
+  flex-direction: column;
+}
+.mmenu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 12px var(--gut);
+  border-bottom: 1px solid var(--line);
+}
+.mmenu__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px var(--gut) 24px;
+}
+.mmenu__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 60px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  text-align: left;
+}
+.mmenu__sub {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+  padding: 10px 0 16px;
+}
+.mmenu__sub a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink-2);
+}
+.mmenu__foot {
+  padding: 16px var(--gut) calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mega,
+  .sheet,
+  .sheet-scrim,
+  .promo__line {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------- shop filters */
+.filters__sheet-head,
+.filters__sheet-foot,
+.mfilter,
+.filters__scrim {
+  display: none;
+}
+.applied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: -6px 0 22px;
+}
+.applied__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--cream-2);
+  font-size: 0.84rem;
+  color: var(--ink);
+  transition: background-color 0.2s;
+}
+.applied__chip:hover {
+  background: var(--beige);
+}
+@media (pointer: coarse) {
+  .applied__chip,
+  .check-row {
+    min-height: 44px;
+  }
+}
+
+/* Phones and tablets: the filters become a bottom sheet, opened from a
+   floating pill that stays in reach while browsing. */
+@media (max-width: 880px) {
+  .filters {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 95;
+    max-height: 86dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    transform: translateY(104%);
+    visibility: hidden;
+    transition:
+      transform 0.5s var(--ease),
+      visibility 0.5s;
+  }
+  .filters.is-open {
+    transform: none;
+    visibility: visible;
+  }
+  .filters__scrim {
+    display: block;
+    z-index: 94;
+  }
+  .filters__sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    margin: 0 -22px;
+    padding: 12px 12px 12px 22px;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+  }
+  .filters__sheet-foot {
+    display: block;
+    position: sticky;
+    bottom: 0;
+    margin: 18px -22px 0;
+    padding: 14px 22px calc(14px + env(safe-area-inset-bottom));
+    background: var(--white);
+    border-top: 1px solid var(--line);
+  }
+  .mfilter {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    z-index: 70;
+    pointer-events: none;
+  }
+  .mfilter__btn {
+    pointer-events: auto;
+    box-shadow: var(--sh-3);
+    padding-inline: 1.6em;
+  }
+  body[data-overlay] .mfilter {
+    display: none;
+  }
+}

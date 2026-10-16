@@ -51,7 +51,7 @@ export const terms = (s) => ({
       id: "delivery",
       heading: "Delivery",
       blocks: [
-        `We deliver within Kampala (${ugx(s.kampalaDelivery)}) and upcountry (${ugx(s.upcountryDelivery)}), free on orders over ${ugx(s.freeShippingOver)}, or you can collect from the showroom at no charge. Full details are in our delivery policy.`,
+        `We deliver to ${(s.zones ?? []).filter((z) => !z.collect).map((z) => `${z.name} (${ugx(z.fee)})`).join(", ")}, free on orders over ${ugx(s.freeShippingOver)}, or you can collect from the showroom at no charge. Full details are in our delivery policy.`,
       ],
     },
     {

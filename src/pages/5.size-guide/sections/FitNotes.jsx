@@ -1,10 +1,11 @@
 /* How Each Piece Fits */
 import { Link } from "react-router-dom";
 
-import Reveal from "@/components/ui/Reveal";
+import Reveal from "@/components/motion/Reveal";
 import { useProducts } from "@/store/tanstackStore/queries/site";
 import { FIT_LABELS } from "@/utils/sizing";
 
+// Built from the live catalogue, so a new piece's fit note shows up here without editing the page.
 export default function FitNotes() {
   const { data: products = [] } = useProducts();
 
@@ -24,6 +25,7 @@ export default function FitNotes() {
                 <tr key={p.id}>
                   <td><Link to={`/product/${p.slug}`} className="text-brand-600">{p.name}</Link></td>
                   <td>{p.category}</td>
+                  {/* A piece with no fit set is treated as true to size. */}
                   <td>{FIT_LABELS[p.fit] ?? "True to size"}</td>
                   <td className="text-ink-3">{p.fitNote}</td>
                 </tr>

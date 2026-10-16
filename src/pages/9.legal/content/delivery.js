@@ -15,9 +15,7 @@ export const delivery = (s) => ({
         { table: {
           head: ["Option", "Fee"],
           rows: [
-            ["Kampala", ugx(s.kampalaDelivery)],
-            ["Upcountry (outside Kampala)", ugx(s.upcountryDelivery)],
-            ["Collect from the showroom", "Free"],
+            ...(s.zones ?? []).map((z) => [z.etaDays ? `${z.name} (${z.etaDays} days)` : z.name, z.fee ? ugx(z.fee) : "Free"]),
             [`Orders over ${ugx(s.freeShippingOver)}`, "Free delivery"],
           ],
         } },

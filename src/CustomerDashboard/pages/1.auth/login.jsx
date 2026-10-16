@@ -8,13 +8,14 @@ import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
 import { useSeo } from "@/seo/useSeo";
-import AuthShell from "../../components/auth/AuthShell";
-import { useNextPath, useRedirectIfSignedIn } from "../../components/auth/useRedirectIfSignedIn";
+import AuthShell from "./AuthShell";
+import { useNextPath, useRedirectIfSignedIn } from "./useRedirectIfSignedIn";
 import { loginSchema } from "./schemas";
 
 export default function CustomerLogin() {
   useSeo({ title: "Sign in", noindex: true });
   useRedirectIfSignedIn();
+  // Where to land afterwards: a safe local ?next= or /account.
   const { signIn } = useCustomerAuth();
   const navigate = useNavigate();
   const next = useNextPath();
@@ -35,7 +36,8 @@ export default function CustomerLogin() {
     <AuthShell
       title="Welcome back"
       lede="Sign in to see your orders and saved pieces."
-      footer={<>New to QV FITS? <Link to={`/signup?next=${encodeURIComponent(next)}`} className="link-arrow">Create an account</Link></>}
+      // Carry ?next= across so switching between sign in and sign up keeps the destination.
+      footer={<>New to QVFITS? <Link to={`/signup?next=${encodeURIComponent(next)}`} className="link-arrow">Create an account</Link></>}
     >
       <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Field label="Email" type="email" autoComplete="email" input={register("email")} error={errors.email?.message} />

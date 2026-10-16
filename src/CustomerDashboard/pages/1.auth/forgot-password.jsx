@@ -8,7 +8,7 @@ import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
 import { useSeo } from "@/seo/useSeo";
-import AuthShell from "../../components/auth/AuthShell";
+import AuthShell from "./AuthShell";
 import { forgotSchema } from "./schemas";
 
 // Honest seam: until the API sends email, the page says so and points to
@@ -19,6 +19,7 @@ export default function CustomerForgotPassword() {
   const [result, setResult] = useState(null);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(forgotSchema) });
 
+  // The page trusts the API's { sent } flag rather than assuming the email went out.
   const onSubmit = async ({ email }) => setResult(await requestPasswordReset(email));
 
   return (

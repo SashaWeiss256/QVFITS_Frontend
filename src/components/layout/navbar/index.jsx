@@ -1,80 +1,63 @@
-/* Header (from Quivogue buildChrome()) */
-import { useEffect, useRef, useState } from "react";
-import { Heart, Menu, Search, ShoppingBag, UserRound } from "lucide-react";
-import { Link } from "react-router-dom";
+/* Navbar */
+import { useCallback, useEffect, useState } from "react";
+import { Menu } from "lucide-react";
 
-import CurrencyPicker from "@/components/storefront/CurrencyPicker";
-import { useCart } from "@/store/context/CartContext";
-import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
-import { useWishlist } from "@/store/context/WishlistContext";
 import { cn } from "@/utils/cn";
 import Logo from "./Logo";
+import MegaMenu from "./MegaMenu";
+import MobileMenu from "./MobileMenu";
+import NavActions from "./NavActions";
 import NavLinks from "./NavLinks";
-import SearchPanel from "./SearchPanel";
+import SearchOverlay from "./SearchOverlay";
+import { useMegaMenuHover } from "./useMegaMenuHover";
+import { useNavbarChrome } from "./useNavbarChrome";
 
-function Count({ n }) {
-  return <span className={cn("icon-btn__count", n > 0 && "is-on")}>{n}</span>;
-}
+const MEGA_ID = "mega-shop";
 
+/**
+ * Laptop and desktop (1024px up): logo, centred links with the Shop mega
+ * menu, icons. Phone and tablet: menu button, centred logo, search and bag;
+ * everything else is in the full-height menu. Solid, tucked away while
+ * scrolling down and back the moment you scroll up.
+ */
 export default function Navbar() {
-  const { count, openDrawer } = useCart();
-  const wishlist = useWishlist();
-  const { customer } = useCustomerAuth();
-  const [stuck, setStuck] = useState(false);
+  const { stuck, hidden } = useNavbarChrome();
+  const mega = useMegaMenuHover();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const searchRef = useRef(null);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
 
-  // The header picks up a rule and a shadow once the page scrolls under it.
+  // "/" opens search, as on most shops, unless you're typing somewhere.
   useEffect(() => {
-    const onScroll = () => setStuck(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const onKey = (e) => {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey) return;
+      const el = document.activeElement;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      e.preventDefault();
+      setSearchOpen(true);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  const toggleSearch = () => {
-    setSearchOpen((open) => !open);
-    setTimeout(() => searchRef.current?.focus(), 120);
-  };
-
   return (
-    <SearchPanel inputRef={searchRef} onDone={() => setSearchOpen(false)}>
-      {(searchField, searchResults) => (
-        <header className={cn("hdr", stuck && "is-stuck", searchOpen && "search-open")}>
-          <div className="hdr__inner">
+    <>
+      <header className={cn("hdr", stuck && "is-stuck", hidden && !mega.open && "is-hidden")}>
+        <div className="hdr__inner">
+          <div className="hdr__start">
+            <button type="button" className="icon-btn hdr__burger" aria-label="Menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
+              <Menu className="h-[22px] w-[22px]" strokeWidth={1.75} aria-hidden="true" />
+            </button>
             <Logo />
-            <NavLinks />
-            <div className="hdr__acts">
-              <CurrencyPicker />
-              <button
-                type="button"
-                className="icon-btn search__toggle"
-                aria-label="Search"
-                aria-expanded={searchOpen}
-                onClick={toggleSearch}
-              >
-                <Search className="h-[19px] w-[19px]" aria-hidden="true" />
-              </button>
-              <Link to={customer ? "/account" : "/login"} className="icon-btn hdr__account" aria-label={customer ? "Your account" : "Sign in"}>
-                <UserRound className="h-[19px] w-[19px]" aria-hidden="true" />
-              </Link>
-              <button type="button" className="icon-btn" aria-label="Wishlist" onClick={() => openDrawer("wish")}>
-                <Heart className="h-[19px] w-[19px]" aria-hidden="true" />
-                <Count n={wishlist.count} />
-              </button>
-              <button type="button" className="icon-btn" aria-label="Shopping bag" onClick={() => openDrawer("cart")}>
-                <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-                <Count n={count} />
-              </button>
-              <button type="button" className="icon-btn burger" aria-label="Menu" onClick={() => openDrawer("menu")}>
-                <Menu className="h-[21px] w-[21px]" aria-hidden="true" />
-              </button>
-            </div>
-            {searchField}
           </div>
-          {searchResults}
-        </header>
-      )}
-    </SearchPanel>
+          <NavLinks mega={mega} megaId={MEGA_ID} />
+          <NavActions onSearch={() => setSearchOpen(true)} />
+        </div>
+        <MegaMenu id={MEGA_ID} open={mega.open} onEnter={mega.enter} onLeave={mega.leave} onNavigate={mega.close} />
+      </header>
+      <SearchOverlay open={searchOpen} onClose={closeSearch} />
+      <MobileMenu open={menuOpen} onClose={closeMenu} />
+    </>
   );
 }

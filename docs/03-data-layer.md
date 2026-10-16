@@ -1,4 +1,4 @@
-# 03 — Data Layer
+# 03: Data Layer
 
 **Rule:** the UI asks a query hook. The hook asks a service. The service decides whether the answer comes from a fixture or the API. Swapping one for the other changes the service file only.
 
@@ -29,14 +29,16 @@ src/store/
     ├── notices.ts               ← "couldn't refresh" messages
     ├── queries/
     │   ├── keys.ts              ← realm roots: siteRoot, customerRoot, adminRoot
-    │   ├── site/                ← catalog, content, checkout, forms, index
-    │   ├── account/             ← profile, orders, addresses, wishlist, index
-    │   └── admin/               ← collection (useCollection/useDocument), catalog, sales,
-    │                              marketing, website, team, settings, overview, index
+    │   ├── site/                ← catalog, content (settings, home, offers, pages, navigation,
+    │   │                          FAQ, zones, payment methods), forms, index (usePageCopy …)
+    │   ├── account/             ← profile, orders, returns, index
+    │   └── admin/               ← collection (useCollection, useDocument, crudResource),
+    │                              catalog, sales, website, team, index
     └── services/
         ├── api/                 ← transport (TypeScript)
         ├── types.ts             ← domain types (the contract)
         ├── store/collectionStore.ts ← mock tables and documents
+        ├── store/adminCrud.ts   ← list/create/update/remove/reorder with permission + audit
         └── <area>/<thing>Api.ts
 ```
 
@@ -56,19 +58,28 @@ src/store/
 
 | Area | Files | Used by |
 |---|---|---|
-| `catalog/` | `productsApi`, `categoriesApi`, `collectionsApi`, `reviewsApi`, `sizeChartApi` | site, admin |
-| `sales/` | `checkoutApi`, `ordersApi`, `paymentsApi`, `discountsApi`, `reportsApi` | site, account, admin |
-| `customers/` | `customersApi`, `addressesApi` | account, admin |
-| `content/` | `contentApi` (hero, looks, movements, press, FAQ), `settingsApi` (delivery, shop details), `contactApi` | site, admin |
-| `marketing/` | `offersApi` (sale, promo bar, sticker), `subscribersApi` | site, admin |
-| `auth/` | `customerAuthApi`, `adminAuthApi` | the two auth contexts |
-| `assistant/` | `fitAssistantApi` (Quivogue's intent parser over the live catalogue) | site |
+| `catalog/` | `productsApi` (records in, expanded views out; stock, bulk edits), `attributesApi` (categories, colours, sizes, activities, filter layout), `categoriesApi` (facets), `collectionsApi` (rails, kits), `reviewsApi`, `sizeChartApi`, `photos` | site, admin |
+| `sales/` | `checkoutApi` (quote, place, manual orders), `ordersApi` (statuses, payment, notes), `discountsApi` (rules), `transactionsApi`, `returnsApi`, `reportsApi` | site, account, admin |
+| `customers/` | `customersApi` (profile, addresses, wishlist; staff notes and tags) | account, admin |
+| `content/` | `contentApi` (home page), `pagesApi` (page copy, menus), `faqApi`, `settingsApi`, `contactApi` (messages inbox) | site, admin |
+| `settings/` | `shippingApi` (delivery zones, fees), `paymentMethodsApi` | site, admin |
+| `marketing/` | `offersApi` (sale, promo bar, deals, sticker), `subscribersApi` | site, admin |
+| `team/` | `teamStore`, `staffApi` (invites, roles, the last-owner rule) | admin |
+| `admin/` | `activityApi` (the audit log every admin write feeds) | admin |
+| `auth/` | `customerAuthApi`, `adminAuthApi`, `adminSession` (who is signed in, `can`, `assertCan`) | the two auth contexts, every admin service |
+| `assistant/` | `fitAssistantApi` + `vee/` (Quivogue's full intent parser: language, search, looks, reply) over the live catalogue, stock and size chart; replies are blocks (text, product cards, links), never HTML | site |
 
 Every read takes `{ signal }` and passes it on. Admin-only services say `realm: admin` in their header comment.
 
 ### The collection store
 
-`createCollection<T>(key, seed, { idPrefix })` gives a service `list / get / create / update / remove / reset` over rows seeded from `src/data` and persisted in localStorage under `qvfits:store:v2:<key>` (bump the version when a seed changes shape). `createDocument<T>(key, seed)` does the same for one settings document. Admin edits therefore survive a reload while mocking.
+`createCollection<T>(key, seed, { idPrefix })` gives a service `list / get / create / update / remove / replace / reset` over rows seeded from the JSON in `src/data` and persisted in localStorage under `qvfits:store:v3:<key>` (bump the version when a seed changes shape). `createDocument<T>(key, seed)` does the same for one settings document. Admin edits therefore survive a reload while mocking.
+
+`adminCrud(table, { module, noun, label, prepare, beforeRemove })` wraps a table for the admin: every write checks the signed-in admin's permission for `module` (`assertCan`, a 403 like the API's) and writes a line to the activity log. `beforeRemove` refuses a delete that would break something, such as a colour a product still uses.
+
+### Records and views
+
+Seeds and writes are **records**: relations by id (`categoryId`, `colorIds`, variants per colour and size). Reads return **views** with names filled in and stock summed per size, which is what the API's list endpoints will return. A patch from a screen may carry view fields; the service saves the stored fields only.
 
 ### Honest seams
 
@@ -76,7 +87,9 @@ A mock never claims something happened that did not:
 
 - Checkout with mocks on says no payment was taken and offers the WhatsApp order instead.
 - The contact form and newsletter say delivery is not connected yet.
-- Placeholder prices are flagged in the fixture (`// PRICE TBC`) until the client confirms them.
+- The contact form lands in the admin's Messages inbox and says so; no email is sent yet.
+- Staff invites hand back the link to share, until the API sends email.
+- Placeholder prices and offers are listed in `07-data.md` until the client confirms them.
 
 ## Realms and keys
 
@@ -94,11 +107,11 @@ A mock never claims something happened that did not:
 
 ## Adding a resource
 
-1. Add the fixture, `data/things.js`.
-2. Add the type to `services/types.ts` and the service `services/<area>/thingsApi.ts`. Use `createCollection<Thing>` if the admin edits it. Reads take `{ signal }`.
-3. Add the query factory:
-   - Storefront: `thingQueries` in `queries/site/<area>.ts` under `siteRoot`, a `useThings` hook in `queries/site/index.ts`.
+1. Add the seed, `data/things.json`, shaped like the API's table (ids, relations by id), and list it in `07-data.md`.
+2. Add the type to `services/types.ts` and the service `services/<area>/thingsApi.ts`: `createCollection<Thing>("things", seed)`, and `adminCrud(things, { module, noun, label })` if the admin edits it. Reads take `{ signal }`.
+3. Add the module to `data/permissions.json` and give it to the roles in `data/roles.json`.
+4. Add the query factory:
+   - Storefront: under `siteRoot` in `queries/site/`, a `useThings` hook in `queries/site/index.ts`.
    - Customer: under `customerRoot(id)` in `queries/account/`.
-   - Admin: `collectionQueries("things", listThings)` and a `thingsResource` in `queries/admin/<area>.ts`; pages call `useCollection(thingsResource)`.
-4. If an admin write changes something the storefront shows, list that key in the resource's `alsoInvalidates`.
+   - Admin: `crudResource("things", thingsCrud, { noun: "Thing" })` in `queries/admin/<area>.ts`; pages call `useCollection(thingsResource)`. Admin writes refresh the storefront (`siteRoot`) by default.
 5. Add the namespace to `api/routes.ts` if it is new, and to `05-backend-integration.md`.

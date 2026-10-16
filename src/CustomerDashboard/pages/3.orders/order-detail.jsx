@@ -7,6 +7,7 @@ import { useCurrency } from "@/store/context/CurrencyContext";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
 import { useMyOrder } from "@/store/tanstackStore/queries/account";
 import { formatDate } from "@/utils/format";
+import ReturnRequest from "./ReturnRequest";
 
 // Orders are quoted in UGX whatever currency the shop is shown in.
 export default function AccountOrderDetail() {
@@ -16,6 +17,7 @@ export default function AccountOrderDetail() {
   const { moneyBase } = useCurrency();
 
   if (isLoading) return <PageLoader className="min-h-[30vh]" />;
+  // Another shopper's id or a stale link lands here too, not on a crash.
   if (error || !order) return <p className="text-ink-3">We couldn&apos;t find that order. <Link to="/account/orders" className="link-arrow">All orders</Link></p>;
 
   return (
@@ -25,6 +27,7 @@ export default function AccountOrderDetail() {
         <StatusChip status={order.status} />
       </div>
       <p className="mt-1 text-sm text-ink-3">Placed {formatDate(order.createdAt)}</p>
+      {/* Order Lines: one row per product, size and colour. */}
       <ul className="mt-4 list-none p-0">
         {order.lines.map((l) => (
           <li key={`${l.productId}-${l.size}-${l.color}`} className="flex justify-between border-b border-line py-3">
@@ -33,11 +36,13 @@ export default function AccountOrderDetail() {
           </li>
         ))}
       </ul>
+      {/* Totals */}
       <dl className="mt-4 grid grid-cols-[1fr_auto] gap-1 text-[.95rem]">
         <dt>Delivery</dt><dd className="m-0 text-right">{moneyBase(order.delivery)}</dd>
         {order.discount > 0 && <><dt>Discount</dt><dd className="m-0 text-right">−{moneyBase(order.discount)}</dd></>}
         <dt className="font-semibold">Total</dt><dd className="m-0 text-right font-semibold">{moneyBase(order.total)}</dd>
       </dl>
+      <ReturnRequest order={order} customerId={customer.id} />
     </div>
   );
 }

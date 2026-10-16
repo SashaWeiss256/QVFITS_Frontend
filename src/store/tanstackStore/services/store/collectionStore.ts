@@ -2,13 +2,14 @@
 import type { Id } from "../api/types";
 
 /**
- * A small localStorage-backed table per collection, seeded from src/data.
+ * A small localStorage-backed table per collection, seeded from the JSON in
+ * src/data.
  * Admin edits survive a reload, so the dashboard behaves like it will once
  * the API is live. Only services touch this; the UI never does.
  */
 
 // Bump the version when seeds change shape, so stale browser copies are dropped.
-const PREFIX = "qvfits:store:v2:";
+const PREFIX = "qvfits:store:v3:";
 const memory = new Map<string, unknown>();
 
 function load<T>(key: string, seed: T): T {
@@ -42,6 +43,8 @@ export interface Collection<T extends { id: Id }> {
   create(data: NewRow<T>): T;
   update(id: Id, patch: Partial<T>): T | null;
   remove(id: Id): void;
+  /** Replace every row at once: a reorder, a bulk edit or an import. */
+  replace(rows: T[]): void;
   reset(): void;
 }
 
@@ -70,6 +73,7 @@ export function createCollection<T extends { id: Id }>(
       return updated;
     },
     remove: (id) => save(key, rows().filter((r) => String(r.id) !== String(id))),
+    replace: (next) => save(key, [...next]),
     reset: () => save(key, [...seed]),
   };
 }
@@ -84,7 +88,7 @@ export interface SettingsDocument<T extends object> {
 }
 
 /**
- * A single settings document (ads, stream site) instead of a table. `update`
+ * A single settings document (shop settings, home page, offers) instead of a table. `update`
  * merges one level deep, so saving one section never wipes another.
  */
 export function createDocument<T extends object>(key: string, seed: T): SettingsDocument<T> {

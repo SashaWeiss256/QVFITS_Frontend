@@ -1,0 +1,58 @@
+[
+  {
+    "id": "faq_1",
+    "q": "Where is the showroom?",
+    "a": "THE CUBE, G17, Kisementi, Kampala, ground floor, shop G17. Come and try things on; fit is the whole point.",
+    "group": "General",
+    "position": 0
+  },
+  {
+    "id": "faq_2",
+    "q": "How do I order?",
+    "a": "WhatsApp +256 758 981 959 with the piece, your size and your colour, or DM us on Instagram at @quivogue. Our team confirms stock and payment with you directly.",
+    "group": "General",
+    "position": 1
+  },
+  {
+    "id": "faq_3",
+    "q": "What is the difference between seamless and seam-fit?",
+    "a": "Seamless is knitted as one tube, so there are no side seams to rub, so it hugs and moves with you. Seam-fit is cut and stitched from panels, which lets us build in structure, support and mesh exactly where they are needed. Seamless for comfort and shape, seam-fit for support.",
+    "group": "General",
+    "position": 2
+  },
+  {
+    "id": "faq_4",
+    "q": "Are the leggings squat-proof?",
+    "a": "The High-Waist Sculpt Legging and the seamless sets are tested opaque under stretch. If you are ever unsure about a specific colour, ask us. The lighter shades are the ones worth asking about.",
+    "group": "General",
+    "position": 3
+  },
+  {
+    "id": "faq_5",
+    "q": "How should activewear fit?",
+    "a": "Snugger than you think. Seamless pieces are compressive and relax slightly as you wear them, so take your true size unless the piece says it runs small. If you are between sizes and want a softer hold, go up.",
+    "group": "General",
+    "position": 4
+  },
+  {
+    "id": "faq_6",
+    "q": "How do I care for it?",
+    "a": "Cold wash, inside out, no fabric softener, as it clogs the fibres and kills the stretch. Hang to dry, never tumble. Rinse swimwear in fresh water after chlorine or salt.",
+    "group": "General",
+    "position": 5
+  },
+  {
+    "id": "faq_7",
+    "q": "Can I exchange something?",
+    "a": "Talk to us as soon as you can and we will sort an exchange on anything unworn with its tags on. For hygiene reasons swimwear can only be exchanged if the liner is intact and unworn.",
+    "group": "General",
+    "position": 6
+  },
+  {
+    "id": "faq_8",
+    "q": "Do you deliver?",
+    "a": "Yes. Tell us where you are on WhatsApp and we will confirm the delivery fee and timing before anything is sent.",
+    "group": "General",
+    "position": 7
+  }
+]

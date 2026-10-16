@@ -1,11 +1,11 @@
 /* Newsletter Subscribers Service */
 import { ApiError, mockApi } from "../api/mock";
-import type { RequestOptions } from "../api/types";
+import { adminCrud } from "../store/adminCrud";
 import { createCollection } from "../store/collectionStore";
 import type { Subscriber } from "../types";
-import { subscriberSeed } from "@/data/orders";
+import subscriberSeed from "@/data/subscribers.json";
 
-const subscribers = createCollection<Subscriber>("subscribers", subscriberSeed, { idPrefix: "sub" });
+const subscribers = createCollection<Subscriber>("subscribers", subscriberSeed as Subscriber[], { idPrefix: "sub" });
 
 /**
  * Stored, so the admin can see and export the list. Honest seam: no email is
@@ -20,8 +20,14 @@ export function subscribe(email: string) {
   }, 300);
 }
 
+/** For the customer list: who is on the newsletter. */
+export const isSubscribed = (email: string) => subscribers.list().some((s) => s.email === email.trim().toLowerCase());
+
 /* Admin (realm: admin) */
 
-export function listSubscribers({ signal }: RequestOptions = {}) {
-  return mockApi(() => subscribers.list(), 150, signal);
-}
+export const subscribersCrud = adminCrud(subscribers, {
+  module: "newsletter",
+  noun: "subscriber",
+  label: (s) => s.email,
+  prepare: (data, existing) => (existing ? data : { createdAt: new Date().toISOString(), ...data, email: String(data.email ?? "").trim().toLowerCase() }),
+});

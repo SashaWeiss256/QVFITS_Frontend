@@ -31,9 +31,12 @@ export default function CartPanel() {
     );
   }
 
+  // The live sale price when an offer covers the piece, else the list price.
   const priceOf = (p) => saleOf(p, offers?.sale)?.now ?? p.price;
+  // Skip lines whose product is still loading or no longer in the catalogue.
   const rows = lines.map((l) => ({ line: l, product: products.find((p) => p.id === l.productId) })).filter((r) => r.product);
   const subtotal = rows.reduce((sum, r) => sum + priceOf(r.product) * r.line.qty, 0);
+  // Hidden (0) until settings load, so the nudge never shows a wrong threshold.
   const left = settings ? settings.freeShippingOver - subtotal : 0;
 
   return (
@@ -54,6 +57,7 @@ export default function CartPanel() {
         ))}
       </div>
       <div className="drawer__foot">
+        {/* Free Delivery Nudge */}
         {left > 0 ? (
           <p className="mb-2.5 text-[.82rem] text-ink-3">{money(left)} away from free delivery</p>
         ) : (
@@ -62,6 +66,7 @@ export default function CartPanel() {
         <div className="sum-row sum-row--total" style={{ margin: "0 0 14px", border: 0, padding: 0 }}>
           <span>Subtotal</span><span>{money(subtotal)}</span>
         </div>
+        {/* Checkout starts from the full bag page, where sizes and quantities can still change. */}
         <Link className="btn btn--primary btn--block" to="/cart">Checkout</Link>
       </div>
     </>

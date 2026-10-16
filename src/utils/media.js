@@ -6,6 +6,7 @@
  * space before the photo arrives.
  *
  * - Local photos (/photos): WebP at each width on disk, JPEG twin as fallback.
+ * - Uploaded photos (a data: URL): one resized WebP, served as it is.
  * - Remote photos (`photo.url`): an image CDN that crops and resizes on
  *   request and picks WebP or AVIF itself (`auto=format`), so no <source>.
  */
@@ -13,6 +14,12 @@ export function photoSources(photo, { wide = false } = {}) {
   // A card is half the screen on a phone and about 300px on a desktop; a
   // wide image is the content column, capped at 1200.
   const sizes = wide ? "(max-width: 1240px) 100vw, 1200px" : "(max-width: 700px) 50vw, (max-width: 1500px) 300px, 360px";
+
+  // Uploaded in the admin and held in the browser until the API stores it:
+  // already resized (lib/media.js), so it is served as it is.
+  if (photo.url?.startsWith("data:")) {
+    return { remote: true, srcSet: undefined, sizes: undefined, src: photo.url, width: photo.width, height: photo.height };
+  }
 
   if (photo.url) {
     const ratio = photo.height / photo.width;

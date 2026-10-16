@@ -5,11 +5,13 @@ import { useProfile } from "@/store/tanstackStore/queries/account";
 // The add / edit form ports next (useSaveAddresses).
 export default function AccountAddresses() {
   const { customer } = useCustomerAuth();
+  // Fall back to the session's copy while the full profile loads.
   const { data: profile = customer } = useProfile(customer.id);
 
   return (
     <div className="rounded-r-lg bg-white p-6 shadow-sh-1">
       <h2 className="text-[1.3rem]">Delivery addresses</h2>
+      {/* Address List */}
       {profile.addresses.length ? (
         <ul className="mt-4 grid list-none gap-3 p-0 sm:grid-cols-2">
           {profile.addresses.map((a) => (

@@ -48,9 +48,23 @@ export function AdminAuthProvider({ children }) {
     forget();
   }, [forget]);
 
+  // Setting a password from an invite signs the person straight in.
+  const acceptInvite = useCallback(async (input) => {
+    const a = await auth.acceptInvite(input);
+    setAdmin(a);
+    return a;
+  }, []);
+
+  // Re-reads the session, so a change to your own role applies at once.
+  const refresh = useCallback(async () => setAdmin(await auth.currentAdmin()), []);
+
+  // What the signed-in admin may do: can("products", "edit"). The server
+  // checks again; this only decides what to show.
+  const can = useCallback((module, action = "view") => Boolean(admin?.permissions?.[module]?.includes(action)), [admin]);
+
   const value = useMemo(
-    () => ({ admin, loading, signIn, signOut, acceptInvite: auth.acceptInvite }),
-    [admin, loading, signIn, signOut],
+    () => ({ admin, loading, signIn, signOut, acceptInvite, refresh, can }),
+    [admin, loading, signIn, signOut, acceptInvite, refresh, can],
   );
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;

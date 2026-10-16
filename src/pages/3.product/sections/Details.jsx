@@ -3,14 +3,18 @@ import { Link } from "react-router-dom";
 
 import Accordion from "@/components/ui/Accordion";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { useSettings } from "@/store/tanstackStore/queries/site";
+import { usePageCopy, useSettings } from "@/store/tanstackStore/queries/site";
+import { fill, shopTokens } from "@/utils/fill";
 
-// The details (open), fit and sizing, and delivery and exchanges. Fees and
-// the exchange window come from the shop settings, as on the policy pages.
-export default function ProductDetails({ product }) {
+// The details (open), fit and sizing, care, and delivery and exchanges.
+// Care is per product; fees and the exchange window come from the settings.
+export default function Details({ product }) {
   const { money } = useCurrency();
   const { data: s } = useSettings();
+  const { data: copy } = usePageCopy("product");
+  const tokens = shopTokens(s, money);
 
+  // Product copy first; the shop-wide panel is added once settings load.
   const items = [
     {
       title: "The details",
@@ -26,26 +30,24 @@ export default function ProductDetails({ product }) {
       body: (
         <>
           {product.fitNote && <p>{product.fitNote}</p>}
-          <p>Not sure? The <Link to="/size-guide" className="text-brand-600 underline">size guide</Link> has the full measurement chart, or Vee will work it out from your measurements.</p>
+          <p>{copy?.fitHelp} <Link to="/size-guide" className="text-brand-600 underline">Open the size guide</Link></p>
         </>
       ),
     },
-    {
-      title: "Care",
-      body: <p>Cold wash, inside out, no fabric softener. Hang to dry, never tumble. Rinse swimwear in fresh water after chlorine or salt.</p>,
-    },
-  ];
-  if (s) {
+    product.care && { title: "Care", body: <p>{product.care}</p> },
+  ].filter(Boolean);
+  if (s && copy) {
     items.push({
       title: "Delivery and exchanges",
       body: (
         <>
-          <p>Kampala {money(s.kampalaDelivery)}, upcountry {money(s.upcountryDelivery)}, free over {money(s.freeShippingOver)}. Or collect from the showroom. <Link to="/delivery" className="text-brand-600 underline">Delivery details</Link></p>
-          <p>Exchange within {s.exchangeDays} days, unworn with tags; swimwear with the liner intact. <Link to="/returns" className="text-brand-600 underline">Exchanges policy</Link></p>
+          <p>{fill(copy.delivery, tokens)} <Link to="/delivery" className="text-brand-600 underline">Delivery details</Link></p>
+          <p>{fill(copy.exchanges, tokens)} <Link to="/returns" className="text-brand-600 underline">Exchanges policy</Link></p>
         </>
       ),
     });
   }
 
+  // "The details" opens by default.
   return <Accordion items={items} defaultOpen={0} />;
 }

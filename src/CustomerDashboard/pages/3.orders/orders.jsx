@@ -10,6 +10,7 @@ import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
 import { useMyOrders } from "@/store/tanstackStore/queries/account";
 import { formatDate } from "@/utils/format";
 
+// Only this shopper's orders (the API filters by account); each row opens its detail.
 export default function AccountOrders() {
   const { customer } = useCustomerAuth();
   const { data: orders, isLoading } = useMyOrders(customer.id);
@@ -22,6 +23,7 @@ export default function AccountOrders() {
 
   return (
     <div className="rounded-r-lg bg-white shadow-sh-1">
+      {/* The account layout already shows the page title; keep the heading for screen readers. */}
       <h2 className="sr-only">Orders</h2>
       {orders.map((o) => (
         <Link key={o.id} to={`/account/orders/${o.id}`} className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-4 last:border-0 hover:bg-brand-50">

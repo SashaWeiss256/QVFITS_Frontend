@@ -2,12 +2,10 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, X } from "lucide-react";
 
-import { assistantGreeting, useAskAssistant } from "@/store/tanstackStore/queries/site";
+import { assistantGreeting, useAskAssistant, usePageCopy } from "@/store/tanstackStore/queries/site";
 import AssistantMessage from "./AssistantMessage";
 import { AssistantMark } from "./AssistantMark";
 import { onAskVee } from "./askVee";
-
-const CHIPS = ["Something for the gym", "What size am I?", "Under 150k", "Build me a kit"];
 
 const bot = (text) => ({ from: "bot", blocks: [{ type: "text", paras: [text] }] });
 
@@ -20,6 +18,9 @@ export default function FitAssistant() {
   const [messages, setMessages] = useState(() => [bot(assistantGreeting())]);
   const [draft, setDraft] = useState("");
   const ask = useAskAssistant();
+  // Suggested questions, edited in the admin with the page copy.
+  const { data: copy } = usePageCopy("assistant");
+  const chips = copy?.chips ?? [];
   const bodyRef = useRef(null);
   const inputRef = useRef(null);
   const sendRef = useRef(null);
@@ -91,7 +92,7 @@ export default function FitAssistant() {
 
         {!ask.isPending && (
           <div className="asst__chips">
-            {CHIPS.map((c) => <button key={c} type="button" onClick={() => send(c)}>{c}</button>)}
+            {chips.map((c) => <button key={c} type="button" onClick={() => send(c)}>{c}</button>)}
           </div>
         )}
 

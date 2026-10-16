@@ -1,4 +1,4 @@
-/* Legal Blocks */
+/* Blocks */
 
 // A section's content: paragraphs (strings), { list: [...] } or
 // { table: { head, rows } }. Plain text only, so nothing can inject markup.
@@ -21,6 +21,7 @@ export default function Blocks({ blocks }) {
             </thead>
             <tbody>
               {b.table.rows.map((row) => (
+                // The first cell names the row, so it doubles as the key and is set in bold.
                 <tr key={row[0]} className="border-t border-line align-top">
                   {row.map((cell, c) => <td key={c} className={c === 0 ? "px-4 py-3 font-semibold" : "px-4 py-3 text-ink-2"}>{cell}</td>)}
                 </tr>

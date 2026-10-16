@@ -7,7 +7,7 @@ import { useWishlist } from "@/store/context/WishlistContext";
 import { useOffers, useFacets } from "@/store/tanstackStore/queries/site";
 import { notify } from "@/store/tanstackStore/notices";
 import { cn } from "@/utils/cn";
-import { anyInStock, inStock, productSizes, saleOf } from "@/utils/stockLevel";
+import { anyInStock, firstAvailable, saleOf } from "@/utils/stockLevel";
 import Photo from "./Photo";
 import PriceTag from "./PriceTag";
 
@@ -20,22 +20,23 @@ export default function ProductCard({ product: p }) {
   const sold = !anyInStock(p);
   const sale = saleOf(p, offers?.sale);
   const wished = wishlist.has(p.id);
-  const swatch = (c) => facets?.colors.find((x) => x.name === c)?.swatch ?? "#ddd";
+  // Colour names map to swatches in the facets; grey until they load.
+  const swatch = (c) => facets?.colors.find((x) => x.name === c)?.swatch ?? "var(--line-2)";
   const href = `/product/${p.slug}`;
 
-  // Adds the first size in stock and the first colour, then says which: the
+  // Adds the first colour and size in stock, then says which: the
   // shopper can change both in the bag. Without this a phone had no way to
   // add from the grid.
   const quickAdd = () => {
-    const size = productSizes(p).find((s) => inStock(p, s));
-    if (!size) return notify(`${p.name} is sold out`);
-    add({ productId: p.id, size, color: p.colors[0], qty: 1 });
-    notify(`${p.name} — ${p.colors[0]}, ${size} added. Change size in your bag.`, { tone: "success" });
+    const pick = firstAvailable(p);
+    if (!pick) return notify(`${p.name} is sold out`);
+    add({ productId: p.id, ...pick, qty: 1 });
+    notify(`${p.name} (${pick.color}, ${pick.size}) added. Change size in your bag.`, { tone: "success" });
   };
 
   const toggleWish = () => {
     wishlist.toggle(p.id);
-    notify(wished ? "Removed from your wishlist" : `Saved ${p.name} to your wishlist`, { tone: "success" });
+    notify(wished ? "Removed from your saved pieces" : `Saved ${p.name}`, { tone: "success" });
   };
 
   return (
@@ -44,11 +45,13 @@ export default function ProductCard({ product: p }) {
         <button type="button" className={cn("heart", wished && "is-on")} onClick={toggleWish} aria-label={`Save ${p.name} to wishlist`} aria-pressed={wished}>
           <Heart className="h-[19px] w-[19px]" strokeWidth={1.9} aria-hidden="true" />
         </button>
+        {/* The name link below is the keyboard stop; the photo link is for pointers only. */}
         <Link to={href} aria-label={p.name} tabIndex={-1}>
           <Photo photo={p.photos[0]} label={p.name} />
         </Link>
       </div>
       <div className="card__body">
+        {/* One badge only: sold out beats sale, sale beats the product's own label. */}
         {sold ? <span className="badge badge--out">Sold out</span>
           : sale ? <span className="badge badge--sale">{sale.pct}% off</span>
           : p.badge ? <span className="badge">{p.badge}</span> : null}
@@ -59,6 +62,7 @@ export default function ProductCard({ product: p }) {
         </div>
         <div className="card__foot">
           <span className="card__price"><PriceTag product={p} /></span>
+          {/* Sold out still links through so the shopper can see the piece. */}
           {sold ? (
             <Link className="card__add card__add--out" to={href}>Sold out</Link>
           ) : (

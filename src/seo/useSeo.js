@@ -1,7 +1,7 @@
 /* Page Title And Description */
 import { useEffect } from "react";
 
-const SITE = "QV FITS";
+const SITE = "QVFITS";
 const DEFAULT_DESCRIPTION = "Premium seamless and seam-fit activewear, swim and lounge wear. Showroom at THE CUBE, Kisementi, Kampala.";
 
 /**

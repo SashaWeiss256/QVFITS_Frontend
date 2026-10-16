@@ -3,18 +3,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { askVee } from "@/components/assistant/askVee";
-import Reveal from "@/components/ui/Reveal";
+import Reveal from "@/components/motion/Reveal";
 import { useProducts, useSizeChart } from "@/store/tanstackStore/queries/site";
 import { findSize } from "@/utils/sizing";
 import { inStock } from "@/utils/stockLevel";
 
+// Placeholders are a typical size M, so the fields read as an example.
 const FIELDS = [
   { key: "bust", label: "Bust (cm)", placeholder: "88" },
   { key: "waist", label: "Waist (cm)", placeholder: "70" },
   { key: "hip", label: "Hip (cm)", placeholder: "96" },
 ];
 
-export default function SizeFinder({ presetId }) {
+// Any one measurement is enough. findSize picks the nearest band, then moves
+// up a size for a piece that runs small. Vee uses the same maths.
+export default function Finder({ presetId }) {
   const { data: chart = [] } = useSizeChart();
   const { data: products = [] } = useProducts();
   const [m, setM] = useState({ bust: "", waist: "", hip: "" });
@@ -22,6 +25,7 @@ export default function SizeFinder({ presetId }) {
   const [result, setResult] = useState(null);
 
   const piece = products.find((p) => p.id === pieceId);
+  // Empty or unreadable input counts as "not given", never as zero.
   const num = (v) => (v === "" ? null : parseFloat(v) || null);
 
   const go = (e) => {
@@ -53,6 +57,7 @@ export default function SizeFinder({ presetId }) {
       </div>
       <button className="btn btn--primary btn--block mt-[18px]" type="submit">Show me my size</button>
 
+      {/* Result: the size, the piece's fit note, then stock for that size. */}
       {result && (
         <div className="result" role="status">
           {result.empty ? (
@@ -60,6 +65,7 @@ export default function SizeFinder({ presetId }) {
           ) : (
             <>
               You&apos;re a <strong>{result.size}</strong>{result.exact ? "" : " (closest match)"}. {result.note}
+              {/* Only check stock when a piece was picked. */}
               {piece && (inStock(piece, result.size) ? (
                 <><br /><span className="font-semibold text-success">In stock in {result.size}.</span>{" "}<Link to={`/product/${piece.slug}`} className="text-brand-600 underline">Take me to it</Link></>
               ) : (

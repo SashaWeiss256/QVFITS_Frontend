@@ -1,12 +1,13 @@
 /* Size Chart */
 import { useState } from "react";
 
-import Reveal from "@/components/ui/Reveal";
+import Reveal from "@/components/motion/Reveal";
 import { useSizeChart } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
 import { formatRange } from "@/utils/sizing";
 
-export default function SizeChart() {
+// The chart is stored in cm; inches are converted on display only.
+export default function Chart() {
   const { data: rows = [] } = useSizeChart();
   const [unit, setUnit] = useState("cm");
 
@@ -24,6 +25,7 @@ export default function SizeChart() {
             ))}
           </div>
         </Reveal>
+        {/* table-wrap scrolls sideways on a phone instead of squashing the columns. */}
         <div className="table-wrap">
           <table className="size">
             <thead>

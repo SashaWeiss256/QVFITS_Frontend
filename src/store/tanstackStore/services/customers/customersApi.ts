@@ -1,9 +1,10 @@
 /* Customers Service */
 import { ApiError, mockApi } from "../api/mock";
 import type { Id, RequestOptions } from "../api/types";
+import { adminCrud } from "../store/adminCrud";
 import { createCollection } from "../store/collectionStore";
 import type { Address, Customer } from "../types";
-import { customerSeed } from "@/data/customers";
+import customerSeed from "@/data/customers.json";
 
 /** A stored customer. The password is a mock-only field; the API hashes it. */
 export type CustomerRecord = Customer & { password?: string };
@@ -44,3 +45,14 @@ export function saveWishlist(id: Id, wishlist: Id[]) {
 export function listCustomers({ signal }: RequestOptions = {}) {
   return mockApi(() => customers.list().map(publicCustomer), 200, signal);
 }
+
+// Staff edit notes and tags only; the shopper owns their name and addresses.
+const crud = adminCrud(customers, {
+  module: "customers",
+  noun: "customer",
+  label: (c) => c.name,
+  prepare: (data) => ({ ...(data.notes !== undefined && { notes: data.notes }), ...(data.tags !== undefined && { tags: data.tags }) }),
+});
+
+export const updateCustomer = (id: Id, patch: Pick<Partial<Customer>, "notes" | "tags">) => crud.update(id, patch).then(publicCustomer);
+export const removeCustomer = crud.remove;

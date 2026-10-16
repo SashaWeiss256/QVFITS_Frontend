@@ -1,47 +1,36 @@
 /* Shop Settings Service */
 import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
+import { logActivity } from "../admin/activityApi";
+import { assertCan } from "../auth/adminSession";
 import { createDocument, type DocumentPatch } from "../store/collectionStore";
+import { activeZones } from "../settings/shippingApi";
 import type { ShopSettings } from "../types";
-import { CONFIG, CURRENCIES, RATES_UPDATED } from "@/data/shop";
+import settingsSeed from "@/data/settings.json";
 
 /**
- * One settings document: shop details, delivery fees and display currencies.
- * The storefront reads it everywhere (header, footer, cart); the admin edits
- * it under Settings (realm: admin for updates once on HTTP). Exchange rates
- * move to a daily feed on the API; until then they show their date.
+ * One settings document: shop details, contact and socials, stock alerts,
+ * the exchange window and display currencies. The storefront reads it
+ * everywhere (header, footer, cart); the admin edits it under Settings.
+ * Exchange rates move to a daily feed on the API; until then they show their date.
  */
-const seed: ShopSettings = {
-  brand: CONFIG.brand,
-  wordmark: CONFIG.wordmark,
-  tagline: CONFIG.tagline,
-  blurb: CONFIG.blurb,
-  address: CONFIG.address,
-  addressNote: CONFIG.addressNote,
-  mapsUrl: CONFIG.mapsUrl,
-  phone: CONFIG.phone,
-  whatsapp: CONFIG.whatsapp,
-  email: CONFIG.email,
-  instagram: CONFIG.instagram,
-  instagramHandle: CONFIG.instagramHandle,
-  tiktok: CONFIG.tiktok,
-  tiktokHandle: CONFIG.tiktokHandle,
-  opensAt: CONFIG.opensAt,
-  currency: "UGX",
-  freeShippingOver: CONFIG.freeShippingOver,
-  kampalaDelivery: CONFIG.kampalaDelivery,
-  upcountryDelivery: CONFIG.upcountryDelivery,
-  exchangeDays: 7, // PLACEHOLDER: confirm the exchange window with the shop
-  ratesUpdated: RATES_UPDATED,
-  currencies: CURRENCIES as ShopSettings["currencies"],
-};
+const settings = createDocument<ShopSettings>("settings", settingsSeed as ShopSettings);
 
-const settings = createDocument<ShopSettings>("settings", seed);
-
+/** The document plus the live delivery zones. */
 export function getSettings({ signal }: RequestOptions = {}) {
-  return mockApi(() => settings.get(), 100, signal);
+  return mockApi<ShopSettings>(() => ({ ...settings.get(), zones: activeZones() }), 100, signal);
 }
 
+/** Read synchronously by other services (checkout, inventory alerts). */
+export const readSettings = () => settings.get();
+
 export function updateSettings(patch: DocumentPatch<ShopSettings>) {
-  return mockApi(() => settings.update(patch));
+  return mockApi<ShopSettings>(() => {
+    assertCan("settings", "edit");
+    // Zones are edited on their own; never save the read-only copy back.
+    const { zones: _zones, ...rest } = patch;
+    const doc = settings.update(rest);
+    logActivity({ module: "settings", action: "update", summary: `Updated settings (${Object.keys(patch).join(", ")})` });
+    return { ...doc, zones: activeZones() };
+  });
 }

@@ -15,6 +15,7 @@ import {
 export default function accountRoutes() {
   return (
     <>
+      {/* Guard the shared account layout once; nested routes inherit the same sign-in requirement. */}
       <Route
         path="account"
         element={
@@ -30,7 +31,7 @@ export default function accountRoutes() {
         <Route path="addresses" element={<AccountAddresses />} />
         <Route path="settings" element={<AccountSettings />} />
       </Route>
-      {/* One address for saved pieces, as in Belioras */}
+      {/* Keep the legacy wishlist URL working while the account route owns the page. */}
       <Route path="wishlist" element={<Navigate to="/account/wishlist" replace />} />
     </>
   );

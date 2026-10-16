@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import FitAssistant from "@/components/assistant/FitAssistant";
-import Footer from "@/components/layout/footer/Footer";
+import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/navbar";
 import PromoBar from "@/components/layout/PromoBar";
 import QueryErrorBoundary from "@/components/layout/QueryErrorBoundary";
@@ -17,9 +17,12 @@ export default function SiteLayout() {
   const { pathname } = useLocation();
   return (
     <>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
       <PromoBar />
       <Navbar />
-      <main>
+      <main id="main" tabIndex={-1} className="outline-none">
         {/* Header and footer stay painted while a page chunk loads */}
         <QueryErrorBoundary resetKey={pathname}>
           <Suspense fallback={<PageLoader />}>

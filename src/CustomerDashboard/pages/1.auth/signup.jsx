@@ -8,13 +8,14 @@ import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
 import { useSeo } from "@/seo/useSeo";
-import AuthShell from "../../components/auth/AuthShell";
-import { useNextPath, useRedirectIfSignedIn } from "../../components/auth/useRedirectIfSignedIn";
+import AuthShell from "./AuthShell";
+import { useNextPath, useRedirectIfSignedIn } from "./useRedirectIfSignedIn";
 import { signupSchema } from "./schemas";
 
 export default function CustomerSignup() {
   useSeo({ title: "Create an account", noindex: true });
   useRedirectIfSignedIn();
+  // Where to land afterwards: a safe local ?next= or /account.
   const { signUp } = useCustomerAuth();
   const navigate = useNavigate();
   const next = useNextPath();
@@ -35,11 +36,13 @@ export default function CustomerSignup() {
     <AuthShell
       title="Create an account"
       lede="Track your orders, save pieces and check out faster. You can always order as a guest."
+      // Carry ?next= across so switching between sign in and sign up keeps the destination.
       footer={<>Already have an account? <Link to={`/login?next=${encodeURIComponent(next)}`} className="link-arrow">Sign in</Link></>}
     >
       <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Field label="Name" autoComplete="name" input={register("name")} error={errors.name?.message} />
         <Field label="Email" type="email" autoComplete="email" input={register("email")} error={errors.email?.message} />
+        {/* Optional so an email is enough to start; checkout asks for a phone anyway. */}
         <Field label="Phone (optional)" type="tel" autoComplete="tel" placeholder="+256" input={register("phone")} error={errors.phone?.message} />
         <Field label="Password" type="password" autoComplete="new-password" input={register("password")} error={errors.password?.message} />
         {serverError && <p role="alert" className="m-0 text-sm font-semibold text-warn">{serverError}</p>}

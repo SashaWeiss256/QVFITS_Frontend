@@ -5,7 +5,7 @@ import type { ErrorBody, ErrorDetails } from "./types";
  * Mirrors the backend's AppError. Every failed response arrives as
  * `{ error: { code, message, details?, requestId } }` from one error
  * middleware, so the client has exactly one shape to read and `code` is
- * reliable enough to branch on — unlike a message, which is translated.
+ * reliable enough to branch on, unlike a message, which is translated.
  */
 
 const CODES: Record<number, string> = {

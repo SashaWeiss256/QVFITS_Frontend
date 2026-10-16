@@ -20,3 +20,27 @@ export function saleOf(product, sale) {
   if (pct <= 0) return null;
   return { pct, was: product.price, now: Math.round((product.price * (100 - pct)) / 100) };
 }
+
+/**
+ * The product as one colourway sees it: stock per size for that colour only,
+ * so the size picker never offers a size that is sold out in the colour
+ * chosen. Without variants (older rows), the product is returned unchanged.
+ */
+export function forColor(product, colorId) {
+  if (!colorId || !product.variants?.length) return product;
+  const stock = Object.fromEntries(Object.keys(product.stock).map((size) => [size, 0]));
+  for (const v of product.variants) if (v.colorId === colorId) stock[v.size] = (stock[v.size] ?? 0) + v.stock;
+  return { ...product, stock };
+}
+
+/**
+ * The first colour and size that can actually be sold, for one-tap adds
+ * (the card's Add, a whole kit). Colours keep the product's order; a
+ * product's colour names and ids line up one to one.
+ */
+export function firstAvailable(product) {
+  const v = product.variants?.find((x) => x.stock > 0);
+  if (v) return { color: product.colors[product.colorIds.indexOf(v.colorId)] ?? product.colors[0], size: v.size };
+  const size = productSizes(product).find((s) => inStock(product, s));
+  return size ? { color: product.colors[0], size } : null;
+}

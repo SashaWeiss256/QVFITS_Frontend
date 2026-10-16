@@ -2,28 +2,32 @@
 import { Link } from "react-router-dom";
 
 import { useSeo } from "@/seo/useSeo";
-import ContactInfo from "./sections/ContactInfo";
+import { usePageCopy } from "@/store/tanstackStore/queries/site";
+import Details from "./sections/Details";
 import Faq from "./sections/Faq";
 import MessageForm from "./sections/MessageForm";
 
 export default function ContactPage() {
-  useSeo({ title: "Contact & FAQ", description: "Visit QV FITS at THE CUBE, G17 Kisementi, Kampala. Fit, fabric, delivery and exchange questions answered." });
+  const { data: copy } = usePageCopy("contact");
+  useSeo({ title: "Contact & FAQ", description: "Visit QVFITS at THE CUBE, G17 Kisementi, Kampala. Fit, fabric, delivery and exchange questions answered." });
   return (
     <>
+      {/* Keep store details beside the message composer on wide screens. */}
       <section className="section section--tight">
         <div className="wrap">
           <p className="crumbs"><Link to="/">Home</Link> / Contact &amp; FAQ</p>
           <div className="section-head center">
-            <span className="kicker">Get in touch</span>
-            <h1>Come see us, or just ask</h1>
-            <p className="lede">The fastest answer is a WhatsApp. For anything about fit, fabric or what is in stock, Vee in the corner knows every piece.</p>
+            <span className="kicker">{copy?.kicker}</span>
+            <h1>{copy?.title}</h1>
+            <p className="lede">{copy?.lede}</p>
           </div>
           <div className="contact-grid">
-            <ContactInfo />
+            <Details />
             <MessageForm />
           </div>
         </div>
       </section>
+      {/* FAQs are shared with the admin-managed website content. */}
       <Faq />
     </>
   );

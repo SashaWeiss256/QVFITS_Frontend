@@ -8,7 +8,7 @@ import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useSeo } from "@/seo/useSeo";
-import AuthCard from "../../components/auth/AuthCard";
+import AuthCard from "./AuthCard";
 import { adminLoginSchema } from "./schemas";
 
 // The staff door, separate from the shoppers' /login so 2FA and a stricter
@@ -18,10 +18,12 @@ export default function AdminLogin() {
   const { admin, signIn } = useAdminAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  // RequireAdmin passes the page that bounced here; return there after sign in.
   const back = location.state?.from?.pathname ?? "/admin";
   const [serverError, setServerError] = useState("");
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(adminLoginSchema) });
 
+  // Redirect on the session, not on submit, so an already signed-in admin skips the form too.
   useEffect(() => {
     if (admin) navigate(back, { replace: true });
   }, [admin, back, navigate]);
@@ -36,7 +38,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <AuthCard title="Sign in" lede="For the QV FITS team only.">
+    <AuthCard title="Sign in" lede="For the QVFITS team only.">
       <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Field label="Email" type="email" autoComplete="username" input={register("email")} error={errors.email?.message} />
         <Field label="Password" type="password" autoComplete="current-password" input={register("password")} error={errors.password?.message} />

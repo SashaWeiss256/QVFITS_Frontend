@@ -1,13 +1,19 @@
-/* Footer (from Quivogue buildChrome()) */
+/* Footer */
 import { Link } from "react-router-dom";
 
-import { useFacets, useSettings } from "@/store/tanstackStore/queries/site";
+import { useCurrency } from "@/store/context/CurrencyContext";
+import { useFacets, useNavigation, usePageCopy, useSettings } from "@/store/tanstackStore/queries/site";
+import { fill, shopTokens } from "@/utils/fill";
 import { whatsappLink } from "@/utils/whatsapp";
+import Logo from "./navbar/Logo";
 
 export default function Footer() {
   const { data: settings } = useSettings();
   const { data: facets } = useFacets();
-  const year = new Date().getFullYear();
+  const { data: nav } = useNavigation();
+  const { data: copy } = usePageCopy("footer");
+  const { money } = useCurrency();
+  const tokens = shopTokens(settings, money);
 
   return (
     <footer className="ftr">
@@ -15,11 +21,9 @@ export default function Footer() {
         <div className="ftr__grid">
           {/* Brand */}
           <div className="ftr__brand">
-            <Link className="logo" to="/" aria-label="QV FITS home" style={{ marginBottom: 14 }}>
-              <img src="/logo/qvfits-logo-horizontal.svg" alt="" width="173" height="48" className="logo__img logo__img--ftr" decoding="async" />
-            </Link>
+            <Logo size="lg" className="mb-[14px]" />
             {settings && (
-              <p className="max-w-[34ch] text-[.9rem] text-ink-3">{settings.blurb} Made for the way you actually train.</p>
+              <p className="max-w-[34ch] text-[.9rem] text-ink-3">{settings.blurb} {copy?.blurbSuffix}</p>
             )}
           </div>
 
@@ -37,10 +41,7 @@ export default function Footer() {
           <div>
             <h2 className="ftr__title">Help</h2>
             <ul>
-              <li><Link to="/size-guide">Size guide</Link></li>
-              <li><Link to="/track-order">Track an order</Link></li>
-              <li><Link to="/contact">Contact us</Link></li>
-              <li><Link to="/account">Your account</Link></li>
+              {nav?.help.map((l) => <li key={l.path}><Link to={l.path}>{l.title}</Link></li>)}
             </ul>
           </div>
 
@@ -48,10 +49,7 @@ export default function Footer() {
           <nav aria-label="Legal">
             <h2 className="ftr__title">Legal</h2>
             <ul>
-              <li><Link to="/privacy">Privacy policy</Link></li>
-              <li><Link to="/terms">Terms of sale</Link></li>
-              <li><Link to="/returns">Exchanges &amp; returns</Link></li>
-              <li><Link to="/delivery">Delivery</Link></li>
+              {nav?.legal.map((l) => <li key={l.path}><Link to={l.path}>{l.title}</Link></li>)}
             </ul>
           </nav>
 
@@ -72,8 +70,8 @@ export default function Footer() {
           )}
         </div>
         <div className="ftr__bot">
-          <span>© {year} QV FITS. Kampala, Uganda.</span>
-          <span>Seamless. Seam-fit. Swim. Lounge.</span>
+          <span>{fill(copy?.copyright, tokens)}</span>
+          <span>{copy?.tagline}</span>
         </div>
       </div>
     </footer>

@@ -1,9 +1,9 @@
-/* Chip Group */
+/* Filter Chips */
 import { cn } from "@/utils/cn";
 
 // One filter group: a heading and a row of toggle chips. `options` are
 // { value, label, swatch? }; a colour chip shows its swatch.
-export default function ChipGroup({ title, options, selected, onToggle }) {
+export default function FilterChips({ title, options, selected, onToggle }) {
   return (
     <div className="filters__group">
       <h2 className="filters__title">{title}</h2>

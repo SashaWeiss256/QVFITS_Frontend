@@ -8,7 +8,7 @@ import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useSeo } from "@/seo/useSeo";
-import AuthCard from "../../components/auth/AuthCard";
+import AuthCard from "./AuthCard";
 import { inviteSchema } from "./schemas";
 
 // Where an invited team member chooses their own password (?token=…).
@@ -22,6 +22,7 @@ export default function AdminInvite() {
   const onSubmit = async ({ password }) => {
     setServerError("");
     try {
+      // A missing token goes up empty; the server owns the "invalid invite" message.
       await acceptInvite({ token: params.get("token") ?? "", password });
     } catch (e) {
       setServerError(e.message);

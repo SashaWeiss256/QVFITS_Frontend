@@ -1,14 +1,12 @@
-/* Campaign Banner */
+/* Campaign */
 import { Link } from "react-router-dom";
 
+import Reveal from "@/components/motion/Reveal";
 import Photo from "@/components/storefront/Photo";
-import Reveal from "@/components/ui/Reveal";
-import { useHomeContent } from "@/store/tanstackStore/queries/site";
 
-// The one big campaign image, edited under Website in the admin.
-export default function Campaign() {
-  const { data: content } = useHomeContent();
-  const c = content?.campaign;
+// One campaign image inside the page width, copy over it. Switched on and
+// edited under Website in the admin.
+export default function Campaign({ campaign: c }) {
   if (!c?.live) return null;
 
   return (
@@ -19,7 +17,6 @@ export default function Campaign() {
           <div className="campaign__body">
             <span className="kicker">{c.kicker}</span>
             <h2>{c.title}</h2>
-            {c.text && <p>{c.text}</p>}
             <Link className="btn btn--primary" to={c.href}>{c.cta}</Link>
           </div>
         </Reveal>

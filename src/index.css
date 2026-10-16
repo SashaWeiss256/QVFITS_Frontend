@@ -1,9 +1,14 @@
-/* QV fits — Global Styles */
+/* QV fits: Global Styles */
 @import "tailwindcss";
 
 /* Quivogue's stylesheet: tokens on :root, reset, layout, chrome, sections.
    In the components layer so Tailwind utilities can still override it. */
 @import "./styles/quivogue.css" layer(components);
+
+/* The premium layer: retuned tokens and restyled shared classes. Same layer,
+   later in the cascade, so it wins over quivogue.css at equal specificity. */
+@import "./styles/theme.css" layer(components);
+@import "./styles/chrome.css" layer(components);
 
 /*
   Tailwind tokens point at the Quivogue variables (docs/04-design-system.md),
@@ -54,7 +59,6 @@
 
   --font-display: var(--display);
   --font-body: var(--body);
-  --font-wordmark: "Anton", var(--display), sans-serif;
 
   --radius-r-sm: var(--r-sm);
   --radius-r-md: var(--r-md);
@@ -97,30 +101,6 @@
     color: #fff;
   }
 
-  /* The supplied QV FITS lockup in the header and footer. */
-  .logo__img {
-    height: 44px;
-    width: auto;
-  }
-  .logo__img--ftr {
-    height: 48px;
-  }
-  @media (max-width: 1279px) {
-    .logo__img {
-      height: 36px;
-    }
-    /* The account link moves into the side menu. */
-    .hdr__account {
-      display: none;
-    }
-  }
-  /* Small phones (320 to 380): the row is logo + five icons, so the lockup
-     steps down once more rather than push the menu button off screen. */
-  @media (max-width: 380px) {
-    .logo__img {
-      height: 28px;
-    }
-  }
   /* No rule before eyebrow labels, anywhere (client request). Covers the
      base kicker and its campaign, phone and hero-slide variants. */
   .kicker::before {
@@ -128,6 +108,45 @@
   }
   .kicker {
     gap: 0;
+  }
+
+  /* The bag row's name link gets the 24px box Quivogue gives .card__name;
+     the photo beside it is a second, larger link to the same piece. */
+  .cart-row__name {
+    display: inline-block;
+    padding: 4px 0;
+    min-height: 24px;
+  }
+
+  /* The filter sidebar is taller than most laptop windows (1,100px with the
+     colour list). Sticky but taller than the viewport, it re-pinned to the
+     top whenever the result count changed the grid's height, throwing the
+     price slider off screen mid-drag. Capped to the window, it scrolls on
+     its own and stays put. Below 880px it is an inline panel again. */
+  @media (min-width: 881px) {
+    /* And the window stays where it is while the grid grows and shrinks:
+       scroll anchoring otherwise chases the cards and drags the page. */
+    .shop-layout {
+      overflow-anchor: none;
+      transition: grid-template-columns 0.25s ease;
+    }
+    .shop-layout.is-full {
+      grid-template-columns: 1fr;
+    }
+    .filters {
+      max-height: calc(100dvh - 112px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+  }
+
+  .grid-products.density-compact {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  }
+  .grid-products.density-editorial {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   }
 
   /* Filter chips: full 44px on touch screens. The rows sit 7px apart, so an
@@ -152,39 +171,6 @@
     }
     .ftr__brand {
       grid-column: 1 / -1;
-    }
-  }
-  /* The lockup never gives ground to the nav. */
-  .logo {
-    flex: none;
-  }
-
-  /* The header carries one more icon than Quivogue's (the account) and a
-     wider lockup, so the inline search collapses behind its icon below 1500px
-     rather than 1100px; a small laptop squeezed the field to 51px. Same rules
-     as styles/quivogue.css, new breakpoint. */
-  .search__field {
-    min-width: 200px;
-  }
-  @media (max-width: 1499px) {
-    .hdr__inner {
-      flex-wrap: nowrap;
-    }
-    .hdr.search-open .hdr__inner {
-      flex-wrap: wrap;
-    }
-    .search__toggle {
-      display: grid;
-    }
-    .search__field {
-      display: none;
-      order: 99;
-      flex-basis: 100%;
-      width: auto;
-      margin-bottom: 12px;
-    }
-    .hdr.search-open .search__field {
-      display: flex;
     }
   }
 }

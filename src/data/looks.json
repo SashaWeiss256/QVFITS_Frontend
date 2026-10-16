@@ -1,0 +1,50 @@
+[
+  {
+    "id": "look-lift-day",
+    "title": "Lift Day",
+    "note": "Compression where it counts. Longline bra, sculpt legging, nothing that moves.",
+    "items": [
+      "seamless-longline-bra",
+      "highwaist-sculpt-legging",
+      "rib-seamless-set"
+    ],
+    "position": 0,
+    "live": true
+  },
+  {
+    "id": "look-course-to-lunch",
+    "title": "Course to Lunch",
+    "note": "The skort dress with an inbuilt pant, so nine holes and a table both work.",
+    "items": [
+      "golf-tennis-skort-dress",
+      "crossback-sports-bra",
+      "pleated-tennis-skort"
+    ],
+    "position": 1,
+    "live": true
+  },
+  {
+    "id": "look-long-haul",
+    "title": "Long Haul",
+    "note": "Rib lounge set and an oversized hoodie. Built for the flight, not the photo.",
+    "items": [
+      "ribbed-lounge-set",
+      "oversized-lounge-hoodie",
+      "wideleg-lounge-pant"
+    ],
+    "position": 2,
+    "live": true
+  },
+  {
+    "id": "look-off-duty",
+    "title": "Off Duty",
+    "note": "Soft rib bra, flare legging, and a jogger for when it cools down.",
+    "items": [
+      "ribbed-scoop-bra",
+      "flare-lounge-legging",
+      "wideleg-lounge-pant"
+    ],
+    "position": 3,
+    "live": true
+  }
+]

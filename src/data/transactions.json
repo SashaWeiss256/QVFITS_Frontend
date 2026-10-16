@@ -1,0 +1,13 @@
+[
+  {
+    "id": "txn_1001",
+    "orderId": "ord_1001",
+    "orderRef": "QV-1001",
+    "type": "payment",
+    "method": "mtn",
+    "amount": 210000,
+    "status": "succeeded",
+    "reference": "MTN-7731024",
+    "createdAt": "2026-10-03T11:40:00.000Z"
+  }
+]

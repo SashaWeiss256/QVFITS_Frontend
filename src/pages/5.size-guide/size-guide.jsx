@@ -2,36 +2,41 @@
 import { Link, useSearchParams } from "react-router-dom";
 
 import { useSeo } from "@/seo/useSeo";
+import { usePageCopy } from "@/store/tanstackStore/queries/site";
 import BodyMap from "./sections/BodyMap";
 import FitNotes from "./sections/FitNotes";
-import SizeChart from "./sections/SizeChart";
-import SizeFinder from "./sections/SizeFinder";
+import Chart from "./sections/Chart";
+import Finder from "./sections/Finder";
 
 export default function SizeGuidePage() {
-  useSeo({ title: "Size guide", description: "QV FITS size chart in cm and inches, a size finder, and how each piece fits." });
+  useSeo({ title: "Size guide", description: "QVFITS size chart in cm and inches, a size finder, and how each piece fits." });
   const [params] = useSearchParams();
+  const { data: copy } = usePageCopy("sizeGuide");
 
   return (
     <>
+      {/* Intro */}
       <section className="section section--tight">
         <div className="wrap">
           <p className="crumbs"><Link to="/">Home</Link> / Size guide</p>
           <div className="section-head center">
-            <span className="kicker">Get it right first time</span>
-            <h1>Size guide</h1>
-            <p className="lede">These are <strong>body</strong> measurements, not garment measurements. Measure yourself over your underwear, keep the tape snug but not tight, and breathe normally.</p>
+            <span className="kicker">{copy?.kicker}</span>
+            <h1>{copy?.title}</h1>
+            <p className="lede">{copy?.lede}</p>
           </div>
         </div>
       </section>
       <section className="section section--tight">
         <div className="wrap">
           <div className="about-grid">
-            <SizeFinder presetId={params.get("id") ?? undefined} />
+            {/* Product links can preselect a piece so its fit guidance is used. */}
+            <Finder presetId={params.get("id") ?? undefined} />
             <BodyMap />
           </div>
         </div>
       </section>
-      <SizeChart />
+      {/* The full numbers, then each piece's fit, for anyone who skips the finder. */}
+      <Chart />
       <FitNotes />
     </>
   );

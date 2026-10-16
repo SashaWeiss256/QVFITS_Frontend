@@ -1,12 +1,18 @@
 /* Logo */
 import { Link } from "react-router-dom";
 
-// The supplied QV FITS lockup (public/logo). The horizontal mark is about
-// 3.6 : 1, so 44px tall sits at about 159px wide.
-export default function Logo({ height = 44 }) {
+import { cn } from "@/utils/cn";
+
+/**
+ * The QVFITS logo in the client's format: the supplied artwork (wave mark,
+ * QVFITS under it, EST. 2023) on the left, and QVFITS over the brand name
+ * QUIVOGUE on the right. One piece of artwork, so the
+ * parts always keep their spacing (docs/04-design-system.md, Logo).
+ */
+export default function Logo({ size = "md", to = "/", className }) {
   return (
-    <Link to="/" className="logo" aria-label="QV FITS home">
-      <img src="/logo/qvfits-logo-horizontal.svg" alt="" width={Math.round(height * 3.6)} height={height} className="logo__img" decoding="async" />
+    <Link to={to} className={cn("logo", size === "lg" && "logo--lg", className)} aria-label={`QVFITS by Quivogue, ${to === "/" ? "home" : "dashboard"}`}>
+      <img src="/logo/qvfits-logo.svg" alt="" width="2573" height="1120" className="logo__img" decoding="async" />
     </Link>
   );
 }

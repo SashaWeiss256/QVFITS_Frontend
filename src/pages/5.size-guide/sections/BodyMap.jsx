@@ -1,6 +1,8 @@
 /* Where To Measure */
-import Reveal from "@/components/ui/Reveal";
+import Reveal from "@/components/motion/Reveal";
+import { usePageCopy } from "@/store/tanstackStore/queries/site";
 
+// Measuring lines in the SVG's own 220 by 330 units, one per chart column.
 const LINES = [
   { y: 112, x1: 42, x2: 178, color: "var(--brand-400)", label: "BUST" },
   { y: 158, x1: 52, x2: 168, color: "var(--sand-400)", label: "WAIST" },
@@ -8,8 +10,10 @@ const LINES = [
 ];
 
 export default function BodyMap() {
+  const { data: copy } = usePageCopy("sizeGuide");
   return (
     <Reveal className="bodymap">
+      {/* The aria-label carries the instructions for screen readers; the text below repeats them. */}
       <svg viewBox="0 0 220 330" role="img" aria-label="Where to measure: bust across the fullest part, waist at the narrowest, hips at the fullest">
         <defs>
           <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
@@ -33,9 +37,7 @@ export default function BodyMap() {
         ))}
       </svg>
       <div className="mt-[18px] max-w-[300px] text-[.9rem] text-ink-2">
-        <p><strong>Bust</strong>: around the fullest part, tape level at the back.</p>
-        <p><strong>Waist</strong>: the narrowest point, usually just above the belly button.</p>
-        <p><strong>Hips</strong>: the fullest part, around 20 cm below your waist.</p>
+        {copy?.measures.map((m) => <p key={m.name}><strong>{m.name}</strong>: {m.text}</p>)}
       </div>
     </Reveal>
   );

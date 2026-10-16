@@ -16,6 +16,7 @@ export default function Related({ product }) {
         (p.category !== product.category ? 2 : 0) +
         (p.colors.some((c) => product.colors.includes(c)) ? 1 : 0),
     }))
+    // A score of 0 means nothing in common, so leave it out rather than pad the row.
     .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 4)

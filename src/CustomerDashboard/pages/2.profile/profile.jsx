@@ -4,6 +4,7 @@ import { useProfile } from "@/store/tanstackStore/queries/account";
 
 export default function AccountProfile() {
   const { customer } = useCustomerAuth();
+  // Show the session's copy while the full profile loads, so the card never flashes empty.
   const { data: profile = customer } = useProfile(customer.id);
 
   return (
