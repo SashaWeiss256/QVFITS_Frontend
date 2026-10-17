@@ -9,7 +9,7 @@ import type { Id } from "../api/types";
  */
 
 // Bump the version when seeds change shape, so stale browser copies are dropped.
-const PREFIX = "qvfits:store:v6:";
+const PREFIX = "qvfits:store:v7:";
 const memory = new Map<string, unknown>();
 
 function load<T>(key: string, seed: T): T {

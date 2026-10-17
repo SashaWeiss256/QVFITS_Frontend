@@ -171,5 +171,6 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
   }
 
   /* Honest fallback */
+  session.missed = true;
   return [text(`I'm not sure I got that one${who(ctx)}, and I'd rather ask than guess. Try me with a category ("seamless leggings"), an activity ("something for the gym"), a colour, or a budget.`, "If it's an order question, the team is on WhatsApp."), team];
 }

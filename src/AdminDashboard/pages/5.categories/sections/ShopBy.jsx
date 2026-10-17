@@ -9,12 +9,10 @@ import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import {
   categoriesResource,
-  contentResource,
   groupsResource,
   productsResource,
   termsResource,
   useCollection,
-  useDocument,
   useReassignCategory,
 } from "@/store/tanstackStore/queries/admin";
 import { targetHref } from "@/utils/shopTargets";
@@ -22,7 +20,6 @@ import PageHeader from "@/AdminDashboard/components/PageHeader";
 import GroupCard from "./GroupCard";
 import GroupDialog from "./GroupDialog";
 import ItemDialog from "./ItemDialog";
-import MenuPreview from "./MenuPreview";
 
 /**
  * The storefront's "Shop by" groups and their items, one card each, in the
@@ -36,7 +33,6 @@ export default function ShopBy() {
   const terms = useCollection(termsResource);
   const products = useCollection(productsResource);
   const reassign = useReassignCategory();
-  const { data: content } = useDocument(contentResource);
   const { can } = useAdminAuth();
   const canEdit = can("categories", "edit");
   const canDelete = can("categories", "delete");
@@ -96,13 +92,11 @@ export default function ShopBy() {
   return (
     <>
       <PageHeader
-        lede="Each group is a way into the shop: a column in the Shop menu, a filter and its own addresses. Products pick their category and tags on the product form."
-        action={canEdit && <Button onClick={() => setGroupDialog({ name: "", slug: "", kind: "tags", inMenu: true, inFilters: true, active: true })}><Plus className="h-4 w-4" aria-hidden="true" /> Add group</Button>}
+        lede="Each group is a way into the shop: a column in the Shop menu, a filter and its own addresses, made from the names. Products pick their category and tags on the product form."
+        action={canEdit && <Button onClick={() => setGroupDialog({ name: "", kind: "tags", inMenu: true, inFilters: true, active: true })}><Plus className="h-4 w-4" aria-hidden="true" /> Add group</Button>}
       />
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
-        <MenuPreview lookup={lookup} campaign={content?.campaign} />
-
         {groups.items.map((g, i) => (
           <GroupCard
             key={g.id}
@@ -119,7 +113,7 @@ export default function ShopBy() {
             onEdit={() => setGroupDialog(g)}
             onDelete={() => setRemoving({ group: g })}
             onMoveItem={(j, by) => reorder(tableOf(g), itemsOf(g), j, by)}
-            onAddItem={() => setItemDialog({ group: g, value: g.kind === "edits" ? { name: "", target: {}, active: true } : { name: "", slug: "", description: "", image: null, photo: null, active: true } })}
+            onAddItem={() => setItemDialog({ group: g, value: g.kind === "edits" ? { name: "", target: {}, active: true } : { name: "", description: "", image: null, photo: null, active: true } })}
             onEditItem={(x) => setItemDialog({ group: g, value: x })}
             onDeleteItem={(x) => setRemoving({ group: g, item: x })}
           />
@@ -127,7 +121,7 @@ export default function ShopBy() {
       </div>
 
       <GroupDialog value={groupDialog} onChange={setGroupDialog} onClose={() => setGroupDialog(null)} onSave={saveGroup} saving={groups.isSaving} />
-      <ItemDialog dialog={itemDialog} onChange={setItemDialog} onClose={() => setItemDialog(null)} onSave={saveItem} saving={categories.isSaving || terms.isSaving} lookup={lookup} />
+      <ItemDialog dialog={itemDialog} onChange={setItemDialog} onClose={() => setItemDialog(null)} onSave={saveItem} saving={categories.isSaving || terms.isSaving} />
 
       <Modal isOpen={Boolean(removing)} onClose={() => setRemoving(null)} title={`Delete ${removing?.item?.name ?? removing?.group?.name ?? ""}`} size="sm">
         {removing && (

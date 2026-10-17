@@ -2,19 +2,17 @@
 import Tabs from "@/AdminDashboard/components/Tabs";
 import { useTab } from "@/AdminDashboard/lib/useTab";
 import OrderList from "./sections/OrderList";
-import Payments from "./sections/Payments";
 import Returns from "./sections/Returns";
 
 const TABS = [
   { id: "orders", label: "Orders" },
   { id: "returns", label: "Returns and refunds" },
-  { id: "payments", label: "Payments" },
 ];
 
 /**
  * Everything after the bag: orders from checkout and sales recorded in the
- * showroom, returns and their refunds or exchanges, and every payment in
- * and refund out, each tied to its order.
+ * showroom, and returns with their refunds or exchanges. Every payment in
+ * and refund out has its own page, Transactions.
  */
 export default function AdminOrders() {
   const [tab, setTab] = useTab(TABS);
@@ -23,7 +21,6 @@ export default function AdminOrders() {
       <Tabs tabs={TABS} value={tab} onChange={setTab} />
       {tab === "orders" && <OrderList />}
       {tab === "returns" && <Returns />}
-      {tab === "payments" && <Payments />}
     </>
   );
 }

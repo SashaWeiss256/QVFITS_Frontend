@@ -73,20 +73,25 @@ function withIdAndPosition<T extends { id: string; position: number }>(name: (d:
 }
 
 /**
- * A slug unique among `all` (its own table, or a term's own group) and never
- * a shop word (new, bestsellers, sale). `taken` adds slugs used elsewhere,
- * since a category and a group both sit right after /shop.
- * A changed slug keeps the old one in previousSlugs, so shared links redirect.
+ * The web address, always made from the name (nobody types one). It is
+ * unique among `all` (its own table, or a term's own group) and never a shop
+ * word (new, bestsellers, sale): a clash gets a number ("swim-2"). `taken`
+ * adds slugs used elsewhere, since a category and a group both sit right
+ * after /shop. A renamed row gets a new address and keeps the old one in
+ * previousSlugs, so shared links redirect. Saving anything but the name
+ * leaves the address alone.
  */
 function withSlug<T extends { id: string; slug: string; previousSlugs?: string[] }>(data: Partial<T>, existing: T | null, all: T[], name?: string, taken: { slug: string; previousSlugs?: string[] }[] = []): Partial<T> {
-  // A blank address means "from the name" for something new, "unchanged" for something saved.
-  const wanted = data.slug === undefined ? (existing ? undefined : name) : data.slug || (existing ? existing.slug : name);
-  const slug = slugify(wanted ?? "");
-  if (!slug) return data;
-  if (RESERVED_SLUGS.has(slug)) throw new ApiError(`"${slug}" is kept for the shop's own pages. Pick another web address.`, 409);
-  if (taken.some((r) => r.slug === slug || r.previousSlugs?.includes(slug))) throw new ApiError(`A category or group already uses the web address "${slug}".`, 409);
-  const clash = all.find((r) => r.id !== existing?.id && (r.slug === slug || r.previousSlugs?.includes(slug)));
-  if (clash) throw new ApiError(`Another one already uses the web address "${slug}".`, 409);
+  const renamed = !existing || (data as { name?: string }).name === undefined ? !existing : (data as { name?: string }).name !== (existing as unknown as { name: string }).name;
+  if (!renamed) return { ...data, slug: existing!.slug, previousSlugs: existing!.previousSlugs ?? [] };
+  const base = slugify(name ?? "");
+  if (!base) return data;
+  const used = (s: string) =>
+    RESERVED_SLUGS.has(s) ||
+    taken.some((r) => r.slug === s || r.previousSlugs?.includes(s)) ||
+    all.some((r) => r.id !== existing?.id && (r.slug === s || r.previousSlugs?.includes(s)));
+  let slug = base;
+  for (let n = 2; used(slug); n++) slug = `${base}-${n}`;
   const previous = existing && existing.slug !== slug ? [...new Set([...(existing.previousSlugs ?? []), existing.slug])].filter((s) => s !== slug) : existing?.previousSlugs;
   return { ...data, slug, ...(previous ? { previousSlugs: previous } : {}) };
 }

@@ -7,7 +7,7 @@ import Photo from "@/components/storefront/Photo";
 import { revealItem } from "@/components/motion/revealVariants";
 import { useHomeContent } from "@/store/tanstackStore/queries/site";
 
-// One editorial tile: the live campaign from the admin's Website module.
+// One editorial tile: the campaign from the home page content (src/data/home.json).
 export default function MegaMenuFeature({ onNavigate }) {
   const { data: content } = useHomeContent();
   const c = content?.campaign;

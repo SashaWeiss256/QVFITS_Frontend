@@ -5,7 +5,7 @@ import Reveal from "@/components/motion/Reveal";
 import Photo from "@/components/storefront/Photo";
 
 // One campaign image inside the page width, copy over it. Switched on and
-// edited under Website in the admin.
+// from src/data/home.json: part of the site's code.
 export default function Campaign({ campaign: c }) {
   if (!c?.live) return null;
 

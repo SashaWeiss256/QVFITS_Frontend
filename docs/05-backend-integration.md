@@ -44,9 +44,9 @@ Shoppers choose "Stay signed in" (on by default). Admin sessions stay per tab an
 | `payments` | gateway webhook | none | payments and refunds, always against an order |
 | `orders` | track, cancel unpaid, ask for a return (reference + phone) | own orders, cancel unpaid, returns | list, detail, status changes (pending, paid, packed, out for delivery, delivered, cancelled, exchanged), part payments, returns and refunds, messages sent |
 | `customers` | none | profile, addresses, wishlist, bag, recently viewed, download my data, close my account | list, detail, order history, notes and tags, erase on request |
-| `content` | hero slides, looks, movements, press, FAQ, shop details, delivery fees, exchange rates | none | edit all of these |
+| `content` | shop details, delivery fees, exchange rates (the home page, page copy and FAQ are code, not API data) | none | edit settings, delivery zones, payment methods |
 | `marketing` | active sale and promo bar, newsletter sign-up, confirm, unsubscribe | newsletter switch | offers, discount codes, subscribers, campaigns, welcome email |
-| `assistant` | fit assistant query over the live catalogue | none | none |
+| `assistant` | fit assistant query over the live catalogue; logs each question (text and whether it was answered) | none | Vee's settings and the questions list |
 | `reports` | none | none | overview KPIs and the Reports page: sales, orders, products, codes, customers, stock, for any period |
 
 `services/api/routes.ts` lists these as `API_NAMESPACES`. Exact paths and payloads are agreed with the API repo and added there as each goes live.

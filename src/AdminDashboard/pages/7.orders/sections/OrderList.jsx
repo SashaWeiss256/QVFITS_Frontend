@@ -22,7 +22,7 @@ const SOURCE = [{ value: "web", label: "The shop" }, { value: "showroom", label:
 /**
  * Every order, newest first: from the shop's checkout, and sales recorded
  * in the showroom or on WhatsApp. Open one to move it on; ?order=<id> opens
- * it from a link (the Payments tab, a return).
+ * it from a link (Transactions, a return).
  */
 export default function OrderList() {
   const { data: orders = [], isLoading } = useOrders();

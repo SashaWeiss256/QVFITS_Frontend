@@ -44,7 +44,6 @@ export default function GroupCard({
             </span>
             <span className="mt-0.5 block text-[.8rem] text-ink-4">
               {kind.hint} · {items.length} {items.length === 1 ? kind.noun : `${kind.noun === "category" ? "categories" : `${kind.noun}s`}`}
-              {group.kind === "tags" && <> · <code className="text-brand-600">/shop/{group.slug}/…</code></>}
             </span>
           </span>
         </button>

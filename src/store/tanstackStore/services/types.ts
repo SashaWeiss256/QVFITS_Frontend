@@ -170,8 +170,10 @@ export interface Variant {
 /** A product as stored (src/data/products.json and the API's table). */
 export interface ProductRecord {
   id: Id;
-  /** The URL part, /product/:slug. */
+  /** The URL part, /product/:slug. Made from the name; frozen once the piece has been live. */
   slug: string;
+  /** Set when the piece first goes live, so its address never changes after that. */
+  slugLocked?: boolean;
   name: string;
   status: ProductStatus;
   categoryId: Id;
@@ -295,7 +297,7 @@ export interface ShopSettings {
   shopGrid: { phone: 1 | 2; tablet: 2 | 3; desktop: 3 | 4 };
   ratesUpdated: string;
   currencies: Currency[];
-  assistant: { endpoint: string | null; name: string; greeting: string };
+  assistant: { endpoint: string | null; enabled: boolean; name: string; greeting: string; chips: string[] };
   /** Read only, on reads: the active delivery zones, so every page that shows a fee has them. */
   zones?: ShippingZone[];
 }
@@ -321,6 +323,14 @@ export interface PaymentMethodOption {
   instructions: string;
   active: boolean;
   position: number;
+}
+
+/** A question a shopper put to Vee, and whether she found an answer. */
+export interface VeeQuestion {
+  id: Id;
+  text: string;
+  answered: boolean;
+  createdAt: string;
 }
 
 export interface FaqItem {

@@ -17,6 +17,8 @@ export interface VeeSession {
   name: string | null;
   lastSubject: Product | null;
   awaitingName: boolean;
+  /** Set when the last question found no answer. */
+  missed?: boolean;
 }
 
 /** ", Amina" once she has said her name, "" before. */

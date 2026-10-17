@@ -1,4 +1,4 @@
-/* Payments */
+/* Admin Transactions */
 import { useNavigate } from "react-router-dom";
 import { ArrowDownLeft, ArrowUpRight, Scale } from "lucide-react";
 
@@ -15,9 +15,11 @@ import StatCard from "@/AdminDashboard/components/StatCard";
  * Money in and out, each tied to its order: a payment when an order is
  * paid (by staff now, by the payment gateway later), a refund when a
  * return is refunded. Nothing is added or changed here, so the books
- * always match the orders; open a row to see its order.
+ * always match the orders; open a row to see its order. Staff who handle
+ * orders but not the money don't see this page (Transactions, in Team and
+ * roles).
  */
-export default function Payments() {
+export default function AdminTransactions() {
   const tx = useCollection(transactionsResource);
   const methods = useCollection(paymentMethodsResource);
   const { moneyBase } = useCurrency();

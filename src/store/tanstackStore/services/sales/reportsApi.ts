@@ -22,7 +22,8 @@ export interface Overview {
   newCustomers: number;
   /** The same numbers for the period before, for the "vs last" line. */
   previous: { revenue: number; orders: number };
-  byDay: { day: string; revenue: number; orders: number }[];
+  /** Bars for the chart: a day each up to 45 days, a week each beyond, so every bar stays readable. `day` is the bucket's first day. */
+  buckets: { day: string; end: string; revenue: number; orders: number }[];
   topProducts: { productId: string; name: string; units: number; revenue: number }[];
   lowStock: { productId: string; name: string; size: string; color: string; stock: number }[];
   recentOrders: Order[];
@@ -54,11 +55,16 @@ export async function getOverview(days = 30, { signal }: RequestOptions = {}): P
     const prev = all.filter((o) => COUNTED.has(o.status) && inRange(o, prevFrom, from));
     const revenue = paid.reduce((sum, o) => sum + o.total, 0);
 
-    // One bar per day in the range, empty days included, oldest first.
-    const byDay = Array.from({ length: days }, (_, i) => {
+    // One bar per day in the range, empty days included, oldest first; weeks beyond 45 days.
+    const perDay = Array.from({ length: days }, (_, i) => {
       const day = new Date(from + (i + 1) * DAY).toISOString().slice(0, 10);
       const list = paid.filter((o) => o.createdAt.slice(0, 10) === day);
       return { day, revenue: list.reduce((s, o) => s + o.total, 0), orders: list.length };
+    });
+    const width = days > 45 ? 7 : 1;
+    const buckets = Array.from({ length: Math.ceil(days / width) }, (_, i) => {
+      const chunk = perDay.slice(i * width, i * width + width);
+      return { day: chunk[0].day, end: chunk[chunk.length - 1].day, revenue: chunk.reduce((s, d) => s + d.revenue, 0), orders: chunk.reduce((s, d) => s + d.orders, 0) };
     });
 
     const top = new Map<string, { productId: string; name: string; units: number; revenue: number }>();
@@ -84,7 +90,7 @@ export async function getOverview(days = 30, { signal }: RequestOptions = {}): P
       averageOrder: paid.length ? Math.round(revenue / paid.length) : 0,
       newCustomers: customers.list().filter((c) => Date.parse(c.createdAt) >= from).length,
       previous: { revenue: prev.reduce((s, o) => s + o.total, 0), orders: prev.length },
-      byDay,
+      buckets,
       topProducts: [...top.values()].sort((a, b) => b.revenue - a.revenue).slice(0, 5),
       lowStock,
       recentOrders: [...all].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 6),

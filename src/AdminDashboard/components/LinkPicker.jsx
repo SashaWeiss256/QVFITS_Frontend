@@ -10,19 +10,18 @@ const KINDS = [
   { value: "shop", label: "Part of the shop" },
   { value: "product", label: "One piece" },
   { value: "page", label: "A page" },
-  { value: "address", label: "Another address" },
 ];
 
 const kindOf = (link) =>
-  link.target ? (link.target.product ? "product" : link.target.page ? "page" : "shop") : link.href === null ? "whatsapp" : "address";
+  link.href === null && !link.target ? "whatsapp" : link.target?.product ? "product" : link.target?.page ? "page" : "shop";
 
 /**
  * Where a link goes, picked from what exists rather than typed: a part of
  * the shop (a category, items from any "Shop by" group, a label, or a mix
  * such as Bras for running), one piece, or a fixed page. The link stores the choice as a
  * target (utils/shopTargets), so renaming a category never breaks it.
- * "Another address" keeps a typed href for outside links and #anchors;
- * `whatsapp` adds "WhatsApp chat" (a null href) for the deal cards.
+ * Nothing is ever typed: there is no "another address". `whatsapp` adds
+ * "WhatsApp chat" (a null href) for the deal cards.
  *
  *   <LinkPicker value={slide} onChange={(patch) => update(patch)} />
  */
@@ -42,8 +41,7 @@ export default function LinkPicker({ value, onChange, label = "Goes to", whatsap
     if (next === "shop") setTarget({});
     else if (next === "product") setTarget({ product: products[0]?.id });
     else if (next === "page") setTarget({ page: PAGES[0].path });
-    else if (next === "whatsapp") onChange({ target: undefined, href: null });
-    else onChange({ target: undefined, href: "" });
+    else onChange({ target: undefined, href: null });
   };
   const shop = (patch) => {
     const next = { ...t, ...patch };
@@ -104,10 +102,6 @@ export default function LinkPicker({ value, onChange, label = "Goes to", whatsap
 
       {kind === "page" && (
         <Field label="Page" options={PAGES.map((p) => ({ value: p.path, label: p.name }))} value={t.page} onChange={(e) => setTarget({ page: e.target.value })} />
-      )}
-
-      {kind === "address" && (
-        <Field label="Address" value={value.href ?? ""} onChange={(e) => onChange({ target: undefined, href: e.target.value })} hint="An outside link (https://…) or a spot on the page (#newsForm)." />
       )}
 
       {/* What the shopper gets, so a pick can be checked before saving. */}

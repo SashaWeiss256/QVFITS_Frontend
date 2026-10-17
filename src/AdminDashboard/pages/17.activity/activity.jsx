@@ -21,7 +21,6 @@ export default function AdminActivity() {
         <DataTable
           rows={rows}
           loading={isLoading}
-          pageSize={50}
           columns={[
             { key: "at", label: "When", sort: (r) => r.at, render: (r) => <span className="whitespace-nowrap">{formatDateTime(r.at)}</span> },
             { key: "actorName", label: "Who" },

@@ -26,11 +26,13 @@ export const readSettings = () => settings.get();
 
 export function updateSettings(patch: DocumentPatch<ShopSettings>) {
   return mockApi<ShopSettings>(() => {
-    assertCan("settings", "edit");
+    // Vee's own page may save Vee's settings; everything else needs Settings.
+    const onlyVee = Object.keys(patch).every((k) => k === "assistant");
+    assertCan(onlyVee ? "vee" : "settings", "edit");
     // Zones are edited on their own; never save the read-only copy back.
     const { zones: _zones, ...rest } = patch;
     const doc = settings.update(rest);
-    logActivity({ module: "settings", action: "update", summary: `Updated settings (${Object.keys(patch).join(", ")})` });
+    logActivity({ module: onlyVee ? "vee" : "settings", action: "update", summary: `Updated settings (${Object.keys(patch).join(", ")})` });
     return { ...doc, zones: activeZones() };
   });
 }

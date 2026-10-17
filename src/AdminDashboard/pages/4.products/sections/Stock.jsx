@@ -117,7 +117,6 @@ export default function Stock() {
             rows={rows}
             loading={products.isLoading}
             columns={columns}
-            pageSize={40}
             search={(r) => `${r.product} ${r.color} ${r.size} ${r.sku}`}
             searchLabel="Search product, colour or SKU"
             filters={[

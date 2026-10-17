@@ -1,6 +1,6 @@
 # 07: Data
 
-**Rule:** everything the shop shows lives as JSON in `src/data/`, one file per entity, shaped like the API's tables. Services read the JSON as seeds (`03-data-layer.md`); screens never import it. The admin edits the same rows, and with mocks on those edits persist in the browser under `qvfits:store:v6:<key>`.
+**Rule:** everything the shop shows lives as JSON in `src/data/`, one file per entity, shaped like the API's tables. Services read the JSON as seeds (`03-data-layer.md`); screens never import it. The admin edits the same rows, and with mocks on those edits persist in the browser under `qvfits:store:v7:<key>`.
 
 Ids are strings. Relations are ids, never names: a product has a `categoryId` and `colorIds`, not "Sets" and "Ivory". Services expand ids into names on the way out, so a renamed colour is renamed everywhere at once.
 
@@ -18,23 +18,24 @@ Ids are strings. Relations are ids, never names: a product has a `categoryId` an
 | `reviews.json` | `{ id, productId, name, text, stars, status, createdAt }`; only `approved` show. Written by staff for now | Catalog, Products (Reviews tab) |
 | `size-chart.json` | `{ size, uk, us, eu, bust: [from, to], waist, hip }` in cm | Catalog, Sizes and size guide |
 | `photos.json` | Generated: photo id → `[width, height, [webp widths]]` for `public/photos` | Not edited by hand |
-| `home.json` | Hero slides, the two rails' words (their pieces are worked out), movements, campaign, press, feed, newsletter box | Website, Home page |
+| `home.json` | **Static, in code.** Hero slides, the two rails' words (their pieces are worked out), movement tiles, campaign, reels, newsletter box. Links are targets | Not edited in the dashboard |
 | `offers.json` | Sale switch, promo bar lines, deal cards, the sign-up sticker | Marketing, Offers and banners |
-| `pages.json` | Headings, text and buttons of every other page, by page, and the footer's newsletter band | Website, Pages and menus |
-| `navigation.json` | Header, help and legal links (`{ title, target }`) and popular searches. The Shop mega menu is not here: it is built from the groups | Website, Pages and menus, Menus tab |
-| `faq.json` | `{ id, q, a, group, position }` | Website, FAQ |
-| `settings.json` | Shop details, contact, socials, free delivery threshold, low stock level, exchange window, currencies, Vee, `bestsellerCount`, `unpaidHoldHours`, `shopGrid` (products per row by screen) | Admin, Settings |
+| `pages.json` | **Static, in code.** Headings, text and buttons of every other page, by page, and the footer's newsletter band | Not edited in the dashboard |
+| `navigation.json` | **Static, in code.** The fixed pages only: About in the top bar, the Help and Legal links (`{ title, target }`). The Shop menu, the top bar's other links and the popular searches are built from the groups, never stored | Catalog, Categories (Menu tab) switches what joins them |
+| `faq.json` | **Static, in code.** `{ id, q, a, group, position }`. Vee reads it too | Not edited in the dashboard |
+| `settings.json` | Shop details, contact, socials, free delivery threshold, low stock level, exchange window, currencies, Vee (`assistant`: on/off, name, greeting, starter questions), `bestsellerCount`, `unpaidHoldHours`, `shopGrid` (products per row by screen) | Admin, Settings |
 | `shipping-zones.json` | `{ id, name, description, fee, freeOver, etaDays, collect, active, position }` | Settings, Delivery |
 | `payment-methods.json` | `{ id, label, short, instructions, active, position }` | Settings, Payments |
-| `orders.json` | Orders with `lines` (a line added from a kit keeps its `kitId`), totals, `kitSaving`, `source` (web, showroom, whatsapp), `paymentStatus` (unpaid, part_paid, paid, refunded), `history` (timeline), staff `notes` | Sales, Orders |
-| `transactions.json` | Payments and refunds, each tied to an order; recorded only from the order or the refund flow | Sales, Orders (Payments tab) |
+| `orders.json` | Demo orders for the charts and reports (about 38 across mid-August to mid-October 2026, with payments, returns and five demo accounts): placeholders, cleared when the backend takes over. Orders with `lines` (a line added from a kit keeps its `kitId`), totals, `kitSaving`, `source` (web, showroom, whatsapp), `paymentStatus` (unpaid, part_paid, paid, refunded), `history` (timeline), staff `notes` | Sales, Orders |
+| `transactions.json` | Payments and refunds, each tied to an order; recorded only from the order or the refund flow | Sales, Transactions |
 | `returns.json` | Return and exchange requests, from the account, `/track-order` or staff, with the `refunded` amount | Sales, Orders (Returns and refunds tab) |
 | `customers.json` | Accounts (mock passwords only), addresses, wishlist, `bag` and `recentlyViewed` (so they follow the shopper), `emailConfirmedAt`, staff notes and tags | Sales, Customers |
 | `discounts.json` | Codes. See below | Marketing, Discount codes |
 | `subscribers.json` | `{ email, name?, customerId?, status: pending \| subscribed \| unsubscribed, source, consentText, consentedAt, confirmedAt, unsubscribedAt, token, welcomeSentAt }` | Marketing, Newsletter |
 | `campaigns.json` | `{ title, subject, heading, body, productIds (up to 4), cta, status: draft \| scheduled \| sent, sendAt, sentAt, recipients }` | Marketing, Newsletter (Campaigns) |
 | `newsletter.json` | One document: the consent words and the welcome email (on, code, subject, heading, body) | Marketing, Newsletter (Welcome email) |
-| `messages.json` | Contact form messages | Website, Messages |
+| `messages.json` | Contact form messages | Sales, Messages |
+| `vee-questions` | What shoppers asked Vee and whether she answered (text and time only; newest 200). Written by the assistant, starts empty | Marketing, Vee (Questions tab) |
 | `staff.json`, `roles.json`, `permissions.json` | Team, roles and the modules a role can be given | Admin, Team and roles |
 | `activity.json` | The audit log, written by every admin save (starts empty, keeps 500) | Admin, Activity log |
 
@@ -132,3 +133,10 @@ Carried over from the old `shop.js` notes. Confirm the placeholders with the sho
 - Every offer in `offers.json` (the 20% deal, the 10% sign-up sticker, the "Up to 50% off" slide). Each is a live promise next to the real WhatsApp number: switch it off the day it ends.
 - Product photos: Unsplash placeholders until the shop's photography arrives (the admin can upload replacements).
 - Exchange rates in `settings.json`, dated in `ratesUpdated`.
+
+## Static content and the dashboard
+
+The dashboard edits what changes as the shop trades: products, stock, orders, discounts, offers, the newsletter and the mega menu. Words and layout are the site's code: `home.json`, `pages.json`, `faq.json`, `navigation.json`. A backend never serves them.
+
+- **No typed slugs or addresses anywhere.** Slugs come from names (a rename keeps the old address redirecting; a product's address freezes once it has been live). Links are targets (`utils/shopTargets.js`), resolved to addresses on read. A link to something deleted drops out; `npm run lint` runs `scripts/check-data.mjs`, which fails if a target in the static JSON names something that does not exist.
+- **Menus are built, not stored:** the Shop menu from the groups, the top bar from the categories and Edits items marked "in the top bar", the popular searches from the categories and Movement items.

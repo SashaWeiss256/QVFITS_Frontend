@@ -9,7 +9,7 @@ import MegaMenuFeature from "./megaMenu/MegaMenuFeature";
 
 /**
  * The full-width "Shop" panel under the header: the columns and links picked
- * in the admin (Website, Mega menu), then the live campaign. Its columns
+ * in the admin (Catalog, Categories, Menu), then the home campaign. Its columns
  * arrive in a short stagger each time it opens.
  */
 export default function MegaMenu({ id, open, onEnter, onLeave, onNavigate }) {

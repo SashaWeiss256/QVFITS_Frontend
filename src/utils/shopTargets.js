@@ -201,6 +201,19 @@ export function shopMenuColumns(lookup = {}) {
 }
 
 /**
+ * The top bar after Shop, built from the catalogue and never typed: the
+ * Edits items and the categories marked "in the top bar", live ones only,
+ * in the order of the groups. Pass the page's own fixed links (About) to
+ * add after them.
+ */
+export function topBarLinks(lookup = {}, fixed = []) {
+  const groups = (lookup.groups ?? []).filter((g) => g.active !== false && g.kind === "edits");
+  const edits = groups.flatMap((g) => (lookup.terms ?? []).filter((t) => t.groupId === g.id && t.active && t.inHeader).map((t) => ({ title: t.name, target: t.target ?? {} })));
+  const cats = (lookup.categories ?? []).filter((c) => c.active && c.inHeader).map((c) => ({ title: c.name, target: { categories: [c.id] } }));
+  return [...edits, ...cats, ...fixed].filter((l) => targetExists(l.target, lookup));
+}
+
+/**
  * Every stored link inside a document, with where it sits, for "is this
  * category still used?" checks. A link is any object carrying `target`.
  */

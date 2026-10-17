@@ -8,14 +8,31 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Download, MoreHorizontal, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Download, MoreHorizontal, Search, SlidersHorizontal, X } from "lucide-react";
 
 import Skeleton from "@/components/ui/Skeleton";
 import { useClickOutside } from "@/utils/useClickOutside";
 import { cn } from "@/utils/cn";
+import { readStored, writeStored } from "@/utils/storage";
 import { downloadCsv } from "../lib/csv";
 import { useUrlFilters } from "../lib/useUrlFilters";
 import FilterDrawer from "./FilterDrawer";
+
+// How many rows a page shows: small enough to scan, large enough that most
+// lists fit on one or two pages. One choice for every table, remembered.
+const PAGE_SIZES = [10, 25, 50, 100];
+const SIZE_KEY = "qvfits:admin:rows";
+const storedSize = () => {
+  const n = readStored(SIZE_KEY, 25);
+  return PAGE_SIZES.includes(n) ? n : 25;
+};
+
+/** Page numbers to show: first, last, the current and its neighbours, with gaps as null. */
+function pageList(index, count) {
+  const keep = new Set([0, count - 1, index - 1, index, index + 1]);
+  const pages = [...keep].filter((p) => p >= 0 && p < count).sort((a, b) => a - b);
+  return pages.flatMap((p, i) => (i && p - pages[i - 1] > 1 ? [null, p] : [p]));
+}
 
 /**
  * Enterprise Admin Data Table powered by TanStack Table v8.
@@ -35,7 +52,6 @@ export default function DataTable({
   exportName,
   exportRow,
   toolbar,
-  pageSize = 20,
   loading = false,
   empty = "Nothing here yet.",
   initialSort,
@@ -50,6 +66,8 @@ export default function DataTable({
     initialSort ? [{ id: initialSort.key, desc: initialSort.dir === "desc" }] : []
   );
   const [rowSelection, setRowSelection] = useState({});
+  const [pageSize, setPageSize] = useState(storedSize);
+  const topRef = useRef(null);
 
   // Filter rows before passing to TanStack Table. Drawer mode: any ticked value
   // within a group matches, every group must. Inline mode: one value per select.
@@ -198,6 +216,19 @@ export default function DataTable({
   const pageIndex = table.getState().pagination.pageIndex;
   const pageCount = table.getPageCount();
 
+  const changeSize = (n) => {
+    setPageSize(n);
+    writeStored(SIZE_KEY, n);
+    table.setPageSize(n);
+    table.setPageIndex(0);
+  };
+  const goTo = (index) => {
+    table.setPageIndex(index);
+    topRef.current?.scrollIntoView({ block: "nearest" });
+  };
+  const firstRow = pageIndex * pageSize + 1;
+  const lastRow = Math.min(totalFilteredRows.length, (pageIndex + 1) * pageSize);
+
   const handleExport = () => {
     if (!exportRow || !totalFilteredRows.length) return;
     // An export can leave a row out by returning nothing (the newsletter exports confirmed subscribers only).
@@ -206,11 +237,11 @@ export default function DataTable({
   };
 
   return (
-    <div>
+    <div ref={topRef}>
       {/* Toolbar */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         {search && (
-          <label className="relative min-w-[200px] flex-1">
+          <label className="relative w-full sm:w-72">
             <span className="sr-only">{searchLabel}</span>
             <Search
               className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-ink-4"
@@ -254,16 +285,27 @@ export default function DataTable({
           </label>
         ))}
         {toolbar}
-        {exportRow && (
-          <button
-            type="button"
-            className="btn btn--ghost min-h-11 px-4 text-[.85rem]"
-            onClick={handleExport}
-            disabled={!totalFilteredRows.length}
-          >
-            <Download className="h-4 w-4" aria-hidden="true" /> Export
-          </button>
-        )}
+        {/* Rows per page, and Export, sit together at the end of the toolbar. */}
+        <div className="ml-auto flex items-center gap-2">
+          {rows.length > PAGE_SIZES[0] && (
+            <label>
+              <span className="sr-only">Rows per page</span>
+              <select className="input w-auto" value={pageSize} onChange={(e) => changeSize(Number(e.target.value))}>
+                {PAGE_SIZES.map((n) => <option key={n} value={n}>{n} per page</option>)}
+              </select>
+            </label>
+          )}
+          {exportRow && (
+            <button
+              type="button"
+              className="btn btn--ghost min-h-11 px-4 text-[.85rem]"
+              onClick={handleExport}
+              disabled={!totalFilteredRows.length}
+            >
+              <Download className="h-4 w-4" aria-hidden="true" /> Export
+            </button>
+          )}
+        </div>
       </div>
 
       {activeChips.length > 0 && (
@@ -415,32 +457,47 @@ export default function DataTable({
         )}
       </div>
 
-      {/* Paging */}
-      {pageCount > 1 && (
-        <div className="mt-4 flex items-center justify-between text-sm text-ink-3">
-          <span>
-            {totalFilteredRows.length} rows · page {pageIndex + 1} of {pageCount}
+      {/* Paging: always at the bottom, what is showing and where to go next. */}
+      {totalFilteredRows.length > 0 && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-ink-3">
+          <span aria-live="polite">
+            Showing {firstRow} to {lastRow} of {totalFilteredRows.length}
           </span>
-          <div className="flex gap-1">
-            <button
-              type="button"
-              className="icon-btn"
-              aria-label="Previous page"
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => table.previousPage()}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              className="icon-btn"
-              aria-label="Next page"
-              disabled={!table.getCanNextPage()}
-              onClick={() => table.nextPage()}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
+          {pageCount > 1 && (
+            <nav className="flex items-center gap-1" aria-label="Pages">
+              <button type="button" className="icon-btn" aria-label="First page" disabled={!table.getCanPreviousPage()} onClick={() => goTo(0)}>
+                <ChevronsLeft className="h-4 w-4" />
+              </button>
+              <button type="button" className="icon-btn" aria-label="Previous page" disabled={!table.getCanPreviousPage()} onClick={() => goTo(pageIndex - 1)}>
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              {pageList(pageIndex, pageCount).map((p, i) =>
+                p === null ? (
+                  <span key={`gap-${i}`} className="px-1 text-ink-4" aria-hidden="true">…</span>
+                ) : (
+                  <button
+                    key={p}
+                    type="button"
+                    aria-label={`Page ${p + 1}`}
+                    aria-current={p === pageIndex ? "page" : undefined}
+                    onClick={() => goTo(p)}
+                    className={cn(
+                      "grid h-10 min-w-10 place-items-center rounded-r-md px-2 text-sm font-semibold tabular-nums transition-colors duration-150",
+                      p === pageIndex ? "bg-brand-500 text-white" : "text-ink-2 hover:bg-cream-2",
+                    )}
+                  >
+                    {p + 1}
+                  </button>
+                ),
+              )}
+              <button type="button" className="icon-btn" aria-label="Next page" disabled={!table.getCanNextPage()} onClick={() => goTo(pageIndex + 1)}>
+                <ChevronRight className="h-4 w-4" />
+              </button>
+              <button type="button" className="icon-btn" aria-label="Last page" disabled={!table.getCanNextPage()} onClick={() => goTo(pageCount - 1)}>
+                <ChevronsRight className="h-4 w-4" />
+              </button>
+            </nav>
+          )}
         </div>
       )}
     </div>

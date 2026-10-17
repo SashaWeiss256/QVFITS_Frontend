@@ -3,7 +3,6 @@ import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import Modal from "@/components/ui/Modal";
 import { cn } from "@/utils/cn";
-import { slugify } from "@/utils/shopTargets";
 import Toggle from "@/AdminDashboard/components/Toggle";
 
 const KINDS = [
@@ -18,7 +17,6 @@ const KINDS = [
 export default function GroupDialog({ value, onChange, onClose, onSave, saving }) {
   const g = value;
   const set = (patch) => onChange({ ...g, ...patch });
-  const slug = g?.slug || slugify(g?.name);
 
   return (
     <Modal
@@ -44,10 +42,6 @@ export default function GroupDialog({ value, onChange, onClose, onSave, saving }
                 </label>
               ))}
             </fieldset>
-          )}
-
-          {g.kind === "tags" && (
-            <Field label="Web address" value={g.slug} placeholder={slugify(g.name)} onChange={(e) => set({ slug: slugify(e.target.value) })} hint={`/shop/${slug || "…"}/<item>. Changing it keeps the old addresses working.`} />
           )}
 
           <div className="grid gap-3 rounded-r-md bg-cream p-4">

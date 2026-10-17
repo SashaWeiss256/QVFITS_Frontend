@@ -22,20 +22,17 @@ export const SizeGuide = lazy(() => import("./pages/6.size-guide/size-guide"));
 
 // Sales
 export const Orders = lazy(() => import("./pages/7.orders/orders"));
-export const Customers = lazy(() => import("./pages/8.customers/customers"));
+export const Transactions = lazy(() => import("./pages/8.transactions/transactions"));
+export const Customers = lazy(() => import("./pages/9.customers/customers"));
+export const Messages = lazy(() => import("./pages/10.messages/messages"));
 
 // Marketing
-export const Discounts = lazy(() => import("./pages/9.discounts/discounts"));
-export const Offers = lazy(() => import("./pages/10.offers/offers"));
-export const Newsletter = lazy(() => import("./pages/11.newsletter/newsletter"));
-
-// Website
-export const HomeContent = lazy(() => import("./pages/12.home-content/home-content"));
-export const PagesAndMenus = lazy(() => import("./pages/13.pages/pages"));
-export const Faq = lazy(() => import("./pages/14.faq/faq"));
-export const Messages = lazy(() => import("./pages/15.messages/messages"));
+export const Discounts = lazy(() => import("./pages/11.discounts/discounts"));
+export const Offers = lazy(() => import("./pages/12.offers/offers"));
+export const Newsletter = lazy(() => import("./pages/13.newsletter/newsletter"));
+export const Vee = lazy(() => import("./pages/14.vee/vee"));
 
 // Admin
-export const Team = lazy(() => import("./pages/16.team/team"));
-export const Settings = lazy(() => import("./pages/17.settings/settings"));
-export const ActivityLog = lazy(() => import("./pages/18.activity/activity"));
+export const Team = lazy(() => import("./pages/15.team/team"));
+export const Settings = lazy(() => import("./pages/16.settings/settings"));
+export const ActivityLog = lazy(() => import("./pages/17.activity/activity"));

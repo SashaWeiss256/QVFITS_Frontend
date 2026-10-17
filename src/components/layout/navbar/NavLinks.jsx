@@ -6,8 +6,8 @@ import { useNavigation } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
 
 // Laptops and desktops only (CSS hides it below 1024px). "Shop" opens the
-// mega menu on hover or click; the rest are plain links, edited in the
-// admin under Website, Pages and navigation.
+// mega menu on hover or click; the rest are plain links built from the
+// catalogue (admin: Catalog, Categories, Menu) and the fixed pages.
 export default function NavLinks({ mega, megaId }) {
   const { pathname, search } = useLocation();
   const { data: nav } = useNavigation();

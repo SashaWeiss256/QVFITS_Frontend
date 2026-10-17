@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, X } from "lucide-react";
 
-import { assistantGreeting, useAskAssistant, usePageCopy } from "@/store/tanstackStore/queries/site";
+import { assistantGreeting, useAskAssistant, useSettings } from "@/store/tanstackStore/queries/site";
 import AssistantMessage from "./AssistantMessage";
 import { AssistantMark } from "./AssistantMark";
 import { onAskVee } from "./askVee";
@@ -11,16 +11,17 @@ const bot = (text) => ({ from: "bot", blocks: [{ type: "text", paras: [text] }] 
 
 /**
  * Vee: the round button and the chat panel. Opened by the button, by
- * askVee("…") from any page, and closed with Escape.
+ * askVee("…") from any page, and closed with Escape. Her name, greeting,
+ * starter questions and on/off switch are set in the dashboard (Vee).
  */
 export default function FitAssistant() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState(() => [bot(assistantGreeting())]);
+  const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
   const ask = useAskAssistant();
-  // Suggested questions, edited in the admin with the page copy.
-  const { data: copy } = usePageCopy("assistant");
-  const chips = copy?.chips ?? [];
+  const { data: settings } = useSettings();
+  const vee = settings?.assistant;
+  const chips = vee?.chips ?? [];
   const bodyRef = useRef(null);
   const inputRef = useRef(null);
   const sendRef = useRef(null);
@@ -65,6 +66,11 @@ export default function FitAssistant() {
     sendRef.current = send;
   });
 
+  if (vee && vee.enabled === false) return null;
+
+  // Her greeting leads the chat; it follows the dashboard's words until she knows the shopper's name.
+  const thread = [bot(assistantGreeting(vee?.greeting)), ...messages];
+
   return (
     <>
       <button type="button" className={`asst-btn ${open ? "is-open" : ""}`} aria-label="Open the Style Assistant" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
@@ -75,7 +81,7 @@ export default function FitAssistant() {
         <header className="asst__head">
           <div className="asst__av"><AssistantMark /></div>
           <div>
-            <strong>Vee</strong>
+            <strong>{vee?.name || "Vee"}</strong>
             <span>Your QV fit guide</span>
           </div>
           <button type="button" className="asst__close" aria-label="Close" onClick={() => setOpen(false)}>
@@ -84,7 +90,7 @@ export default function FitAssistant() {
         </header>
 
         <div className="asst__body" ref={bodyRef}>
-          {messages.map((m, i) => <AssistantMessage key={i} message={m} onLeave={() => setOpen(false)} />)}
+          {thread.map((m, i) => <AssistantMessage key={i} message={m} onLeave={() => setOpen(false)} />)}
           {ask.isPending && (
             <div className="msg msg--bot msg--typing"><span className="typing"><i /><i /><i /></span></div>
           )}

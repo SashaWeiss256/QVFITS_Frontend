@@ -48,16 +48,13 @@ export {
   useUpdateReturnStatus,
 } from "./sales";
 export {
-  contentResource,
-  faqResource,
   messagesResource,
-  navigationResource,
   offersResource,
-  pagesResource,
   paymentMethodsResource,
   settingsResource,
   shippingResource,
   subscriberQueries,
+  veeQuestionsResource,
   campaignQueries,
   newsletterSettingsResource,
   useCampaigns,

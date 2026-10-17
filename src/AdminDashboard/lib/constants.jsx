@@ -2,17 +2,16 @@
 import {
   Activity,
   BadgePercent,
+  Banknote,
   BarChart3,
-  FileText,
   FolderTree,
-  Globe,
   Inbox,
   LayoutDashboard,
   Mail,
-  MessagesSquare,
   Package,
   Ruler,
   Settings,
+  Sparkles,
   ShieldCheck,
   Shirt,
   Tags,
@@ -22,6 +21,8 @@ import {
 /**
  * The sidebar, in groups. Every page has its own link, so nothing hides
  * behind a tab, and a group disappears when the role can see none of it.
+ * `readOnly` pages (Reports, Transactions) only ever show, so they never carry
+ * the "view only" notice.
  * The page folders follow this order.
  */
 export const ADMIN_NAV = [
@@ -29,7 +30,7 @@ export const ADMIN_NAV = [
     id: "main",
     items: [
       { to: "/admin", label: "Overview", icon: LayoutDashboard, perm: "overview", end: true },
-      { to: "/admin/reports", label: "Reports", icon: BarChart3, perm: "reports" },
+      { to: "/admin/reports", label: "Reports", icon: BarChart3, perm: "reports", readOnly: true },
     ],
   },
   {
@@ -46,7 +47,9 @@ export const ADMIN_NAV = [
     label: "Sales",
     items: [
       { to: "/admin/orders", label: "Orders", icon: Package, perm: "orders" },
+      { to: "/admin/transactions", label: "Transactions", icon: Banknote, perm: "transactions", readOnly: true },
       { to: "/admin/customers", label: "Customers", icon: UsersRound, perm: "customers" },
+      { to: "/admin/messages", label: "Messages", icon: Inbox, perm: "messages" },
     ],
   },
   {
@@ -56,16 +59,7 @@ export const ADMIN_NAV = [
       { to: "/admin/discounts", label: "Discount codes", icon: BadgePercent, perm: "discounts" },
       { to: "/admin/offers", label: "Offers and banners", icon: Tags, perm: "offers" },
       { to: "/admin/newsletter", label: "Newsletter", icon: Mail, perm: "newsletter" },
-    ],
-  },
-  {
-    id: "website",
-    label: "Website",
-    items: [
-      { to: "/admin/website", label: "Home page", icon: Globe, perm: "home-content" },
-      { to: "/admin/pages", label: "Pages and menus", icon: FileText, perm: "pages" },
-      { to: "/admin/faq", label: "FAQ", icon: MessagesSquare, perm: "faq" },
-      { to: "/admin/messages", label: "Messages", icon: Inbox, perm: "messages" },
+      { to: "/admin/vee", label: "Vee", icon: Sparkles, perm: "vee" },
     ],
   },
   {

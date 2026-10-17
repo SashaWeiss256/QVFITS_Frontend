@@ -5,7 +5,6 @@ import { ArrowRight, Check } from "lucide-react";
 import {
   categoriesResource,
   colorsResource,
-  contentResource,
   paymentMethodsResource,
   productsResource,
   settingsResource,
@@ -30,7 +29,6 @@ export default function ShopReady() {
   const zones = useCollection(shippingResource).items;
   const methods = useCollection(paymentMethodsResource).items;
   const { data: settings } = useDocument(settingsResource);
-  const { data: home } = useDocument(contentResource);
   if (products.isLoading || !settings) return null;
 
   const live = products.items.filter((p) => p.status === "active");
@@ -42,7 +40,6 @@ export default function ShopReady() {
     { label: "Delivery areas", done: zones.some((z) => z.active), to: "/admin/settings?tab=delivery" },
     { label: "Ways to pay", done: methods.some((m) => m.active), to: "/admin/settings?tab=payments" },
     { label: "Contact details", done: Boolean(settings.phone && settings.whatsapp && settings.email), to: "/admin/settings?tab=contact" },
-    { label: "Home page banner", done: Boolean(home?.heroSlides?.length), to: "/admin/website" },
   ];
   const done = steps.filter((s) => s.done).length;
   if (done === steps.length) return null;

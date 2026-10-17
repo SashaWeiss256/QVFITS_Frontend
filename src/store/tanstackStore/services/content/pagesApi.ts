@@ -1,9 +1,9 @@
 /* Page Copy And Navigation Service */
 import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
-import { linkLookup, sortedCategories, sortedTerms, sortedGroups } from "../catalog/attributesApi";
+import { linkLookup, sortedCategories, sortedTerms } from "../catalog/attributesApi";
 import type { Linked } from "../types";
-import { shopMenuColumns, targetExists, withHrefs } from "@/utils/shopTargets";
+import { shopMenuColumns, targetExists, topBarLinks, withHrefs } from "@/utils/shopTargets";
 import navigationSeed from "@/data/navigation.json";
 import pagesSeed from "@/data/pages.json";
 
@@ -43,20 +43,9 @@ export interface Navigation {
 type FixedNav = { header: NavLink[]; help: NavLink[]; legal: NavLink[] };
 const fixed = navigationSeed as unknown as FixedNav;
 
-/**
- * The top bar after Shop: the Edits items and categories marked "in the top
- * bar", in the order of the Shop by groups, then the fixed pages (About).
- */
+/** The top bar after Shop: the catalogue's own links (see topBarLinks), then the fixed pages (About). */
 export function headerLinks(lookup = linkLookup()): NavLink[] {
-  const live = (list: { active: boolean; inHeader?: boolean }[]) => list.filter((x) => x.active && x.inHeader);
-  const edits = sortedGroups().filter((g) => g.active && g.kind === "edits").flatMap((g) =>
-    live(sortedTerms().filter((t) => t.groupId === g.id)) as ReturnType<typeof sortedTerms>);
-  const cats = live(sortedCategories()) as ReturnType<typeof sortedCategories>;
-  const own: NavLink[] = [
-    ...edits.map((t) => ({ title: t.name, target: t.target ?? {} })),
-    ...cats.map((c) => ({ title: c.name, target: { categories: [c.id] } })),
-  ];
-  return [...own, ...fixed.header].filter((l) => !l.target || targetExists(l.target, lookup));
+  return topBarLinks(lookup, fixed.header);
 }
 
 /** The words people are most likely to look for: the categories, then the first Movement items. */

@@ -61,7 +61,7 @@ src/store/
 | `catalog/` | `productsApi` (records in, expanded views out; kits, best sellers, setup and publish checks, stock and the stock log, draft preview, bulk edits), `attributesApi` (shop groups, categories, terms, colours, sizes, filter layout, the link lookup), `categoriesApi` (facets), `collectionsApi` (the worked-out rails, live kits), `reviewsApi`, `sizeChartApi`, `photos` | site, admin |
 | `sales/` | `checkoutApi` (quote with kit pricing, place, record a sale), `ordersApi` (statuses, payments and part payments, unpaid expiry, cancel, customer messages, notes), `discountsApi` (rules, uses counted from orders), `transactionsApi`, `returnsApi` (guest and staff returns, refund due), `reportsApi` (overview and Reports) | site, account, admin |
 | `customers/` | `customersApi` (profile, addresses, wishlist, bag, recently viewed; staff notes and tags), `privacyApi` (download my data, close my account, staff erase) | account, admin |
-| `content/` | `contentApi` (home page), `pagesApi` (page copy, menus), `faqApi`, `settingsApi`, `contactApi` (messages inbox) | site, admin |
+| `content/` | `contentApi` (home page), `pagesApi` (page copy, the built menus), `faqApi`: all three read only, over JSON in the code. Then `settingsApi`, `contactApi` (messages inbox) | site, admin |
 | `settings/` | `shippingApi` (delivery zones, fees), `paymentMethodsApi` | site, admin |
 | `marketing/` | `offersApi` (sale, promo bar, deals, sticker), `subscribersApi` (double opt-in, welcome email, newsletter settings), `campaignsApi` | site, admin |
 | `notifications/` | `outboxApi`: every email the shop would send, until an email service is connected | every area that emails |
@@ -74,7 +74,7 @@ Every read takes `{ signal }` and passes it on. Admin-only services say `realm: 
 
 ### The collection store
 
-`createCollection<T>(key, seed, { idPrefix })` gives a service `list / get / create / update / remove / replace / reset` over rows seeded from the JSON in `src/data` and persisted in localStorage under `qvfits:store:v6:<key>` (bump the version when a seed changes shape). `createDocument<T>(key, seed)` does the same for one settings document. Admin edits therefore survive a reload while mocking.
+`createCollection<T>(key, seed, { idPrefix })` gives a service `list / get / create / update / remove / replace / reset` over rows seeded from the JSON in `src/data` and persisted in localStorage under `qvfits:store:v7:<key>` (bump the version when a seed changes shape). `createDocument<T>(key, seed)` does the same for one settings document. Admin edits therefore survive a reload while mocking.
 
 `adminCrud(table, { module, noun, label, prepare, beforeRemove })` wraps a table for the admin: every write checks the signed-in admin's permission for `module` (`assertCan`, a 403 like the API's) and writes a line to the activity log. `beforeRemove` refuses a delete that would break something, such as a colour a product still uses.
 

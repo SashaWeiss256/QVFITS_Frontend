@@ -55,21 +55,6 @@
         "edit",
         "delete"
       ],
-      "home-content": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "pages": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "faq": [
-        "view",
-        "edit",
-        "delete"
-      ],
       "messages": [
         "view",
         "edit",
@@ -89,6 +74,13 @@
         "view",
         "edit",
         "delete"
+      ],
+      "vee": [
+        "view",
+        "edit"
+      ],
+      "transactions": [
+        "view"
       ]
     }
   },
@@ -148,21 +140,6 @@
         "edit",
         "delete"
       ],
-      "home-content": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "pages": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "faq": [
-        "view",
-        "edit",
-        "delete"
-      ],
       "messages": [
         "view",
         "edit",
@@ -173,6 +150,13 @@
         "view"
       ],
       "activity": [
+        "view"
+      ],
+      "vee": [
+        "view",
+        "edit"
+      ],
+      "transactions": [
         "view"
       ]
     }
@@ -212,22 +196,15 @@
       "newsletter": [
         "view"
       ],
-      "home-content": [
-        "view"
-      ],
-      "pages": [
-        "view"
-      ],
-      "faq": [
-        "view"
-      ],
       "messages": [
         "view",
         "edit"
       ],
       "team": [],
       "settings": [],
-      "activity": []
+      "activity": [],
+      "vee": [],
+      "transactions": []
     }
   }
 ]

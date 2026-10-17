@@ -6,11 +6,12 @@ import Feed from "./sections/Feed";
 import Hero from "./sections/Hero";
 import Movements from "./sections/Movements";
 import Newsletter from "./sections/Newsletter";
-import Press from "./sections/Press";
 import ProductRail from "./sections/ProductRail";
 
-// The original site's order, top to bottom. Every section reads the one
-// home document the admin edits under Website, so nothing here is hardcoded.
+// The original site's order, top to bottom. The two product rails fill
+// themselves from products (New arrival, best sellers); the rest is the
+// site's own content in src/data/home.json, with every link built from a
+// target, never typed.
 export default function HomePage() {
   useSeo();
   const { data: content } = useHomeContent();
@@ -18,7 +19,6 @@ export default function HomePage() {
   return (
     <>
       <Hero slides={content?.heroSlides} />
-      <Press press={content?.press} />
       <ProductRail rail={content?.rails.newReleases} kind="newReleases" />
       <ProductRail rail={content?.rails.bestSellers} kind="bestSellers" tight />
       <Movements movements={content?.movements} />

@@ -22,7 +22,6 @@ const TABS = [
   { id: "currencies", label: "Currencies" },
   { id: "policies", label: "Stock and policies" },
   { id: "display", label: "Shop display" },
-  { id: "assistant", label: "Vee" },
 ];
 
 /** The shop's details, fees and rules. The storefront reads them everywhere. */
@@ -40,7 +39,7 @@ function Editor({ doc }) {
   const canEdit = can("settings", "edit");
 
   const save = async () => {
-    const { zones: _zones, ...rest } = draft;
+    const { zones: _zones, assistant: _assistant, ...rest } = draft;
     commit(await doc.save(rest));
   };
 
@@ -72,14 +71,6 @@ function Editor({ doc }) {
                   onChange={(e) => set("shopGrid", { ...draft.shopGrid, [key]: Number(e.target.value) })}
                 />
               ))}
-            </div>
-          </Panel>
-        )}
-        {tab === "assistant" && (
-          <Panel title="Vee, the style assistant">
-            <div className="grid gap-4">
-              <Field label="Name" className="max-w-xs" value={draft.assistant.name} onChange={(e) => set("assistant", { ...draft.assistant, name: e.target.value })} />
-              <Field label="Greeting" as="textarea" rows={2} value={draft.assistant.greeting} onChange={(e) => set("assistant", { ...draft.assistant, greeting: e.target.value })} />
             </div>
           </Panel>
         )}

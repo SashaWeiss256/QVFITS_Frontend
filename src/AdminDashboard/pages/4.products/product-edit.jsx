@@ -216,7 +216,7 @@ function Editor({ existing, products }) {
 
           <Panel title="Search engines">
             <div className="grid gap-4">
-              <Field label="Web address" value={p.slug} onChange={(e) => patch({ slug: e.target.value })} hint={`/product/${p.slug || "made-from-the-name"}`} />
+              <p className="m-0 text-sm text-ink-3">Web address: <code className="rounded-r-sm bg-cream px-1.5 py-0.5 text-[.8rem] text-brand-600">/product/{p.slug || "made-from-the-name"}</code>{existing && (existing.slugLocked || existing.status === "active") ? ", fixed now it has been live." : ", made from the name."}</p>
               <Field label="Page title" value={p.seo.title} placeholder={p.name} onChange={(e) => patch({ seo: { ...p.seo, title: e.target.value } })} />
               <Field label="Description" as="textarea" rows={3} value={p.seo.description} placeholder={p.blurb} onChange={(e) => patch({ seo: { ...p.seo, description: e.target.value } })} />
             </div>

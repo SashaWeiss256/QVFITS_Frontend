@@ -339,7 +339,8 @@ export function createProduct(data: NewRow<ProductRecord>) {
     assertSetUp();
     assertPublishable({ ...data, type: data.type ?? "piece" } as Partial<ProductRecord>);
     const now = new Date().toISOString();
-    const slug = uniqueSlug(slugify(data.slug || data.name));
+    // The address always comes from the name; nobody types one.
+    const slug = uniqueSlug(slugify(data.name));
     const row = products.create({
       ...toRecordPatch(data as Partial<Product>),
       type: data.type ?? "piece",
@@ -367,8 +368,13 @@ export function updateProduct(id: Id, patch: Partial<Product>) {
   return mockApi(() => {
     assertCan("products", "edit");
     const clean = toRecordPatch(patch);
-    if (clean.slug !== undefined) clean.slug = uniqueSlug(slugify(clean.slug || clean.name || ""), id);
+    delete clean.slug;
     const before = products.get(id);
+    // The address follows the name while the piece is still a draft that was never
+    // published; once it has been live it is frozen, so a shared link never breaks.
+    const everLive = before?.status === "active" || before?.slugLocked || clean.status === "active";
+    if (before && clean.name && clean.name !== before.name && !everLive) clean.slug = uniqueSlug(slugify(clean.name), id);
+    if (everLive) clean.slugLocked = true;
     if (before) assertPublishable({ ...before, ...clean });
     // A piece still in a live kit can't leave the shop, or the kit couldn't be sent.
     if (before && clean.status && clean.status !== "active" && before.type !== "kit") {

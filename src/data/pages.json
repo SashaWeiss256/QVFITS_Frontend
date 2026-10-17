@@ -8,7 +8,7 @@
       "New": "New in",
       "Bestseller": "Best sellers",
       "sale": "The sale",
-      "search": "Results for “{query}”"
+      "search": "Results for \u201c{query}\u201d"
     },
     "kits": {
       "kicker": "Complete kits",
@@ -146,17 +146,9 @@
     "title": "We couldn't find that page",
     "lede": "It may have moved, or the link may be old. The whole range is one tap away."
   },
-  "assistant": {
-    "chips": [
-      "Something for the gym",
-      "What size am I?",
-      "Under 150k",
-      "Build me a kit"
-    ]
-  },
   "footer": {
     "blurbSuffix": "Made for the way you actually train.",
-    "copyright": "© {year} {brand}. Kampala, Uganda.",
+    "copyright": "\u00a9 {year} {brand}. Kampala, Uganda.",
     "tagline": "Seamless. Seam-fit. Swim. Lounge.",
     "newsTitle": "First to know",
     "newsText": "New drops, restocks and members-only offers, about twice a month.",

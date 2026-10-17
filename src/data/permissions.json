@@ -54,6 +54,13 @@
     ]
   },
   {
+    "id": "transactions",
+    "label": "Transactions",
+    "actions": [
+      "view"
+    ]
+  },
+  {
     "id": "customers",
     "label": "Customers",
     "actions": [
@@ -90,30 +97,11 @@
     ]
   },
   {
-    "id": "home-content",
-    "label": "Home page",
+    "id": "vee",
+    "label": "Vee, the style assistant",
     "actions": [
       "view",
-      "edit",
-      "delete"
-    ]
-  },
-  {
-    "id": "pages",
-    "label": "Pages and navigation",
-    "actions": [
-      "view",
-      "edit",
-      "delete"
-    ]
-  },
-  {
-    "id": "faq",
-    "label": "FAQ",
-    "actions": [
-      "view",
-      "edit",
-      "delete"
+      "edit"
     ]
   },
   {

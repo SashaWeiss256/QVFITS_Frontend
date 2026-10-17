@@ -14,14 +14,13 @@ const MODULES = [
   ["categories", "categories", P.Categories],
   ["size-guide", "size-guide", P.SizeGuide],
   ["orders", "orders", P.Orders],
+  ["transactions", "transactions", P.Transactions],
   ["customers", "customers", P.Customers],
+  ["messages", "messages", P.Messages],
   ["discounts", "discounts", P.Discounts],
   ["offers", "offers", P.Offers],
   ["newsletter", "newsletter", P.Newsletter],
-  ["website", "home-content", P.HomeContent],
-  ["pages", "pages", P.PagesAndMenus],
-  ["faq", "faq", P.Faq],
-  ["messages", "messages", P.Messages],
+  ["vee", "vee", P.Vee],
   ["team", "team", P.Team],
   ["settings", "settings", P.Settings],
   ["activity", "activity", P.ActivityLog],
@@ -32,8 +31,11 @@ const MOVED = [
   ["inventory", "/admin/products?tab=stock"],
   ["reviews", "/admin/products?tab=reviews"],
   ["returns", "/admin/orders?tab=returns"],
-  ["transactions", "/admin/orders?tab=payments"],
   ["collections", "/admin/products?type=kit"],
+  // The website content is part of the site's code now, not dashboard data.
+  ["website", "/admin"],
+  ["pages", "/admin"],
+  ["faq", "/admin"],
 ];
 
 export default function adminRoutes() {

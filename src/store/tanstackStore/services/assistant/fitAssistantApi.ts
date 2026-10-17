@@ -8,6 +8,7 @@ import { getSettings } from "../content/settingsApi";
 import type { VeeSession } from "./vee/context";
 import type { Block } from "./vee/helpers";
 import { reply } from "./vee/reply";
+import { logQuestion } from "./veeQuestionsApi";
 
 /**
  * "Vee", Quivogue's fit assistant: a real intent parser over the live
@@ -33,6 +34,7 @@ function readName() {
 export async function ask(question: string): Promise<Block[]> {
   const [products, settings, chart, looks, facets] = await Promise.all([listProducts(), getSettings(), getSizeChart(), listLooks(), getFacets()]);
   const before = session.name;
+  session.missed = false;
   const blocks = reply(question, {
     products,
     settings,
@@ -43,6 +45,8 @@ export async function ask(question: string): Promise<Block[]> {
     swatches: facets.colors.map((c) => c.name),
     session,
   });
+  // What was asked, and whether she found an answer, for Marketing, Vee.
+  logQuestion(question, !session.missed);
   if (session.name && session.name !== before) {
     try {
       window.localStorage.setItem(NAME_KEY, session.name);
@@ -54,9 +58,7 @@ export async function ask(question: string): Promise<Block[]> {
   return mockApi(() => blocks, 420 + Math.random() * 380);
 }
 
-/** The greeting, personal once she has said her name. */
-export function greeting() {
-  return session.name
-    ? `Welcome back, ${session.name}. What are we finding today?`
-    : "Hey! Looking for your fit? I know every piece in the studio. Tell me what you train in.";
+/** The greeting set in the dashboard, personal once she has said her name. */
+export function greeting(text?: string) {
+  return session.name ? `Welcome back, ${session.name}. What are we finding today?` : text || "Hey! Looking for your fit? Tell me what you train in.";
 }

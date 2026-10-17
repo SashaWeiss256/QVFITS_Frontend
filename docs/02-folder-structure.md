@@ -6,7 +6,7 @@
 - **Sign-in lives with its realm:** the shopper's sign-in is `CustomerDashboard/pages/1.auth/`, the staff sign-in `AdminDashboard/pages/1.auth/`. `src/pages/` has no auth.
 - **The page file sits in its folder** (`2.shop/shop.jsx`), next to its page-level helpers: a shell, schemas, a hook (`7.checkout/CheckoutShell.jsx`, `7.checkout/schemas.js`, `2.shop/useShopFilters.js`).
 - **Sections are flat and plainly named:** each section is one file in `sections/`, named for what it is (`ShopToolbar.jsx`, `Gallery.jsx`, `SizePicker.jsx`), without the page's name in front. **No folders inside `sections/`** unless there is truly no other way.
-- `pages/not-found.jsx` sits at the root of `pages/`. Page copy lives in `data/pages.json`; the policy builders in `9.legal/content/` take the live settings.
+- `pages/not-found.jsx` sits at the root of `pages/`. Page copy lives in `data/pages.json`, part of the code (no dashboard); the policy builders in `9.legal/content/` take the live settings.
 - **Home sections stay few:** the home page has one file per real section (client request: not split too far).
 
 ```
@@ -62,14 +62,13 @@ QVfits/
         │                            useTab (?tab=), useUrlFilters, useIdleTimeout, csv.js, media.js
         └── pages/                 ← 1.auth (login, invite) 2.overview 3.reports
                                      Catalog: 4.products (tabs Products, Stock, Reviews; + product-edit
-                                     for pieces and kits) 5.categories (Shop by groups, colours, Filter and sort)
+                                     for pieces and kits) 5.categories (Shop by groups, colours, Menu, Filter and sort)
                                      6.size-guide (chart, sizes)
-                                     Sales: 7.orders (tabs Orders, Returns and refunds, Payments)
-                                     8.customers
-                                     Marketing: 9.discounts 10.offers 11.newsletter (tabs Subscribers,
-                                     Campaigns, Welcome email, Outbox)
-                                     Website: 12.home-content 13.pages 14.faq 15.messages
-                                     Admin: 16.team 17.settings 18.activity
+                                     Sales: 7.orders (tabs Orders, Returns and refunds)
+                                     8.transactions 9.customers 10.messages
+                                     Marketing: 11.discounts 12.offers 13.newsletter (tabs Subscribers,
+                                     Campaigns, Welcome email, Outbox) 14.vee (Settings, Questions)
+                                     Admin: 15.team 16.settings 17.activity
 ```
 
 ## Routes
@@ -88,8 +87,8 @@ QVfits/
 | `/login`, `/signup`, `/forgot-password`, `/reset-password`, `/account/confirm` | `CustomerDashboard/pages/1.auth/` |
 | `/account`, `/account/orders[/:id]`, `/account/wishlist`, `/account/addresses`, `/account/settings` | `CustomerDashboard/pages/2` to `6` |
 | `/admin/login`, `/admin/invite` | `AdminDashboard/pages/1.auth/` |
-| `/admin`, `/admin/reports`, `/admin/products[/new, /:id]`, `/admin/orders` … `/admin/activity` | `AdminDashboard/pages/2` to `18`, each behind its permission (`routes/AdminRoutes.jsx`). A tab opens by address (`/admin/orders?tab=returns`, `?order=<id>` opens an order) |
-| `/admin/inventory`, `/reviews`, `/returns`, `/transactions`, `/collections` | Old addresses, redirected to their tab (`MOVED` in `AdminRoutes.jsx`) |
+| `/admin`, `/admin/reports`, `/admin/products[/new, /:id]`, `/admin/orders` … `/admin/activity` | `AdminDashboard/pages/2` to `17`, each behind its permission (`routes/AdminRoutes.jsx`). A tab opens by address (`/admin/orders?tab=returns`, `?order=<id>` opens an order) |
+| `/admin/inventory`, `/reviews`, `/returns`, `/collections`, `/website`, `/pages`, `/faq` | Old addresses, redirected (`MOVED` in `AdminRoutes.jsx`) |
 
 Checkout is guest-friendly: signing in is offered, never required.
 

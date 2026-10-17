@@ -60,7 +60,7 @@ export default function AdminLayout() {
     active && deeper && { label: active.label, to: active.to },
   ].filter(Boolean);
   const title = deeper ? (pathname.endsWith("/new") ? `New ${active.label.toLowerCase().replace(/s$/, "")}` : `Edit ${active.label.toLowerCase().replace(/s$/, "")}`) : active?.label ?? "Admin";
-  const viewOnly = active && can(active.perm, "view") && !can(active.perm, "edit");
+  const viewOnly = active && !active.readOnly && can(active.perm, "view") && !can(active.perm, "edit");
 
   // The main pane scrolls, not the window, so reset it on each module.
   useEffect(() => {

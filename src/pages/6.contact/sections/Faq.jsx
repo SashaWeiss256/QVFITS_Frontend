@@ -4,7 +4,7 @@ import Accordion from "@/components/ui/Accordion";
 import Reveal from "@/components/motion/Reveal";
 import { useFaq, usePageCopy } from "@/store/tanstackStore/queries/site";
 
-// The questions are edited under Website, FAQ in the admin.
+// The questions come from src/data/faq.json: part of the site's code.
 export default function Faq() {
   const { data: faq = [] } = useFaq();
   const { data: copy } = usePageCopy("contact");

@@ -53,11 +53,11 @@ export default function AdminOverview() {
       {/* minmax(0,1fr): the orders table scrolls inside its panel instead of widening the page */}
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
         {/* Only for those who can do the setup; it hides itself once all is done. */}
-        {["categories", "size-guide", "products", "settings", "home-content"].every((m) => can(m, "edit")) && <ShopReady />}
+        {["categories", "size-guide", "products", "settings"].every((m) => can(m, "edit")) && <ShopReady />}
         <KeyFigures data={data} loading={isLoading} days={days} money={moneyBase} />
 
         <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <RevenueChart byDay={data?.byDay} loading={isLoading} money={moneyBase} />
+          <RevenueChart buckets={data?.buckets} loading={isLoading} money={moneyBase} />
           <NeedsAttention data={data} loading={isLoading} can={can} />
         </div>
 
