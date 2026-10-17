@@ -2,7 +2,7 @@
 import { lazy } from "react";
 
 // Each page is its own chunk. Folder 1 is the shopper's door; the rest follow
-// the account menu order (lib/accountMenuItems.js).
+// the account menu order (utils/accountMenuItems.js).
 
 // The shopper's door: full screen, outside the account layout
 export const CustomerLogin = lazy(() => import("./pages/1.auth/login"));

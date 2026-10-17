@@ -42,7 +42,7 @@ export default function ShopBy() {
   const [removing, setRemoving] = useState(null);
   const [moveTo, setMoveTo] = useState("");
 
-  if (groups.isLoading || categories.isLoading || terms.isLoading) return <PageLoader />;
+  if (groups.isLoading || categories.isLoading || terms.isLoading) return <PageLoader variant="list" />;
 
   // What the address builders need to turn an item into its shop address.
   const lookup = { groups: groups.items, categories: categories.items, terms: terms.items, products: products.items };

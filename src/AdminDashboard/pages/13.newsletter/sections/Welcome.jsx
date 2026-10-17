@@ -16,7 +16,7 @@ import { useDraft } from "@/AdminDashboard/lib/useDraft";
  */
 export default function Welcome() {
   const doc = useDocument(newsletterSettingsResource);
-  if (!doc.data) return <PageLoader />;
+  if (!doc.data) return <PageLoader variant="form" />;
   return <Editor doc={doc} />;
 }
 

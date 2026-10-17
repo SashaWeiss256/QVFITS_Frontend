@@ -21,7 +21,7 @@
 
 Individual files are **never** number-prefixed (no `2.Hero.jsx`). Only folders carry the order.
 
-The number is the position: nav pages first, then the off-nav pages (or, in a dashboard, `1.auth` then the sidebar order). A new page takes its place and the folders after it move up by one. Update the nav source (`navbarMenu.js`, `accountMenuItems.js` or `ADMIN_NAV`) and the lazy barrel (`routes/pages.js`, `CustomerPages.jsx`, `AdminPages.jsx`) together.
+The number is the position: nav pages first, then the off-nav pages (or, in a dashboard, `1.auth` then the sidebar order). A new page takes its place and the folders after it move up by one. Update the nav source (`navbarMenu.js`, `utils/accountMenuItems.js` or `ADMIN_NAV`) and the lazy barrel (`routes/pages.js`, `CustomerPages.jsx`, `AdminPages.jsx`) together.
 
 ## 2. Splitting
 
@@ -47,7 +47,10 @@ The number is the position: nav pages first, then the off-nav pages (or, in a da
 
 ## 5. Forms
 
-- react-hook-form + zod, `zodResolver`, `noValidate` on the `<form>`.
+- **Customer-facing forms** (sign in, sign up, reset, checkout, contact, track order): react-hook-form + zod, `zodResolver`, `noValidate` on the `<form>`. Formik and Yup are not used and not installed.
+- **Admin forms** keep a working copy with `AdminDashboard/lib/useDraft` (a functional `set` and `patch`, so two changes in one click don't overwrite each other) and save it with `SaveBar`; the services validate again.
+- **Lists** in the admin all use TanStack Table through `DataTable`. Small hand-written tables remain where they are fixed grids, not lists: `PermissionMatrix`, `RecentOrders`, `ReportTable`, `VariantMatrix` and `SizeChart`.
+- Text fields and dropdowns are pills; the shared `Field` and `.input` already are, so don't restyle them per page.
 - Schemas sit beside the form (`schemas.js`, `checkoutSchema.js`).
 - Render fields with `components/ui/Field`: label, `aria-invalid`, and an error announced with `role="alert"`.
 - Phone numbers are Ugandan by default (`+256`).

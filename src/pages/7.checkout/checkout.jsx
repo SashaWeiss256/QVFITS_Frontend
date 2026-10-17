@@ -99,7 +99,7 @@ export default function CheckoutPage() {
     );
   }
   if (!lines.length) return <Shell><BagEmpty /></Shell>;
-  if (bag.isLoading || !bag.settings) return <Shell><PageLoader /></Shell>;
+  if (bag.isLoading || !bag.settings) return <Shell><PageLoader variant="form" /></Shell>;
 
   const review = (values) => {
     setDetails(values);

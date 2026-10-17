@@ -16,7 +16,7 @@ export default function AccountOrders() {
   const { data: orders, isLoading } = useMyOrders(customer.id);
   const { moneyBase } = useCurrency();
 
-  if (isLoading) return <PageLoader className="min-h-[30vh]" />;
+  if (isLoading) return <PageLoader variant="list" />;
   if (!orders?.length) {
     return <EmptyState icon={Package} action={<Link to="/shop" className="btn btn--primary">Shop the range</Link>}>No orders yet.</EmptyState>;
   }

@@ -54,7 +54,7 @@ function problems(p) {
 export default function ProductEdit() {
   const { id } = useParams();
   const products = useCollection(productsResource);
-  if (products.isLoading) return <PageLoader />;
+  if (products.isLoading) return <PageLoader variant="form" />;
   const existing = id ? products.items.find((p) => p.id === id) : null;
   if (id && !existing) return <p className="text-ink-3">That product no longer exists. <Link to="/admin/products" className="link-arrow">All products</Link></p>;
   return <Editor key={id ?? "new"} existing={existing} products={products} />;

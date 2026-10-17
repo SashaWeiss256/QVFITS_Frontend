@@ -57,17 +57,18 @@ QVfits/
     └── AdminDashboard/            ← /admin; AdminLayout, AdminPages (lazy barrel)
         ├── components/            ← auth/RequireAdmin, header/, sidebar/, PermissionGate, DataTable,
         │                            Drawer, ImageUploader, ListEditor, ProductPicker, SaveBar, Tabs,
-        │                            TagInput, Toggle, PageHeader, Panel, StatCard
+        │                            TagInput, Toggle, PageHeader, Panel, StatCard, ChipGroup, FilterDrawer, AttributeList
         ├── lib/                   ← constants.jsx (ADMIN_NAV with permissions), useTable, useDraft,
         │                            useTab (?tab=), useUrlFilters, useIdleTimeout, csv.js, media.js
         └── pages/                 ← 1.auth (login, invite) 2.overview 3.reports
                                      Catalog: 4.products (tabs Products, Stock, Reviews; + product-edit
-                                     for pieces and kits) 5.categories (Shop by groups, colours, Menu, Filter and sort)
+                                     for pieces and kits; Stock has thumbnails, a quick look, an inline count
+                                     that is logged, and the log in a drawer) 5.categories (Shop by groups, colours, Menu, Filter and sort)
                                      6.size-guide (chart, sizes)
                                      Sales: 7.orders (tabs Orders, Returns and refunds)
                                      8.transactions 9.customers 10.messages
                                      Marketing: 11.discounts 12.offers 13.newsletter (tabs Subscribers,
-                                     Campaigns, Welcome email, Outbox) 14.vee (Settings, Questions)
+                                     Campaigns, Welcome email, Outbox) 14.vee (Settings, Questions; Vee is a rule-based assistant, see 03)
                                      Admin: 15.team 16.settings 17.activity
 ```
 
@@ -126,7 +127,7 @@ A section that grows is split into more flat files in `sections/` (`BuyPanel.jsx
 | You are adding… | Put it in |
 |---|---|
 | A storefront page | `pages/<n>.<name>/` (next number; nav pages first) + `routes/pages.js` + `SiteRoutes.jsx`; its copy in `data/pages.json`, and a link in `data/navigation.json` if it is in a menu |
-| A customer account page | `CustomerDashboard/pages/<n>.<name>/` + `accountMenuItems.js` + `CustomerPages.jsx` |
+| A customer account page | `CustomerDashboard/pages/<n>.<name>/` + `utils/accountMenuItems.js` (shared with the navbar's account menu) + `CustomerPages.jsx` |
 | An admin module | `AdminDashboard/pages/<n>.<name>/` (flat, sidebar order) + `ADMIN_NAV` (with its `perm`) + `AdminPages.jsx` + `routes/AdminRoutes.jsx` + a module in `data/permissions.json` |
 | A component two site pages use | `components/ui/` (generic) or `components/storefront/` |
 | A component only the admin uses | `AdminDashboard/components/` |

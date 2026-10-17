@@ -28,7 +28,7 @@ export default function MegaMenu() {
   const tile = useDocument(menuFeatureResource);
   const { can } = useAdminAuth();
   const canEdit = can("categories", "edit");
-  if (groups.isLoading || categories.isLoading || terms.isLoading || !tile.data) return <PageLoader />;
+  if (groups.isLoading || categories.isLoading || terms.isLoading || !tile.data) return <PageLoader variant="list" />;
 
   // Only live groups, categories and items count, as on the shop.
   const lookup = { groups: groups.items.filter((g) => g.active), categories: categories.items.filter((c) => c.active), terms: terms.items.filter((t) => t.active) };

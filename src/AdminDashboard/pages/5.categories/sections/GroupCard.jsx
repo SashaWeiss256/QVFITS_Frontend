@@ -1,6 +1,6 @@
 /* Shop By Group Card */
 import { useState } from "react";
-import { ArrowDown, ArrowUp, ChevronDown, ExternalLink, Pencil, Plus, Tag, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronDown, ExternalLink, Lock, Pencil, Plus, Tag, Trash2 } from "lucide-react";
 
 import StatusChip from "@/components/ui/StatusChip";
 import Photo from "@/components/storefront/Photo";
@@ -58,8 +58,11 @@ export default function GroupCard({
             <button type="button" className="icon-btn" aria-label={`Move ${group.name} up`} disabled={first} onClick={() => onMove(-1)}><ArrowUp className="h-4 w-4" /></button>
             <button type="button" className="icon-btn" aria-label={`Move ${group.name} down`} disabled={last} onClick={() => onMove(1)}><ArrowDown className="h-4 w-4" /></button>
             <button type="button" className="icon-btn" aria-label={`Edit ${group.name}`} onClick={onEdit}><Pencil className="h-4 w-4" /></button>
-            {canDelete && group.kind !== "category" && (
+            {/* The last slot is always there so every row lines up: delete, or a lock where deleting isn't allowed (Category, which every product needs). */}
+            {canDelete && group.kind !== "category" ? (
               <button type="button" className="icon-btn text-warn" aria-label={`Delete ${group.name}`} onClick={onDelete}><Trash2 className="h-4 w-4" /></button>
+            ) : (
+              <button type="button" className="icon-btn text-ink-4" disabled title={group.kind === "category" ? "Every product needs a category, so this group stays" : "You can't delete this"} aria-label={group.kind === "category" ? `${group.name} can't be deleted: every product needs one` : `${group.name} can't be deleted`}><Lock className="h-4 w-4" /></button>
             )}
           </div>
         )}

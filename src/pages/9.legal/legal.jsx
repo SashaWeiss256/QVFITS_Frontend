@@ -15,7 +15,7 @@ import Blocks from "./sections/Blocks";
 export default function LegalPage() {
   const { pathname: path } = useLocation();
   const { data: settings } = useSettings();
-  if (!settings) return <PageLoader />;
+  if (!settings) return <PageLoader variant="text" />;
   // Build the page from the path-specific policy and live business settings (e.g. contact details).
   const doc = legalDoc(path).build(settings);
 

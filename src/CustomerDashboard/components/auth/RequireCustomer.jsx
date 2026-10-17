@@ -10,7 +10,7 @@ export default function RequireCustomer({ children }) {
   const { customer, loading } = useCustomerAuth();
   const { pathname } = useLocation();
 
-  if (loading) return <PageLoader />;
+  if (loading) return <PageLoader variant="logo" />;
   if (!customer) return <Navigate to={`/login?next=${encodeURIComponent(pathname)}`} replace />;
   return children;
 }

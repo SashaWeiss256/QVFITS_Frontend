@@ -22,7 +22,7 @@ const BUILT_IN = { size: "Size", color: "Colour", price: "Price" };
 export default function FilterAndSort() {
   const doc = useDocument(filtersResource);
   const groups = useCollection(groupsResource);
-  if (!doc.data || groups.isLoading) return <PageLoader />;
+  if (!doc.data || groups.isLoading) return <PageLoader variant="form" />;
   return <Editor doc={doc} groups={groups.items} />;
 }
 

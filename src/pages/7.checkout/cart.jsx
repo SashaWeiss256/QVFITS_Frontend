@@ -22,7 +22,7 @@ export default function CartPage() {
         {bag.empty ? (
           <BagEmpty />
         ) : bag.isLoading ? (
-          <PageLoader />
+          <PageLoader variant="form" />
         ) : (
           <>
             <Steps at={1} />

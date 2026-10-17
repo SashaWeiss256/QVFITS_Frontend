@@ -11,7 +11,7 @@ import { useDraft } from "@/AdminDashboard/lib/useDraft";
 
 export default function VeeSettings() {
   const doc = useDocument(settingsResource);
-  if (!doc.data) return <PageLoader />;
+  if (!doc.data) return <PageLoader variant="form" />;
   return <Editor doc={doc} />;
 }
 

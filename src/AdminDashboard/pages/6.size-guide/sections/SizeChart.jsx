@@ -16,7 +16,7 @@ const LABELS = [["size", "Size"], ["uk", "UK"], ["us", "US"], ["eu", "EU"]];
 /** The size chart the size guide, the finder and Vee all read. */
 export default function SizeChart() {
   const doc = useDocument(sizeChartResource);
-  if (!doc.data) return <PageLoader />;
+  if (!doc.data) return <PageLoader variant="form" />;
   return <Editor doc={doc} />;
 }
 

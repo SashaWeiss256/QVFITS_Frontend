@@ -32,7 +32,7 @@ export default function ProductPage() {
   useSeo({ title: p?.name ?? (error ? "Piece not found" : undefined), description: p ? `${p.name}, ${p.category} from QVFITS, Kampala. ${p.blurb}` : undefined, noindex: Boolean(error) });
 
   // Keep loading distinct from a missing product so transient fetches don't show a 404.
-  if (isLoading) return <PageLoader />;
+  if (isLoading) return <PageLoader variant="product" />;
   if (error || !p) {
     return (
       <section className="section section--tight">

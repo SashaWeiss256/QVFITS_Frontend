@@ -110,7 +110,7 @@ export default function AdminLayout() {
           )}
           {/* Each module is its own chunk; the shell stays put while one loads */}
           <QueryErrorBoundary resetKey={pathname}>
-            <Suspense fallback={<PageLoader />}>
+            <Suspense fallback={<PageLoader variant="admin" />}>
               <HeaderSlotContext.Provider value={headerSlot}>
                 <Outlet />
               </HeaderSlotContext.Provider>

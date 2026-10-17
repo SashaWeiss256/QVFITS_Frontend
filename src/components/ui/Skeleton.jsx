@@ -7,9 +7,9 @@ export default function Skeleton({ className }) {
 }
 
 /** A product grid's worth of placeholder cards. */
-export function SkeletonGrid({ count = 8 }) {
+export function SkeletonGrid({ count = 8, className }) {
   return (
-    <div className="grid-products" role="status" aria-label="Loading">
+    <div className={cn("grid-products", className)} role="status" aria-label="Loading">
       {Array.from({ length: count }, (_, i) => (
         <div key={i}>
           <Skeleton className="aspect-[3/4] w-full" />

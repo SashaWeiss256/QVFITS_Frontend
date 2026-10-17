@@ -43,7 +43,7 @@ export default function CustomerLayout() {
 
         {/* The page for the chosen menu item */}
         <div className="min-w-0">
-          <Suspense fallback={<PageLoader className="min-h-[30vh]" />}>
+          <Suspense fallback={<PageLoader variant="form" />}>
             <Outlet />
           </Suspense>
         </div>

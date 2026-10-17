@@ -21,7 +21,7 @@ const TONES = [{ value: "brand", label: "Brand gradient" }, { value: "dark", lab
  */
 export default function AdminOffers() {
   const doc = useDocument(offersResource);
-  if (!doc.data) return <PageLoader />;
+  if (!doc.data) return <PageLoader variant="form" />;
   return <Editor doc={doc} />;
 }
 

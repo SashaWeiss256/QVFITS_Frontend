@@ -27,7 +27,7 @@ const TABS = [
 /** The shop's details, fees and rules. The storefront reads them everywhere. */
 export default function AdminSettings() {
   const doc = useDocument(settingsResource);
-  if (!doc.data) return <PageLoader />;
+  if (!doc.data) return <PageLoader variant="form" />;
   return <Editor doc={doc} />;
 }
 

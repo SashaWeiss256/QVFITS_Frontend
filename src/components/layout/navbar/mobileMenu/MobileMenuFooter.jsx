@@ -1,10 +1,9 @@
 /* Mobile Menu Footer */
-import { ArrowUpRight, Globe } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Globe } from "lucide-react";
 
 import { WhatsAppIcon } from "@/components/ui/BrandIcons";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useSettings } from "@/store/tanstackStore/queries/site";
-import { cn } from "@/utils/cn";
 import { whatsappLink } from "@/utils/whatsapp";
 
 // Currency (moved here from the phone header, which is too narrow for it) and a WhatsApp row.
@@ -14,16 +13,17 @@ export default function MobileMenuFooter() {
 
   return (
     <div className="mmenu__foot">
-      {/* Currency: only when the admin has added a second one. The strip swipes, so any number fits. */}
+      {/* Currency: only when the admin has added a second one. A native menu, so the phone's own picker opens and any number of currencies fits. */}
       {currencies.length > 1 && (
-        <div className="mmenu__cur" role="group" aria-label="Show prices in">
-          <span className="mmenu__curlabel"><Globe className="h-4 w-4" aria-hidden="true" />Show prices in</span>
-          <div className="mmenu__curs">
-            {currencies.map((c) => (
-              <button key={c.code} type="button" aria-pressed={c.code === currency.code} className={cn(c.code === currency.code && "is-on")} onClick={() => setCurrency(c.code)}>{c.code}</button>
-            ))}
-          </div>
-        </div>
+        <label className="mmenu__cur">
+          <span className="mmenu__curlabel"><Globe className="h-[18px] w-[18px]" aria-hidden="true" />Prices in</span>
+          <span className="mmenu__sel">
+            <select value={currency.code} onChange={(e) => setCurrency(e.target.value)}>
+              {currencies.map((c) => <option key={c.code} value={c.code}>{c.code} · {c.label}</option>)}
+            </select>
+            <ChevronDown className="h-4 w-4" aria-hidden="true" />
+          </span>
+        </label>
       )}
       {/* Contact details come from settings; render nothing until they load. */}
       {s && (

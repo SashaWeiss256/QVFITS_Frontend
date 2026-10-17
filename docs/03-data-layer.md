@@ -68,7 +68,7 @@ src/store/
 | `team/` | `teamStore`, `staffApi` (invites, roles, the last-owner rule) | admin |
 | `admin/` | `activityApi` (the audit log every admin write feeds) | admin |
 | `auth/` | `customerAuthApi` (stay signed in, confirm email, password reset), `adminAuthApi`, `adminSession` (who is signed in, `can`, `assertCan`) | the two auth contexts, every admin service |
-| `assistant/` | `fitAssistantApi` + `vee/` (Quivogue's full intent parser: language, search, looks, reply) over the live catalogue, stock and size chart; replies are blocks (text, product cards, links), never HTML | site |
+| `assistant/` | `fitAssistantApi` + `vee/` (Quivogue's full intent parser: language, search, looks, reply) over the live catalogue, stock and size chart; replies are blocks (text, product cards, links), never HTML. It is rules, not a language model: it never invents a piece or claims stock it lacks. Today `outfitFor` picks the first in-stock partner per category and ignores colour; colour-aware outfit building (using each colour's hex) is proposed, not built | site |
 
 Every read takes `{ signal }` and passes it on. Admin-only services say `realm: admin` in their header comment.
 

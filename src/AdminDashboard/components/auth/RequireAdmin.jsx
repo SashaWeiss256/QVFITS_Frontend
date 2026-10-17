@@ -10,7 +10,7 @@ export default function RequireAdmin({ children }) {
   const { admin, loading } = useAdminAuth();
   const location = useLocation();
 
-  if (loading) return <PageLoader className="min-h-dvh" />;
+  if (loading) return <PageLoader variant="logo" className="min-h-dvh" />;
   if (!admin) return <Navigate to="/admin/login" state={{ from: location }} replace />;
   return children;
 }

@@ -10,7 +10,7 @@
 |---|---|
 | `styles/quivogue.css` | Quivogue's `css/style.css`, whole and unchanged. The base layer and **the source of every colour token** (`:root`) |
 | `styles/theme.css` | The premium layer: fonts, radii, easing, headings, labels, buttons, the header states, surfaces, forms, skeletons, the marquee band, the full-bleed hero, the bento, the campaign, the product page |
-| `styles/chrome.css` | Logo sizes, the header grid, the mega menu, the search overlay, the phone menu, the shop's applied-filter chips and filter sheet |
+| `styles/chrome.css` | Logo sizes, the header grid, the mega menu, the search overlay, the phone menu (account, shortcuts, currency, WhatsApp), the signed-in account dropdown, the shop's applied-filter chips, filter sheet and Show more, the product carousel, the newsletter card, the dark footer, the pill inputs and the pill search and sort controls |
 
 After them, `index.css` keeps the `@theme inline` token map (`bg-brand-500`, `text-ink-3`, `rounded-r-lg` …) and a few QVFITS rules: `.input`, `.btn--danger`, the five-column footer, the slider fix in the filter sidebar, and the TV zoom.
 
@@ -40,12 +40,13 @@ Shadows and photo scrims are tinted with the ink hue, `rgba(23, 33, 31, …)`, n
 
 ## Shape, surfaces, buttons
 
-- Radii (`theme.css`): `r-sm` 4px (images, inputs), `r-md` 10, `r-lg` 14, `r-xl` 20 (large panels); buttons are pills.
+- Radii (`theme.css`): `r-sm` 4px (images), `r-md` 10, `r-lg` 14, `r-xl` 20 (large panels). **Buttons, text inputs, dropdowns, search and sort are pills everywhere**, storefront and admin alike (`chrome.css`, "pill inputs"). A multi-line box cannot be a pill, so a textarea takes the `r-xl` corner. Checkboxes, radios, file and range inputs keep their own shape.
 - Product cards are Quivogue's, unchanged (client's choice): white rounded card that lifts on hover, the label as a pill under the photo, category, name, swatches, price and the gradient Add button.
 - A 3% grain sits over the page (`body::after`, pointer-events none).
 - `.btn` is 50px tall (`.btn--lg` for heroes, `.btn--light` on photos), presses to `scale(.98)`. `.link-arrow` is the tertiary style, with an animated underline.
 - Easing everywhere is `--ease: cubic-bezier(0.16, 1, 0.3, 1)`, 200 to 500ms.
-- Loading uses skeletons that match the layout (`components/ui/Skeleton.jsx`: `Skeleton`, `SkeletonGrid`).
+- Loading uses skeletons that match the layout, not spinners (`components/ui/Skeleton.jsx`: `Skeleton`, `SkeletonGrid`; `components/ui/PageLoader.jsx` picks a whole-screen shape by `variant`: page, product, text, form, list, admin, or logo for the sign-in check). No library is needed: it is one CSS shimmer (`.skel`, which also stills for reduced motion).
+- **Icons:** Lucide for interface icons. Lucide has no brand marks, so Instagram, TikTok and WhatsApp come from Simple Icons through Iconify (`@iconify/react` with `@iconify-icons/simple-icons`, bundled, no network request) in `components/ui/BrandIcons.jsx`.
 
 ## Logo
 
@@ -89,9 +90,10 @@ The brand is **Quivogue (QVFITS)**: one brand, one name, never described as two.
 |---|---|
 | `PromoBar` (in `layout/`) | One line on the brand gradient, fixed 36px, cross-fades every 4.5s, pauses on hover and focus |
 | `index.jsx` | Laptop and desktop (1024px up): logo, centred links (Shop ▾, then the header links from `data/navigation.json`), icons. Phone and tablet: menu button, centred logo, search and bag. Always solid; hides on scroll down, returns on scroll up |
-| `MegaMenu` + `megaMenu/` | Opens on hover (90ms intent delay, 180ms grace on leave) or on click/Enter; Escape closes and returns focus to Shop. Columns from the catalogue facets plus a featured campaign tile; currency in the foot |
+| `MegaMenu` + `megaMenu/` | Opens on hover (90ms intent delay, 180ms grace on leave) or on click/Enter; Escape closes and returns focus to Shop. Columns from the catalogue facets plus a featured campaign tile. It ends after the columns: delivery and showroom details are not repeated here (the top bar and footer carry them). A column has no height cap yet, so a very long list needs a "See all" link and a scroll limit |
 | `SearchOverlay` + `searchOverlay/` | Sheet from the top. Opened by the icon or the `/` key. Popular searches and new pieces before typing, live results while typing, Enter goes to `/shop?q=` |
-| `MobileMenu` + `mobileMenu/` | **Below 1024px only.** Full-height sheet from the left with large links, Shop as an accordion, account, currency and WhatsApp at the foot. Closes itself if the window grows past 1024px |
+| `AccountButton` | The person icon. Signed out it links to sign in. Signed in it opens a menu (name, the account pages, Sign out), closing on outside click, Escape or choosing an item. Its page list is `utils/accountMenuItems.js`, shared with the account sidebar |
+| `MobileMenu` + `mobileMenu/` | **Below 1024px only.** Full-height sheet from the left. Order: the shop's links first (Shop opens in place as icon-led groups of pills), then the account block (welcome and Sign in or Create account, or the signed-in card; slim Saved and Track order pills), then at the foot a currency dropdown and the WhatsApp row. Help pages are not repeated here (they are in the footer). The phone header is menu, centred logo, search and bag; currency moves into the menu. Closes itself if the window grows past 1024px |
 
 Every overlay (menu, search, bag drawer, filter sheet) calls `useOverlayFlag(open)`: it locks the page scroll and sets `body[data-overlay]`, which hides Vee and the sticker. Closed overlays are `inert`. A "Skip to content" link is the first tab stop on every storefront page.
 
@@ -108,14 +110,22 @@ Only `transform` and `opacity` animate. `MotionConfig reducedMotion="user"` and 
 
 ## Home page
 
-**Back to the original Quivogue home page** (client request), in its order: hero slideshow (inside the page width, rounded, copy centred over the picture, dots below) · Press (when switched on) · New releases (four cards and a button) · Best sellers (four cards) · Shop by movement (four tiles) · Campaign · Shop the feed · Newsletter (the centred card). Every word and picture comes from the Home page module in the admin. The rest of the site keeps the new design.
+**Back to the original Quivogue home page** (client request), in its order: hero slideshow (inside the page width, rounded, copy centred over the picture, dots below) · Press (when switched on) · New releases (four cards and a button) · Best sellers (four cards) · Shop by movement (four tiles) · Campaign · Shop the feed · Newsletter (the brand-gradient card with perks, a pill form and two tilted photos). New releases and Best sellers are a **carousel** of the same Quivogue card (`components/storefront/ProductCarousel.jsx`): scroll-snap, four in view on a laptop, two on a tablet, one and a bit on a phone, swipe, arrow keys and round arrow buttons either side of the "See more" link. Every word and picture comes from the Home page module in the admin. The rest of the site keeps the new design.
 
 ## Shop and product page
 
-- **Shop:** applied filters as removable chips above the grid. Below 881px the filter sidebar becomes a bottom sheet opened from a floating "Filter" pill, with a "Show N pieces" button.
+- **Shop:** applied filters as removable chips above the grid. A long list shows 24 pieces and a **Show more** button with "Showing 24 of N" and a progress bar (`sections/ShowMore.jsx`). How far it has been opened is kept in the address (`?n=48`), so Back from a product returns to the same place; any filter change starts over. Not endless scrolling: the footer stays reachable. Below 881px the filter sidebar becomes a bottom sheet opened from a floating "Filter" pill, with a "Show N pieces" button.
 - **Product card:** Quivogue's card. Add puts the first colour and size in stock in the bag and says which, so it works the same on phones and laptops.
 - **Filters:** which groups show, their names and order come from the admin (Colours, sizes, filters).
 - **Product page:** desktop shows a photo stack and a sticky buy panel (96px from the top); phones show a swipeable gallery with dots and a sticky add-to-bag bar.
+
+## Footer
+
+A deep plum panel mixed from the brand's own purple (no new colour), `components/layout/Footer.jsx`. The newsletter leads (large "First to know", a white pill form); then the logo (`tone="dark"` swaps in the white artwork) with its social buttons in a row, the Shop and Help columns, and Visit us with an icon per line. Legal links sit in the bottom bar, and Delivery and Returns appear once, under Help. A huge faint QVFITS bleeds off the bottom edge. On a phone everything is centred and link rows are 40px.
+
+## Offer card
+
+`components/storefront/Sticker.jsx`, the small first-order card. Closing it takes effect at once and is remembered for `snoozeDays` (`offers.json`), with a session fallback when storage is blocked.
 
 ## Responsive ranges
 
@@ -144,4 +154,4 @@ Product cards use free Unsplash photos as placeholders (the `photos` of each pro
 
 ## Dashboards
 
-The customer area uses the storefront look. The admin uses the same tokens and fonts in a calmer layout (sidebar, tables, panels on `cream` and `white`), built from one kit in `AdminDashboard/components/`: `DataTable` for every list (search, filters, sort, paging, bulk actions, CSV), `Drawer` for long forms, `Modal` for short ones, `SaveBar` for documents. Nothing is taken from Artistry's or Belioras's look.
+The customer area uses the storefront look: a sticky member card (initials, name, member since) holding the menu on the left, the page on the right under one heading; the profile page opens with a strip of counts (orders, saved pieces, addresses) that link to their pages. The admin uses the same tokens and fonts in a calmer layout (sidebar, tables, panels on `cream` and `white`), built from one kit in `AdminDashboard/components/`: `DataTable` for every list (pill search with close matching from `utils/search.js` (word starts, plurals, a slip or two in spelling, joined or split words; one matcher for the shop and the dashboard), rows per page, numbered paging, filters on the right, sort, bulk actions, CSV), `ChipGroup` for choice chips that fold behind "+N more" past ten and get a search past twenty (selected chips never fold away), `Drawer` for long forms, `Modal` for short ones, `SaveBar` for documents. Nothing is taken from Artistry's or Belioras's look.

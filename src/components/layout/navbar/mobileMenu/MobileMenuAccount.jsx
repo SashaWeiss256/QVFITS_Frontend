@@ -9,7 +9,7 @@ import { useWishlist } from "@/store/context/WishlistContext";
 /**
  * The account block of the phone menu, under the shop links. Signed in: a
  * card with the shopper's initials that opens their account. Signed out: a
- * welcome and the two ways in. Under it, two icon tiles for what shoppers
+ * welcome and the two ways in. Under it, two slim pills for what shoppers
  * reach for most: saved pieces (opens the saved drawer, with its count) and
  * tracking an order.
  */
@@ -46,16 +46,13 @@ export default function MobileMenuAccount({ onNavigate }) {
           </div>
         </div>
       )}
-      {/* Shortcuts: an icon above its label, so they read as tiles to tap */}
+      {/* Shortcuts: icon and label side by side, so the pair takes one slim row */}
       <div className="mmenu__quick">
         <button type="button" onClick={() => { onNavigate(); openDrawer("wish"); }}>
-          <span className="mmenu__ico"><Heart className="h-5 w-5" aria-hidden="true" />{count > 0 && <b className="mmenu__badge">{count}</b>}</span>
-          Saved pieces
+          <Heart className="h-[18px] w-[18px]" aria-hidden="true" /> Saved
+          {count > 0 && <b className="mmenu__badge">{count}</b>}
         </button>
-        <Link to="/track-order">
-          <span className="mmenu__ico"><PackageSearch className="h-5 w-5" aria-hidden="true" /></span>
-          Track an order
-        </Link>
+        <Link to="/track-order"><PackageSearch className="h-[18px] w-[18px]" aria-hidden="true" /> Track order</Link>
       </div>
     </div>
   );

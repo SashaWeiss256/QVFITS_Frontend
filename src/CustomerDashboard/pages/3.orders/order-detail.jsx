@@ -18,7 +18,7 @@ export default function AccountOrderDetail() {
   const { moneyBase } = useCurrency();
   const cancel = useCancelMyOrder(customer.id);
 
-  if (isLoading) return <PageLoader className="min-h-[30vh]" />;
+  if (isLoading) return <PageLoader variant="form" />;
   // Another shopper's id or a stale link lands here too, not on a crash.
   if (error || !order) return <p className="text-ink-3">We couldn&apos;t find that order. <Link to="/account/orders" className="link-arrow">All orders</Link></p>;
 

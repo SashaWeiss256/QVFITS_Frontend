@@ -8,7 +8,7 @@ Ids are strings. Relations are ids, never names: a product has a `categoryId` an
 
 | File | Holds | Edited in the admin under |
 |---|---|---|
-| `products.json` | The catalogue: single pieces and kits. See below | Catalog, Products (Products and Stock tabs) |
+| `products.json` | The catalogue: single pieces and kits. See below | Catalog, Products (Products and Stock tabs). **Piece or Kit** is chosen at the top of a new product. A piece has colours, sizes and stock; a set (Sets category) is just a piece sold as a matching pair. A kit bundles two to six saved pieces under one price. The "More about the piece" panel (fit, fabric, care, details) is optional and folded for a new product, because the product page reads it when present |
 | `categories.json` | `{ id, name, slug, previousSlugs, parentId, image, description, position, active }`; each has a shop page `/shop/<slug>` | Catalog, Categories |
 | `colors.json` | `{ id, name, hex, position }`, the swatches | Catalog, Categories (Colours tab) |
 | `sizes.json` | `{ id, label, group, position }` | Catalog, Sizes and size guide |

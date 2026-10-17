@@ -1,21 +1,19 @@
 /* Mega Menu */
 import { m } from "motion/react";
 
-import { useCurrency } from "@/store/context/CurrencyContext";
-import { useNavigation, useSettings } from "@/store/tanstackStore/queries/site";
+import { useNavigation } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
 import MegaMenuColumn from "./megaMenu/MegaMenuColumn";
 import MegaMenuFeature from "./megaMenu/MegaMenuFeature";
 
 /**
  * The full-width "Shop" panel under the header: the columns and links picked
- * in the admin (Catalog, Categories, Menu), then the picture tile. Its columns
- * arrive in a short stagger each time it opens.
+ * in the admin (Catalog, Categories, Menu), then the picture tile. Delivery and
+ * showroom details are not repeated here (the top bar and footer carry them).
+ * Its columns arrive in a short stagger each time it opens.
  */
 export default function MegaMenu({ id, open, onEnter, onLeave, onNavigate }) {
-  const { data: settings } = useSettings();
   const { data: nav } = useNavigation();
-  const { money } = useCurrency();
   const menu = nav?.shopMenu;
 
   return (
@@ -24,9 +22,6 @@ export default function MegaMenu({ id, open, onEnter, onLeave, onNavigate }) {
         {menu?.columns.map((c) => <MegaMenuColumn key={c.id} title={c.title} links={c.links} onNavigate={onNavigate} />)}
         {menu?.feature && <MegaMenuFeature feature={menu.feature} onNavigate={onNavigate} />}
       </m.div>
-      <div className="mega__foot">
-        <span>{settings ? `Free delivery over ${money(settings.freeShippingOver)} · Showroom at ${settings.address}` : ""}</span>
-      </div>
     </div>
   );
 }

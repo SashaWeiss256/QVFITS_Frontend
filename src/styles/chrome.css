@@ -255,18 +255,6 @@
   font-size: 1.5rem;
   letter-spacing: -0.03em;
 }
-.mega__foot {
-  max-width: var(--wrap);
-  margin-inline: auto;
-  padding: 14px var(--gut);
-  border-top: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  font-size: 0.85rem;
-  color: var(--ink-3);
-}
 
 /* ---------------------------------------------------------------- overlay sheets */
 /* Search and the phone menu: full-width sheets over a scrim. */
@@ -866,23 +854,24 @@ body:has(.consent) .sticker { opacity: 0; pointer-events: none; visibility: hidd
 .mmenu__join { padding: 18px 16px 16px; }
 .mmenu__join .btn { min-height: 46px; padding-inline: 12px; font-size: .9rem; }
 .mmenu__quick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.mmenu__quick > * { display: grid; justify-items: center; gap: 8px; padding: 16px 10px 14px; border: 1px solid var(--line-2); border-radius: var(--r-xl); background: transparent; color: var(--ink-2); font-size: .88rem; font-weight: 500; text-align: center; transition: background-color .2s, color .2s, border-color .2s; }
+.mmenu__quick > * { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: 999px; background: transparent; color: var(--ink-2); font-size: .9rem; font-weight: 500; transition: background-color .2s, color .2s, border-color .2s; }
+.mmenu__quick > * svg { color: var(--brand-500); }
 .mmenu__quick > *:hover, .mmenu__quick > *:active { background: var(--brand-100); border-color: var(--brand-200); color: var(--brand-600); }
 .mmenu__ico { position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--brand-100); color: var(--brand-600); }
-.mmenu__badge { position: absolute; top: -3px; right: -5px; display: grid; place-items: center; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--brand-grad); color: #fff; font-size: .68rem; font-weight: 700; }
+.mmenu__badge { display: grid; place-items: center; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--brand-grad); color: #fff; font-size: .68rem; font-weight: 700; }
 
 /* Main links, a notch smaller so five fit above the fold on a small phone. */
 .mmenu__link { min-height: 56px; font-size: 1.45rem; }
 
 /* Foot */
 .mmenu__foot { gap: 14px; padding-top: 14px; }
-.mmenu__cur { display: grid; gap: 10px; }
-.mmenu__curlabel { display: flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
-/* One swipeable strip, so any number of currencies fits a narrow phone. */
-.mmenu__curs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-inline: calc(var(--gut) * -1); padding-inline: var(--gut); }
-.mmenu__curs::-webkit-scrollbar { display: none; }
-.mmenu__curs button { flex: none; min-width: 56px; min-height: 38px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: 999px; background: transparent; font-size: .82rem; font-weight: 600; color: var(--ink-2); }
-.mmenu__curs button.is-on { background: var(--brand-grad); border-color: transparent; color: #fff; }
+.mmenu__cur { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mmenu__curlabel { display: flex; align-items: center; gap: 9px; font-size: .92rem; color: var(--ink-2); }
+.mmenu__curlabel svg { color: var(--brand-500); }
+/* The select is a pill like the rest of the site; the chevron is drawn over it. */
+.mmenu__sel { position: relative; display: inline-flex; align-items: center; min-width: 0; flex: 1; justify-content: flex-end; }
+.mmenu__sel select { appearance: none; max-width: 100%; min-height: 42px; padding: 0 38px 0 16px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--white); color: var(--ink); font: 600 .88rem inherit; text-overflow: ellipsis; }
+.mmenu__sel svg { position: absolute; right: 14px; pointer-events: none; color: var(--ink-3); }
 .mmenu__wa { display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 10px; border-radius: 999px; background: var(--brand-100); color: var(--brand-600); transition: background-color .2s; }
 .mmenu__wa:hover { background: var(--brand-200); }
 .mmenu__waicon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #1fa855; }
@@ -958,3 +947,40 @@ body:has(.consent) .sticker { opacity: 0; pointer-events: none; visibility: hidd
 .showmore__count { margin: 0; font-size: .9rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .showmore__bar { width: min(260px, 70%); height: 4px; border-radius: 999px; background: var(--line-2); overflow: hidden; }
 .showmore__bar span { display: block; height: 100%; border-radius: inherit; background: var(--brand-grad); transition: width .4s var(--ease); }
+
+/* Footer on a phone: centred, the way a narrow dark footer usually reads, with tighter link rows. */
+@media (max-width: 600px) {
+  .ftr__join { text-align: center; }
+  .ftr__lede { margin-inline: auto; }
+  .ftr--dark .ftr__grid { text-align: center; gap: 30px 16px; }
+  .ftr--dark .ftr__brand { display: grid; justify-items: center; }
+  .ftr--dark .ftr__brand .logo { margin-inline: auto; }
+  .ftr__blurb { margin-inline: auto; }
+  .ftr .ftr__social { justify-content: center; }
+  /* Touch rows: 40px is easy to hit and stops two short lists towering over the page. */
+  .ftr--dark ul a { min-height: 40px !important; justify-content: center; }
+  .ftr--dark nav ul a:hover { transform: none; }
+  /* Each showroom line: its icon above, the words centred under it. */
+  .ftr__visit { gap: 18px; }
+  .ftr__visit li { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .ftr__visit li > svg, .ftr__vi { margin-top: 0; }
+  .ftr__note { text-align: center; }
+  .ftr--dark .ftr__bot { align-items: center; text-align: center; gap: 10px; }
+  .ftr__legal { justify-content: center; }
+}
+
+/* ---------------------------------------------------------------- pill inputs */
+/* Text fields and dropdowns are pills everywhere (as the search, filter and
+   buttons already are); a multi-line box can't be a pill, so it gets a soft
+   large radius instead. Checkboxes and radios keep their own shape. */
+.input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not(textarea),
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+.field select,
+select.select {
+  border-radius: var(--r-pill, 999px);
+  padding-inline: 1.3em;
+}
+textarea.input, .field textarea { border-radius: var(--r-xl); padding: .9em 1.3em; }
+select.input, .field select { padding-right: 2.75rem; }
+/* The show/hide eye sits inside the pill's curve, so it needs a little more room. */
+.input[type="password"] + button, .input[type="password"] ~ button { right: 6px; }
