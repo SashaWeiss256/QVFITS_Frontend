@@ -1,12 +1,12 @@
 /* Admin Product Editor */
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 import Field from "@/components/ui/Field";
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
-import { activitiesResource, categoriesResource, colorsResource, productsResource, sizesResource, useCollection } from "@/store/tanstackStore/queries/admin";
+import { categoriesResource, colorsResource, movementsResource, productsResource, sizesResource, useCollection } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
 import ImageUploader from "@/AdminDashboard/components/ImageUploader";
 import Panel from "@/AdminDashboard/components/Panel";
@@ -17,7 +17,7 @@ import VariantMatrix from "./sections/VariantMatrix";
 
 const BLANK = {
   name: "", slug: "", status: "draft", categoryId: "", price: 0, compareAtPrice: null, salePercent: null, badge: null,
-  colorIds: [], activityIds: [], blurb: "", details: [], fit: "true", fitNote: "", fabric: "", care: "",
+  colorIds: [], movementIds: [], blurb: "", details: [], fit: "true", fitNote: "", fabric: "", care: "",
   variants: [], photos: [], seo: { title: "", description: "" },
 };
 const FITS = [{ value: "true", label: "True to size" }, { value: "small", label: "Runs small" }, { value: "large", label: "Runs large" }, { value: "relaxed", label: "Relaxed cut" }];
@@ -47,7 +47,7 @@ function Editor({ existing, products }) {
   const categories = useCollection(categoriesResource);
   const colors = useCollection(colorsResource);
   const sizes = useCollection(sizesResource);
-  const activities = useCollection(activitiesResource);
+  const movements = useCollection(movementsResource);
   const { draft: p, set, dirty, reset, commit } = useDraft(existing ?? BLANK);
   const [tried, setTried] = useState(false);
   const errors = tried ? problems(p) : {};
@@ -70,11 +70,13 @@ function Editor({ existing, products }) {
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap items-center gap-3">
-        <Link to="/admin/products" className="icon-btn" aria-label="All products"><ArrowLeft className="h-5 w-5" /></Link>
-        <h1 className="mr-auto text-[clamp(1.5rem,3vw,2rem)]">{existing ? existing.name : "New product"}</h1>
-        {existing?.status === "active" && <a className="btn btn--ghost min-h-11 px-4 text-[.85rem]" href={`/product/${existing.slug}`} target="_blank" rel="noopener noreferrer">View in shop <ExternalLink className="h-4 w-4" /></a>}
-      </div>
+      {/* The header says New or Edit product; an existing piece also names itself here. */}
+      {existing && (
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <h2 className="m-0 mr-auto text-[1.4rem] font-bold tracking-tight">{existing.name}</h2>
+          {existing.status === "active" && <a className="btn btn--ghost min-h-10 px-4 text-[.85rem]" href={`/product/${existing.slug}`} target="_blank" rel="noopener noreferrer">View in shop <ExternalLink className="h-4 w-4" /></a>}
+        </div>
+      )}
 
       <fieldset disabled={readOnly} className="m-0 grid min-w-0 gap-6 border-0 p-0 lg:grid-cols-[1fr_320px]">
         <div className="grid min-w-0 gap-6">
@@ -119,11 +121,11 @@ function Editor({ existing, products }) {
               <Field label="Category" options={[{ value: "", label: "Pick one" }, ...categories.items.map((c) => ({ value: c.id, label: c.name }))]} value={p.categoryId} onChange={(e) => patch({ categoryId: e.target.value })} error={errors.categoryId} />
               <Field label="Label" options={[{ value: "", label: "None" }, { value: "New", label: "New" }, { value: "Bestseller", label: "Bestseller" }]} value={p.badge ?? ""} onChange={(e) => patch({ badge: e.target.value || null })} />
               <fieldset className="m-0 border-0 p-0">
-                <legend className="mb-2 text-sm font-semibold text-ink-2">Activities</legend>
+                <legend className="mb-2 text-sm font-semibold text-ink-2">Movements</legend>
                 <div className="flex flex-wrap gap-1.5">
-                  {activities.items.map((a) => {
-                    const on = p.activityIds.includes(a.id);
-                    return <button key={a.id} type="button" aria-pressed={on} className={cn("chip", on && "is-on")} onClick={() => patch({ activityIds: on ? p.activityIds.filter((x) => x !== a.id) : [...p.activityIds, a.id] })}>{a.label}</button>;
+                  {movements.items.map((a) => {
+                    const on = p.movementIds.includes(a.id);
+                    return <button key={a.id} type="button" aria-pressed={on} className={cn("chip", on && "is-on")} onClick={() => patch({ movementIds: on ? p.movementIds.filter((x) => x !== a.id) : [...p.movementIds, a.id] })}>{a.name}</button>;
                   })}
                 </div>
               </fieldset>

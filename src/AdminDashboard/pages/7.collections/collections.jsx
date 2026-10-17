@@ -9,6 +9,7 @@ import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { contentResource, looksResource, productsResource, useCollection, useDocument } from "@/store/tanstackStore/queries/admin";
 import Drawer from "@/AdminDashboard/components/Drawer";
+import LinkPicker from "@/AdminDashboard/components/LinkPicker";
 import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
 import ProductPicker from "@/AdminDashboard/components/ProductPicker";
@@ -26,7 +27,7 @@ export default function AdminCollections() {
   const [tab, setTab] = useState("rails");
   return (
     <>
-      <PageHeader title="Rails and kits" lede="What the home page rails show, and the full kits on the shop page." />
+      <PageHeader lede="What the home page rails show, and the full kits on the shop page." />
       <Tabs tabs={[{ id: "rails", label: "Home rails" }, { id: "kits", label: "Kits" }]} value={tab} onChange={setTab} />
       {tab === "rails" ? <Rails /> : <Kits />}
     </>
@@ -51,7 +52,9 @@ function RailsEditor({ doc, products }) {
           <Field label="Small heading" value={r.kicker} onChange={(e) => patch({ kicker: e.target.value })} />
           <Field label="Title" value={r.title} onChange={(e) => patch({ title: e.target.value })} />
           <Field label="Button" value={r.cta} onChange={(e) => patch({ cta: e.target.value })} />
-          <Field label="Button goes to" value={r.href} onChange={(e) => patch({ href: e.target.value })} hint="e.g. /shop?badge=New" />
+          <div className="sm:col-span-2">
+            <LinkPicker label="Button goes to" value={r} onChange={patch} />
+          </div>
         </div>
         <p className="mt-5 mb-2 text-sm font-semibold text-ink-2">Pieces, in order</p>
         <ProductPicker products={products} value={r.productIds} onChange={(productIds) => patch({ productIds })} max={4} />
