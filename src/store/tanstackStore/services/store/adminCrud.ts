@@ -10,7 +10,7 @@ import type { Collection, NewRow } from "./collectionStore";
  * against the signed-in admin's permissions and written to the activity log.
  * A resource is one line instead of five near-identical functions:
  *
- *   export const colorsCrud = adminCrud(colors, { module: "attributes", noun: "colour", label: (c) => c.name });
+ *   export const colorsCrud = adminCrud(colors, { module: "categories", noun: "colour", label: (c) => c.name });
  */
 export interface CrudOptions<T> {
   /** The permission module, as in src/data/permissions.json. */

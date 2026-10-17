@@ -507,6 +507,10 @@ table.size td a::after,
   display: grid; gap: clamp(16px, 2.4vw, 28px);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--card-min)), 1fr));
 }
+/* Every card in a row is as tall as the tallest: the reveal wrapper stretches
+   with its grid row, and the card fills it, price and Add on the bottom line. */
+.grid-products > :not(.card) { display: flex; flex-direction: column; min-width: 0; }
+.grid-products > :not(.card) > .card { flex: 1; }
 .card {
   background: var(--white); border-radius: var(--r-lg);
   overflow: hidden; box-shadow: var(--sh-1);
@@ -520,6 +524,10 @@ table.size td a::after,
 /* No push-in on product photos, the hero is the only thing that moves. */
 .card__body { padding: 14px 16px 18px; display: flex; flex-direction: column; flex: 1; }
 .card__cat { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-4); }
+.card__pieces { margin: -2px 0 8px; font-size: .8rem; line-height: 1.45; color: var(--ink-3); }
+.card__pieces a { color: inherit; text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 2px; }
+.card__pieces a:hover { color: var(--brand-600); }
+.card__low { display: block; margin: -2px 0 6px; font-size: .76rem; font-weight: 600; color: var(--warn); }
 .card__name {
   font-family: var(--display); font-weight: 700; font-size: 1.02rem;
   margin: 3px 0 6px; line-height: 1.25;
@@ -544,6 +552,8 @@ table.size td a::after,
   padding: .34em .75em; border-radius: var(--r-pill);
 }
 .badge--out { background: var(--ink); color: #fff; }
+/* Holds the badge's place on a card without one, so names and swatches line up across a row. */
+.badge--blank { visibility: hidden; }
 .heart {
   position: absolute; top: 10px; right: 10px; z-index: 3;
   width: 36px; height: 36px; border-radius: 50%;
@@ -606,7 +616,9 @@ table.size td a::after,
 }
 .look:hover { transform: translateY(-5px); box-shadow: var(--sh-3); }
 .look__media { aspect-ratio: 3 / 4; position: relative; }
-.look__body { padding: 18px 20px 22px; }
+.look__body { padding: 18px 20px 22px; display: flex; flex-direction: column; flex: 1; }
+/* The kit's price and Add all line up along the bottom of every look in a row. */
+.look__body > :last-child { margin-top: auto; }
 .look__items { list-style: none; margin: 14px 0 16px; padding: 0; display: grid; gap: 9px; }
 .look__items a {
   display: flex; align-items: center; gap: 11px;
@@ -656,7 +668,14 @@ table.size td a::after,
 
 /* ---------------------------------------------------------------- footer */
 .ftr { background: var(--white); border-top: 1px solid var(--line); padding-block: clamp(44px, 6vw, 70px) 28px; margin-top: clamp(40px, 6vw, 80px); }
-.ftr__grid { display: grid; gap: 34px; grid-template-columns: 1.4fr repeat(3, 1fr); }
+.ftr__grid { display: grid; gap: 34px; grid-template-columns: 1.4fr repeat(4, 1fr); }
+/* The newsletter band above the footer columns: words left, form right. */
+.ftr__news {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px 40px; align-items: center;
+  padding-bottom: clamp(28px, 4vw, 44px); margin-bottom: clamp(28px, 4vw, 44px); border-bottom: 1px solid var(--line);
+}
+.ftr__news .news__form { margin: 0; max-width: none; }
+@media (max-width: 760px) { .ftr__news { grid-template-columns: 1fr; } }
 .ftr__title { font-size: .86rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-family: var(--body); font-weight: 600; margin-bottom: 14px; }
 .ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .ftr a { color: var(--ink-2); font-size: .9rem; transition: color .2s; }
@@ -677,13 +696,6 @@ table.size td a::after,
 @media (max-width: 440px) { .ftr__grid { grid-template-columns: 1fr; } }
 
 /* ---------------------------------------------------------------- shop page */
-.shop-layout { display: grid; grid-template-columns: 250px 1fr; gap: clamp(22px, 3vw, 40px); align-items: start; }
-.filters {
-  background: var(--white); border-radius: var(--r-lg); padding: 22px;
-  box-shadow: var(--sh-1); position: sticky; top: 96px;
-}
-.filters__group + .filters__group { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--line); }
-.filters__title { font-family: var(--display); font-size: .95rem; margin-bottom: 12px; }
 .chips { display: flex; flex-wrap: wrap; gap: 7px; }
 .chip {
   padding: .42em .85em; border-radius: var(--r-pill);
@@ -704,40 +716,12 @@ table.size td a::after,
 }
 .check-row input { accent-color: var(--brand-500); width: 18px; height: 18px; flex: none; }
 
-.range { width: 100%; accent-color: var(--brand-500); height: 24px; }
-/* The default thumb is small and varies by browser, pin it to 24px so the
-   price slider can be dragged with a thumb. */
-.range::-webkit-slider-thumb {
-  -webkit-appearance: none; appearance: none;
-  width: 24px; height: 24px; border-radius: 50%;
-  background: var(--brand-500); border: 3px solid #fff;
-  box-shadow: var(--sh-1); cursor: pointer; margin-top: -10px;
-}
-.range::-moz-range-thumb {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: var(--brand-500); border: 3px solid #fff; cursor: pointer;
-}
-.range::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: var(--line-2); }
-.range::-moz-range-track { height: 4px; border-radius: 999px; background: var(--line-2); }
-.range-vals { display: flex; justify-content: space-between; font-size: .8rem; color: var(--ink-3); margin-top: 6px; }
 
-.shop-bar {
-  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-.shop-bar__count { font-size: .88rem; color: var(--ink-3); margin-right: auto; }
 .select {
   min-height: 44px; font-size: max(16px, .88rem);
   padding: .58em 2.4em .58em 1.1em; border-radius: var(--r-pill);
   background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6f83' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1.1em center;
   border: 1px solid var(--line-2); appearance: none;
-}
-.filter-toggle { display: none; }
-@media (max-width: 880px) {
-  .shop-layout { grid-template-columns: 1fr; }
-  .filters { position: static; display: none; }
-  .filters.is-open { display: block; }
-  .filter-toggle { display: inline-flex; }
 }
 
 .empty {

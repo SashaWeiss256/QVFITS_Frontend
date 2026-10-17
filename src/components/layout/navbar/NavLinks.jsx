@@ -11,7 +11,7 @@ import { cn } from "@/utils/cn";
 export default function NavLinks({ mega, megaId }) {
   const { pathname, search } = useLocation();
   const { data: nav } = useNavigation();
-  // Compare with the query too, since nav items like /shop?badge=New share a path.
+  // Compare with the query too, since a link may carry one (/shop/sets?show=new).
   const here = pathname + search;
 
   return (
@@ -29,7 +29,7 @@ export default function NavLinks({ mega, megaId }) {
         Shop <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
       {nav?.header.map((item) => (
-        <Link key={item.path} to={item.path} className={cn(here === item.path && "is-active")} aria-current={here === item.path ? "page" : undefined}>
+        <Link key={item.href} to={item.href} className={cn(here === item.href && "is-active")} aria-current={here === item.href ? "page" : undefined}>
           {item.title}
         </Link>
       ))}

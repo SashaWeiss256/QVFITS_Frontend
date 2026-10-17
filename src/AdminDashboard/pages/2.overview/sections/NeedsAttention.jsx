@@ -9,8 +9,8 @@ export default function NeedsAttention({ data, loading, can }) {
   const items = data
     ? [
         { label: "Orders waiting for payment", n: data.pending, to: "/admin/orders", perm: "orders" },
-        { label: "Return requests", n: data.inbox.returns, to: "/admin/returns", perm: "returns" },
-        { label: "Reviews to approve", n: data.inbox.reviews, to: "/admin/reviews", perm: "reviews" },
+        { label: "Return requests", n: data.inbox.returns, to: "/admin/orders?tab=returns", perm: "orders" },
+        { label: "Reviews to approve", n: data.inbox.reviews, to: "/admin/products?tab=reviews", perm: "products" },
         { label: "New messages", n: data.inbox.messages, to: "/admin/messages", perm: "messages" },
       ].filter((t) => can(t.perm))
     : [];

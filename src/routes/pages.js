@@ -15,3 +15,5 @@ export const CheckoutPage = lazy(() => import("@/pages/7.checkout/checkout"));
 export const OrderConfirmedPage = lazy(() => import("@/pages/7.checkout/order-confirmed"));
 export const TrackOrderPage = lazy(() => import("@/pages/8.track-order/track-order"));
 export const LegalPage = lazy(() => import("@/pages/9.legal/legal"));
+export const NewsletterConfirmPage = lazy(() => import("@/pages/10.newsletter/confirm"));
+export const NewsletterUnsubscribePage = lazy(() => import("@/pages/10.newsletter/unsubscribe"));

@@ -4,7 +4,9 @@
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
 import { getProfile, saveAddresses, updateProfile } from "../../services/customers/customersApi";
-import { getMyOrder, listMyOrders } from "../../services/sales/ordersApi";
+import { cancelMyOrder, getMyOrder, listMyOrders } from "../../services/sales/ordersApi";
+import { deleteMyAccount, downloadMyData } from "../../services/customers/privacyApi";
+import { subscribe, subscriptionOf, unsubscribeEmail } from "../../services/marketing/subscribersApi";
 import { listMyReturns, requestReturn, returnWindow } from "../../services/sales/returnsApi";
 import type { Address, Customer, Id, ReturnRequest } from "../../services/types";
 import { adminRoot } from "../keys";
@@ -44,6 +46,30 @@ export const useRequestReturn = (id: Id) =>
   });
 
 export { returnWindow };
+
+// An unpaid order the customer calls off: its pieces go back on the shelf (gap O1).
+export const useCancelMyOrder = (id: Id) =>
+  useMutation({
+    mutationFn: (orderId: Id) => cancelMyOrder(id, orderId),
+    meta: { invalidates: [customerRoot(id), [...adminRoot, "orders"], [...adminRoot, "products"], ["site", "catalog"]], success: "Order cancelled", handlesErrors: true },
+  });
+
+// Privacy (gap A6): a copy of their data, and closing the account.
+export const useDownloadMyData = (id: Id) => useMutation({ mutationFn: () => downloadMyData(id) });
+export const useDeleteMyAccount = (id: Id) => useMutation({ mutationFn: () => deleteMyAccount(id), meta: { handlesErrors: true } });
+
+// The account's newsletter switch, by the account's email.
+export const useNewsletterStatus = (id: Id, email?: string) =>
+  useQuery({ queryKey: [...customerRoot(id), "newsletter", email], queryFn: () => subscriptionOf(email!), enabled: Boolean(email) });
+export const useSetNewsletter = (id: Id) =>
+  useMutation({
+    mutationFn: async ({ email, on, name }: { email: string; on: boolean; name?: string }) => {
+      if (on) return (await subscribe(email, { source: "account", name, customerId: id })).status;
+      await unsubscribeEmail(email);
+      return "unsubscribed" as const;
+    },
+    meta: { invalidates: [[...customerRoot(id), "newsletter"], [...adminRoot, "subscribers"], [...adminRoot, "outbox"]], handlesErrors: true },
+  });
 
 export const useProfile = (id: Id) => useQuery(accountQueries.profile(id));
 export const useMyOrders = (id: Id) => useQuery(accountQueries.orders(id));

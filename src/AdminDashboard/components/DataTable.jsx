@@ -8,12 +8,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Download, MoreHorizontal, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Download, MoreHorizontal, Search, SlidersHorizontal, X } from "lucide-react";
 
 import Skeleton from "@/components/ui/Skeleton";
 import { useClickOutside } from "@/utils/useClickOutside";
 import { cn } from "@/utils/cn";
 import { downloadCsv } from "../lib/csv";
+import { useUrlFilters } from "../lib/useUrlFilters";
+import FilterDrawer from "./FilterDrawer";
 
 /**
  * Enterprise Admin Data Table powered by TanStack Table v8.
@@ -37,21 +39,39 @@ export default function DataTable({
   loading = false,
   empty = "Nothing here yet.",
   initialSort,
+  // Filters as ticked groups in a drawer, kept in the URL, with chips under the toolbar.
+  filterDrawer = false,
 }) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [filterValues, setFilterValues] = useState({});
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const urlFilters = useUrlFilters(filters.map((f) => f.id));
   const [sorting, setSorting] = useState(
     initialSort ? [{ id: initialSort.key, desc: initialSort.dir === "desc" }] : []
   );
   const [rowSelection, setRowSelection] = useState({});
 
-  // Filter rows by facet dropdowns before passing to TanStack Table
-  const filteredData = useMemo(() => {
-    if (!filters.length) return rows;
-    return rows.filter((row) =>
-      filters.every((f) => !filterValues[f.id] || f.test(row, filterValues[f.id]))
-    );
-  }, [rows, filters, filterValues]);
+  // Filter rows before passing to TanStack Table. Drawer mode: any ticked value
+  // within a group matches, every group must. Inline mode: one value per select.
+  const drawerValues = urlFilters.values;
+  const passes = useCallback(
+    (row, skip) =>
+      filters.every((f) => {
+        if (f.id === skip) return true;
+        if (filterDrawer) {
+          const vals = drawerValues[f.id] ?? [];
+          return !vals.length || vals.some((v) => f.test(row, v));
+        }
+        return !filterValues[f.id] || f.test(row, filterValues[f.id]);
+      }),
+    [filters, filterDrawer, drawerValues, filterValues],
+  );
+  const filteredData = useMemo(() => (filters.length ? rows.filter((row) => passes(row)) : rows), [rows, filters, passes]);
+  // How many rows an option would show, given every other group as it is.
+  const countOf = (f, value) => rows.filter((row) => passes(row, f.id) && f.test(row, value)).length;
+  const activeChips = filterDrawer
+    ? filters.flatMap((f) => (drawerValues[f.id] ?? []).map((v) => ({ f, v, label: f.options.find((o) => o.value === v)?.label ?? v })))
+    : [];
 
   // Global search filter function using custom search predicate if provided
   const globalFilterFn = useCallback(
@@ -180,7 +200,8 @@ export default function DataTable({
 
   const handleExport = () => {
     if (!exportRow || !totalFilteredRows.length) return;
-    const flatRows = totalFilteredRows.map((r) => exportRow(r.original));
+    // An export can leave a row out by returning nothing (the newsletter exports confirmed subscribers only).
+    const flatRows = totalFilteredRows.map((r) => exportRow(r.original)).filter(Boolean);
     downloadCsv(exportName ?? "export", flatRows);
   };
 
@@ -204,7 +225,13 @@ export default function DataTable({
             />
           </label>
         )}
-        {filters.map((f) => (
+        {filterDrawer && filters.length > 0 && (
+          <button type="button" className="btn btn--ghost min-h-11 px-4 text-[.85rem]" onClick={() => setDrawerOpen(true)}>
+            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" /> Filters
+            {activeChips.length > 0 && <span className="min-w-5 rounded-r-pill bg-brand-500 px-1.5 text-center text-[.7rem] leading-5 text-white">{activeChips.length}</span>}
+          </button>
+        )}
+        {!filterDrawer && filters.map((f) => (
           <label key={f.id} className="min-w-[150px]">
             <span className="sr-only">{f.label}</span>
             <select
@@ -238,6 +265,36 @@ export default function DataTable({
           </button>
         )}
       </div>
+
+      {activeChips.length > 0 && (
+        <div className="mb-3 flex flex-wrap items-center gap-2" aria-label="Filters in use">
+          {activeChips.map(({ f, v, label }) => (
+            <button
+              key={`${f.id}:${v}`}
+              type="button"
+              className="inline-flex min-h-8 items-center gap-1.5 rounded-r-pill bg-cream-2 px-3 text-[.8rem] text-ink-2 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-600"
+              onClick={() => urlFilters.setValues(f.id, (drawerValues[f.id] ?? []).filter((x) => x !== v))}
+              aria-label={`Remove ${f.label}: ${label}`}
+            >
+              <span className="text-ink-4">{f.label}:</span> {label} <X className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          ))}
+          <button type="button" className="text-[.8rem] font-semibold text-brand-600 hover:underline" onClick={urlFilters.clear}>Clear all</button>
+        </div>
+      )}
+
+      {filterDrawer && (
+        <FilterDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          filters={filters}
+          values={drawerValues}
+          onChange={urlFilters.setValues}
+          onClear={urlFilters.clear}
+          countOf={countOf}
+          resultCount={filteredData.length}
+        />
+      )}
 
       {/* Bulk bar */}
       {Boolean(bulkActions) && selectedIds.length > 0 && (

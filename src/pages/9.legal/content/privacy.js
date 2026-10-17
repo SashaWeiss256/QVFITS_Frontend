@@ -27,7 +27,7 @@ export const privacy = (s) => ({
           "Account details, if you create an account: your name, email, phone, password (stored scrambled, never readable), saved addresses and saved pieces.",
           "Payment confirmation: whether a payment succeeded, its reference and amount. Your mobile money PIN and full card number go to our payment partner, never to us.",
           "Messages you send us through the contact form, WhatsApp or email.",
-          "Newsletter sign-ups: your email address.",
+          "Newsletter sign-ups: your email address, when and where you signed up, the words you agreed to, and when you confirmed.",
           "Basic technical information our server receives with every visit, such as your device type and IP address, used to keep the site secure.",
         ] },
       ],
@@ -65,9 +65,18 @@ export const privacy = (s) => ({
     },
     {
       id: "storage",
-      heading: "Your device's storage",
+      heading: "Cookies and your device's storage",
       blocks: [
-        "The site keeps a few things in your browser so it works: your bag, your saved pieces, your chosen currency and whether you are signed in. We do not use advertising or tracking cookies. Clearing your browser's site data removes all of it.",
+        "The site keeps a few things in your browser. On your first visit we ask what you agree to, and you can change your answer any time from Cookie settings at the foot of every page. Your choice is saved with its date.",
+        { table: {
+          head: ["Kind", "What it does", "Needs your yes"],
+          rows: [
+            ["Essential", "Your bag, saved pieces, sign-in, chosen currency and your cookie choice. The shop cannot work without these.", "No, always on"],
+            ["Analytics", "Counting visits and which pieces are popular, so we know what to restock. Not in use today.", "Yes, off until you agree"],
+            ["Marketing", "Measuring our adverts on Instagram and TikTok. Not in use today.", "Yes, off until you agree"],
+          ],
+        } },
+        "Under the Data Protection and Privacy Act, 2019 we only collect what we need and only with your consent where the law asks for it. If we start using an analytics or marketing tool, it will load only for visitors who said yes, and we will update this page first. Clearing your browser's site data removes all of it.",
       ],
     },
     {
@@ -95,6 +104,7 @@ export const privacy = (s) => ({
           "Ask us to delete your information, unless the law requires us to keep it.",
           "Object to, or withdraw your consent for, a particular use, such as the newsletter.",
         ] },
+        "If you have an account, you can download a copy of your data or close your account yourself, from Settings in your account. Orders stay in our books for tax, without your name or contact details.",
         `To use any of these rights, ${contactLine(s)} We will reply within 30 days. If you are not satisfied, you can complain to the Personal Data Protection Office (PDPO) in Uganda.`,
       ],
     },

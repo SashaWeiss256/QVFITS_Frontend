@@ -19,11 +19,15 @@ export interface Category {
   name: string;
   slug: string;
   parentId: Id | null;
-  /** A photo id in /photos for the category tile. */
-  image?: string;
+  /** A photo id in /photos, or an uploaded photo, for the category tile. */
+  image?: string | Photo | null;
   description: string;
   position: number;
   active: boolean;
+  /** Also a link in the top bar, after Shop. */
+  inHeader?: boolean;
+  /** Slugs this category used to have; old shop links redirect to the current one. */
+  previousSlugs: string[];
 }
 
 export interface Color {
@@ -40,16 +44,97 @@ export interface SizeOption {
   position: number;
 }
 
-export interface Activity {
+/**
+ * One "Shop by" group on the storefront: Category, Movement, Edits, or one the
+ * admin adds (Fit, Support). The kind decides what its items are:
+ *   category  the categories table; a product has exactly one (categoryId)
+ *   tags      terms that products carry any number of (termIds)
+ *   edits     terms that are curated views (New in, Size guide), each a target
+ */
+export type GroupKind = "category" | "tags" | "edits";
+
+export interface ShopGroup {
   id: Id;
-  label: string;
+  name: string;
+  /** The URL part, /shop/<group>/<term>. */
+  slug: string;
+  previousSlugs: string[];
+  kind: GroupKind;
   position: number;
+  /** A column in the Shop mega menu. */
+  inMenu: boolean;
+  /** A chip group in the shop's filter sidebar (tags groups only). */
+  inFilters: boolean;
+  active: boolean;
 }
 
-export type FacetId = "category" | "size" | "color" | "activity" | "price";
+/** An item in a tags or edits group: Running, High support, New in. */
+export interface Term {
+  id: Id;
+  groupId: Id;
+  name: string;
+  /** The URL part, unique within its group. */
+  slug: string;
+  /** Slugs it used to have; old shop links redirect to the current one. */
+  previousSlugs: string[];
+  /** A photo id in /photos, or an uploaded photo, for tiles and its shop page. */
+  image?: string | Photo | null;
+  description: string;
+  /** Edits only: what the item opens. */
+  target?: Target;
+  position: number;
+  active: boolean;
+  /** Edits only: also a link in the top bar, after Shop. */
+  inHeader?: boolean;
+}
 
+/** Built-in filters, plus one per tags group: `group:<groupId>`. */
+export type FacetId = "category" | "size" | "color" | "price" | `group:${string}`;
+
+export type SortId = "featured" | "bestselling" | "new" | "low" | "high";
+
+/** The shop's Filter drawer sections and its Sort menu, both set in Catalog, Categories. */
 export interface FilterConfig {
   facets: { id: FacetId; label: string; visible: boolean; position: number }[];
+  sort: { default: SortId; options: { id: SortId; label: string; visible: boolean; position: number }[] };
+}
+
+/**
+ * What a link shows (see utils/shopTargets): part of the shop, one piece or
+ * a fixed page. Stored links keep the target; reads add the `href`.
+ */
+export interface Target {
+  categories?: Id[];
+  /** Terms from any tags groups: OR within a group, AND across groups. */
+  terms?: Id[];
+  label?: "new" | "bestseller" | "sale";
+  product?: Id;
+  page?: string;
+}
+
+/** A stored link: a target, or for WhatsApp and outside addresses a plain href. */
+export interface Linked {
+  target?: Target;
+  href?: string | null;
+}
+
+/** Why a size's stock changed. Staff pick the first four; the rest happen on their own. */
+export type StockReason = "restock" | "sale" | "damaged" | "correction" | "return" | "order" | "cancel";
+
+/** One change to one size of one colour, with who made it and why. */
+export interface StockMovement {
+  id: Id;
+  at: string;
+  productId: Id;
+  productName: string;
+  color: string;
+  size: string;
+  from: number;
+  to: number;
+  reason: StockReason;
+  /** The order or return it came from: QV-XXXXXX. */
+  ref?: string;
+  by: string;
 }
 
 /* Catalog */
@@ -93,9 +178,17 @@ export interface ProductRecord {
   price: number;
   compareAtPrice?: number | null;
   salePercent?: number | null;
-  badge?: Badge | null;
+  /** A single piece, or a kit: pieces sold together at a kit price. */
+  type: "piece" | "kit";
+  /** Kit only: the pieces in it, in order. */
+  kitItems: Id[];
+  /** Shown on /shop/new and the home New releases rail. */
+  isNew: boolean;
+  /** Always counted a best seller, on top of the ones sales pick. */
+  pinnedBestseller: boolean;
   colorIds: Id[];
-  activityIds: Id[];
+  /** Terms from tags groups (Movement, Fit…). */
+  termIds: Id[];
   blurb: string;
   details: string[];
   fit?: "small" | "true" | "large" | "relaxed" | null;
@@ -114,18 +207,26 @@ export interface ProductRecord {
  * per size summed across colours, so the shop never joins tables itself.
  */
 export interface Product extends ProductRecord {
+  /** Pinned, or among the top sellers by units sold in the last 90 days. */
+  isBestseller: boolean;
+  /** Units sold in paid orders in the last 90 days. */
+  unitsSold: number;
+  /** The card label: Bestseller, then New, then none. */
+  badge: Badge | null;
   category: string;
+  /** The category's URL part, for /shop/:slug links. */
+  categorySlug: string;
   colors: string[];
-  occasions: string[];
   /** Units on hand per size, across every colour. 0 = sold out in that size. */
   stock: Record<Size, number>;
 }
 
 export interface ProductFilters {
-  category?: string;
+  categoryId?: Id;
   size?: Size;
   color?: string;
-  occasion?: string;
+  /** Term ids, comma separated. */
+  term?: string;
   badge?: string;
   sale?: boolean;
   inStock?: boolean;
@@ -186,6 +287,12 @@ export interface ShopSettings {
   exchangeDays: number;
   /** A size at or under this many units counts as low stock. */
   lowStockAt: number;
+  /** How many top sellers (by units sold, last 90 days) count as best sellers, on top of pinned ones. */
+  bestsellerCount: number;
+  /** Hours an unpaid order holds its stock before it cancels itself. */
+  unpaidHoldHours: number;
+  /** Products per row on the shop page by default; shoppers can change it. */
+  shopGrid: { phone: 1 | 2; tablet: 2 | 3; desktop: 3 | 4 };
   ratesUpdated: string;
   currencies: Currency[];
   assistant: { endpoint: string | null; name: string; greeting: string };
@@ -231,11 +338,13 @@ export interface CartLine {
   size: Size;
   color: string;
   qty: number;
+  /** Added as part of this kit, so the kit's price applies when the whole set is in the bag. */
+  kitId?: Id;
 }
 
 /** A shipping zone id: kampala, upcountry, pickup, or one the admin adds. */
 export type DeliveryRegion = string;
-export type PaymentMethod = "mtn" | "airtel" | "card" | "whatsapp" | (string & {});
+export type PaymentMethod = "mtn" | "airtel" | "card" | "cash" | "whatsapp" | (string & {});
 
 export type OrderStatus =
   | "pending"
@@ -247,7 +356,7 @@ export type OrderStatus =
   | "exchanged"
   | "refunded";
 
-export type PaymentStatus = "unpaid" | "paid" | "partially_refunded" | "refunded";
+export type PaymentStatus = "unpaid" | "part_paid" | "paid" | "partially_refunded" | "refunded";
 
 export interface OrderLine extends CartLine {
   name: string;
@@ -285,6 +394,8 @@ export interface Order {
   delivery: number;
   discount: number;
   discountCode?: string;
+  /** What complete kits in the order saved against their pieces' own prices. */
+  kitSaving?: number;
   total: number;
   payment: PaymentMethod;
   paymentStatus: PaymentStatus;
@@ -292,7 +403,8 @@ export interface Order {
   history: OrderEvent[];
   notes: OrderNote[];
   /** Entered by staff for a WhatsApp or showroom sale. */
-  source?: "web" | "manual";
+  /** Where it came from: the shop, or a sale staff recorded in the showroom or on WhatsApp ("manual" is older records). */
+  source?: "web" | "showroom" | "whatsapp" | "manual";
   createdAt: string;
 }
 
@@ -306,6 +418,8 @@ export interface CheckoutInput {
   payment: PaymentMethod;
   lines: CartLine[];
   discountCode?: string;
+  /** What complete kits in the order saved against their pieces' own prices. */
+  kitSaving?: number;
 }
 
 export type TransactionType = "payment" | "refund";
@@ -359,12 +473,19 @@ export interface Customer {
   phone?: string;
   addresses: Address[];
   wishlist: Id[];
+  /** The bag, so it follows the shopper to another device (gap F6). */
+  bag?: CartLine[];
+  /** Product ids, newest first: what they looked at lately. */
+  recentlyViewed?: Id[];
   notes?: string;
   tags?: string[];
+  /** When they opened the confirmation link in their sign-up email. */
+  emailConfirmedAt?: string | null;
   createdAt: string;
 }
 
-export type PermissionAction = "view" | "edit" | "delete";
+/** view, edit and delete for every module; refund and payment only on orders, since they move money. */
+export type PermissionAction = "view" | "edit" | "delete" | "refund" | "payment";
 
 /** One admin module the permission matrix covers. */
 export interface PermissionModule {
@@ -420,9 +541,74 @@ export interface ActivityEntry {
 
 /* Marketing */
 
+export type SubscriberStatus = "pending" | "subscribed" | "unsubscribed";
+export type SubscriberSource = "footer" | "home" | "checkout" | "account" | "resubscribe";
+
+/**
+ * One address on the newsletter, with the consent that put it there (double
+ * opt-in: pending until the emailed link is opened). Unsubscribing keeps the
+ * record so the address isn't mailed again; erasing removes it entirely.
+ */
 export interface Subscriber {
   id: Id;
   email: string;
+  name?: string;
+  customerId?: Id;
+  status: SubscriberStatus;
+  source: SubscriberSource;
+  /** The words they agreed to, as shown when they signed up. */
+  consentText: string;
+  consentedAt: string;
+  confirmedAt: string | null;
+  unsubscribedAt: string | null;
+  /** In the confirm and unsubscribe links. */
+  token: string;
+  /** When the welcome code went out; only ever once per address. */
+  welcomeSentAt: string | null;
+  createdAt: string;
+}
+
+export type CampaignStatus = "draft" | "scheduled" | "sent";
+
+/** A newsletter email: written in the admin, scheduled or sent to confirmed subscribers only. */
+export interface Campaign {
+  id: Id;
+  subject: string;
+  previewText: string;
+  heading: string;
+  body: string;
+  /** Up to four pieces shown as cards in the email. */
+  productIds: Id[];
+  cta: Linked & { label: string };
+  status: CampaignStatus;
+  sendAt: string | null;
+  sentAt: string | null;
+  recipients: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** The newsletter's own settings: the consent wording and the welcome email. */
+export interface NewsletterSettings {
+  consentText: string;
+  welcome: { enabled: boolean; code: string; subject: string; heading: string; body: string };
+}
+
+/**
+ * An email the shop would send. Honest seam: with no email service
+ * connected yet, it lands in this outbox (Newsletter, Outbox) instead, and
+ * the shop's dev build offers the link in it so the flow can be tried.
+ */
+export interface OutboxEmail {
+  id: Id;
+  to: string;
+  kind: "newsletter-confirm" | "newsletter-welcome" | "campaign" | "order-update" | "password-reset" | "account-confirm" | "low-stock";
+  subject: string;
+  body: string;
+  /** The one link that matters (confirm, unsubscribe, reset), for the demo. */
+  link?: string;
+  /** The order it belongs to, for order updates. */
+  ref?: string;
   createdAt: string;
 }
 
@@ -440,8 +626,11 @@ export interface Discount {
   endsAt: string | null;
   usageLimit: number | null;
   perCustomerLimit: number | null;
+  /** Worked out from orders on every read (cancelled and refunded ones hand their use back); never trusted from storage. */
   usedCount: number;
   appliesTo: { scope: "all" | "categories" | "products"; ids: Id[] };
+  /** Whether it also takes money off pieces already on sale (off: no stacking with the sale). */
+  onSaleItems: boolean;
   active: boolean;
   createdAt: string;
 }

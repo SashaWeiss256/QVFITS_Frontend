@@ -4,7 +4,9 @@ import { Link } from "react-router-dom";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useFacets, useNavigation, usePageCopy, useSettings } from "@/store/tanstackStore/queries/site";
 import { fill, shopTokens } from "@/utils/fill";
+import { openCookieSettings } from "@/store/consent/consent";
 import { whatsappLink } from "@/utils/whatsapp";
+import NewsletterForm from "@/components/storefront/NewsletterForm";
 import Logo from "./navbar/Logo";
 
 export default function Footer() {
@@ -18,6 +20,14 @@ export default function Footer() {
   return (
     <footer className="ftr">
       <div className="wrap">
+        {/* The newsletter on every page, above the columns. */}
+        <section className="ftr__news" aria-labelledby="ftr-news-title">
+          <div>
+            <h2 id="ftr-news-title" className="m-0 font-display text-[1.35rem] font-bold tracking-tight">{copy?.newsTitle}</h2>
+            <p className="m-0 mt-1 text-[.92rem] text-ink-3">{copy?.newsText}</p>
+          </div>
+          <NewsletterForm source="footer" cta={copy?.newsCta} />
+        </section>
         <div className="ftr__grid">
           {/* Brand */}
           <div className="ftr__brand">
@@ -31,8 +41,8 @@ export default function Footer() {
           <div>
             <h2 className="ftr__title">Shop</h2>
             <ul>
-              {facets?.categories.map((c) => (
-                <li key={c}><Link to={`/shop?c=${encodeURIComponent(c)}`}>{c}</Link></li>
+              {facets?.categoryList.map((c) => (
+                <li key={c.id}><Link to={`/shop/${c.slug}`}>{c.name}</Link></li>
               ))}
             </ul>
           </div>
@@ -41,7 +51,7 @@ export default function Footer() {
           <div>
             <h2 className="ftr__title">Help</h2>
             <ul>
-              {nav?.help.map((l) => <li key={l.path}><Link to={l.path}>{l.title}</Link></li>)}
+              {nav?.help.map((l) => <li key={l.href}><Link to={l.href}>{l.title}</Link></li>)}
             </ul>
           </div>
 
@@ -49,7 +59,8 @@ export default function Footer() {
           <nav aria-label="Legal">
             <h2 className="ftr__title">Legal</h2>
             <ul>
-              {nav?.legal.map((l) => <li key={l.path}><Link to={l.path}>{l.title}</Link></li>)}
+              {nav?.legal.map((l) => <li key={l.href}><Link to={l.href}>{l.title}</Link></li>)}
+              <li><button type="button" className="ftr__cookie" onClick={openCookieSettings}>Cookie settings</button></li>
             </ul>
           </nav>
 

@@ -4,7 +4,7 @@ import { zoneOf } from "@/utils/delivery";
 
 // The running total beside every step, with the bar to free delivery.
 export default function OrderSummary({ bag, region = "kampala", children }) {
-  const { money } = useCurrency();
+  const { money, currency } = useCurrency();
   const zone = zoneOf(bag.settings, region);
   const threshold = zone?.freeOver ?? bag.settings?.freeShippingOver ?? 0;
   const left = threshold - bag.subtotal;
@@ -31,10 +31,14 @@ export default function OrderSummary({ bag, region = "kampala", children }) {
           <span>Delivery{zone ? ` (${zone.name})` : ""}</span>
           <span>{bag.delivery === 0 ? "Free" : money(bag.delivery)}</span>
         </div>
+        {bag.kitSaving > 0 && (
+          <div className="sum-row text-success"><span>Kit saving</span><span>-{money(bag.kitSaving)}</span></div>
+        )}
         {bag.discount > 0 && (
           <div className="sum-row text-success"><span>Discount{bag.discountCode ? ` (${bag.discountCode})` : ""}</span><span>-{money(bag.discount)}</span></div>
         )}
         <div className="sum-row sum-row--total"><span>Total</span><span>{money(bag.total)}</span></div>
+        {currency?.code !== "UGX" && <p className="m-0 mt-1 text-[.78rem] text-ink-3">Shown in {currency?.code} as a guide. You pay in Ugandan shillings (UGX).</p>}
       </div>
       {/* Each step passes its own call to action. */}
       {children}

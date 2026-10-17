@@ -6,7 +6,7 @@ import PageLoader from "@/components/ui/PageLoader";
 import { useCart } from "@/store/context/CartContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
-import { usePaymentMethods, usePlaceOrder, useQuote } from "@/store/tanstackStore/queries/site";
+import { usePaymentMethods, usePlaceOrder, useQuote, useSubscribe } from "@/store/tanstackStore/queries/site";
 import { useSeo } from "@/seo/useSeo";
 import { readStored, writeStored } from "@/utils/storage";
 import BagEmpty from "./sections/BagEmpty";
@@ -28,6 +28,7 @@ export default function CheckoutPage() {
   const { money } = useCurrency();
   const navigate = useNavigate();
   const placeOrder = usePlaceOrder();
+  const subscribe = useSubscribe();
   const { data: methods = [] } = usePaymentMethods();
 
   const [details, setDetails] = useState(() => {
@@ -40,6 +41,7 @@ export default function CheckoutPage() {
       region: saved.region ?? home?.region ?? "kampala",
       address: saved.address ?? home?.address ?? "",
       note: "",
+      news: false,
       payment: saved.payment ?? "mtn",
     };
   });
@@ -63,14 +65,27 @@ export default function CheckoutPage() {
     }
   };
 
-  // A new delivery area can change what a code is worth (free delivery codes).
+  // The shop prices the bag every time it or the delivery area changes: kits,
+  // sale prices and the code are worked out there, never trusted from here.
+  // A code the bag no longer qualifies for drops off with its reason.
   const appliedCode = applied?.discountCode;
   const { mutateAsync: requote } = quote;
+  const [server, setServer] = useState(null);
   useEffect(() => {
-    if (!appliedCode) return;
-    requote({ lines, region, code: appliedCode, customerId: customer?.id }).then((q) => setApplied(q.discountCode ? q : null)).catch(() => {});
+    if (!lines.length) return;
+    requote({ lines, region, code: appliedCode, customerId: customer?.id })
+      .then((q) => {
+        setServer(q);
+        if (appliedCode && !q.discountCode) {
+          setApplied(null);
+          setCodeError(q.discountReason ?? "That code no longer applies to your bag.");
+        }
+      })
+      .catch(() => {});
   }, [region, appliedCode, lines, customer?.id, requote]);
-  const priced = applied ? { ...bag, discount: applied.discount, discountCode: applied.discountCode, delivery: applied.delivery, total: applied.total } : bag;
+  const priced = server
+    ? { ...bag, subtotal: server.subtotal, kitSaving: server.kitSaving, discount: server.discount, discountCode: server.discountCode, delivery: server.delivery, total: server.total }
+    : bag;
 
   // Once placed, show the hand-off details instead of the form; the bag is cleared below.
   if (placed) {
@@ -88,8 +103,8 @@ export default function CheckoutPage() {
 
   const review = (values) => {
     setDetails(values);
-    // Remembered on this device for next time; the note is not.
-    writeStored(KEY, { ...values, note: undefined });
+    // Remembered on this device for next time; the note and the newsletter choice are not.
+    writeStored(KEY, { ...values, note: undefined, news: undefined });
     setStep(3);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -97,6 +112,8 @@ export default function CheckoutPage() {
   const place = async () => {
     const order = await placeOrder.mutateAsync({ input: { ...details, lines, discountCode: appliedCode }, customerId: customer?.id }).catch(() => null);
     if (!order) return;
+    // Opted in at checkout: the confirm email goes out; a failure never blocks the order.
+    if (details.news && details.email) subscribe.mutate({ email: details.email, source: "checkout", name: details.name, customerId: customer?.id });
     setPlaced(order);
     clear();
     window.scrollTo({ top: 0, behavior: "smooth" });

@@ -7,7 +7,9 @@
     "image": "collection-sets",
     "description": "Matching tops and bottoms, seamless and seam-fit.",
     "position": 0,
-    "active": true
+    "active": true,
+    "previousSlugs": [],
+    "inHeader": false
   },
   {
     "id": "bras",
@@ -17,7 +19,9 @@
     "image": "collection-bras",
     "description": "Light to high support, made to be seen.",
     "position": 1,
-    "active": true
+    "active": true,
+    "previousSlugs": [],
+    "inHeader": false
   },
   {
     "id": "bottoms",
@@ -27,7 +31,9 @@
     "image": "collection-bottoms",
     "description": "Leggings and flares, squat-tested.",
     "position": 2,
-    "active": true
+    "active": true,
+    "previousSlugs": [],
+    "inHeader": false
   },
   {
     "id": "skorts",
@@ -37,7 +43,9 @@
     "image": "collection-skorts",
     "description": "Golf and tennis, with an inbuilt pant.",
     "position": 3,
-    "active": true
+    "active": true,
+    "previousSlugs": [],
+    "inHeader": false
   },
   {
     "id": "swim",
@@ -47,7 +55,9 @@
     "image": "collection-swim",
     "description": "One-pieces and bikinis that hold.",
     "position": 4,
-    "active": true
+    "active": true,
+    "previousSlugs": [],
+    "inHeader": true
   },
   {
     "id": "lounge",
@@ -57,6 +67,8 @@
     "image": "collection-lounge",
     "description": "Soft knits for slow days and long flights.",
     "position": 5,
-    "active": true
+    "active": true,
+    "previousSlugs": [],
+    "inHeader": false
   }
 ]

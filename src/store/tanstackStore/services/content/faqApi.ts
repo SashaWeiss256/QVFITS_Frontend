@@ -1,23 +1,14 @@
 /* FAQ Service */
 import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
-import { adminCrud, byPosition } from "../store/adminCrud";
-import { createCollection } from "../store/collectionStore";
 import type { FaqItem } from "../types";
 import faqSeed from "@/data/faq.json";
 
-/** Questions and answers on the contact page, grouped and in the admin's order. */
-const faq = createCollection<FaqItem>("faq", faqSeed as FaqItem[], { idPrefix: "faq" });
-
+/**
+ * Questions and answers on the contact page, grouped, in the order of
+ * src/data/faq.json. Part of the site's code, not dashboard data. Vee reads
+ * them too.
+ */
 export function listFaq({ signal }: RequestOptions = {}) {
-  return mockApi(() => byPosition(faq.list()), 100, signal);
+  return mockApi(() => [...(faqSeed as FaqItem[])].sort((a, b) => a.position - b.position), 100, signal);
 }
-
-/* Admin (realm: admin) */
-
-export const faqCrud = adminCrud(faq, {
-  module: "faq",
-  noun: "question",
-  label: (f) => `"${f.q}"`,
-  prepare: (data, existing, all) => (existing ? data : { group: "General", ...data, position: all.length }),
-});

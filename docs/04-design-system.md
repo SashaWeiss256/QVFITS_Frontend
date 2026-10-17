@@ -51,30 +51,33 @@ Shadows and photo scrims are tinted with the ink hue, `rgba(23, 33, 31, …)`, n
 
 The brand is **Quivogue** (said Q-Vogue: Q for quality, Vogue for fashionable). **QVFITS** is its short form, always one word, never "QV FITS".
 
-**The format (client rule):** on the left, the supplied artwork: the wave mark with **QVFITS under it** and EST. 2023 beneath. On the right, **QVFITS over QUIVOGUE**, both in Anton, centred on the artwork.
+**The format (client rule, as on the original Quivogue site):** on the left, the supplied artwork (the wave mark with QVFITS under it and EST. 2023 beneath). On the right, **QVFITS** large in Anton with the brand gradient, and **QUIVOGUE** small beneath it in the body font, in `ink-3`, its letters spread to exactly the width of QVFITS. The block sits centred on the artwork.
 
 ```
    ~~~~       QVFITS
-  ~~~~~~      QUIVOGUE
+  ~~~~~~      Q U I V O G U E
   QVFITS
  EST. 2023
 ```
 
+**In the app** always use `components/layout/navbar/Logo.jsx`, never a bare `<img>`. It draws the artwork (`qvfits-logo-stacked.svg`) and sets QVFITS and QUIVOGUE as live text, so the words stay sharp and readable at header size. QUIVOGUE is one `<span>` per letter in a `justify-content: space-between` row, which is what makes it exactly as wide as QVFITS in any font. Styles: `styles/chrome.css`, logo block (overriding the base rules in `quivogue.css`).
+
+| Use | Artwork height | QVFITS | QUIVOGUE |
+|---|---|---|---|
+| `<Logo />` header and phone menu | 52px | 1.5rem | .66rem |
+| below 1024px | 44px | 1.2rem | .56rem |
+| `<Logo size="lg" />` footer, customer sign-in | 76px | 1.9rem | .78rem |
+| `<Logo to="/admin" />` admin sidebar | 52px | 1.5rem | .66rem |
+
 | File in `public/logo/` | Use |
 |---|---|
-| `qvfits-logo.*` | The logo, used everywhere: header, phone menu, footer, both dashboards, sign-in pages, invoices. The right-hand words in the brand gradient. Cream and white grounds |
-| `qvfits-logo-on-black.*` | The same, right-hand words in white, for black and very dark grounds. `og-image.png` is built from it |
-| `qvfits-logo-white.*` | The same, all lettering white, for purple and photography |
-| `qvfits-logo-stacked.*`, `-stacked-white.*` | The supplied artwork alone (no QUIVOGUE): square spaces such as social profile pictures |
+| `qvfits-logo.*` | The same lockup as one image, for places that cannot run the component: the printed invoice, emails, social, print. Cream and white grounds |
+| `qvfits-logo-on-black.*` | The same for black grounds (QVFITS white, QUIVOGUE light grey). `og-image.png` is built from it |
+| `qvfits-logo-white.*` | The same, all white, for purple and photography |
+| `qvfits-logo-stacked.*`, `-stacked-white.*` | The supplied artwork alone: what `Logo.jsx` draws; also square spaces such as profile pictures |
 | `qvfits-icon.*` | The wave mark alone: favicon, app icons, page loader, admin sign-in card |
 
-**In the app** always use `components/layout/navbar/Logo.jsx`, never a bare `<img>` (the printed invoice is the one exception). It draws `qvfits-logo.svg`, sized by height (styles in `styles/chrome.css`, logo block):
-
-- `<Logo />`: header and phone menu. 60px tall; 50px below 1024px; 44px below 380px. Smaller and QVFITS under the mark stops being readable.
-- `<Logo size="lg" />`: footer and customer sign-in, 88px.
-- `<Logo to="/admin" />`: admin sidebar.
-
-The words are part of the artwork, so never retype QVFITS or QUIVOGUE in a font, never rearrange the parts, and never recolour, stretch or rotate the files. The files are regenerated from the original artwork (outlined text, no fonts needed); ask Raijin Tech Hub for a new version rather than editing one by hand.
+**Never:** retype QVFITS under the mark (it is in the artwork), put QUIVOGUE above QVFITS or in another colour or face, set QVFITS with a space, or recolour, stretch or rotate the artwork. The image files are regenerated from the original artwork with outlined text (no fonts needed); ask Raijin Tech Hub for new versions rather than editing them by hand.
 
 ## Navbar
 

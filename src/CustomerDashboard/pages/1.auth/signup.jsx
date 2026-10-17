@@ -22,10 +22,12 @@ export default function CustomerSignup() {
   const [serverError, setServerError] = useState("");
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(signupSchema) });
 
-  const onSubmit = async (values) => {
+  // When the form appeared: sent faster than a person could type, it's a bot (gap A4).
+  const [startedAt] = useState(() => Date.now());
+  const onSubmit = async ({ website, ...values }) => {
     setServerError("");
     try {
-      await signUp(values);
+      await signUp({ ...values, guard: { hp: website, startedAt } });
       navigate(next, { replace: true });
     } catch (e) {
       setServerError(e.message);
@@ -44,7 +46,9 @@ export default function CustomerSignup() {
         <Field label="Email" type="email" autoComplete="email" input={register("email")} error={errors.email?.message} />
         {/* Optional so an email is enough to start; checkout asks for a phone anyway. */}
         <Field label="Phone (optional)" type="tel" autoComplete="tel" placeholder="+256" input={register("phone")} error={errors.phone?.message} />
-        <Field label="Password" type="password" autoComplete="new-password" input={register("password")} error={errors.password?.message} />
+        <Field label="Password" type="password" autoComplete="new-password" input={register("password")} error={errors.password?.message} hint="At least 8 characters." />
+        {/* Hidden from people; only bots fill it in. */}
+        <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" {...register("website")} />
         {serverError && <p role="alert" className="m-0 text-sm font-semibold text-warn">{serverError}</p>}
         <Button type="submit" block loading={isSubmitting}>Create account</Button>
         <p className="m-0 text-center text-xs text-ink-3">

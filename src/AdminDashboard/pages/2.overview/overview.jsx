@@ -11,6 +11,7 @@ import NeedsAttention from "./sections/NeedsAttention";
 import RecentOrders from "./sections/RecentOrders";
 import RevenueChart from "./sections/RevenueChart";
 import RunningLow from "./sections/RunningLow";
+import ShopReady from "./sections/ShopReady";
 import TopSellers from "./sections/TopSellers";
 
 const RANGES = [7, 30, 90];
@@ -51,6 +52,8 @@ export default function AdminOverview() {
 
       {/* minmax(0,1fr): the orders table scrolls inside its panel instead of widening the page */}
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
+        {/* Only for those who can do the setup; it hides itself once all is done. */}
+        {["categories", "size-guide", "products", "settings", "home-content"].every((m) => can(m, "edit")) && <ShopReady />}
         <KeyFigures data={data} loading={isLoading} days={days} money={moneyBase} />
 
         <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
@@ -60,7 +63,7 @@ export default function AdminOverview() {
 
         <div className="grid min-w-0 gap-6 lg:grid-cols-2">
           <TopSellers rows={data?.topProducts} loading={isLoading} money={moneyBase} />
-          <RunningLow rows={data?.lowStock} loading={isLoading} canOpen={can("inventory")} />
+          <RunningLow rows={data?.lowStock} loading={isLoading} canOpen={can("products")} />
         </div>
 
         <RecentOrders orders={data?.recentOrders} loading={isLoading} money={moneyBase} canOpen={can("orders")} />

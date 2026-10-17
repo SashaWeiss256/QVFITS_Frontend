@@ -2,9 +2,11 @@
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 
+import PaymentDue from "@/components/storefront/PaymentDue";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { notify } from "@/store/tanstackStore/notices";
 import { usePaymentMethods } from "@/store/tanstackStore/queries/site";
+import { zoneEta, zoneOf } from "@/utils/delivery";
 import { whatsappLink } from "@/utils/whatsapp";
 import { orderMessage } from "../orderMessage";
 
@@ -16,6 +18,8 @@ import { orderMessage } from "../orderMessage";
 export default function SendOrder({ order, settings }) {
   const currency = useCurrency();
   const { data: methods = [] } = usePaymentMethods();
+  const zone = zoneOf(settings, order.region);
+  const eta = zoneEta(zone);
   const message = orderMessage(order, { ...currency, settings, methods });
   const copy = async (quiet) => {
     try {
@@ -36,6 +40,8 @@ export default function SendOrder({ order, settings }) {
         <a className="btn btn--ghost" href={settings.instagram} target="_blank" rel="noopener noreferrer" onClick={() => { copy(true); notify("Order copied to your clipboard too.", { tone: "success" }); }}>Send via Instagram DM</a>
         <button type="button" className="btn btn--soft" onClick={() => copy(false)}>Copy order</button>
       </div>
+      {eta && <p className="m-0 mt-4 text-sm text-ink-2">{zone.collect ? `${eta} from the showroom, once paid.` : `Arrives in ${eta.toLowerCase()} once paid.`}</p>}
+      <PaymentDue order={order} />
       <p className="mt-5 text-sm text-ink-3">
         Track it any time on <Link to="/track-order" className="text-brand-600 underline">Track an order</Link>.
       </p>

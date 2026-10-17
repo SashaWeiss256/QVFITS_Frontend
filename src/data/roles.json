@@ -10,32 +10,15 @@
         "edit",
         "delete"
       ],
+      "reports": [
+        "view"
+      ],
       "products": [
         "view",
         "edit",
         "delete"
       ],
       "categories": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "attributes": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "inventory": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "collections": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "reviews": [
         "view",
         "edit",
         "delete"
@@ -48,19 +31,11 @@
       "orders": [
         "view",
         "edit",
-        "delete"
-      ],
-      "returns": [
-        "view",
-        "edit",
-        "delete"
+        "delete",
+        "refund",
+        "payment"
       ],
       "customers": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "transactions": [
         "view",
         "edit",
         "delete"
@@ -128,32 +103,15 @@
         "edit",
         "delete"
       ],
+      "reports": [
+        "view"
+      ],
       "products": [
         "view",
         "edit",
         "delete"
       ],
       "categories": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "attributes": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "inventory": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "collections": [
-        "view",
-        "edit",
-        "delete"
-      ],
-      "reviews": [
         "view",
         "edit",
         "delete"
@@ -166,20 +124,14 @@
       "orders": [
         "view",
         "edit",
-        "delete"
-      ],
-      "returns": [
-        "view",
-        "edit",
-        "delete"
+        "delete",
+        "refund",
+        "payment"
       ],
       "customers": [
         "view",
         "edit",
         "delete"
-      ],
-      "transactions": [
-        "view"
       ],
       "discounts": [
         "view",
@@ -234,23 +186,11 @@
       "overview": [
         "view"
       ],
+      "reports": [],
       "products": [
         "view"
       ],
       "categories": [
-        "view"
-      ],
-      "attributes": [
-        "view"
-      ],
-      "inventory": [
-        "view",
-        "edit"
-      ],
-      "collections": [
-        "view"
-      ],
-      "reviews": [
         "view"
       ],
       "size-guide": [
@@ -260,14 +200,9 @@
         "view",
         "edit"
       ],
-      "returns": [
-        "view",
-        "edit"
-      ],
       "customers": [
         "view"
       ],
-      "transactions": [],
       "discounts": [
         "view"
       ],

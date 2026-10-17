@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 
 import { useCart } from "@/store/context/CartContext";
 import { useWishlist } from "@/store/context/WishlistContext";
-import { useOffers, useFacets } from "@/store/tanstackStore/queries/site";
+import { useOffers, useFacets, useSettings } from "@/store/tanstackStore/queries/site";
 import { notify } from "@/store/tanstackStore/notices";
 import { cn } from "@/utils/cn";
 import { anyInStock, firstAvailable, saleOf } from "@/utils/stockLevel";
@@ -17,7 +17,11 @@ export default function ProductCard({ product: p }) {
   const { data: offers } = useOffers();
   const { data: facets } = useFacets();
 
+  const { data: settings } = useSettings();
   const sold = !anyInStock(p);
+  // Nearly gone across every size: worth saying, under the Settings threshold.
+  const left = Object.values(p.stock).reduce((n, x) => n + x, 0);
+  const low = !sold && left <= (settings?.lowStockAt ?? 2);
   const sale = saleOf(p, offers?.sale);
   const wished = wishlist.has(p.id);
   // Colour names map to swatches in the facets; grey until they load.
@@ -51,12 +55,15 @@ export default function ProductCard({ product: p }) {
         </Link>
       </div>
       <div className="card__body">
-        {/* One badge only: sold out beats sale, sale beats the product's own label. */}
+        {/* One badge only: sold out beats sale, sale beats the product's own label. No
+            badge still keeps its row, so every card in a grid lines up. */}
         {sold ? <span className="badge badge--out">Sold out</span>
           : sale ? <span className="badge badge--sale">{sale.pct}% off</span>
-          : p.badge ? <span className="badge">{p.badge}</span> : null}
+          : p.badge ? <span className="badge">{p.badge}</span>
+          : <span className="badge badge--blank" aria-hidden="true">New</span>}
         <span className="card__cat">{p.category}</span>
         <Link className="card__name" to={href}>{p.name}</Link>
+        {low && <span className="card__low">Only {left} left</span>}
         <div className="card__swatches">
           {p.colors.map((c) => <i key={c} className="sw" style={{ background: swatch(c) }} title={c} />)}
         </div>

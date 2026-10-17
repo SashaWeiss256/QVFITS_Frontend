@@ -39,7 +39,7 @@ export const catalogQueries = {
       queryFn: ({ signal }) => getProductsByIds(ids, { signal }),
       enabled: ids.length > 0,
     }),
-  // Categories, colours and activities change rarely; fetch once per visit.
+  // Categories, movements and colours change rarely; fetch once per visit.
   facets: () =>
     queryOptions({
       queryKey: [...catalogQueries.all(), "facets"] as const,

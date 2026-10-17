@@ -1,6 +1,7 @@
 /* Size Picker */
 import { Link } from "react-router-dom";
 
+import { useSettings } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
 import { inStock, productSizes } from "@/utils/stockLevel";
 
@@ -9,6 +10,9 @@ import { inStock, productSizes } from "@/utils/stockLevel";
 export default function SizePicker({ product, chosen, onChoose }) {
   // Units left in the chosen size; null until a size is picked so no note shows.
   const n = chosen ? product.stock[chosen] || 0 : null;
+  // "Only N left" from the threshold set in Settings, the same one the admin's low stock uses.
+  const { data: settings } = useSettings();
+  const low = settings?.lowStockAt ?? 2;
 
   return (
     <div className="opt">
@@ -36,8 +40,8 @@ export default function SizePicker({ product, chosen, onChoose }) {
         })}
       </div>
       {/* Stock Note: announced as the size changes. */}
-      <p className={cn("stock-note", n !== null && (n <= 2 ? "low" : "ok"))} aria-live="polite">
-        {n === null ? "" : n === 0 ? `Sold out in ${chosen}` : n <= 2 ? `Only ${n} left in ${chosen}. This one moves fast.` : `In stock in ${chosen}`}
+      <p className={cn("stock-note", n !== null && (n <= low ? "low" : "ok"))} aria-live="polite">
+        {n === null ? "" : n === 0 ? `Sold out in ${chosen}` : n <= low ? `Only ${n} left in ${chosen}. This one moves fast.` : `In stock in ${chosen}`}
       </p>
     </div>
   );

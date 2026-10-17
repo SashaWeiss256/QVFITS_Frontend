@@ -9,7 +9,7 @@ import type { Id } from "../api/types";
  */
 
 // Bump the version when seeds change shape, so stale browser copies are dropped.
-const PREFIX = "qvfits:store:v3:";
+const PREFIX = "qvfits:store:v6:";
 const memory = new Map<string, unknown>();
 
 function load<T>(key: string, seed: T): T {
@@ -92,7 +92,12 @@ export interface SettingsDocument<T extends object> {
  * merges one level deep, so saving one section never wipes another.
  */
 export function createDocument<T extends object>(key: string, seed: T): SettingsDocument<T> {
-  const read = () => load<T>(key, seed);
+  // A field the seed gained since the document was saved reads from the seed,
+  // so a new setting never arrives as undefined.
+  const read = () => {
+    const stored = load<T>(key, seed);
+    return Array.isArray(seed) || Array.isArray(stored) ? stored : ({ ...seed, ...stored } as T);
+  };
   return {
     get: () => structuredClone(read()),
     update: (patch) => {

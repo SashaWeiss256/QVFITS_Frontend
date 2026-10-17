@@ -17,12 +17,12 @@ const OPENERS: Record<string, (w: string) => string> = {
 };
 
 /** Pieces for an activity, narrowed by any category, colour or budget said. */
-export function occasionLook(occ: string, t: string, ctx: VeeContext): Block[] {
-  const label = ctx.occasions.find((o) => o.id === occ)?.label ?? occ;
+export function movementLook(occ: string, t: string, ctx: VeeContext): Block[] {
+  const label = ctx.movements.find((m) => m.id === occ)?.name ?? occ;
   const budget = findBudget(t);
   const colors = findColors(t, ctx.swatches);
   const cat = findCategory(t);
-  let items = ctx.products.filter((p) => p.occasions.includes(occ) && anyInStock(p));
+  let items = ctx.products.filter((p) => p.termIds.includes(occ) && anyInStock(p));
 
   if (cat) {
     const inCat = items.filter((p) => p.category === cat);
@@ -63,7 +63,7 @@ export function outfitFor(subject: Product, ctx: VeeContext): Block[] {
   const partners: Product[] = [];
   for (const c of PAIRINGS[subject.category] ?? ["Bras", "Bottoms", "Lounge"]) {
     const found = ctx.products.find(
-      (p) => p.category === c && p.id !== subject.id && anyInStock(p) && !partners.includes(p) && p.occasions.some((o) => subject.occasions.includes(o)),
+      (p) => p.category === c && p.id !== subject.id && anyInStock(p) && !partners.includes(p) && p.termIds.some((m) => subject.termIds.includes(m)),
     );
     if (found) partners.push(found);
   }

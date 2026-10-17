@@ -1,9 +1,11 @@
 /* Lookup Form */
 import { useState } from "react";
 
+import PaymentDue from "@/components/storefront/PaymentDue";
 import StatusChip from "@/components/ui/StatusChip";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { useTrackOrder } from "@/store/tanstackStore/queries/site";
+import { useCancelGuestOrder, useTrackOrder } from "@/store/tanstackStore/queries/site";
+import GuestReturn from "./GuestReturn";
 import { formatDate } from "@/utils/format";
 
 // A guest finds an order by its reference and the phone it was placed with;
@@ -12,8 +14,10 @@ export default function LookupForm() {
   const [ref, setRef] = useState("");
   const [phone, setPhone] = useState("");
   const track = useTrackOrder();
+  const cancel = useCancelGuestOrder();
   const { moneyBase } = useCurrency();
-  const order = track.data;
+  // A cancel returns the updated order; show that over the first lookup.
+  const order = cancel.data ?? track.data;
 
   return (
     <div className="grid max-w-2xl gap-6">
@@ -50,6 +54,9 @@ export default function LookupForm() {
             <div key={`${l.productId}-${l.size}-${l.color}`} className="sum-row"><span>{l.name} · {l.color} · {l.size} ×{l.qty}</span><span>{moneyBase(l.price * l.qty)}</span></div>
           ))}
           <div className="sum-row sum-row--total"><span>Total</span><span>{moneyBase(order.total)}</span></div>
+          <PaymentDue order={order} onCancel={() => cancel.mutate({ ref, phone })} cancelling={cancel.isPending} />
+          {cancel.error && <p role="alert" className="m-0 mt-2 text-sm font-semibold text-warn">{cancel.error.message}</p>}
+          {["delivered", "exchanged"].includes(order.status) && <GuestReturn order={order} refCode={ref} phone={phone} />}
         </div>
       )}
     </div>

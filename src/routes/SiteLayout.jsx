@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import FitAssistant from "@/components/assistant/FitAssistant";
+import CookieConsent from "@/components/layout/CookieConsent";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/navbar";
 import PromoBar from "@/components/layout/PromoBar";
@@ -34,6 +35,7 @@ export default function SiteLayout() {
       <SideDrawer />
       <Sticker />
       <FitAssistant />
+      <CookieConsent />
     </>
   );
 }

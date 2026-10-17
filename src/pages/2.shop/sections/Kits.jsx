@@ -5,40 +5,26 @@ import Photo from "@/components/storefront/Photo";
 import Reveal from "@/components/motion/Reveal";
 import { useCart } from "@/store/context/CartContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { notify } from "@/store/tanstackStore/notices";
 import { useLooks, usePageCopy } from "@/store/tanstackStore/queries/site";
-import { firstAvailable } from "@/utils/stockLevel";
+import { addKit } from "@/utils/kits";
 
 /**
  * Full kits already put together. "Add all to bag" takes the first colour
- * and size in stock of each piece and says so; a sold-out piece is left
- * out with a note rather than failing the whole kit.
+ * and size in stock of each piece and says so; the lines carry the kit's id,
+ * so checkout charges the kit price while the whole set is in the bag.
  */
 export default function Kits({ products }) {
   const { data: looks = [] } = useLooks();
   const { data: copy } = usePageCopy("shop");
   const { add } = useCart();
   const { money } = useCurrency();
-  if (!looks.length || !products.length) return null;
+  if (!products.length) return null;
+  if (!looks.length) return null;
 
   // A look may name a piece that has left the catalogue; those are dropped.
   const byId = (id) => products.find((p) => p.id === id);
 
-  const addAll = (look) => {
-    let added = 0;
-    const skipped = [];
-    for (const p of look.items.map(byId).filter(Boolean)) {
-      const pick = firstAvailable(p);
-      if (!pick) skipped.push(p.name);
-      else {
-        add({ productId: p.id, ...pick, qty: 1 });
-        added++;
-      }
-    }
-    if (added) notify(`${added} piece${added === 1 ? "" : "s"} added. Check sizes in your bag.`, { tone: "success" });
-    // Name the first skipped piece; one notice is enough to send them to check.
-    if (skipped.length) notify(`${skipped[0]} is sold out, so I left it out.`);
-  };
+  const addAll = (look) => addKit(look, look.items.map(byId).filter(Boolean), add);
 
   return (
     <section className="section section--tight scroll-mt-24" id="kits">
@@ -51,8 +37,8 @@ export default function Kits({ products }) {
         <div className="grid-looks">
           {looks.map((look) => {
             const items = look.items.map(byId).filter(Boolean);
-            // Sum of list prices for the pieces still in the catalogue.
-            const total = items.reduce((n, p) => n + p.price, 0);
+            // The kit's own price; the saving shows when it beats buying the pieces one by one.
+            const saving = look.separate - look.price;
             return (
               <Reveal as="article" key={look.id} className="look">
                 <div className="look__media"><Photo photo={look.photo} label={look.title} /></div>
@@ -70,7 +56,10 @@ export default function Kits({ products }) {
                     ))}
                   </ul>
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="font-semibold">{money(total)} the lot</span>
+                    <span className="font-semibold">
+                      {money(look.price)} the lot
+                      {saving > 0 && <span className="ml-2 text-[.82rem] font-semibold text-brand-600">Save {money(saving)}</span>}
+                    </span>
                     <button type="button" className="btn btn--soft" onClick={() => addAll(look)}>Add all to bag</button>
                   </div>
                 </div>

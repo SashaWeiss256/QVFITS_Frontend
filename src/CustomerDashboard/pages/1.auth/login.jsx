@@ -42,6 +42,10 @@ export default function CustomerLogin() {
       <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Field label="Email" type="email" autoComplete="email" input={register("email")} error={errors.email?.message} />
         <Field label="Password" type="password" autoComplete="current-password" input={register("password")} error={errors.password?.message} />
+        <label className="check-row">
+          <input type="checkbox" defaultChecked {...register("remember")} />
+          Stay signed in on this device
+        </label>
         <Link to="/forgot-password" className="self-end text-sm text-brand-600">Forgot your password?</Link>
         {serverError && <p role="alert" className="m-0 text-sm font-semibold text-warn">{serverError}</p>}
         <Button type="submit" block loading={isSubmitting}>Sign in</Button>

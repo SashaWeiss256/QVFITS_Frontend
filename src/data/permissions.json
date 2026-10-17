@@ -9,8 +9,15 @@
     ]
   },
   {
+    "id": "reports",
+    "label": "Reports",
+    "actions": [
+      "view"
+    ]
+  },
+  {
     "id": "products",
-    "label": "Products",
+    "label": "Products, kits, stock and reviews",
     "actions": [
       "view",
       "edit",
@@ -19,43 +26,7 @@
   },
   {
     "id": "categories",
-    "label": "Categories",
-    "actions": [
-      "view",
-      "edit",
-      "delete"
-    ]
-  },
-  {
-    "id": "attributes",
-    "label": "Colours, sizes and filters",
-    "actions": [
-      "view",
-      "edit",
-      "delete"
-    ]
-  },
-  {
-    "id": "inventory",
-    "label": "Inventory",
-    "actions": [
-      "view",
-      "edit",
-      "delete"
-    ]
-  },
-  {
-    "id": "collections",
-    "label": "Collections and looks",
-    "actions": [
-      "view",
-      "edit",
-      "delete"
-    ]
-  },
-  {
-    "id": "reviews",
-    "label": "Reviews",
+    "label": "Categories, groups and colours",
     "actions": [
       "view",
       "edit",
@@ -64,7 +35,7 @@
   },
   {
     "id": "size-guide",
-    "label": "Size guide",
+    "label": "Sizes, size guide and shop filters",
     "actions": [
       "view",
       "edit",
@@ -73,34 +44,18 @@
   },
   {
     "id": "orders",
-    "label": "Orders",
+    "label": "Orders, returns, refunds and payments",
     "actions": [
       "view",
       "edit",
-      "delete"
-    ]
-  },
-  {
-    "id": "returns",
-    "label": "Returns",
-    "actions": [
-      "view",
-      "edit",
-      "delete"
+      "delete",
+      "refund",
+      "payment"
     ]
   },
   {
     "id": "customers",
     "label": "Customers",
-    "actions": [
-      "view",
-      "edit",
-      "delete"
-    ]
-  },
-  {
-    "id": "transactions",
-    "label": "Transactions",
     "actions": [
       "view",
       "edit",

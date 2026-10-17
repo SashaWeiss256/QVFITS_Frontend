@@ -55,12 +55,12 @@ export default function MobileMenu({ open, onClose }) {
         <m.nav className="mmenu__body" aria-label="Main" initial="hidden" animate={open ? "shown" : "hidden"} variants={{ hidden: {}, shown: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } } }}>
           <m.div variants={revealItem}><MobileMenuShop /></m.div>
           {nav?.header.map((item) => (
-            <m.div key={item.path} variants={revealItem}>
-              <Link to={item.path} className="mmenu__link">{item.title}</Link>
+            <m.div key={item.href} variants={revealItem}>
+              <Link to={item.href} className="mmenu__link">{item.title}</Link>
             </m.div>
           ))}
           <m.div variants={revealItem} className="mmenu__sub">
-            {nav?.help.map((l) => <Link key={l.path} to={l.path}>{l.title}</Link>)}
+            {nav?.help.map((l) => <Link key={l.href} to={l.href}>{l.title}</Link>)}
           </m.div>
         </m.nav>
         <MobileMenuFooter />

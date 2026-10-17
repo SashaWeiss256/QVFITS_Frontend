@@ -16,8 +16,12 @@
       "title": "Summer drop",
       "text": "Swim and lightweight seamless, just landed in store.",
       "cta": "Shop swim",
-      "href": "/shop?c=Swim",
-      "tone": "brand"
+      "tone": "brand",
+      "target": {
+        "categories": [
+          "swim"
+        ]
+      }
     },
     {
       "id": "percent-off",
@@ -26,8 +30,12 @@
       "title": "20% off",
       "text": "Selected sets and bras. Ask in store or on WhatsApp.",
       "cta": "See what's in",
-      "href": "/shop?c=Sets",
-      "tone": "dark"
+      "tone": "dark",
+      "target": {
+        "categories": [
+          "sets"
+        ]
+      }
     },
     {
       "id": "weekly",

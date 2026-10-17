@@ -20,6 +20,7 @@ export default function AdminLogin() {
   const location = useLocation();
   // RequireAdmin passes the page that bounced here; return there after sign in.
   const back = location.state?.from?.pathname ?? "/admin";
+  const idle = new URLSearchParams(location.search).has("idle");
   const [serverError, setServerError] = useState("");
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(adminLoginSchema) });
 
@@ -40,6 +41,7 @@ export default function AdminLogin() {
   return (
     <AuthCard title="Sign in" lede="For the QVFITS team only.">
       <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        {idle && <p role="status" className="m-0 rounded-r-md bg-brand-50 px-3 py-2 text-sm text-ink-2">You were signed out after 30 minutes without activity.</p>}
         <Field label="Email" type="email" autoComplete="username" input={register("email")} error={errors.email?.message} />
         <Field label="Password" type="password" autoComplete="current-password" input={register("password")} error={errors.password?.message} />
         {serverError && <p role="alert" className="m-0 text-sm font-semibold text-warn">{serverError}</p>}

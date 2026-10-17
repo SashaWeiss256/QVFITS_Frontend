@@ -3,12 +3,11 @@ import { useId, useState } from "react";
 import { Link } from "react-router-dom";
 import { Minus, Plus } from "lucide-react";
 
-import { useFacets, useNavigation } from "@/store/tanstackStore/queries/site";
+import { useNavigation } from "@/store/tanstackStore/queries/site";
 
-// "Shop" opens in place: the edits, every category, every activity.
+// "Shop" opens in place, with the same columns as the desktop mega menu.
 export default function MobileMenuShop() {
   const [open, setOpen] = useState(false);
-  const { data: facets } = useFacets();
   const { data: nav } = useNavigation();
   const id = useId();
 
@@ -20,10 +19,12 @@ export default function MobileMenuShop() {
       </button>
       {open && (
         <div id={id} className="mmenu__sub">
-          {/* Edits first, then categories and activities from the live catalogue facets. */}
-          {nav?.shopEdits.map((l) => <Link key={l.path} to={l.path}>{l.title}</Link>)}
-          {facets?.categories.map((c) => <Link key={c} to={`/shop?c=${encodeURIComponent(c)}`}>{c}</Link>)}
-          {facets?.occasions.map((o) => <Link key={o.id} to={`/shop?occasion=${o.id}`}>{o.label}</Link>)}
+          {nav?.shopMenu.columns.map((c) => (
+            <div key={c.id} className="col-span-2 grid grid-cols-2 gap-x-4">
+              <p className="col-span-2 m-0 mt-3 text-[.72rem] font-semibold tracking-[.14em] text-ink-3 uppercase">{c.title}</p>
+              {c.links.map((l) => <Link key={l.id} to={l.href}>{l.title}</Link>)}
+            </div>
+          ))}
         </div>
       )}
     </div>

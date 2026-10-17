@@ -57,7 +57,7 @@ export function CustomerAuthProvider({ children }) {
   }, [forget]);
 
   const value = useMemo(
-    () => ({ customer, loading, signIn, signUp, signOut, requestPasswordReset: auth.requestPasswordReset }),
+    () => ({ customer, loading, signIn, signUp, signOut, requestPasswordReset: auth.requestPasswordReset, resetPassword: auth.resetPassword, confirmEmail: auth.confirmEmail }),
     [customer, loading, signIn, signUp, signOut],
   );
 

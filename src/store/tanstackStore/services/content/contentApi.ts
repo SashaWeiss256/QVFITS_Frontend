@@ -1,64 +1,62 @@
 /* Home Content Service */
 import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
-import { logActivity } from "../admin/activityApi";
-import { assertCan } from "../auth/adminSession";
+import { linkLookup, sortedTerms } from "../catalog/attributesApi";
+import { termView } from "../catalog/categoriesApi";
 import { localPhoto } from "../catalog/photos";
-import { createDocument, type DocumentPatch } from "../store/collectionStore";
-import type { Photo } from "../types";
+import { targetLabel, withHrefs } from "@/utils/shopTargets";
+import type { Linked, Photo } from "../types";
 import homeSeed from "@/data/home.json";
 
 /**
  * Everything on the home page, top to bottom as the original Quivogue site
- * lays it out: hero slides, the press row, the two product rails, shop by
- * movement, the campaign, the feed and the newsletter. One document, so the
- * admin saves a section at a time without touching the rest.
+ * lays it out: hero slides, the two product rails, shop by movement, the
+ * campaign, the feed and the newsletter. It is part of the site's code
+ * (src/data/home.json), not dashboard data: the rails fill themselves from
+ * products, and every link is a target that resolves to a live address (a
+ * link to something deleted drops out). Honest seam: nothing here moves to
+ * the backend.
  *
  * A picture is either a photo id in /photos (the brand's shoot) or an
  * uploaded Photo; `photo` on the view is always the resolved one.
  */
 type Picture = string | Photo | null | undefined;
 
-export interface HeroSlide {
+export interface HeroSlide extends Linked {
   id: string;
   kicker: string;
   title: string;
   text: string;
   cta: string;
-  href: string;
   /** The round tag on the picture, e.g. "Sale". */
   sticker?: string;
   image?: Picture;
   live: boolean;
 }
 
-export interface Rail {
+export interface Rail extends Linked {
   kicker: string;
   title: string;
   cta: string;
-  href: string;
-  productIds: string[];
 }
 
-export interface Movement {
+/** A Shop by movement tile. Label and picture default from the first term it opens. */
+export interface MovementTile extends Linked {
   id: string;
-  label: string;
-  /** The activity ids the tile filters by, comma separated. */
-  occasion: string;
+  label?: string;
   image?: Picture;
 }
 
 export interface HomeContent {
   heroSlides: HeroSlide[];
   rails: { newReleases: Rail; bestSellers: Rail };
-  movements: { title: string; items: Movement[] };
-  campaign: { live: boolean; kicker: string; title: string; text: string; cta: string; href: string; image?: Picture };
-  press: { live: boolean; title: string; items: { name: string; href?: string }[] };
-  feed: { live: boolean; kicker: string; title: string; items: { id: string; label: string; href: string; post?: string }[] };
+  movements: { title: string; items: MovementTile[] };
+  campaign: Linked & { live: boolean; kicker: string; title: string; text: string; cta: string; image?: Picture };
+  feed: { live: boolean; kicker: string; title: string; items: (Linked & { id: string; label: string; post?: string })[] };
   newsletter: { kicker: string; title: string; text: string; cta: string; placeholder: string };
 }
 
-const content = createDocument<HomeContent>("home", homeSeed as unknown as HomeContent);
+const content = homeSeed as unknown as HomeContent;
 
 const resolve = (picture: Picture, fallbackId: string): Photo | undefined =>
   picture && typeof picture === "object" ? picture : localPhoto(picture || fallbackId);
@@ -66,38 +64,38 @@ const resolve = (picture: Picture, fallbackId: string): Photo | undefined =>
 /** The document as the storefront reads it: live slides only, every picture resolved. */
 export type HomeContentView = HomeContent & {
   heroSlides: (HeroSlide & { photo?: Photo })[];
-  movements: HomeContent["movements"] & { items: (Movement & { photo?: Photo })[] };
+  movements: HomeContent["movements"] & { items: (MovementTile & { label: string; href: string; photo?: Photo })[] };
   campaign: HomeContent["campaign"] & { photo?: Photo };
   /** The studio photo on the About page. */
   aboutPhoto?: Photo;
 };
 
-function view(doc: HomeContent, { all = false } = {}): HomeContentView {
+// Every link gets its href from the live slugs. A tile with no label or picture
+// of its own borrows the first term it opens.
+function view(stored: HomeContent): HomeContentView {
+  const lookup = linkLookup();
+  const doc = withHrefs(stored, lookup) as HomeContent & { movements: { items: (MovementTile & { href: string })[] } };
+  const termOf = (t: MovementTile) => sortedTerms().find((x) => x.id === t.target?.terms?.[0]);
   return {
     ...doc,
-    heroSlides: doc.heroSlides.filter((s) => all || s.live !== false).map((s) => ({ ...s, photo: resolve(s.image, s.id) })),
-    movements: { ...doc.movements, items: doc.movements.items.map((m) => ({ ...m, photo: resolve(m.image, `movement-${m.id}`) })) },
+    heroSlides: doc.heroSlides.filter((s) => s.live !== false).map((s) => ({ ...s, photo: resolve(s.image, s.id) })),
+    movements: {
+      ...doc.movements,
+      items: doc.movements.items.map((t) => {
+        const own = termOf(t);
+        return {
+          ...t,
+          href: t.href ?? "/shop",
+          label: t.label || targetLabel(t.target, lookup),
+          photo: resolve(t.image, `movement-${t.id}`) ?? (own ? termView(own).photo : undefined),
+        };
+      }),
+    },
     campaign: { ...doc.campaign, photo: resolve(doc.campaign.image, "banner-campaign") },
     aboutPhoto: localPhoto("about"),
   };
 }
 
 export function getContent({ signal }: RequestOptions = {}) {
-  return mockApi(() => view(content.get()), 100, signal);
-}
-
-/* Admin (realm: admin) */
-
-/** Every slide, live or not, for the editor. */
-export function getContentForEdit({ signal }: RequestOptions = {}) {
-  return mockApi(() => view(content.get(), { all: true }), 100, signal);
-}
-
-export function updateContent(patch: DocumentPatch<HomeContent>) {
-  return mockApi(() => {
-    assertCan("home-content", "edit");
-    const doc = content.update(patch);
-    logActivity({ module: "home-content", action: "update", summary: `Updated the home page (${Object.keys(patch).join(", ")})` });
-    return view(doc, { all: true });
-  });
+  return mockApi(() => view(content), 100, signal);
 }

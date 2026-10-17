@@ -1,7 +1,7 @@
 /* Vee: Search */
 import { anyInStock } from "@/utils/stockLevel";
 import type { VeeContext } from "./context";
-import { findBudget, findCategory, findColors, findOccasion, words } from "./language";
+import { findBudget, findCategory, findColors, findMovement, words } from "./language";
 
 /**
  * Scores every piece against what was said. A piece only counts if something
@@ -10,7 +10,7 @@ import { findBudget, findCategory, findColors, findOccasion, words } from "./lan
  */
 export function search(t: string, ctx: VeeContext, limit = 3) {
   const cat = findCategory(t);
-  const occ = findOccasion(t);
+  const occ = findMovement(t);
   const colors = findColors(t, ctx.swatches);
   const budget = findBudget(t);
 
@@ -19,7 +19,7 @@ export function search(t: string, ctx: VeeContext, limit = 3) {
       let s = 0;
       let signal = 0;
       if (cat && p.category === cat) { s += 5; signal++; }
-      if (occ && p.occasions.includes(occ)) { s += 4; signal++; }
+      if (occ && p.termIds.includes(occ)) { s += 4; signal++; }
       if (colors.length && colors.some((c) => p.colors.includes(c))) { s += 3; signal++; }
       if (budget && p.price <= budget) s += 2;
       if (budget && p.price > budget) s -= 6;

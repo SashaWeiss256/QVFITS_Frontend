@@ -3,7 +3,8 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { zoneFee } from "@/utils/delivery";
+import { useNewsletterConsent } from "@/store/tanstackStore/queries/site";
+import { zoneEta, zoneFee } from "@/utils/delivery";
 import { deliverySchema } from "../schemas";
 
 function Err({ error }) {
@@ -20,7 +21,9 @@ export default function DeliveryForm({ defaults, settings, methods, subtotal, on
   const zones = settings.zones ?? [];
   const { register, handleSubmit, control, formState: { errors } } = useForm({ resolver: zodResolver(deliverySchema(zones, methods)), defaultValues: defaults });
   const region = useWatch({ control, name: "region" });
-  const collect = zones.find((z) => z.id === region)?.collect;
+  const zone = zones.find((z) => z.id === region);
+  const collect = zone?.collect;
+  const { data: consent } = useNewsletterConsent();
   const regionField = register("region");
 
   return (
@@ -46,9 +49,11 @@ export default function DeliveryForm({ defaults, settings, methods, subtotal, on
         <select id="oRegion" {...regionField} onChange={(e) => { regionField.onChange(e); onRegion(e.target.value); }}>
           {zones.map((z) => {
             const fee = zoneFee(z, subtotal, settings);
-            return <option key={z.id} value={z.id}>{z.name}: {fee ? money(fee) : "free"}</option>;
+            const eta = zoneEta(z);
+            return <option key={z.id} value={z.id}>{z.name}: {fee ? money(fee) : "free"}{eta ? `, ${eta.toLowerCase()}` : ""}</option>;
           })}
         </select>
+        {zone && <p className="m-0 mt-1 text-xs text-ink-3">{[zoneEta(zone), zone.description].filter(Boolean).join(". ")}</p>}
       </div>
       {!collect && (
         <div className="field">
@@ -72,6 +77,16 @@ export default function DeliveryForm({ defaults, settings, methods, subtotal, on
       <div className="field">
         <label htmlFor="oNote">Anything we should know? (optional)</label>
         <textarea id="oNote" rows={2} placeholder="Gift wrap, a specific delivery time…" {...register("note")} />
+      </div>
+      {/* Never ticked for them: joining the newsletter is its own choice (double opt-in follows). */}
+      <div className="field">
+        <label className="check-row items-start">
+          <input type="checkbox" className="mt-1" {...register("news")} />
+          <span className="text-sm font-normal">
+            Send me news of drops and offers (needs your email)
+            {consent && <span className="block text-xs text-ink-3">{consent}</span>}
+          </span>
+        </label>
       </div>
       <div className="mt-5 flex flex-wrap gap-2.5">
         <button type="submit" className="btn btn--primary">Review order</button>

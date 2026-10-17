@@ -15,8 +15,8 @@ export default function RunningLow({ rows = [], loading, canOpen }) {
       title="Running low"
       hint="Active pieces at or under the low stock level"
       action={canOpen && (
-        <Link to="/admin/inventory" className="group inline-flex items-center gap-1 text-[.82rem] font-semibold text-brand-600 transition-colors duration-200 hover:text-brand-500">
-          Inventory <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 ease-q group-hover:translate-x-0.5" aria-hidden="true" />
+        <Link to="/admin/products?tab=stock" className="group inline-flex items-center gap-1 text-[.82rem] font-semibold text-brand-600 transition-colors duration-200 hover:text-brand-500">
+          Stock <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 ease-q group-hover:translate-x-0.5" aria-hidden="true" />
         </Link>
       )}
     >

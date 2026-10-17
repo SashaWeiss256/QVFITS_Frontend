@@ -38,7 +38,8 @@ export async function ask(question: string): Promise<Block[]> {
     settings,
     chart,
     looks,
-    occasions: facets.occasions,
+    // Vee talks about what you train in: the terms of the Movement group.
+    movements: facets.terms.filter((t) => t.groupId === "movement").map(({ id, name }) => ({ id, name })),
     swatches: facets.colors.map((c) => c.name),
     session,
   });

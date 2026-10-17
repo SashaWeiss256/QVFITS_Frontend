@@ -5,7 +5,7 @@
 - **Every page folder is numbered**, in nav order and then the off-nav pages (`1.home` … `9.legal`). Dashboard pages are numbered too, and each dashboard starts with its own sign-in, `1.auth`, followed by its sidebar or account-menu order.
 - **Sign-in lives with its realm:** the shopper's sign-in is `CustomerDashboard/pages/1.auth/`, the staff sign-in `AdminDashboard/pages/1.auth/`. `src/pages/` has no auth.
 - **The page file sits in its folder** (`2.shop/shop.jsx`), next to its page-level helpers: a shell, schemas, a hook (`7.checkout/CheckoutShell.jsx`, `7.checkout/schemas.js`, `2.shop/useShopFilters.js`).
-- **Sections are flat and plainly named:** each section is one file in `sections/`, named for what it is (`SortBar.jsx`, `Gallery.jsx`, `SizePicker.jsx`), without the page's name in front. **No folders inside `sections/`** unless there is truly no other way.
+- **Sections are flat and plainly named:** each section is one file in `sections/`, named for what it is (`ShopToolbar.jsx`, `Gallery.jsx`, `SizePicker.jsx`), without the page's name in front. **No folders inside `sections/`** unless there is truly no other way.
 - `pages/not-found.jsx` sits at the root of `pages/`. Page copy lives in `data/pages.json`; the policy builders in `9.legal/content/` take the live settings.
 - **Home sections stay few:** the home page has one file per real section (client request: not split too far).
 
@@ -28,39 +28,48 @@ QVfits/
     ├── data/                      ← the JSON seeds, one file per entity (07-data.md)
     ├── utils/  seo/
     ├── components/                ← shared by the site; neither dashboard owns these
-    │   ├── layout/                ← Footer, PromoBar, SideDrawer, PageIntro, ScrollToTop,
-    │   │                            useOverlayFlag · navbar/index.jsx + Logo, MegaMenu (megaMenu/),
+    │   ├── layout/                ← Footer (with the newsletter band), PromoBar, SideDrawer,
+    │   │                            CookieConsent, PageIntro, ScrollToTop, useOverlayFlag · navbar/index.jsx + Logo, MegaMenu (megaMenu/),
     │   │                            SearchOverlay (searchOverlay/), MobileMenu (mobileMenu/)
     │   ├── motion/                ← Reveal, RevealGroup, RevealItem (m components, LazyMotion)
-    │   ├── ui/  storefront/  assistant/
+    │   ├── ui/  assistant/
+    │   ├── storefront/            ← ProductCard, ProductGrid, NewsletterForm, PaymentDue,
+    │   │                            RecentlyViewed, CartPanel, WishlistPanel …
     ├── pages/                     ← the storefront, every folder numbered
     │   ├── 1.home/                ← home.jsx · sections/ Hero, Press, ProductRail, Movements,
     │   │                            Campaign, Feed, Newsletter (the original Quivogue home)
-    │   ├── 2.shop/                ← shop.jsx, useShopFilters.js, filterProducts.js · sections/
+    │   ├── 2.shop/                ← shop.jsx, useShopFilters.js, useGridSize.js, filterProducts.js
+    │   │                            sections/ ShopToolbar, FilterDrawer, SortMenu, PriceRange,
+    │   │                            FilterChips, Kits, Deals …
     │   ├── 3.product/             ← product.jsx · sections/ Gallery, BuyPanel, ColorPicker, SizePicker …
     │   ├── 4.about/  5.size-guide/  6.contact/
     │   ├── 7.checkout/            ← cart, checkout, order-confirmed, CheckoutShell, schemas,
     │   │                            orderMessage, useCheckoutBag · sections/
-    │   ├── 8.track-order/         ← track-order.jsx · sections/LookupForm
+    │   ├── 8.track-order/         ← track-order.jsx · sections/ LookupForm, GuestReturn
     │   ├── 9.legal/               ← legal.jsx (all four policies) · content/ · sections/Blocks
+    │   ├── 10.newsletter/         ← confirm.jsx, unsubscribe.jsx (the double opt-in links)
     │   └── not-found.jsx
     ├── CustomerDashboard/         ← /account; CustomerLayout, CustomerPages (lazy barrel)
     │   ├── components/            ← auth/RequireCustomer, AccountMenu
-    │   └── pages/                 ← 1.auth (login, signup, forgot-password, AuthShell, schemas)
+    │   └── pages/                 ← 1.auth (login, signup, forgot-password, reset-password,
+    │                                confirm-email, AuthShell, schemas)
     │                                2.profile  3.orders  4.wishlist  5.addresses  6.settings
     └── AdminDashboard/            ← /admin; AdminLayout, AdminPages (lazy barrel)
         ├── components/            ← auth/RequireAdmin, header/, sidebar/, PermissionGate, DataTable,
         │                            Drawer, ImageUploader, ListEditor, ProductPicker, SaveBar, Tabs,
         │                            TagInput, Toggle, PageHeader, Panel, StatCard
         ├── lib/                   ← constants.jsx (ADMIN_NAV with permissions), useTable, useDraft,
-        │                            csv.js, media.js
-        └── pages/                 ← 1.auth (login, invite) 2.overview
-                                     Catalog: 3.products (+ product-edit) 4.categories 5.attributes
-                                     6.inventory 7.collections 8.reviews 9.size-guide
-                                     Sales: 10.orders 11.returns 12.customers 13.transactions
-                                     Marketing: 14.discounts 15.offers 16.newsletter
-                                     Website: 17.home-content 18.pages 19.faq 20.messages
-                                     Admin: 21.team 22.settings 23.activity
+        │                            useTab (?tab=), useUrlFilters, useIdleTimeout, csv.js, media.js
+        └── pages/                 ← 1.auth (login, invite) 2.overview 3.reports
+                                     Catalog: 4.products (tabs Products, Stock, Reviews; + product-edit
+                                     for pieces and kits) 5.categories (Shop by groups, colours, Filter and sort)
+                                     6.size-guide (chart, sizes)
+                                     Sales: 7.orders (tabs Orders, Returns and refunds, Payments)
+                                     8.customers
+                                     Marketing: 9.discounts 10.offers 11.newsletter (tabs Subscribers,
+                                     Campaigns, Welcome email, Outbox)
+                                     Website: 12.home-content 13.pages 14.faq 15.messages
+                                     Admin: 16.team 17.settings 18.activity
 ```
 
 ## Routes
@@ -68,17 +77,19 @@ QVfits/
 | URL | Folder |
 |---|---|
 | `/` | `pages/1.home/home.jsx` |
-| `/shop` | `pages/2.shop/shop.jsx` |
-| `/product/:slug` | `pages/3.product/product.jsx` |
+| `/shop`, `/shop/:category`, `/shop/:group/:term`, `/shop/:category/:group/:term`, `/shop/new`, `/shop/bestsellers`, `/shop/sale`, `/shop/kits` | `pages/2.shop/shop.jsx`; the path is resolved by `utils/shopTargets.js` (03, Links and targets) |
+| `/product/:slug` (`?preview` lets signed-in staff see a draft) | `pages/3.product/product.jsx` |
 | `/about`, `/size-guide`, `/contact` | `pages/4.about/`, `5.size-guide/`, `6.contact/` |
 | `/cart`, `/checkout`, `/order/:ref` | `pages/7.checkout/` |
 | `/track-order` | `pages/8.track-order/track-order.jsx` |
 | `/privacy`, `/terms`, `/returns`, `/delivery` | `pages/9.legal/legal.jsx` (the policy comes from the URL) |
+| `/newsletter/confirm`, `/newsletter/unsubscribe` | `pages/10.newsletter/` |
 | anything else | `pages/not-found.jsx`, inside the storefront chrome |
-| `/login`, `/signup`, `/forgot-password` | `CustomerDashboard/pages/1.auth/` |
+| `/login`, `/signup`, `/forgot-password`, `/reset-password`, `/account/confirm` | `CustomerDashboard/pages/1.auth/` |
 | `/account`, `/account/orders[/:id]`, `/account/wishlist`, `/account/addresses`, `/account/settings` | `CustomerDashboard/pages/2` to `6` |
 | `/admin/login`, `/admin/invite` | `AdminDashboard/pages/1.auth/` |
-| `/admin`, `/admin/products[/new, /:id]`, `/admin/orders` … `/admin/activity` | `AdminDashboard/pages/2` to `23`, each behind its permission (`routes/AdminRoutes.jsx`) |
+| `/admin`, `/admin/reports`, `/admin/products[/new, /:id]`, `/admin/orders` … `/admin/activity` | `AdminDashboard/pages/2` to `18`, each behind its permission (`routes/AdminRoutes.jsx`). A tab opens by address (`/admin/orders?tab=returns`, `?order=<id>` opens an order) |
+| `/admin/inventory`, `/reviews`, `/returns`, `/transactions`, `/collections` | Old addresses, redirected to their tab (`MOVED` in `AdminRoutes.jsx`) |
 
 Checkout is guest-friendly: signing in is offered, never required.
 

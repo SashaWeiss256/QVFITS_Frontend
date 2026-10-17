@@ -11,8 +11,8 @@ export default function MegaMenuColumn({ title, links, onNavigate }) {
       <p className="mega__title">{title}</p>
       <ul className="mega__list">
         {links.map((l) => (
-          <li key={l.path}>
-            <Link to={l.path} onClick={onNavigate}>{l.title}</Link>
+          <li key={l.id ?? l.href}>
+            <Link to={l.href} onClick={onNavigate}>{l.title}</Link>
           </li>
         ))}
       </ul>

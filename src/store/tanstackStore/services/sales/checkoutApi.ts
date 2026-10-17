@@ -3,12 +3,13 @@ import { ApiError, mockApi } from "../api/mock";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 import { assertCan } from "../auth/adminSession";
-import { getProductsByIds, moveStock, variantStock } from "../catalog/productsApi";
+import { getLiveKit, getProductsByIds, moveStock, variantStock } from "../catalog/productsApi";
 import { colors } from "../catalog/attributesApi";
 import { readSettings } from "../content/settingsApi";
+import { settlePayment } from "./ordersApi";
 import { feeFor } from "../settings/shippingApi";
-import type { CartLine, CheckoutInput, DeliveryRegion, Order, OrderLine } from "../types";
-import { applyDiscount, markDiscountUsed } from "./discountsApi";
+import type { CartLine, CheckoutInput, DeliveryRegion, Order, OrderLine, PaymentMethod } from "../types";
+import { applyDiscount } from "./discountsApi";
 import { orders } from "./ordersApi";
 
 /**
@@ -21,6 +22,8 @@ import { orders } from "./ordersApi";
 export interface Quote {
   lines: OrderLine[];
   subtotal: number;
+  /** Complete kits in the bag, priced as kits rather than piece by piece. */
+  kitSaving: number;
   delivery: number;
   discount: number;
   total: number;
@@ -29,10 +32,27 @@ export interface Quote {
   discountReason?: string;
 }
 
-const usesOf = (customerId: Id | undefined, code: string | undefined) =>
-  customerId && code ? orders.list().filter((o) => o.customerId === customerId && o.discountCode === code.toUpperCase()).length : 0;
+/**
+ * Lines added from a kit carry its id. Each complete set of the kit's pieces
+ * in the bag is charged the kit's price; a set that is broken up (a piece
+ * removed) falls back to the pieces' own prices.
+ */
+function kitSavingOf(priced: OrderLine[]) {
+  let saving = 0;
+  for (const kitId of new Set(priced.map((l) => l.kitId).filter(Boolean) as string[])) {
+    const kit = getLiveKit(kitId);
+    if (!kit) continue;
+    const tagged = priced.filter((l) => l.kitId === kitId);
+    const qtyOf = (id: string) => tagged.filter((l) => l.productId === id).reduce((n, l) => n + l.qty, 0);
+    const sets = Math.min(...kit.kitItems.map(qtyOf));
+    if (!Number.isFinite(sets) || sets < 1) continue;
+    const separate = kit.kitItems.reduce((n, id) => n + (tagged.find((l) => l.productId === id)?.price ?? 0), 0);
+    saving += Math.max(0, separate - kit.price) * sets;
+  }
+  return saving;
+}
 
-export async function quote(lines: CartLine[], region: DeliveryRegion, code?: string, { signal, customerId }: RequestOptions & { customerId?: Id } = {}): Promise<Quote> {
+export async function quote(lines: CartLine[], region: DeliveryRegion, code?: string, { signal, customerId, phone }: RequestOptions & { customerId?: Id; phone?: string } = {}): Promise<Quote> {
   const products = await getProductsByIds(lines.map((l) => l.productId), { signal });
 
   const priced: OrderLine[] = lines.flatMap((line) => {
@@ -44,15 +64,19 @@ export async function quote(lines: CartLine[], region: DeliveryRegion, code?: st
   });
 
   const subtotal = priced.reduce((sum, l) => sum + l.price * l.qty, 0);
-  const applied = applyDiscount(code, priced, products, usesOf(customerId, code));
-  const delivery = applied.freeShipping ? 0 : feeFor(region, subtotal - applied.amount, readSettings().freeShippingOver);
+  const kitSaving = kitSavingOf(priced);
+  const applied = applyDiscount(code, priced, products, { customerId, phone });
+  // A code never takes the goods below nothing; delivery is always charged on its own.
+  const discount = Math.min(applied.amount, subtotal - kitSaving);
+  const delivery = applied.freeShipping ? 0 : feeFor(region, subtotal - kitSaving - discount, readSettings().freeShippingOver);
 
   return {
     lines: priced,
     subtotal,
+    kitSaving,
     delivery,
-    discount: applied.amount,
-    total: subtotal - applied.amount + delivery,
+    discount,
+    total: subtotal - kitSaving - discount + delivery,
     discountCode: applied.discount?.code,
     discountReason: applied.reason,
   };
@@ -76,7 +100,8 @@ export async function placeOrder(input: CheckoutInput, customerId?: Id, { source
     const left = variantStock(p, colorId, l.size);
     if (left < l.qty) throw new ApiError(`${p.name} in ${l.color}, ${l.size} has ${left} left. Lower the quantity to carry on.`, 409);
   }
-  const priced = await quote(input.lines, input.region, input.discountCode, { customerId });
+  // The phone counts a guest's earlier uses of the code too (gap A5).
+  const priced = await quote(input.lines, input.region, input.discountCode, { customerId, phone: input.phone });
 
   return mockApi(() => {
     const createdAt = new Date().toISOString();
@@ -91,6 +116,7 @@ export async function placeOrder(input: CheckoutInput, customerId?: Id, { source
       note: input.note,
       lines: priced.lines,
       subtotal: priced.subtotal,
+      kitSaving: priced.kitSaving,
       delivery: priced.delivery,
       discount: priced.discount,
       discountCode: priced.discountCode,
@@ -103,21 +129,27 @@ export async function placeOrder(input: CheckoutInput, customerId?: Id, { source
       source,
       createdAt,
     });
-    priced.lines.forEach((l) => moveStock(l.productId, l.colorId ?? l.color, l.size, -l.qty));
-    if (priced.discountCode) {
-      const d = applyDiscount(priced.discountCode, priced.lines, products).discount;
-      if (d) markDiscountUsed(d.id);
-    }
+    priced.lines.forEach((l) => moveStock(l.productId, l.colorId ?? l.color, l.size, -l.qty, "order", order.ref));
     return order;
   }, 400);
 }
 
 /* Admin (realm: admin) */
 
-/** An order taken on WhatsApp or in the showroom, priced the same way as the shop. */
-export async function createManualOrder(input: CheckoutInput, customerId?: Id) {
-  const admin = assertCan("orders", "edit");
-  const order = await placeOrder(input, customerId, { source: "manual", by: admin.name });
-  logActivity({ module: "orders", action: "create", entityId: order.id, summary: `Entered order ${order.ref} for ${order.name}` });
-  return order;
+/**
+ * A sale paid on the spot, in the showroom or on WhatsApp: priced and
+ * stock-checked exactly like a shop order, then settled at once with a
+ * payment against it, so the books and the stock always match. Online
+ * orders only ever come from checkout.
+ */
+export async function recordSale(
+  input: CheckoutInput,
+  { source, method, reference = "" }: { source: "showroom" | "whatsapp"; method: PaymentMethod; reference?: string },
+  customerId?: Id,
+) {
+  const admin = assertCan("orders", "payment");
+  const order = await placeOrder({ ...input, payment: method }, customerId, { source, by: admin.name });
+  const paid = settlePayment(order, { method, reference }, admin.name);
+  logActivity({ module: "orders", action: "create", entityId: order.id, summary: `Recorded a ${source} sale ${order.ref} for ${order.name}, paid by ${method}` });
+  return paid;
 }

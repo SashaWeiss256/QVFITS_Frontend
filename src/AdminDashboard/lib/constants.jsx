@@ -1,84 +1,82 @@
-/* Admin Constants - Simple, Intuitive Navigation */
+/* Admin Constants */
 import {
   Activity,
   BadgePercent,
-  Boxes,
+  BarChart3,
   FileText,
   FolderTree,
   Globe,
   Inbox,
   LayoutDashboard,
   Mail,
-  MessageSquareQuote,
   MessagesSquare,
   Package,
-  ReceiptText,
+  Ruler,
   Settings,
+  ShieldCheck,
   Shirt,
   Tags,
-  Undo2,
   UsersRound,
 } from "lucide-react";
 
 /**
- * Clean, simple, industry-standard 7-item navigation.
- * All complex sub-features are organized as intuitive sub-tabs inside their respective hub.
+ * The sidebar, in groups. Every page has its own link, so nothing hides
+ * behind a tab, and a group disappears when the role can see none of it.
+ * The page folders follow this order.
  */
 export const ADMIN_NAV = [
   {
     id: "main",
     items: [
       { to: "/admin", label: "Overview", icon: LayoutDashboard, perm: "overview", end: true },
-      { to: "/admin/products", label: "Products", icon: Shirt, perm: "products" },
-      { to: "/admin/orders", label: "Orders", icon: Package, perm: "orders" },
-      { to: "/admin/customers", label: "Customers", icon: UsersRound, perm: "customers" },
-      { to: "/admin/discounts", label: "Promotions", icon: BadgePercent, perm: "discounts" },
-      { to: "/admin/website", label: "Online Store", icon: Globe, perm: "home-content" },
-      { to: "/admin/settings", label: "Settings", icon: Settings, perm: "settings" },
+      { to: "/admin/reports", label: "Reports", icon: BarChart3, perm: "reports" },
     ],
   },
-];
-
-/** Sub-tabs for the Catalog Hub (Products, Categories, Inventory, Reviews) */
-export const CATALOG_TABS = [
-  { to: "/admin/products", label: "All Products", icon: Shirt, end: true, perm: "products" },
-  { to: "/admin/categories", label: "Categories", icon: FolderTree, perm: "categories" },
-  { to: "/admin/inventory", label: "Inventory Stock", icon: Boxes, perm: "inventory" },
-  { to: "/admin/reviews", label: "Reviews", icon: MessageSquareQuote, perm: "reviews" },
-];
-
-/** Sub-tabs for the Sales & Orders Hub (Orders, Returns, Transactions) */
-export const ORDERS_TABS = [
-  { to: "/admin/orders", label: "All Orders", icon: Package, end: true, perm: "orders" },
-  { to: "/admin/returns", label: "Returns & Exchanges", icon: Undo2, perm: "returns" },
-  { to: "/admin/transactions", label: "Transactions", icon: ReceiptText, perm: "transactions" },
-];
-
-/** Sub-tabs for the Customers Hub (Customers, Support Messages) */
-export const CUSTOMERS_TABS = [
-  { to: "/admin/customers", label: "Customer Directory", icon: UsersRound, end: true, perm: "customers" },
-  { to: "/admin/messages", label: "Support Inbox", icon: Inbox, perm: "messages" },
-];
-
-/** Sub-tabs for Marketing & Promotions (Discounts, Offers/Banners, Subscribers) */
-export const MARKETING_TABS = [
-  { to: "/admin/discounts", label: "Discount Codes", icon: BadgePercent, end: true, perm: "discounts" },
-  { to: "/admin/offers", label: "Offers & Banners", icon: Tags, perm: "offers" },
-  { to: "/admin/newsletter", label: "Subscribers", icon: Mail, perm: "newsletter" },
-];
-
-/** Sub-tabs for Online Store CMS (Homepage, Pages & Navigation, FAQ) */
-export const STORE_TABS = [
-  { to: "/admin/website", label: "Home Page", icon: Globe, end: true, perm: "home-content" },
-  { to: "/admin/pages", label: "Pages & Menus", icon: FileText, perm: "pages" },
-  { to: "/admin/faq", label: "FAQ", icon: MessagesSquare, perm: "faq" },
-];
-
-/** Sub-tabs for Store Settings (Settings, Team, Activity Log) */
-export const SETTINGS_TABS = [
-  { to: "/admin/settings", label: "Store Settings", icon: Settings, end: true, perm: "settings" },
-  { to: "/admin/team", label: "Team & Roles", icon: UsersRound, perm: "team" },
-  { to: "/admin/activity", label: "Activity Log", icon: Activity, perm: "activity" },
+  {
+    id: "catalog",
+    label: "Catalog",
+    items: [
+      { to: "/admin/products", label: "Products", icon: Shirt, perm: "products" },
+      { to: "/admin/categories", label: "Categories", icon: FolderTree, perm: "categories" },
+      { to: "/admin/size-guide", label: "Sizes and size guide", icon: Ruler, perm: "size-guide" },
+    ],
+  },
+  {
+    id: "sales",
+    label: "Sales",
+    items: [
+      { to: "/admin/orders", label: "Orders", icon: Package, perm: "orders" },
+      { to: "/admin/customers", label: "Customers", icon: UsersRound, perm: "customers" },
+    ],
+  },
+  {
+    id: "marketing",
+    label: "Marketing",
+    items: [
+      { to: "/admin/discounts", label: "Discount codes", icon: BadgePercent, perm: "discounts" },
+      { to: "/admin/offers", label: "Offers and banners", icon: Tags, perm: "offers" },
+      { to: "/admin/newsletter", label: "Newsletter", icon: Mail, perm: "newsletter" },
+    ],
+  },
+  {
+    id: "website",
+    label: "Website",
+    items: [
+      { to: "/admin/website", label: "Home page", icon: Globe, perm: "home-content" },
+      { to: "/admin/pages", label: "Pages and menus", icon: FileText, perm: "pages" },
+      { to: "/admin/faq", label: "FAQ", icon: MessagesSquare, perm: "faq" },
+      { to: "/admin/messages", label: "Messages", icon: Inbox, perm: "messages" },
+    ],
+  },
+  {
+    id: "admin",
+    label: "Admin",
+    items: [
+      { to: "/admin/team", label: "Team and roles", icon: ShieldCheck, perm: "team" },
+      { to: "/admin/settings", label: "Settings", icon: Settings, perm: "settings" },
+      { to: "/admin/activity", label: "Activity log", icon: Activity, perm: "activity" },
+    ],
+  },
 ];
 
 /** The first page a person may open, for after sign-in and the no-access panel. */

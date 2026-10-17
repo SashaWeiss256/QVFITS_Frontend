@@ -8,6 +8,8 @@ import { lazy } from "react";
 export const CustomerLogin = lazy(() => import("./pages/1.auth/login"));
 export const CustomerSignup = lazy(() => import("./pages/1.auth/signup"));
 export const CustomerForgotPassword = lazy(() => import("./pages/1.auth/forgot-password"));
+export const CustomerResetPassword = lazy(() => import("./pages/1.auth/reset-password"));
+export const CustomerConfirmEmail = lazy(() => import("./pages/1.auth/confirm-email"));
 
 export const CustomerLayout = lazy(() => import("./CustomerLayout"));
 

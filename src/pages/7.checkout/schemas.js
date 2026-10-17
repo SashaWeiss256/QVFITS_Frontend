@@ -21,6 +21,7 @@ export const deliverySchema = (zones = [], methods = []) => z
     // Required for delivery only; the refine below enforces it.
     address: z.string().trim().optional(),
     note: z.string().trim().max(300).optional(),
+    news: z.boolean().optional(),
     payment: z.string().refine((v) => methods.some((m) => m.id === v), "Pick how you'd like to pay"),
   })
   .refine((v) => zones.find((zone) => zone.id === v.region)?.collect || (v.address ?? "").length > 3, { message: "Where should we deliver it?", path: ["address"] });

@@ -1,11 +1,14 @@
 /* Site Forms And Checkout */
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { ask, greeting } from "../../services/assistant/fitAssistantApi";
 import { sendMessage, type ContactInput } from "../../services/content/contactApi";
-import { subscribe } from "../../services/marketing/subscribersApi";
+import { confirmSubscription, getNewsletterConsent, subscribe, unsubscribe } from "../../services/marketing/subscribersApi";
+import { latestEmail } from "../../services/notifications/outboxApi";
+import type { SubscriberSource } from "../../services/types";
 import { placeOrder, quote } from "../../services/sales/checkoutApi";
-import { trackOrder } from "../../services/sales/ordersApi";
+import { cancelGuestOrder, trackOrder } from "../../services/sales/ordersApi";
+import { requestGuestReturn } from "../../services/sales/returnsApi";
 import type { CartLine, CheckoutInput, DeliveryRegion, Id } from "../../services/types";
 import { adminRoot } from "../keys";
 
@@ -18,7 +21,22 @@ export const useSendMessage = () =>
 
 // A new sign-up should show in the admin's Newsletter list straight away.
 export const useSubscribe = () =>
-  useMutation({ mutationFn: (email: string) => subscribe(email), meta: { ...inline, invalidates: [[...adminRoot, "subscribers"]] } });
+  useMutation({
+    mutationFn: ({ email, source, name, customerId }: { email: string; source: SubscriberSource; name?: string; customerId?: Id }) => subscribe(email, { source, name, customerId }),
+    meta: { ...inline, invalidates: [[...adminRoot, "subscribers"], [...adminRoot, "outbox"]] },
+  });
+export const useNewsletterConsent = () => useQuery({ queryKey: ["site", "newsletter-consent"], queryFn: ({ signal }) => getNewsletterConsent({ signal }), staleTime: 60_000 });
+
+/**
+ * Dev builds only: the link from the newest email of a kind to an address,
+ * so the confirm and reset flows can be tried without an email service.
+ */
+export const demoEmailLink = (to: string, kind: Parameters<typeof latestEmail>[1]) => (import.meta.env.DEV ? latestEmail(to, kind)?.link ?? null : null);
+
+// The emailed links: confirm and unsubscribe.
+export const useConfirmSubscription = () =>
+  useMutation({ mutationFn: (token: string) => confirmSubscription(token), meta: { ...inline, invalidates: [[...adminRoot, "subscribers"], [...adminRoot, "outbox"]] } });
+export const useUnsubscribe = () => useMutation({ mutationFn: (token: string) => unsubscribe(token), meta: { ...inline, invalidates: [[...adminRoot, "subscribers"]] } });
 
 // Prices the bag on the server side (delivery and any code), so the shown total matches the order.
 export const useQuote = () =>
@@ -39,6 +57,15 @@ export const usePlaceOrder = () =>
 // A mutation, not a query: it runs on submit with what was typed, and nothing is cached.
 export const useTrackOrder = () =>
   useMutation({ mutationFn: ({ ref, phone }: { ref: string; phone: string }) => trackOrder(ref, phone), meta: inline });
+
+// From Track an order: a guest cancels an unpaid order, or asks for a return (gaps O1, O2).
+export const useCancelGuestOrder = () =>
+  useMutation({ mutationFn: ({ ref, phone }: { ref: string; phone: string }) => cancelGuestOrder(ref, phone), meta: { ...inline, invalidates: [[...adminRoot, "orders"], ["site", "catalog"]] } });
+export const useGuestReturn = () =>
+  useMutation({
+    mutationFn: ({ ref, phone, input }: { ref: string; phone: string; input: Parameters<typeof requestGuestReturn>[2] }) => requestGuestReturn(ref, phone, input),
+    meta: { ...inline, invalidates: [[...adminRoot, "returns"]] },
+  });
 
 export const useAskAssistant = () => useMutation({ mutationFn: (question: string) => ask(question), meta: inline });
 export const assistantGreeting = greeting;

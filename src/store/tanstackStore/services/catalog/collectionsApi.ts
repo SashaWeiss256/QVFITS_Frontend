@@ -1,57 +1,34 @@
 /* Collections Service */
 import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
-import { getContent } from "../content/contentApi";
-import { adminCrud, byPosition } from "../store/adminCrud";
-import { createCollection } from "../store/collectionStore";
-import type { Photo } from "../types";
-import { photosFor } from "./photos";
-import lookSeed from "@/data/looks.json";
+import type { Product } from "../types";
+import { listKits, listProducts, type KitView } from "./productsApi";
 
 /**
- * Curated groupings the shop chooses by hand: the New Releases and Best
- * Sellers rails (product ids, in order, kept with the home page content) and
- * the kits ("looks") that pair pieces from the catalogue.
+ * The shop's automatic groupings. Nothing here is picked by hand any more:
+ *   New releases  the newest pieces marked New arrival
+ *   Best sellers  pinned pieces and the top sellers by units sold
+ *   Kits          kit products (Products, type Kit), via listKits
+ * The home page keeps only the rails' words (Home page editor).
  */
-export interface Look {
-  id: string;
-  title: string;
-  note: string;
-  items: string[];
-  position: number;
-  live: boolean;
-  /** The kit's own photo in /photos (look-<id>), the brand's photography. */
-  photo?: Photo;
-}
+export type Look = KitView;
+export { listKits as listLooks };
 
 export interface Rails {
   newReleases: string[];
   bestSellers: string[];
 }
 
+const RAIL = 8;
+
 export async function getRails({ signal }: RequestOptions = {}): Promise<Rails> {
-  const { rails } = await getContent({ signal });
-  return { newReleases: rails.newReleases.productIds, bestSellers: rails.bestSellers.productIds };
+  const pieces = await listProducts({}, { signal });
+  return mockApi(() => ({
+    newReleases: pieces.filter((p) => p.isNew).sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, RAIL).map((p) => p.id),
+    bestSellers: pieces
+      .filter((p) => p.isBestseller)
+      .sort((a: Product, b: Product) => Number(b.pinnedBestseller) - Number(a.pinnedBestseller) || b.unitsSold - a.unitsSold)
+      .slice(0, RAIL)
+      .map((p) => p.id),
+  }), 0, signal);
 }
-
-const looks = createCollection<Look>("looks", lookSeed as Look[], { idPrefix: "look" });
-
-export function listLooks({ signal }: RequestOptions = {}) {
-  return mockApi<Look[]>(
-    () => byPosition(looks.list()).filter((l) => l.live).map((l) => ({ ...l, photo: l.photo ?? photosFor(l.id)[0] })),
-    100,
-    signal,
-  );
-}
-
-/* Admin (realm: admin) */
-
-export const looksCrud = adminCrud(looks, {
-  module: "collections",
-  noun: "kit",
-  label: (l) => l.title,
-  prepare: (data, existing, all) => (existing ? data : { live: true, items: [], note: "", ...data, position: all.length }),
-});
-
-export const listAllLooks = ({ signal }: RequestOptions = {}) =>
-  mockApi(() => byPosition(looks.list()).map((l) => ({ ...l, photo: l.photo ?? photosFor(l.id)[0] })), 120, signal);

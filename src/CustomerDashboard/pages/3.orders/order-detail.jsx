@@ -5,7 +5,8 @@ import PageLoader from "@/components/ui/PageLoader";
 import StatusChip from "@/components/ui/StatusChip";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
-import { useMyOrder } from "@/store/tanstackStore/queries/account";
+import { useCancelMyOrder, useMyOrder } from "@/store/tanstackStore/queries/account";
+import PaymentDue from "@/components/storefront/PaymentDue";
 import { formatDate } from "@/utils/format";
 import ReturnRequest from "./ReturnRequest";
 
@@ -15,6 +16,7 @@ export default function AccountOrderDetail() {
   const { customer } = useCustomerAuth();
   const { data: order, isLoading, error } = useMyOrder(customer.id, id);
   const { moneyBase } = useCurrency();
+  const cancel = useCancelMyOrder(customer.id);
 
   if (isLoading) return <PageLoader className="min-h-[30vh]" />;
   // Another shopper's id or a stale link lands here too, not on a crash.
@@ -38,10 +40,13 @@ export default function AccountOrderDetail() {
       </ul>
       {/* Totals */}
       <dl className="mt-4 grid grid-cols-[1fr_auto] gap-1 text-[.95rem]">
+        {order.kitSaving > 0 && <><dt>Kit saving</dt><dd className="m-0 text-right">−{moneyBase(order.kitSaving)}</dd></>}
         <dt>Delivery</dt><dd className="m-0 text-right">{moneyBase(order.delivery)}</dd>
         {order.discount > 0 && <><dt>Discount</dt><dd className="m-0 text-right">−{moneyBase(order.discount)}</dd></>}
         <dt className="font-semibold">Total</dt><dd className="m-0 text-right font-semibold">{moneyBase(order.total)}</dd>
       </dl>
+      <PaymentDue order={order} onCancel={() => cancel.mutate(order.id)} cancelling={cancel.isPending} />
+      {cancel.error && <p role="alert" className="m-0 mt-2 text-sm font-semibold text-warn">{cancel.error.message}</p>}
       <ReturnRequest order={order} customerId={customer.id} />
     </div>
   );

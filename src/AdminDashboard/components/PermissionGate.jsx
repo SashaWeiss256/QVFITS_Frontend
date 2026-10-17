@@ -18,7 +18,7 @@ export default function PermissionGate({ perm, children }) {
   return (
     <div className="mx-auto mt-16 max-w-md rounded-r-lg bg-white p-8 text-center shadow-sh-1">
       <Lock className="mx-auto mb-3 h-6 w-6 text-brand-400" aria-hidden="true" />
-      <h1 className="text-[1.4rem]">No access to this page</h1>
+      <h2 className="m-0 text-[1.4rem]">No access to this page</h2>
       <p className="mt-2 text-ink-3">Your role does not include it. Ask the owner if you need it.</p>
       {home && <Link className="btn btn--soft mt-5" to={home}>Go to your dashboard</Link>}
     </div>

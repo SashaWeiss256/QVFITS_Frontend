@@ -1,10 +1,9 @@
-/* Admin Size Guide */
+/* Size Chart */
 import { Plus, Trash2 } from "lucide-react";
 
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { sizeChartResource, useDocument } from "@/store/tanstackStore/queries/admin";
-import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
 import SaveBar from "@/AdminDashboard/components/SaveBar";
 import { useDraft } from "@/AdminDashboard/lib/useDraft";
@@ -14,7 +13,7 @@ const RANGES = [["bust", "Bust"], ["waist", "Waist"], ["hip", "Hips"]];
 const LABELS = [["size", "Size"], ["uk", "UK"], ["us", "US"], ["eu", "EU"]];
 
 /** The size chart the size guide, the finder and Vee all read. */
-export default function AdminSizeGuide() {
+export default function SizeChart() {
   const doc = useDocument(sizeChartResource);
   if (!doc.data) return <PageLoader />;
   return <Editor doc={doc} />;
@@ -30,7 +29,6 @@ function Editor({ doc }) {
 
   return (
     <>
-      <PageHeader lede="Body measurements in cm, from and to, per size. Shoppers can switch to inches." />
       <Panel>
         <fieldset disabled={!canEdit} className="m-0 overflow-x-auto border-0 p-0">
           <table className="w-full border-collapse text-sm">

@@ -20,7 +20,7 @@ export function recordTransaction(data: Omit<NewRow<Transaction>, "createdAt"> &
 export const listTransactions = ({ signal }: RequestOptions = {}) => mockApi(() => transactions.list(), 150, signal);
 
 export const transactionsCrud = adminCrud(transactions, {
-  module: "transactions",
+  module: "orders",
   noun: "transaction",
   label: (t) => `${t.type} on ${t.orderRef}`,
   prepare: (data, existing) => (existing ? data : { status: "succeeded" as const, reference: "", createdAt: new Date().toISOString(), ...data }),

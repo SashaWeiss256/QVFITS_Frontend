@@ -12,35 +12,30 @@ export const AdminInvite = lazy(() => import("./pages/1.auth/invite"));
 export const AdminLayout = lazy(() => import("./AdminLayout"));
 
 export const Overview = lazy(() => import("./pages/2.overview/overview"));
+export const Reports = lazy(() => import("./pages/3.reports/reports"));
 
 // Catalog
-export const Products = lazy(() => import("./pages/3.products/products"));
-export const ProductEdit = lazy(() => import("./pages/3.products/product-edit"));
-export const Categories = lazy(() => import("./pages/4.categories/categories"));
-export const Attributes = lazy(() => import("./pages/5.attributes/attributes"));
-export const Inventory = lazy(() => import("./pages/6.inventory/inventory"));
-export const Collections = lazy(() => import("./pages/7.collections/collections"));
-export const Reviews = lazy(() => import("./pages/8.reviews/reviews"));
-export const SizeGuide = lazy(() => import("./pages/9.size-guide/size-guide"));
+export const Products = lazy(() => import("./pages/4.products/products"));
+export const ProductEdit = lazy(() => import("./pages/4.products/product-edit"));
+export const Categories = lazy(() => import("./pages/5.categories/categories"));
+export const SizeGuide = lazy(() => import("./pages/6.size-guide/size-guide"));
 
 // Sales
-export const Orders = lazy(() => import("./pages/10.orders/orders"));
-export const Returns = lazy(() => import("./pages/11.returns/returns"));
-export const Customers = lazy(() => import("./pages/12.customers/customers"));
-export const Transactions = lazy(() => import("./pages/13.transactions/transactions"));
+export const Orders = lazy(() => import("./pages/7.orders/orders"));
+export const Customers = lazy(() => import("./pages/8.customers/customers"));
 
 // Marketing
-export const Discounts = lazy(() => import("./pages/14.discounts/discounts"));
-export const Offers = lazy(() => import("./pages/15.offers/offers"));
-export const Newsletter = lazy(() => import("./pages/16.newsletter/newsletter"));
+export const Discounts = lazy(() => import("./pages/9.discounts/discounts"));
+export const Offers = lazy(() => import("./pages/10.offers/offers"));
+export const Newsletter = lazy(() => import("./pages/11.newsletter/newsletter"));
 
 // Website
-export const HomeContent = lazy(() => import("./pages/17.home-content/home-content"));
-export const PagesAndMenus = lazy(() => import("./pages/18.pages/pages"));
-export const Faq = lazy(() => import("./pages/19.faq/faq"));
-export const Messages = lazy(() => import("./pages/20.messages/messages"));
+export const HomeContent = lazy(() => import("./pages/12.home-content/home-content"));
+export const PagesAndMenus = lazy(() => import("./pages/13.pages/pages"));
+export const Faq = lazy(() => import("./pages/14.faq/faq"));
+export const Messages = lazy(() => import("./pages/15.messages/messages"));
 
 // Admin
-export const Team = lazy(() => import("./pages/21.team/team"));
-export const Settings = lazy(() => import("./pages/22.settings/settings"));
-export const ActivityLog = lazy(() => import("./pages/23.activity/activity"));
+export const Team = lazy(() => import("./pages/16.team/team"));
+export const Settings = lazy(() => import("./pages/17.settings/settings"));
+export const ActivityLog = lazy(() => import("./pages/18.activity/activity"));

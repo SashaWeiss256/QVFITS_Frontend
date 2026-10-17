@@ -14,6 +14,8 @@ import {
   CartPage,
   CheckoutPage,
   OrderConfirmedPage,
+  NewsletterConfirmPage,
+  NewsletterUnsubscribePage,
   TrackOrderPage,
   LegalPage,
 } from "./pages";
@@ -24,7 +26,8 @@ export default function siteRoutes() {
   return (
     <Route element={<SiteLayout />}>
       <Route index element={<HomePage />} />
-      <Route path="shop" element={<ShopPage />} />
+      {/* /shop/bras, /shop/for/pilates, /shop/bras/running, /shop/new (utils/shopTargets) */}
+      <Route path="shop/*" element={<ShopPage />} />
       <Route path="product/:slug" element={<ProductPage />} />
       <Route path="about" element={<AboutPage />} />
       <Route path="size-guide" element={<SizeGuidePage />} />
@@ -35,6 +38,8 @@ export default function siteRoutes() {
       <Route path="checkout" element={<CheckoutPage />} />
       <Route path="order/:ref" element={<OrderConfirmedPage />} />
       <Route path="track-order" element={<TrackOrderPage />} />
+      <Route path="newsletter/confirm" element={<NewsletterConfirmPage />} />
+      <Route path="newsletter/unsubscribe" element={<NewsletterUnsubscribePage />} />
 
       {/* Legal */}
       {["privacy", "terms", "returns", "delivery"].map((doc) => (

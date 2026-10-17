@@ -1,5 +1,5 @@
 /* Admin Routes */
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 
 import RequireAdmin from "@/AdminDashboard/components/auth/RequireAdmin";
 import PermissionGate from "@/AdminDashboard/components/PermissionGate";
@@ -7,19 +7,14 @@ import * as P from "@/AdminDashboard/AdminPages";
 
 // Path, permission module (src/data/permissions.json) and page, in sidebar order.
 const MODULES = [
+  ["reports", "reports", P.Reports],
   ["products", "products", P.Products],
   ["products/new", "products", P.ProductEdit],
   ["products/:id", "products", P.ProductEdit],
   ["categories", "categories", P.Categories],
-  ["attributes", "attributes", P.Attributes],
-  ["inventory", "inventory", P.Inventory],
-  ["collections", "collections", P.Collections],
-  ["reviews", "reviews", P.Reviews],
   ["size-guide", "size-guide", P.SizeGuide],
   ["orders", "orders", P.Orders],
-  ["returns", "returns", P.Returns],
   ["customers", "customers", P.Customers],
-  ["transactions", "transactions", P.Transactions],
   ["discounts", "discounts", P.Discounts],
   ["offers", "offers", P.Offers],
   ["newsletter", "newsletter", P.Newsletter],
@@ -30,6 +25,15 @@ const MODULES = [
   ["team", "team", P.Team],
   ["settings", "settings", P.Settings],
   ["activity", "activity", P.ActivityLog],
+];
+
+// Pages that became tabs keep their old addresses working.
+const MOVED = [
+  ["inventory", "/admin/products?tab=stock"],
+  ["reviews", "/admin/products?tab=reviews"],
+  ["returns", "/admin/orders?tab=returns"],
+  ["transactions", "/admin/orders?tab=payments"],
+  ["collections", "/admin/products?type=kit"],
 ];
 
 export default function adminRoutes() {
@@ -52,6 +56,7 @@ export default function adminRoutes() {
         {MODULES.map(([path, perm, Page]) => (
           <Route key={path} path={path} element={<PermissionGate perm={perm}><Page /></PermissionGate>} />
         ))}
+        {MOVED.map(([path, to]) => <Route key={path} path={path} element={<Navigate to={to} replace />} />)}
       </Route>
     </>
   );

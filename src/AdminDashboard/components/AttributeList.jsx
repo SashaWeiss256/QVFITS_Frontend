@@ -10,17 +10,17 @@ import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useCollection } from "@/store/tanstackStore/queries/admin";
 
 /**
- * Colours, sizes or activities: one ordered list each, the same screen.
+ * Colours or sizes: one ordered list each, the same screen.
  * `fields` are the form's inputs; `name` labels a row; `swatch` draws a
  * colour dot. Deleting something a product still uses is refused by the
  * service with a message saying how many.
  */
-export default function AttributeList({ resource, noun, fields, name, swatch, usage, blank }) {
+export default function AttributeList({ resource, module, noun, fields, name, swatch, usage, blank }) {
   const items = useCollection(resource);
   const { can } = useAdminAuth();
   const [editing, setEditing] = useState(null);
   const [removing, setRemoving] = useState(null);
-  const canEdit = can("attributes", "edit");
+  const canEdit = can(module, "edit");
   const list = items.items;
 
   const move = (i, by) => {
@@ -57,7 +57,7 @@ export default function AttributeList({ resource, noun, fields, name, swatch, us
               {usage && <span className="ml-2 text-sm text-ink-3">{usage(x)}</span>}
             </span>
             {canEdit && <button type="button" className="btn btn--ghost min-h-10 px-4 text-sm" onClick={() => setEditing(x)}>Edit</button>}
-            {can("attributes", "delete") && <button type="button" className="btn btn--ghost min-h-10 px-4 text-sm text-warn" onClick={() => setRemoving(x)}>Delete</button>}
+            {can(module, "delete") && <button type="button" className="btn btn--ghost min-h-10 px-4 text-sm text-warn" onClick={() => setRemoving(x)}>Delete</button>}
           </li>
         ))}
       </ul>

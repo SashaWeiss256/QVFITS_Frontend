@@ -1,29 +1,74 @@
 {
   "header": [
-    { "title": "New in", "path": "/shop?badge=New" },
-    { "title": "Best sellers", "path": "/shop?badge=Bestseller" },
-    { "title": "Swim", "path": "/shop?c=Swim" },
-    { "title": "About", "path": "/about" }
-  ],
-  "shopEdits": [
-    { "title": "Shop everything", "path": "/shop" },
-    { "title": "New in", "path": "/shop?badge=New" },
-    { "title": "Best sellers", "path": "/shop?badge=Bestseller" },
-    { "title": "Shop the kit", "path": "/shop#kits" }
+    {
+      "title": "About",
+      "target": {
+        "page": "/about"
+      }
+    }
   ],
   "help": [
-    { "title": "Size guide", "path": "/size-guide" },
-    { "title": "Contact and FAQ", "path": "/contact" },
-    { "title": "Track an order", "path": "/track-order" },
-    { "title": "Delivery", "path": "/delivery" },
-    { "title": "Exchanges and returns", "path": "/returns" },
-    { "title": "Your account", "path": "/account" }
+    {
+      "title": "Size guide",
+      "target": {
+        "page": "/size-guide"
+      }
+    },
+    {
+      "title": "Contact and FAQ",
+      "target": {
+        "page": "/contact"
+      }
+    },
+    {
+      "title": "Track an order",
+      "target": {
+        "page": "/track-order"
+      }
+    },
+    {
+      "title": "Delivery",
+      "target": {
+        "page": "/delivery"
+      }
+    },
+    {
+      "title": "Exchanges and returns",
+      "target": {
+        "page": "/returns"
+      }
+    },
+    {
+      "title": "Your account",
+      "target": {
+        "page": "/account"
+      }
+    }
   ],
   "legal": [
-    { "title": "Privacy policy", "path": "/privacy" },
-    { "title": "Terms of sale", "path": "/terms" },
-    { "title": "Exchanges and returns", "path": "/returns" },
-    { "title": "Delivery", "path": "/delivery" }
-  ],
-  "popularSearches": ["Leggings", "Sets", "Sports bra", "Skorts", "Swim", "Lounge"]
+    {
+      "title": "Privacy policy",
+      "target": {
+        "page": "/privacy"
+      }
+    },
+    {
+      "title": "Terms of sale",
+      "target": {
+        "page": "/terms"
+      }
+    },
+    {
+      "title": "Exchanges and returns",
+      "target": {
+        "page": "/returns"
+      }
+    },
+    {
+      "title": "Delivery",
+      "target": {
+        "page": "/delivery"
+      }
+    }
+  ]
 }

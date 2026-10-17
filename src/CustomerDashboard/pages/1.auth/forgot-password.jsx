@@ -7,26 +7,31 @@ import { Link } from "react-router-dom";
 import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
+import { demoEmailLink } from "@/store/tanstackStore/queries/site";
 import { useSeo } from "@/seo/useSeo";
 import AuthShell from "./AuthShell";
 import { forgotSchema } from "./schemas";
 
-// Honest seam: until the API sends email, the page says so and points to
-// WhatsApp rather than claiming a link is on its way.
+// A reset link by email (gap A1). The answer is the same whether or not
+// the address has an account. Until an email service is connected the email
+// waits in the admin's outbox; a dev build shows its link here.
 export default function CustomerForgotPassword() {
   useSeo({ title: "Reset your password", noindex: true });
   const { requestPasswordReset } = useCustomerAuth();
   const [result, setResult] = useState(null);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(forgotSchema) });
 
-  // The page trusts the API's { sent } flag rather than assuming the email went out.
-  const onSubmit = async ({ email }) => setResult(await requestPasswordReset(email));
+  const onSubmit = async ({ email }) => {
+    const r = await requestPasswordReset(email);
+    setResult({ ...r, demo: demoEmailLink(r.email, "password-reset") });
+  };
 
   return (
     <AuthShell title="Reset your password" lede="Enter your email and we'll send you a link to choose a new one." footer={<Link to="/login" className="link-arrow">Back to sign in</Link>}>
       {result ? (
         <p role="status" className="m-0 text-ink-2">
-          {result.sent ? "Check your inbox for the reset link." : "Password emails aren't switched on yet. Message us on WhatsApp and we'll reset it for you."}
+          If there's an account for {result.email}, a reset link is on its way. It works for an hour.
+          {result.demo && <> <Link to={result.demo} className="underline">Open the link (demo)</Link></>}
         </p>
       ) : (
         <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">

@@ -12,7 +12,7 @@ export default function Related({ product }) {
     .map((p) => ({
       p,
       score:
-        p.occasions.filter((o) => product.occasions.includes(o)).length * 2 +
+        p.termIds.filter((t) => product.termIds.includes(t)).length * 2 +
         (p.category !== product.category ? 2 : 0) +
         (p.colors.some((c) => product.colors.includes(c)) ? 1 : 0),
     }))

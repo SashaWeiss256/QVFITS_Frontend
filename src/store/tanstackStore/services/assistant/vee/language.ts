@@ -12,8 +12,8 @@ const CATEGORY_WORDS: Record<string, string[]> = {
   Lounge: ["lounge", "loungewear", "hoodie", "sweat", "sweats", "pyjama", "pajama", "comfy", "travel"],
 };
 
-// Activities, not occasions: people shop activewear by what they do in it.
-const OCCASION_WORDS: Record<string, string[]> = {
+// Movements, not occasions: people shop activewear by what they do in it.
+const MOVEMENT_WORDS: Record<string, string[]> = {
   gym: ["gym", "lift", "lifting", "weights", "squat", "squats", "train", "training", "workout", "strength"],
   run: ["run", "running", "runner", "jog", "jogging", "cardio", "marathon", "treadmill"],
   yoga: ["yoga", "pilates", "stretch", "stretching", "reformer", "barre", "flexibility"],
@@ -37,8 +37,8 @@ export function findCategory(t: string) {
   return Object.entries(CATEGORY_WORDS).find(([, w]) => has(t, w))?.[0] ?? null;
 }
 
-export function findOccasion(t: string) {
-  return Object.entries(OCCASION_WORDS).find(([, w]) => has(t, w))?.[0] ?? null;
+export function findMovement(t: string) {
+  return Object.entries(MOVEMENT_WORDS).find(([, w]) => has(t, w))?.[0] ?? null;
 }
 
 export function findColors(t: string, swatchNames: string[]) {

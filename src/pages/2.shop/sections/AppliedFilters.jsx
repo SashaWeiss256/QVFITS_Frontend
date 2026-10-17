@@ -2,26 +2,35 @@
 import { X } from "lucide-react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
+import { LABELS } from "@/utils/shopTargets";
 
 /**
- * What is narrowing the rail right now, as removable chips above the grid,
- * with "Clear all". Hidden when nothing is applied.
+ * What is narrowing the grid right now, as removable chips above it, with
+ * "Clear all". The sort shows on its own button, so it isn't a chip.
+ * Hidden when nothing is applied.
  */
 export default function AppliedFilters({ filters, facets }) {
   const { state, toggle, update, clear, active } = filters;
   const { money } = useCurrency();
   if (!active) return null;
 
-  const occLabel = (id) => facets?.occasions.find((o) => o.id === id)?.label ?? id;
+  const catName = (id) => facets?.categoryList.find((c) => c.id === id)?.name ?? id;
+  const termName = (id) => facets?.terms.find((t) => t.id === id)?.name ?? id;
+  // An Edit is called what the admin named its item (New in, Best sellers, Kits).
+  const labelName = (l) => facets?.terms.find((t) => t.target?.label === l)?.name ?? (l === "sale" ? "On sale" : LABELS[l]?.name ?? l);
+  const price =
+    state.minPrice && state.maxPrice ? `${money(state.minPrice)} to ${money(state.maxPrice)}`
+      : state.minPrice ? `From ${money(state.minPrice)}`
+      : state.maxPrice ? `Up to ${money(state.maxPrice)}`
+      : null;
   const chips = [
-    ...state.cats.map((v) => ({ key: `c-${v}`, label: v, off: () => toggle("cats", v) })),
+    ...state.cats.map((v) => ({ key: `c-${v}`, label: catName(v), off: () => toggle("cats", v) })),
+    ...state.terms.map((v) => ({ key: `t-${v}`, label: termName(v), off: () => toggle("terms", v) })),
+    ...state.labels.map((v) => ({ key: `l-${v}`, label: labelName(v), off: () => toggle("labels", v) })),
     ...state.sizes.map((v) => ({ key: `s-${v}`, label: `Size ${v}`, off: () => toggle("sizes", v) })),
     ...state.colors.map((v) => ({ key: `co-${v}`, label: v, off: () => toggle("colors", v) })),
-    ...state.occs.map((v) => ({ key: `o-${v}`, label: occLabel(v), off: () => toggle("occs", v) })),
-    state.maxPrice && { key: "max", label: `Up to ${money(state.maxPrice)}`, off: () => update({ maxPrice: null }) },
+    price && { key: "price", label: price, off: () => update({ minPrice: null, maxPrice: null }) },
     state.inStock && { key: "stock", label: "In stock", off: () => update({ inStock: false }) },
-    state.badge && { key: "badge", label: state.badge === "Bestseller" ? "Best sellers" : "New in", off: () => update({ badge: "" }) },
-    state.sale && { key: "sale", label: "On sale", off: () => update({ sale: false }) },
     state.query && { key: "q", label: `“${state.query}”`, off: () => update({ q: "" }) },
   ].filter(Boolean);
 

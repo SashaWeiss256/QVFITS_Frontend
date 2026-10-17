@@ -8,7 +8,7 @@ export interface VeeContext {
   settings: ShopSettings;
   chart: SizeRow[];
   looks: Look[];
-  occasions: { id: string; label: string }[];
+  movements: { id: string; name: string }[];
   swatches: string[];
   session: VeeSession;
 }

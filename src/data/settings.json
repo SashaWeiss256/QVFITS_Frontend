@@ -82,5 +82,12 @@
     "endpoint": null,
     "name": "Vee",
     "greeting": "Hey! Looking for your fit? I know every piece in the studio. Tell me what you train in."
+  },
+  "bestsellerCount": 8,
+  "unpaidHoldHours": 48,
+  "shopGrid": {
+    "phone": 2,
+    "tablet": 3,
+    "desktop": 4
   }
 }

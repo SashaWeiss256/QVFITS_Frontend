@@ -20,6 +20,7 @@ const OTHER = {
   received: "Received",
   unpaid: "Unpaid",
   partially_refunded: "Part refunded",
+  part_paid: "Part paid",
   succeeded: "Succeeded",
   failed: "Failed",
   draft: "Draft",

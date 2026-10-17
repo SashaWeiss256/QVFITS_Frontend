@@ -27,7 +27,7 @@ export function submitReview(input: Pick<Review, "name" | "text" | "stars" | "pr
 /* Admin (realm: admin) */
 
 export const reviewsCrud = adminCrud(reviews, {
-  module: "reviews",
+  module: "products",
   noun: "review",
   label: (r) => `from ${r.name}`,
   prepare: (data, existing) => (existing ? data : { stars: 5, status: "approved" as const, productId: null, createdAt: new Date().toISOString(), ...data }),

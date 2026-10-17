@@ -3,8 +3,8 @@ import { anyInStock, inStock, productSizes } from "@/utils/stockLevel";
 import { findSize } from "@/utils/sizing";
 import { who, type VeeContext } from "./context";
 import { cards, link, sizeGapLine, stockLine, text, ugx, type Block } from "./helpers";
-import { findCategory, findMeasurements, findOccasion, findProduct, has, words } from "./language";
-import { giftPicks, occasionLook, outfitFor, randomLook } from "./looks";
+import { findCategory, findMeasurements, findMovement, findProduct, has, words } from "./language";
+import { giftPicks, movementLook, outfitFor, randomLook } from "./looks";
 import { search } from "./search";
 
 const FIT_LINE: Record<string, string> = { small: "runs a little small", large: "runs large", relaxed: "is cut relaxed", true: "is true to size" };
@@ -25,7 +25,7 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
     const stripped = raw.trim().replace(/^(i'?m|my name is|call me|it'?s)\s+/i, "");
     const n = stripped.split(/[\s,.!]/)[0];
     const looksLikeName =
-      n && n.length < 20 && /^[a-z'-]+$/i.test(n) && stripped.split(/\s+/).length <= 2 && !findCategory(t) && !findOccasion(t) && !findProduct(t, products) &&
+      n && n.length < 20 && /^[a-z'-]+$/i.test(n) && stripped.split(/\s+/).length <= 2 && !findCategory(t) && !findMovement(t) && !findProduct(t, products) &&
       !/\?|^(what|which|do|does|can|how|where|when|why|show|find|need|looking)\b/i.test(stripped);
     if (looksLikeName) {
       session.name = n[0].toUpperCase() + n.slice(1).toLowerCase();
@@ -33,7 +33,7 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
     }
   }
   const nameM = raw.match(/(?:i'?m|my name is|call me|this is)\s+([A-Za-z'-]{2,18})\b/i);
-  if (nameM && !findCategory(t) && !findOccasion(t) && !findMeasurements(t).bust) {
+  if (nameM && !findCategory(t) && !findMovement(t) && !findMeasurements(t).bust) {
     session.name = nameM[1][0].toUpperCase() + nameM[1].slice(1).toLowerCase();
     return [text(`Hi ${session.name}, good to meet you. What are we finding: something to train in, to swim in, or to live in?`)];
   }
@@ -136,13 +136,13 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
       session.lastSubject = subject;
       return outfitFor(subject, ctx);
     }
-    const occ = findOccasion(t);
-    return occ ? occasionLook(occ, t, ctx) : randomLook(ctx);
+    const occ = findMovement(t);
+    return occ ? movementLook(occ, t, ctx) : randomLook(ctx);
   }
 
   /* An activity */
-  const occ = findOccasion(t);
-  if (occ && (has(t, ["need", "looking", "want", "for a", "for my", "help", "something"]) || t.split(/\s+/).length <= 4)) return occasionLook(occ, t, ctx);
+  const occ = findMovement(t);
+  if (occ && (has(t, ["need", "looking", "want", "for a", "for my", "help", "something"]) || t.split(/\s+/).length <= 4)) return movementLook(occ, t, ctx);
 
   /* A named piece */
   const named = findProduct(t, products);

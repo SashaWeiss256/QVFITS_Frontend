@@ -19,8 +19,8 @@ export default function HomePage() {
     <>
       <Hero slides={content?.heroSlides} />
       <Press press={content?.press} />
-      <ProductRail rail={content?.rails.newReleases} badge="New" />
-      <ProductRail rail={content?.rails.bestSellers} badge="Bestseller" tight />
+      <ProductRail rail={content?.rails.newReleases} kind="newReleases" />
+      <ProductRail rail={content?.rails.bestSellers} kind="bestSellers" tight />
       <Movements movements={content?.movements} />
       <Campaign campaign={content?.campaign} />
       <Feed feed={content?.feed} />

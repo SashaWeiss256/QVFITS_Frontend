@@ -1,30 +1,33 @@
 /* Admin Catalog Resources */
-import { useMutation } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
 import {
-  activitiesCrud,
+  groupsCrud,
   categoriesCrud,
   colorsCrud,
   getFilterConfig,
-  listActivities,
+  listGroups,
+  listTerms,
   listCategories,
   listColors,
   listSizes,
   sizesCrud,
+  termsCrud,
   updateFilterConfig,
 } from "../../services/catalog/categoriesApi";
-import { listAllLooks, looksCrud } from "../../services/catalog/collectionsApi";
 import {
   bulkRemoveProducts,
   bulkUpdateProducts,
   createProduct,
   duplicateProduct,
+  getProductPreview,
   listAllProducts,
   reassignCategory,
   removeProduct,
   setVariantStock,
   updateProduct,
   type StockReason,
+  listStockMovements,
 } from "../../services/catalog/productsApi";
 import { reviewsCrud } from "../../services/catalog/reviewsApi";
 import { getSizeChart, saveSizeChart } from "../../services/catalog/sizeChartApi";
@@ -62,24 +65,32 @@ export const useReassignCategory = () =>
     meta: { invalidates: [productQueries.all(), [...adminRoot, "categories"], ...SITE], success: "Products moved" },
   });
 // Inventory edits one variant at a time; the overview's low-stock list follows.
+// The stock log: every change to a size, from staff, orders, cancellations and returns.
+export const stockMovementKey = [...adminRoot, "stock-movements"] as const;
+// A draft on the shop's own product page, for staff (product page ?preview).
+export const useProductPreview = (slug: string | undefined, enabled: boolean) =>
+  useQuery({ queryKey: [...adminRoot, "products", "preview", slug], queryFn: ({ signal }) => getProductPreview(slug!, { signal }), enabled: enabled && Boolean(slug), retry: false });
+export const useStockMovements = () =>
+  useQuery(queryOptions({ queryKey: stockMovementKey, queryFn: ({ signal }) => listStockMovements({ signal }), meta: { label: "the stock log" } }));
+
 export const useSetVariantStock = () =>
   useMutation({
     mutationFn: ({ productId, variantId, stock, reason }: { productId: Id; variantId: Id; stock: number; reason: StockReason }) =>
       setVariantStock(productId, variantId, stock, reason),
-    meta: { invalidates: [productQueries.all(), [...adminRoot, "overview"], [...adminRoot, "activity"], ...SITE], success: "Stock saved" },
+    meta: { invalidates: [productQueries.all(), stockMovementKey, [...adminRoot, "overview"], [...adminRoot, "activity"], ...SITE], success: "Stock saved" },
   });
 
 export const categoriesResource = crudResource("categories", categoriesCrud, { noun: "Category", label: "categories", list: listCategories });
 export const colorsResource = crudResource("colors", colorsCrud, { noun: "Colour", list: listColors });
 export const sizesResource = crudResource("sizes", sizesCrud, { noun: "Size", list: listSizes });
-export const activitiesResource = crudResource("activities", activitiesCrud, { noun: "Activity", label: "activities", list: listActivities });
-export const looksResource = crudResource("looks", looksCrud, { noun: "Kit", list: listAllLooks });
+export const groupsResource = crudResource("shop-groups", groupsCrud, { noun: "Group", label: "groups", list: listGroups });
+export const termsResource = crudResource("terms", termsCrud, { noun: "Item", label: "items", list: listTerms });
 export const reviewsResource = crudResource("reviews", reviewsCrud, { noun: "Review" });
 
 export const filtersResource: DocumentResource<FilterConfig, DocumentPatch<FilterConfig>> = {
   queries: documentQueries("filters", getFilterConfig, "the shop filters"),
   update: updateFilterConfig,
-  saved: "Shop filters saved",
+  saved: "Filter and sort saved",
   alsoInvalidates: SITE,
 };
 

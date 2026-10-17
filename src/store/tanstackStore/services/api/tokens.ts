@@ -6,8 +6,10 @@
  * Signing out of one leaves the other signed in.
  *
  * Held in sessionStorage while the API runs on mocks, so a reload keeps you
- * signed in during development. When the backend lands, tokens move to memory
- * with an httpOnly refresh cookie, as in belioras.
+ * signed in during development. A shopper who ticks "Stay signed in" keeps
+ * theirs in localStorage instead, so closing the tab doesn't sign them out
+ * (gap A3); staff sessions always end with the tab. When the backend lands,
+ * tokens move to memory with an httpOnly refresh cookie, as in belioras.
  */
 
 import type { Realm } from "./types";
@@ -21,17 +23,23 @@ const listeners = new Set<TokenListener>();
 
 export function accessToken(realm: Realm) {
   try {
-    return window.sessionStorage.getItem(KEY(assertRealm(realm)));
+    return window.sessionStorage.getItem(KEY(assertRealm(realm))) ?? (realm === "customer" ? window.localStorage.getItem(KEY(realm)) : null);
   } catch {
     return null;
   }
 }
 
-export function setAccessToken(realm: Realm, token: string | null) {
+/** Where a realm's session lives: the tab, or (a remembered shopper) the browser. */
+export function sessionStore(realm: Realm, remember = false): Storage {
+  return realm === "customer" && remember ? window.localStorage : window.sessionStorage;
+}
+
+export function setAccessToken(realm: Realm, token: string | null, { remember = false }: { remember?: boolean } = {}) {
   assertRealm(realm);
   try {
-    if (token) window.sessionStorage.setItem(KEY(realm), token);
-    else window.sessionStorage.removeItem(KEY(realm));
+    window.sessionStorage.removeItem(KEY(realm));
+    window.localStorage.removeItem(KEY(realm));
+    if (token) sessionStore(realm, remember).setItem(KEY(realm), token);
   } catch {
     // Storage unavailable: the session lasts until the next reload.
   }

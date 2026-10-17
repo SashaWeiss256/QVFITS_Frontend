@@ -3,20 +3,19 @@ import { Link } from "react-router-dom";
 
 import Reveal from "@/components/motion/Reveal";
 import ProductGrid from "@/components/storefront/ProductGrid";
-import { useProducts } from "@/store/tanstackStore/queries/site";
+import { useProducts, useRails } from "@/store/tanstackStore/queries/site";
 
 /**
  * Four products under a centred heading, then the "see more" button. The
- * admin's picks come first; if the list is short or a piece has gone, the
- * row tops up from the badge so it is never left short (Quivogue's row()).
+ * pieces pick themselves: the newest New arrivals, or the pinned and best
+ * selling pieces (getRails). The words come from the Home page editor.
  */
-export default function ProductRail({ rail, badge, tight = false }) {
+export default function ProductRail({ rail, kind, tight = false }) {
   const { data: products = [] } = useProducts();
-  if (!rail) return null;
+  const { data: rails } = useRails();
+  if (!rail || !rails) return null;
 
-  const picked = rail.productIds.map((id) => products.find((p) => p.id === id)).filter(Boolean);
-  const rest = products.filter((p) => p.badge === badge && !picked.includes(p));
-  const row = [...picked, ...rest].slice(0, 4);
+  const row = rails[kind].map((id) => products.find((p) => p.id === id)).filter(Boolean).slice(0, 4);
   if (!row.length) return null;
 
   return (

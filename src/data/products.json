@@ -8,16 +8,10 @@
     "price": 210000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "New",
     "colorIds": [
       "ivory",
       "pink",
       "black"
-    ],
-    "activityIds": [
-      "gym",
-      "everyday",
-      "lounge"
     ],
     "blurb": "Second-skin seamless in a long sleeve and matching legging. Knitted in one piece, so there are no side seams to dig in.",
     "details": [
@@ -168,7 +162,16 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "gym",
+      "everyday",
+      "lounge"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": true,
+    "pinnedBestseller": false
   },
   {
     "id": "sculpt-seamless-set",
@@ -179,16 +182,10 @@
     "price": 195000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "Bestseller",
     "colorIds": [
       "ivory",
       "butter",
       "teal"
-    ],
-    "activityIds": [
-      "gym",
-      "yoga",
-      "everyday"
     ],
     "blurb": "The bra-and-bike-short set that started it all. Ribbed through the waist, smooth everywhere else.",
     "details": [
@@ -339,7 +336,16 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "gym",
+      "yoga",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": true
   },
   {
     "id": "rib-seamless-set",
@@ -350,16 +356,10 @@
     "price": 195000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "New",
     "colorIds": [
       "navy",
       "sand",
       "black"
-    ],
-    "activityIds": [
-      "gym",
-      "yoga",
-      "lounge"
     ],
     "blurb": "A finer rib with more give. The one to train in when you want the set to move with you, not hold you.",
     "details": [
@@ -510,7 +510,16 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "gym",
+      "yoga",
+      "lounge"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": true,
+    "pinnedBestseller": false
   },
   {
     "id": "studio-two-piece",
@@ -521,16 +530,10 @@
     "price": 225000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "New",
     "colorIds": [
       "burgundy",
       "slate",
       "black"
-    ],
-    "activityIds": [
-      "gym",
-      "run",
-      "everyday"
     ],
     "blurb": "Seam-fit rather than seamless, panelled for structure where you want it and airflow where you need it.",
     "details": [
@@ -681,7 +684,16 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "gym",
+      "run",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": true,
+    "pinnedBestseller": false
   },
   {
     "id": "seamless-longline-bra",
@@ -692,17 +704,11 @@
     "price": 85000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "Bestseller",
     "colorIds": [
       "ivory",
       "mocha",
       "teal",
       "black"
-    ],
-    "activityIds": [
-      "gym",
-      "yoga",
-      "everyday"
     ],
     "blurb": "Longline cut with a wide underband. Medium support, and comfortable enough to keep on all day.",
     "details": [
@@ -888,7 +894,16 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "gym",
+      "yoga",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": true
   },
   {
     "id": "crossback-sports-bra",
@@ -899,15 +914,10 @@
     "price": 90000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": null,
     "colorIds": [
       "black",
       "forest",
       "sand"
-    ],
-    "activityIds": [
-      "run",
-      "gym"
     ],
     "blurb": "High support, cross-back straps, no bounce. Built for the days you actually run.",
     "details": [
@@ -1058,7 +1068,15 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "run",
+      "gym"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": false
   },
   {
     "id": "ribbed-scoop-bra",
@@ -1069,16 +1087,10 @@
     "price": 75000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": null,
     "colorIds": [
       "butter",
       "ivory",
       "olive"
-    ],
-    "activityIds": [
-      "yoga",
-      "lounge",
-      "everyday"
     ],
     "blurb": "Light support, deep scoop, soft rib. The one that lives in your everyday rotation.",
     "details": [
@@ -1229,7 +1241,16 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "yoga",
+      "lounge",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": false
   },
   {
     "id": "highwaist-sculpt-legging",
@@ -1240,17 +1261,11 @@
     "price": 145000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "New",
     "colorIds": [
       "navy",
       "black",
       "mocha",
       "slate"
-    ],
-    "activityIds": [
-      "gym",
-      "run",
-      "everyday"
     ],
     "blurb": "The legging we get asked about most. High rise, contour seaming, and genuinely opaque under load.",
     "details": [
@@ -1436,7 +1451,16 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "gym",
+      "run",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": true,
+    "pinnedBestseller": false
   },
   {
     "id": "flare-lounge-legging",
@@ -1447,16 +1471,10 @@
     "price": 135000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "Bestseller",
     "colorIds": [
       "mocha",
       "burgundy",
       "black"
-    ],
-    "activityIds": [
-      "lounge",
-      "everyday",
-      "yoga"
     ],
     "blurb": "A soft flare through the ankle. Studio to street without changing.",
     "details": [
@@ -1607,7 +1625,16 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "lounge",
+      "everyday",
+      "yoga"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": true
   },
   {
     "id": "golf-tennis-skort-dress",
@@ -1618,15 +1645,10 @@
     "price": 245000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "Bestseller",
     "colorIds": [
       "teal",
       "white",
       "black"
-    ],
-    "activityIds": [
-      "golf-tennis",
-      "everyday"
     ],
     "blurb": "Collared, zip-front, with an inbuilt pant underneath. Multifunctional sportswear: course, court, then lunch.",
     "details": [
@@ -1777,7 +1799,15 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "golf-tennis",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": true
   },
   {
     "id": "pleated-tennis-skort",
@@ -1788,15 +1818,10 @@
     "price": 165000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": null,
     "colorIds": [
       "white",
       "teal",
       "butter"
-    ],
-    "activityIds": [
-      "golf-tennis",
-      "everyday"
     ],
     "blurb": "Knife-pleated with the same inbuilt pant. Moves properly on a serve.",
     "details": [
@@ -1947,7 +1972,15 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "golf-tennis",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": false
   },
   {
     "id": "sculpt-one-piece",
@@ -1958,14 +1991,10 @@
     "price": 185000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": null,
     "colorIds": [
       "black",
       "teal",
       "mocha"
-    ],
-    "activityIds": [
-      "swim"
     ],
     "blurb": "Scooped back, high leg, and a lining that actually holds. Swims as well as it photographs.",
     "details": [
@@ -2116,7 +2145,14 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "swim"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": false
   },
   {
     "id": "ribbed-bikini-set",
@@ -2127,14 +2163,10 @@
     "price": 165000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "New",
     "colorIds": [
       "butter",
       "ivory",
       "teal"
-    ],
-    "activityIds": [
-      "swim"
     ],
     "blurb": "Ribbed triangle top with tie sides. Sold as a set, sized separately on request.",
     "details": [
@@ -2285,7 +2317,14 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "swim"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": true,
+    "pinnedBestseller": false
   },
   {
     "id": "ribbed-lounge-set",
@@ -2296,15 +2335,10 @@
     "price": 240000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": "Bestseller",
     "colorIds": [
       "burgundy",
       "mocha",
       "cream"
-    ],
-    "activityIds": [
-      "lounge",
-      "everyday"
     ],
     "blurb": "Hooded rib top and wide-leg pant in the same soft knit. Built for long flights and slow mornings.",
     "details": [
@@ -2455,7 +2489,15 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "lounge",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": true
   },
   {
     "id": "oversized-lounge-hoodie",
@@ -2466,15 +2508,10 @@
     "price": 165000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": null,
     "colorIds": [
       "cream",
       "slate",
       "forest"
-    ],
-    "activityIds": [
-      "lounge",
-      "everyday"
     ],
     "blurb": "Heavyweight, dropped shoulder, brushed inside. The one that never makes it back to its owner.",
     "details": [
@@ -2625,7 +2662,15 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "lounge",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": false
   },
   {
     "id": "wideleg-lounge-pant",
@@ -2636,15 +2681,10 @@
     "price": 150000,
     "compareAtPrice": null,
     "salePercent": null,
-    "badge": null,
     "colorIds": [
       "burgundy",
       "mocha",
       "black"
-    ],
-    "activityIds": [
-      "lounge",
-      "everyday"
     ],
     "blurb": "A proper wide leg with a soft waistband. Wears like pyjamas, reads like trousers.",
     "details": [
@@ -2795,6 +2835,186 @@
       "description": ""
     },
     "createdAt": "2026-10-01T09:00:00.000Z",
-    "updatedAt": "2026-10-01T09:00:00.000Z"
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "termIds": [
+      "lounge",
+      "everyday"
+    ],
+    "type": "piece",
+    "kitItems": [],
+    "isNew": false,
+    "pinnedBestseller": false
+  },
+  {
+    "id": "kit-lift-day",
+    "slug": "kit-lift-day",
+    "name": "Lift Day",
+    "status": "active",
+    "categoryId": "",
+    "price": 425000,
+    "compareAtPrice": null,
+    "salePercent": null,
+    "colorIds": [],
+    "termIds": [],
+    "blurb": "Compression where it counts. Longline bra, sculpt legging, nothing that moves.",
+    "details": [],
+    "fit": null,
+    "fitNote": "",
+    "fabric": "",
+    "care": "",
+    "variants": [],
+    "photos": [
+      {
+        "id": "look-lift-day",
+        "width": 800,
+        "height": 1067,
+        "widths": [
+          400
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Lift Day kit",
+      "description": "Compression where it counts. Longline bra, sculpt legging, nothing that moves."
+    },
+    "createdAt": "2026-10-01T09:00:00.000Z",
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "type": "kit",
+    "kitItems": [
+      "seamless-longline-bra",
+      "highwaist-sculpt-legging",
+      "rib-seamless-set"
+    ],
+    "isNew": false,
+    "pinnedBestseller": false
+  },
+  {
+    "id": "kit-course-to-lunch",
+    "slug": "kit-course-to-lunch",
+    "name": "Course to Lunch",
+    "status": "active",
+    "categoryId": "",
+    "price": 500000,
+    "compareAtPrice": null,
+    "salePercent": null,
+    "colorIds": [],
+    "termIds": [],
+    "blurb": "The skort dress with an inbuilt pant, so nine holes and a table both work.",
+    "details": [],
+    "fit": null,
+    "fitNote": "",
+    "fabric": "",
+    "care": "",
+    "variants": [],
+    "photos": [
+      {
+        "id": "look-course-to-lunch",
+        "width": 800,
+        "height": 1067,
+        "widths": [
+          400
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Course to Lunch kit",
+      "description": "The skort dress with an inbuilt pant, so nine holes and a table both work."
+    },
+    "createdAt": "2026-10-01T09:00:00.000Z",
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "type": "kit",
+    "kitItems": [
+      "golf-tennis-skort-dress",
+      "crossback-sports-bra",
+      "pleated-tennis-skort"
+    ],
+    "isNew": false,
+    "pinnedBestseller": false
+  },
+  {
+    "id": "kit-long-haul",
+    "slug": "kit-long-haul",
+    "name": "Long Haul",
+    "status": "active",
+    "categoryId": "",
+    "price": 555000,
+    "compareAtPrice": null,
+    "salePercent": null,
+    "colorIds": [],
+    "termIds": [],
+    "blurb": "Rib lounge set and an oversized hoodie. Built for the flight, not the photo.",
+    "details": [],
+    "fit": null,
+    "fitNote": "",
+    "fabric": "",
+    "care": "",
+    "variants": [],
+    "photos": [
+      {
+        "id": "look-long-haul",
+        "width": 800,
+        "height": 1067,
+        "widths": [
+          400
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Long Haul kit",
+      "description": "Rib lounge set and an oversized hoodie. Built for the flight, not the photo."
+    },
+    "createdAt": "2026-10-01T09:00:00.000Z",
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "type": "kit",
+    "kitItems": [
+      "ribbed-lounge-set",
+      "oversized-lounge-hoodie",
+      "wideleg-lounge-pant"
+    ],
+    "isNew": false,
+    "pinnedBestseller": false
+  },
+  {
+    "id": "kit-off-duty",
+    "slug": "kit-off-duty",
+    "name": "Off Duty",
+    "status": "active",
+    "categoryId": "",
+    "price": 360000,
+    "compareAtPrice": null,
+    "salePercent": null,
+    "colorIds": [],
+    "termIds": [],
+    "blurb": "Soft rib bra, flare legging, and a jogger for when it cools down.",
+    "details": [],
+    "fit": null,
+    "fitNote": "",
+    "fabric": "",
+    "care": "",
+    "variants": [],
+    "photos": [
+      {
+        "id": "look-off-duty",
+        "width": 800,
+        "height": 1067,
+        "widths": [
+          400
+        ]
+      }
+    ],
+    "seo": {
+      "title": "Off Duty kit",
+      "description": "Soft rib bra, flare legging, and a jogger for when it cools down."
+    },
+    "createdAt": "2026-10-01T09:00:00.000Z",
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "type": "kit",
+    "kitItems": [
+      "ribbed-scoop-bra",
+      "flare-lounge-legging",
+      "wideleg-lounge-pant"
+    ],
+    "isNew": false,
+    "pinnedBestseller": false
   }
 ]
