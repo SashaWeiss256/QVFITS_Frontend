@@ -1,6 +1,7 @@
 /* Vee: Search */
 import { anyInStock } from "@/utils/stockLevel";
 import type { VeeContext } from "./context";
+import { matchesSearch } from "@/utils/search";
 import { findBudget, findCategory, findColors, findMovement, words } from "./language";
 
 /**
@@ -26,7 +27,8 @@ export function search(t: string, ctx: VeeContext, limit = 3) {
       if (!anyInStock(p)) s -= 3;
       const hay = `${p.name} ${p.blurb} ${p.details.join(" ")}`.toLowerCase();
       words(t).filter((w) => w.length > 4).forEach((w) => {
-        if (hay.includes(w)) { s += 1; signal++; }
+        // Close spellings count: "legings" and "seemless" still land.
+        if (hay.includes(w) || matchesSearch(hay, w)) { s += 1; signal++; }
       });
       if (signal && p.badge === "Bestseller") s += 1;
       return { p, s, signal };

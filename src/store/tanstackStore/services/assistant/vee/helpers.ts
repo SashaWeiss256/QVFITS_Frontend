@@ -1,15 +1,22 @@
 /* Vee: Helpers */
 import type { Product } from "../../types";
+import type { Outfit } from "./outfit";
 import { inStock, productSizes } from "@/utils/stockLevel";
 import { formatIn } from "@/utils/formatCurrency";
 
 export type Block =
   | { type: "text"; paras: string[] }
   | { type: "cards"; products: Product[] }
-  | { type: "link"; label: string; to: string; external?: boolean };
+  | { type: "link"; label: string; to: string; external?: boolean }
+  /** An outfit: pieces in their colours and sizes, why it works, and one tap to add it all. */
+  | { type: "outfit"; outfit: Outfit }
+  /** One-tap replies shown under the latest message. */
+  | { type: "chips"; options: string[] };
 
 export const text = (...paras: string[]): Block => ({ type: "text", paras: paras.filter(Boolean) });
 export const cards = (products: Product[]): Block => ({ type: "cards", products });
+export const outfitBlock = (outfit: Outfit): Block => ({ type: "outfit", outfit });
+export const chips = (...options: string[]): Block => ({ type: "chips", options: options.filter(Boolean).slice(0, 4) });
 export const link = (label: string, to: string, external = false): Block => ({ type: "link", label, to, external });
 
 /** Vee quotes prices in shillings: the shop settles in UGX. */

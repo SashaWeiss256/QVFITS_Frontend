@@ -2,9 +2,11 @@
 import { anyInStock, inStock, productSizes } from "@/utils/stockLevel";
 import { findSize } from "@/utils/sizing";
 import { who, type VeeContext } from "./context";
-import { cards, link, sizeGapLine, stockLine, text, ugx, type Block } from "./helpers";
-import { findCategory, findMeasurements, findMovement, findProduct, has, words } from "./language";
-import { giftPicks, movementLook, outfitFor, randomLook } from "./looks";
+import { cards, chips, link, sizeGapLine, stockLine, text, ugx, type Block } from "./helpers";
+import { findBudget, findCategory, findColors, findMeasurements, findMovement, findProduct, has, words } from "./language";
+import { giftPicks, movementLook } from "./looks";
+import { askActivity, outfitReply, refinement, remember, setsReply } from "./outfitReply";
+import { say } from "./voice";
 import { search } from "./search";
 
 const FIT_LINE: Record<string, string> = { small: "runs a little small", large: "runs large", relaxed: "is cut relaxed", true: "is true to size" };
@@ -17,6 +19,11 @@ const FIT_LINE: Record<string, string> = { small: "runs a little small", large: 
 export function reply(raw: string, ctx: VeeContext): Block[] {
   const t = raw.toLowerCase().trim();
   const { session, settings: s, products } = ctx;
+  // What she says about herself is kept; a reply about money, sizes, delivery or a problem makes no jokes.
+  const gaveSize = remember(t, ctx);
+  const pending = session.pendingOutfit;
+  session.pendingOutfit = false;
+  session.serious = /\bfit\b/.test(t) || has(t, ["delivery", "ship", "return", "exchange", "refund", "pay", "price", "cost", "size", "order", "wrong", "broken", "damaged", "complain", "angry", "late", "stock"]);
   const team = link("Message the team on WhatsApp", `https://wa.me/${s.whatsapp}`, true);
 
   /* Names */
@@ -49,7 +56,7 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
     }
     return [text(`Hey ${session.name}, what are we looking for today?`)];
   }
-  if (has(t, ["thank", "thanks", "thx", "appreciate"])) return [text(`Any time${who(ctx)}. Shout if you want me to put a full kit together.`)];
+  if (has(t, ["thank", "thanks", "thx", "appreciate"])) return [text(say(ctx, "thanks"))];
 
   /* Delivery, exchanges, orders, payment */
   if (has(t, ["delivery", "deliver", "shipping", "ship", "how long", "arrive"])) {
@@ -92,7 +99,8 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
   }
 
   /* Fit questions */
-  if (has(t, ["size", "sizing", "fit", "measure", "runs small", "run small", "runs large", "true to size", "what size"])) {
+  // "fit" as a word, so "outfit" is not taken for a sizing question.
+  if (/\bfit\b/.test(t) || has(t, ["size", "sizing", "measure", "runs small", "run small", "runs large", "true to size", "what size"])) {
     const askedCat = findCategory(t);
     let carry = session.lastSubject;
     if (askedCat) {
@@ -129,15 +137,31 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
   }
 
   /* Gifts and outfits */
+  // "I'm a M": kept, and any outfit on the table is shown again in that size.
+  if (gaveSize && t.split(/\s+/).length <= 5) {
+    if (session.lastAsk) return outfitReply(ctx, session.lastAsk as never);
+    return [text(`Got it${who(ctx)}: ${session.size}. I will only show pieces in stock in ${session.size} from now on.`), chips("Build me an outfit", "Something for the gym", "Under 150k")];
+  }
+  // She was just asked what she is dressing for; her answer is the activity.
+  if (pending && findMovement(t)) return outfitReply(ctx, { movement: findMovement(t), budget: findBudget(t) ?? session.budget, colors: session.colors });
   if (has(t, ["gift", "present", "for my sister", "for my friend", "for her", "birthday for"])) return giftPicks(t, ctx);
-  if (has(t, ["goes with", "go with", "pair", "style it", "style this", "outfit", "what should i wear", "build a look", "match", "kit"])) {
-    const subject = findProduct(t, products) ?? session.lastSubject;
+  // A short follow-up on the last outfit ("in black", "bolder", "under 150k") changes it.
+  const again = refinement(t, ctx);
+  if (again) return outfitReply(ctx, again);
+  // A set is one matching piece; offered before building from separates.
+  const setWord = /\b(sets?|co-?ords?|two[- ]piece|matching)\b/.test(t);
+  if (setWord && !has(t, ["kit", "outfit", "goes with", "go with"]) && !findProduct(t, products) && !findMovement(t)) return setsReply(ctx);
+  if (has(t, ["goes with", "go with", "pair", "style it", "style this", "outfit", "what should i wear", "what to wear", "build a look", "build me", "put together", "match", "kit", "complete the look", "complete my"])) {
+    const colors = findColors(t, ctx.swatches);
+    // "my black legging": something she owns, found by the words she used.
+    const subject = findProduct(t, products) ?? (has(t, ["my ", "this", "that", "it"]) ? search(t, ctx).items[0] ?? session.lastSubject : session.lastSubject);
+    const occ = findMovement(t);
     if (subject) {
       session.lastSubject = subject;
-      return outfitFor(subject, ctx);
+      return outfitReply(ctx, { subject, movement: occ, budget: findBudget(t) ?? session.budget, colors: colors.length ? colors : session.colors, baseColor: has(t, ["my "]) ? colors[0] ?? null : null });
     }
-    const occ = findMovement(t);
-    return occ ? movementLook(occ, t, ctx) : randomLook(ctx);
+    if (occ) return outfitReply(ctx, { movement: occ, budget: findBudget(t) ?? session.budget, colors: colors.length ? colors : session.colors });
+    return askActivity(ctx);
   }
 
   /* An activity */
@@ -166,7 +190,7 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
     return [
       text(`${bits.length ? `${bits.join(" ")}: got you${who(ctx)}.` : `Here's what I'd pull for you${who(ctx)}.`} These are my picks:`),
       cards(r.items),
-      ...(more > 0 ? [text(`There are ${more} more like these.`), link("See the full rail", "/shop")] : []),
+      ...(more > 0 ? [text(more === 1 ? "There is 1 more like these." : `There are ${more} more like these.`), link("See the full rail", "/shop")] : []),
     ];
   }
 

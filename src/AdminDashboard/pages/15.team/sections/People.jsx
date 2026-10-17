@@ -51,21 +51,21 @@ export default function People({ roles, modules }) {
 
   return (
     <>
-      {/* Invite Button */}
-      <div className="mb-4 flex justify-end">
-        {canEdit && <Button onClick={() => { setInviting({ name: "", email: "", roleId: "staff" }); setLink(""); }}><Plus className="h-4 w-4" aria-hidden="true" /> Invite someone</Button>}
-      </div>
       {/* Team Table: change a role in the row, or use the row menu for access, pause and remove */}
       <DataTable
         rows={staff.items}
         loading={staff.isLoading}
+        search={(s) => `${s.name} ${s.email} ${roleOf(s.roleId)?.name ?? ""}`}
+        searchLabel="Search people"
+        // Invite sits with the search, on the same row, instead of alone above the table.
+        primaryAction={canEdit && <Button className="h-11 min-h-0 px-5 text-[.88rem]" onClick={() => { setInviting({ name: "", email: "", roleId: "staff" }); setLink(""); }}><Plus className="h-4 w-4" aria-hidden="true" /> Invite someone</Button>}
         columns={[
           { key: "name", label: "Name", sort: (s) => s.name, render: (s) => <span><strong className="font-display">{s.name}</strong>{s.id === admin.id && <span className="ml-2 text-xs text-ink-3">(you)</span>}<span className="block text-xs text-ink-3">{s.email}</span></span> },
           {
             key: "role",
             label: "Role",
             render: (s) => canEdit ? (
-              <select className="select min-h-9 py-1 text-sm" aria-label={`Role for ${s.name}`} value={s.roleId} onChange={(e) => update(s.id, { roleId: e.target.value })}>
+              <select className="select min-h-9 min-w-[11rem] py-1 text-sm" aria-label={`Role for ${s.name}`} value={s.roleId} onChange={(e) => update(s.id, { roleId: e.target.value })}>
                 {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
               </select>
             ) : roleOf(s.roleId)?.name,

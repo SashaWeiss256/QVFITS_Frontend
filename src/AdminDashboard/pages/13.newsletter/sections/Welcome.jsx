@@ -1,4 +1,5 @@
 /* Newsletter Welcome Email */
+import EmailPreview from "@/AdminDashboard/components/EmailPreview";
 import Field from "@/components/ui/Field";
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
@@ -32,7 +33,9 @@ function Editor({ doc }) {
   return (
     <>
       <PageHeader lede="What a new subscriber receives once they confirm, and the words they agree to when they join." />
-      <fieldset disabled={!can("newsletter", "edit")} className="m-0 grid gap-6 border-0 p-0">
+      <fieldset disabled={!can("newsletter", "edit")} className="m-0 grid min-w-0 gap-6 border-0 p-0">
+        {/* The form on the left, and on a wide screen the email as it will look, pinned beside it */}
+        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
         {/* Welcome Email: sent once to each address after it confirms */}
         <Panel title="Welcome email">
           <div className="grid gap-4">
@@ -43,6 +46,11 @@ function Editor({ doc }) {
             <Field label="Message" as="textarea" rows={4} value={w.body} onChange={(e) => setW({ body: e.target.value })} />
           </div>
         </Panel>
+        {/* Preview: follows every keystroke; stays in view while the form scrolls */}
+        <Panel title="Preview" hint="How it looks in an inbox." className="xl:sticky xl:top-24">
+          <EmailPreview subject={w.subject} heading={w.heading} body={w.body} code={codes.find((d) => d.code === w.code)} />
+        </Panel>
+        </div>
         {/* Consent Wording: the words under every signup form, kept with each address as the record of what they agreed to */}
         <Panel title="Consent wording" hint="Shown under every signup form and kept with each address, as the record of what they agreed to.">
           <Field label="What they agree to" as="textarea" rows={3} value={draft.consentText} onChange={(e) => set("consentText", e.target.value)} />

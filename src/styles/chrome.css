@@ -974,13 +974,38 @@ body:has(.consent) .sticker { opacity: 0; pointer-events: none; visibility: hidd
    buttons already are); a multi-line box can't be a pill, so it gets a soft
    large radius instead. Checkboxes and radios keep their own shape. */
 .input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not(textarea),
-.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
-.field select,
-select.select {
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]) {
   border-radius: var(--r-pill, 999px);
   padding-inline: 1.3em;
 }
+/* A dropdown keeps its right side clear for the chevron, so the words never run under it. */
+.field select,
+select.select {
+  border-radius: var(--r-pill, 999px);
+  padding-left: 1.3em;
+}
 textarea.input, .field textarea { border-radius: var(--r-xl); padding: .9em 1.3em; }
-select.input, .field select { padding-right: 2.75rem; }
+select.input, .field select, select.select { padding-right: 2.75rem; }
 /* The show/hide eye sits inside the pill's curve, so it needs a little more room. */
 .input[type="password"] + button, .input[type="password"] ~ button { right: 6px; }
+
+/* ---------------------------------------------------------------- Vee: outfits and quick replies */
+.asst-outfit { align-self: stretch; display: grid; gap: 10px; padding: 14px; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--sh-1); }
+.asst-outfit header { display: flex; align-items: center; gap: 8px; }
+.asst-outfit header strong { font-family: var(--display); font-size: .98rem; }
+.asst-outfit__tag { padding: .15em .65em; border-radius: 999px; background: var(--brand-100); color: var(--brand-600); font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.asst-outfit__why { margin: 0; font-size: .84rem; color: var(--ink-3); }
+.asst-outfit ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.asst-outfit__piece { display: flex; align-items: center; gap: 11px; }
+.asst-outfit__media { width: 44px; height: 56px; flex: none; overflow: hidden; border-radius: 8px; background: var(--cream-2); }
+.asst-outfit__piece b { display: block; font-family: var(--display); font-size: .86rem; line-height: 1.25; }
+.asst-outfit__piece small, .asst-outfit footer small { display: block; color: var(--ink-3); font-size: .76rem; }
+.asst-outfit footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+.asst-outfit footer b { font-size: .95rem; }
+.asst-outfit footer small { color: var(--brand-600); font-weight: 600; }
+.asst-outfit footer .btn { min-height: 40px; padding: 0 16px; font-size: .84rem; }
+.asst__quick { display: flex; flex-wrap: wrap; gap: 6px; align-self: stretch; }
+.asst__quick button { padding: .45em .95em; border-radius: 999px; background: var(--white); color: var(--brand-600); box-shadow: var(--sh-1); font-size: .8rem; font-weight: 600; transition: background-color .2s, transform .2s var(--ease); }
+.asst__quick button:hover { background: var(--brand-100); transform: translateY(-1px); }
+.asst__forget { padding: 0; border: 0; background: none; color: var(--ink-3); font-size: inherit; text-decoration: underline; }
+.asst__forget:hover { color: var(--brand-600); }

@@ -29,5 +29,5 @@ export const usePaymentMethods = () => useQuery(contentQueries.paymentMethods())
 export const usePageCopy = <K extends keyof PageCopy>(page: K) => useQuery({ ...contentQueries.pages(), select: (doc: PageCopy) => doc[page] });
 
 export { catalogQueries, contentQueries };
-export { assistantGreeting, useAskAssistant, usePlaceOrder, useQuote, demoEmailLink, useCancelGuestOrder, useConfirmSubscription, useGuestReturn, useNewsletterConsent, useSendMessage, useSubscribe, useUnsubscribe, useTrackOrder } from "./forms";
+export { assistantGreeting, forgetAssistant, useStyleWith, useAskAssistant, usePlaceOrder, useQuote, demoEmailLink, useCancelGuestOrder, useConfirmSubscription, useGuestReturn, useNewsletterConsent, useSendMessage, useSubscribe, useUnsubscribe, useTrackOrder } from "./forms";
 export type { CartLine, DeliveryRegion, Order, PaymentMethod, Product, ProductFilters } from "../../services/types";

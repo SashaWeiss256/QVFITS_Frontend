@@ -1,7 +1,7 @@
 /* Site Forms And Checkout */
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { ask, greeting } from "../../services/assistant/fitAssistantApi";
+import { ask, greeting, suggestOutfits } from "../../services/assistant/fitAssistantApi";
 import { sendMessage, type ContactInput } from "../../services/content/contactApi";
 import { confirmSubscription, getNewsletterConsent, subscribe, unsubscribe } from "../../services/marketing/subscribersApi";
 import { latestEmail } from "../../services/notifications/outboxApi";
@@ -69,3 +69,7 @@ export const useGuestReturn = () =>
 
 export const useAskAssistant = () => useMutation({ mutationFn: (question: string) => ask(question), meta: inline });
 export const assistantGreeting = greeting;
+/** Outfits built around one piece (product page, bag): kits first, then colour-checked mixes. */
+export const useStyleWith = (productId?: string) => useQuery({ queryKey: ["site", "style-with", productId], queryFn: () => suggestOutfits(productId as string), enabled: Boolean(productId), staleTime: 60_000 });
+/** Clears what Vee remembers about this shopper (name, size, budget, colours). */
+export { forgetMe as forgetAssistant } from "../../services/assistant/fitAssistantApi";

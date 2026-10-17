@@ -1,5 +1,7 @@
 /* Admin Queries */
 // The admin dashboard's only door to data.
+// Vee's colour engine, so the Pairing rules screen can test a pair as the shopper's assistant would judge it.
+export { harmony as colourHarmony, toneOf as colourTone } from "../../services/assistant/vee/colour";
 export { useCollection, useDocument, collectionQueries, documentQueries, crudResource } from "./collection";
 export type { CollectionResource, DocumentResource } from "./collection";
 export {

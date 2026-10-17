@@ -53,6 +53,8 @@ export default function DataTable({
   exportName,
   exportRow,
   toolbar,
+  // The page's main action (Invite someone, Add…), last in the right-hand group so it ends the row.
+  primaryAction,
   loading = false,
   empty = "Nothing here yet.",
   initialSort,
@@ -302,6 +304,7 @@ export default function DataTable({
               <Download className="h-4 w-4" aria-hidden="true" /> Export
             </button>
           )}
+          {primaryAction}
         </div>
       </div>
 

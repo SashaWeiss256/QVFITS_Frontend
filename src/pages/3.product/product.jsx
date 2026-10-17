@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 
 import RecentlyViewed from "@/components/storefront/RecentlyViewed";
+import StyleWith from "@/components/storefront/StyleWith";
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useRecentlyViewed } from "@/store/context/recentlyViewed";
@@ -64,6 +65,8 @@ export default function ProductPage() {
           </div>
         </div>
       </section>
+      {/* Outfits built around this piece, with the colours checked */}
+      {!previewing && <StyleWith product={p} />}
       <Related product={p} />
       <RecentlyViewed except={p.id} />
     </>

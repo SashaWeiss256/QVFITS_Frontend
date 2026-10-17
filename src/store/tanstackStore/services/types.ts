@@ -297,7 +297,17 @@ export interface ShopSettings {
   shopGrid: { phone: 1 | 2; tablet: 2 | 3; desktop: 3 | 4 };
   ratesUpdated: string;
   currencies: Currency[];
-  assistant: { endpoint: string | null; enabled: boolean; name: string; greeting: string; chips: string[] };
+  assistant: {
+    endpoint: string | null;
+    enabled: boolean;
+    name: string;
+    greeting: string;
+    chips: string[];
+    /** How much personality she shows: playful (most wit), balanced, or straight (none). */
+    tone?: "playful" | "balanced" | "straight";
+    /** Colour pairs the team has ruled on, which beat her colour rules. Colour ids. */
+    pairing?: { good: [string, string][]; avoid: [string, string][] };
+  };
   /** Read only, on reads: the active delivery zones, so every page that shows a fee has them. */
   zones?: ShippingZone[];
 }

@@ -88,7 +88,12 @@
       "What size am I?",
       "Under 150k",
       "Build me a kit"
-    ]
+    ],
+    "tone": "balanced",
+    "pairing": {
+      "good": [],
+      "avoid": []
+    }
   },
   "bestsellerCount": 8,
   "unpaidHoldHours": 48,

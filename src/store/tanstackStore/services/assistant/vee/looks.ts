@@ -3,7 +3,7 @@ import type { Product } from "../../types";
 import { anyInStock } from "@/utils/stockLevel";
 import { who, type VeeContext } from "./context";
 import { findBudget, findCategory, findColors } from "./language";
-import { cards, pick, text, ugx, type Block } from "./helpers";
+import { cards, chips, pick, text, ugx, type Block } from "./helpers";
 
 // `w` is ", Amina" once she has said her name.
 const OPENERS: Record<string, (w: string) => string> = {
@@ -45,7 +45,8 @@ export function movementLook(occ: string, t: string, ctx: VeeContext): Block[] {
   return [
     text(OPENERS[occ]?.(who(ctx)) ?? `For ${label.toLowerCase()}${who(ctx)}:`),
     cards(items),
-    text("Want me to pair it with a bra or a legging to finish the kit? Just say the word."),
+    text("Want a full outfit with the colours checked?"),
+    chips(`Build me an outfit for ${label.toLowerCase()}`, "Under 150k", "In black"),
   ];
 }
 
@@ -96,7 +97,7 @@ export function giftPicks(t: string, ctx: VeeContext): Block[] {
   const rank = (p: Product) => (["Lounge", "Swim"].includes(p.category) ? 2 : 0) + (p.badge === "Bestseller" ? 1 : 0);
   items = items.sort((a, b) => rank(b) - rank(a)).slice(0, 3);
   return [
-    text(`Gifting is my favourite${who(ctx)}. ${colors.length ? `Since she loves ${colors[0].toLowerCase()}, ` : ""}these would land well:`),
+    text(`Gifting is my favourite${who(ctx)}. ${colors.length ? `Since she loves ${colors[0].toLowerCase()}, these` : "These"} would land well:`),
     cards(items),
     text("If you don't know her size, lounge and swim are the forgiving ones. Mention it's a gift when the team confirms the order."),
   ];

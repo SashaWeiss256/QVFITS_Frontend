@@ -5,8 +5,9 @@ import { ShoppingBag } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import { useCart } from "@/store/context/CartContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { useOffers, useProductsByIds, useSettings } from "@/store/tanstackStore/queries/site";
+import { useOffers, useProductsByIds, useSettings, useStyleWith } from "@/store/tanstackStore/queries/site";
 import { saleOf } from "@/utils/stockLevel";
+import OutfitCard from "./OutfitCard";
 import Photo from "./Photo";
 
 // The bag in the drawer. Totals here are a preview; checkout prices the bag
@@ -17,6 +18,9 @@ export default function CartPanel() {
   const { data: products = [] } = useProductsByIds(lines.map((l) => l.productId));
   const { data: settings } = useSettings();
   const { data: offers } = useOffers();
+  // "Complete the look" is built around the newest piece in the bag; asked for before any early return, as hooks must be.
+  const lastId = lines[lines.length - 1]?.productId;
+  const { data: looks = [] } = useStyleWith(lastId);
 
   if (!lines.length) {
     return (
@@ -55,6 +59,18 @@ export default function CartPanel() {
             </div>
           </div>
         ))}
+        {/* Complete The Look: one outfit around what is in the bag, adding only what is missing */}
+        {(() => {
+          const inBag = lines.map((l) => l.productId);
+          const next = looks.find((o) => o.pieces.some((pc) => !inBag.includes(pc.product.id)));
+          if (!next || new Set(inBag).size > 2) return null;
+          return (
+            <div className="mt-5 px-[22px] pb-4">
+              <p className="m-0 mb-2 text-[.72rem] font-semibold uppercase tracking-[0.14em] text-ink-4">Complete the look</p>
+              <OutfitCard outfit={next} skip={inBag} />
+            </div>
+          );
+        })()}
       </div>
       <div className="drawer__foot">
         {/* Free Delivery Nudge */}

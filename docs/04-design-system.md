@@ -123,6 +123,10 @@ Only `transform` and `opacity` animate. `MotionConfig reducedMotion="user"` and 
 
 A deep plum panel mixed from the brand's own purple (no new colour), `components/layout/Footer.jsx`. The newsletter leads (large "First to know", a white pill form); then the logo (`tone="dark"` swaps in the white artwork) with its social buttons in a row, the Shop and Help columns, and Visit us with an icon per line. Legal links sit in the bottom bar, and Delivery and Returns appear once, under Help. A huge faint QVFITS bleeds off the bottom edge. On a phone everything is centred and link rows are 40px.
 
+## Vee
+
+`components/assistant/`: the round button and the chat panel. Her replies are blocks: text, product cards, an **outfit card** (`components/storefront/OutfitCard.jsx`: pieces in their colour and size, why the colours work, the total or a kit's saving, one "Add all" button), links and one-tap **quick replies** under the newest message. The same card is used on the product page (`StyleWith`, "Style it with") and in the bag drawer ("Complete the look", which adds only what is missing). The chat has a "Forget me" link. The dashboard page (Vee) has Settings (on or off, name, greeting, tone, suggestion buttons with a preview), Pairing rules (test any two colours, overrule with always and never pairs) and Questions.
+
 ## Offer card
 
 `components/storefront/Sticker.jsx`, the small first-order card. Closing it takes effect at once and is remembered for `snoozeDays` (`offers.json`), with a session fallback when storage is blocked.

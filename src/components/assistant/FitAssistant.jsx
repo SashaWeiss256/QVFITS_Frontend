@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, X } from "lucide-react";
 
-import { assistantGreeting, useAskAssistant, useSettings } from "@/store/tanstackStore/queries/site";
+import { assistantGreeting, forgetAssistant, useAskAssistant, useSettings } from "@/store/tanstackStore/queries/site";
 import AssistantMessage from "./AssistantMessage";
 import { AssistantMark } from "./AssistantMark";
 import { onAskVee } from "./askVee";
@@ -70,6 +70,9 @@ export default function FitAssistant() {
 
   // Her greeting leads the chat; it follows the dashboard's words until she knows the shopper's name.
   const thread = [bot(assistantGreeting(vee?.greeting)), ...messages];
+  // The starter buttons show until a reply brings its own quick replies.
+  const last = thread[thread.length - 1];
+  const ownChips = last.blocks?.some((b) => b.type === "chips");
 
   return (
     <>
@@ -90,13 +93,13 @@ export default function FitAssistant() {
         </header>
 
         <div className="asst__body" ref={bodyRef}>
-          {thread.map((m, i) => <AssistantMessage key={i} message={m} onLeave={() => setOpen(false)} />)}
+          {thread.map((m, i) => <AssistantMessage key={i} message={m} onLeave={() => setOpen(false)} onAsk={send} isLast={i === thread.length - 1 && !ask.isPending} />)}
           {ask.isPending && (
             <div className="msg msg--bot msg--typing"><span className="typing"><i /><i /><i /></span></div>
           )}
         </div>
 
-        {!ask.isPending && (
+        {!ask.isPending && !ownChips && (
           <div className="asst__chips">
             {chips.map((c) => <button key={c} type="button" onClick={() => send(c)}>{c}</button>)}
           </div>
@@ -114,7 +117,10 @@ export default function FitAssistant() {
             <input ref={inputRef} value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Ask me anything…" autoComplete="off" aria-label="Message the Style Assistant" />
             <button className="asst__send" type="submit" aria-label="Send"><ArrowRight className="h-[15px] w-[15px]" aria-hidden="true" /></button>
           </form>
-          <p className="asst__note">Answers come from live QV stock. For orders, our team replies on WhatsApp.</p>
+          <p className="asst__note">
+            Answers come from live QV stock. For orders, our team replies on WhatsApp.{" "}
+            <button type="button" className="asst__forget" onClick={() => { forgetAssistant(); setMessages((m) => [...m, bot("Done. I have forgotten your name, size and budget.")]); }}>Forget me</button>
+          </p>
         </div>
       </section>
     </>

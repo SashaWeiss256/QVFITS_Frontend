@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
+import OutfitCard from "@/components/storefront/OutfitCard";
 import Photo from "@/components/storefront/Photo";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { anyInStock } from "@/utils/stockLevel";
@@ -9,8 +10,10 @@ import { anyInStock } from "@/utils/stockLevel";
 /**
  * One turn of the chat. Vee's replies are blocks: paragraphs, product cards
  * and links, never raw HTML. `onLeave` closes the panel when a link is followed.
+ * An outfit is a card of pieces with its reason and one button that adds every
+ * piece in the colour and size shown; quick replies run only on the newest message.
  */
-export default function AssistantMessage({ message, onLeave }) {
+export default function AssistantMessage({ message, onLeave, onAsk, isLast }) {
   const { money } = useCurrency();
   if (message.from === "me") return <div className="msg msg--me">{message.text}</div>;
 
@@ -31,6 +34,16 @@ export default function AssistantMessage({ message, onLeave }) {
               </div>
             </Link>
           ))}
+        </div>
+      );
+    }
+    if (b.type === "outfit") return <OutfitCard key={i} outfit={b.outfit} onLeave={onLeave} />;
+    if (b.type === "chips") {
+      // Quick replies: tapping one sends it as the shopper's next message. Only the newest set is live.
+      if (!isLast) return null;
+      return (
+        <div key={i} className="asst__quick" role="group" aria-label="Quick replies">
+          {b.options.map((c) => <button key={c} type="button" onClick={() => onAsk(c)}>{c}</button>)}
         </div>
       );
     }
