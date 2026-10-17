@@ -8,7 +8,9 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
  * needed.
  */
 export default function ListEditor({ items = [], onChange, render, newItem, addLabel = "Add", itemLabel = (_, i) => `Item ${i + 1}`, max }) {
+  // Changes one item of the list and leaves the others.
   const set = (i, patch) => onChange(items.map((it, j) => (j === i ? { ...it, ...patch } : it)));
+  // Moves an item up or down by one place.
   const move = (i, by) => {
     const next = [...items];
     const [it] = next.splice(i, 1);
@@ -16,6 +18,7 @@ export default function ListEditor({ items = [], onChange, render, newItem, addL
     onChange(next);
   };
 
+  {/* One card per item, with its own ordering and remove buttons; the page supplies what goes inside */}
   return (
     <div className="grid gap-3">
       {items.map((item, i) => (
@@ -29,6 +32,7 @@ export default function ListEditor({ items = [], onChange, render, newItem, addL
           {render(item, (patch) => set(i, patch), i)}
         </div>
       ))}
+      {/* Add: hidden once the limit (if any) is reached, so a tile row can't outgrow its space. */}
       {newItem && (!max || items.length < max) && (
         <button type="button" className="btn btn--soft justify-self-start" onClick={() => onChange([...items, newItem()])}>
           <Plus className="h-4 w-4" aria-hidden="true" /> {addLabel}

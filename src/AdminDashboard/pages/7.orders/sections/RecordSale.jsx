@@ -9,11 +9,14 @@ import { useRecordSale } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
 import Drawer from "@/AdminDashboard/components/Drawer";
 
+// An empty customer form. The mobile money reference is kept in the same form but sent separately from the order details.
 const BLANK = { name: "", phone: "", email: "", region: "", address: "", note: "", discountCode: "", reference: "" };
+// Where the sale happened. Online orders aren't here: they only come from the shop's checkout.
 const SOURCES = [
   { id: "showroom", label: "In the showroom", hint: "Paid at the counter, taken away now." },
   { id: "whatsapp", label: "On WhatsApp", hint: "Paid by mobile money before it goes out." },
 ];
+// How it was paid. Cash needs no reference; mobile money always does.
 const METHODS = [
   { id: "cash", label: "Cash" },
   { id: "mtn", label: "MTN Mobile Money" },
@@ -35,6 +38,7 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
   const [form, setForm] = useState(BLANK);
   const [lines, setLines] = useState([]);
   const [pick, setPick] = useState("");
+  // Only published pieces can be sold.
   const live = products.filter((p) => p.status === "active");
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
   // A showroom sale is collected at the counter, so it starts on the collection zone.
@@ -42,6 +46,7 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
   const region = form.region || (source === "showroom" ? counter : undefined) || zones[0]?.id || "";
   const collect = zones.find((z) => z.id === region)?.collect;
 
+  // Adds the piece in the first size that has stock, in its first colour; both can be changed on the line.
   const addLine = () => {
     const p = live.find((x) => x.id === pick);
     if (!p) return;
@@ -50,10 +55,12 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
     setPick("");
   };
   const updateLine = (i, patch) => setLines((ls) => ls.map((l, j) => (j === i ? { ...l, ...patch } : l)));
+  // A guide for the person at the till; the service works out the real total (sale prices, kits, codes, delivery) when the sale is recorded.
   const subtotal = lines.reduce((n, l) => n + (live.find((p) => p.id === l.productId)?.price ?? 0) * l.qty, 0);
   // Mobile money always has a reference; cash doesn't need one.
   const ready = form.name.trim() && form.phone.trim() && lines.length && (collect || form.address.trim()) && (method === "cash" || form.reference.trim());
 
+  // The reference is a payment detail, so it goes alongside the order rather than inside it. A refused sale (for example, not enough stock) keeps the form open.
   const submit = async () => {
     const { reference, ...input } = form;
     const order = await create.mutateAsync({ input: { ...input, region, payment: method, lines }, source, method, reference }).catch(() => null);
@@ -73,6 +80,7 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
       footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button onClick={submit} loading={create.isPending} disabled={!ready}>Record sale</Button></>}
     >
       <div className="grid gap-6">
+        {/* Where The Sale Happened */}
         <section className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Where the sale happened">
           {SOURCES.map((x) => (
             <button
@@ -89,9 +97,10 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
           ))}
         </section>
         <section>
+          {/* Pieces: each line has its own colour, size and quantity */}
           <h3 className="mb-3 text-base">Pieces</h3>
           <div className="flex gap-2">
-            <select className="input flex-1" value={pick} onChange={(e) => setPick(e.target.value)} aria-label="Add a piece">
+            <select className="select flex-1" value={pick} onChange={(e) => setPick(e.target.value)} aria-label="Add a piece">
               <option value="">Pick a piece…</option>
               {live.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
@@ -114,6 +123,7 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
           {lines.length > 0 && <p className="mt-2 text-sm text-ink-3">Subtotal {moneyBase(subtotal)}, before delivery and any code. The final price is worked out when you create it.</p>}
         </section>
 
+        {/* Customer And Payment */}
         <section className="grid gap-4 sm:grid-cols-2">
           <h3 className="m-0 text-base sm:col-span-2">Customer</h3>
           <Field label="Name" value={form.name} onChange={(e) => set({ name: e.target.value })} />
@@ -126,6 +136,7 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
           <Field label="Discount code (optional)" value={form.discountCode} onChange={(e) => set({ discountCode: e.target.value })} />
           <Field label="Note" as="textarea" rows={2} className="sm:col-span-2" value={form.note} onChange={(e) => set({ note: e.target.value })} />
         </section>
+        {/* The service's reason, such as a size that has just sold out. */}
         {create.error && <p role="alert" className="m-0 text-sm font-semibold text-warn">{create.error.message}</p>}
       </div>
     </Drawer>

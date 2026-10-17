@@ -16,8 +16,10 @@ const KINDS = [
  */
 export default function GroupDialog({ value, onChange, onClose, onSave, saving }) {
   const g = value;
+  // Changes one field of the group being edited.
   const set = (patch) => onChange({ ...g, ...patch });
 
+  {/* Group Form: its name, its kind (chosen once), and where it shows */}
   return (
     <Modal
       isOpen={Boolean(g)}
@@ -29,6 +31,7 @@ export default function GroupDialog({ value, onChange, onClose, onSave, saving }
         <div className="grid gap-4">
           <Field label="Name" value={g.name} placeholder="Fit" onChange={(e) => set({ name: e.target.value })} autoFocus hint={`Shows as "${g.name || "Fit"}" in the Shop menu and the filters.`} />
 
+          {/* Kind: only when making a new group; an existing group keeps the kind it was made with */}
           {!g.id && (
             <fieldset className="m-0 grid gap-2 border-0 p-0">
               <legend className="mb-1 text-sm font-semibold text-ink-2">Kind</legend>
@@ -44,6 +47,7 @@ export default function GroupDialog({ value, onChange, onClose, onSave, saving }
             </fieldset>
           )}
 
+          {/* Where It Shows: the Shop menu, the filter drawer, and the shop at all */}
           <div className="grid gap-3 rounded-r-md bg-cream p-4">
             <Toggle checked={g.inMenu} onChange={(inMenu) => set({ inMenu })} label="Show in the Shop menu" hint="A column of its items, in this group's place." />
             <Toggle checked={g.inFilters} onChange={(inFilters) => set({ inFilters })} label="Show as a shop filter" hint={g.kind === "edits" ? "Its New in, Best sellers, Sale and Kits items become choices in the Filter drawer. Order it under Filter and sort." : "A section of the Filter drawer. Order it under Filter and sort."} />

@@ -27,6 +27,7 @@ export const permissionModuleQueries = {
 export const useActivity = (enabled = true) => useQuery({ ...activityQueries.list(), enabled });
 export const usePermissionModules = () => useQuery(permissionModuleQueries.list());
 
+// An invite adds a team member and a line in the activity log.
 export const useInviteStaff = () =>
   useMutation({
     mutationFn: (input: Pick<StaffMember, "name" | "email" | "roleId">) => inviteStaff(input),

@@ -16,6 +16,7 @@ export function publicCustomer({ password: _password, resetToken: _r, resetExpir
   return customer;
 }
 
+// The shopper's own record, or a 404 if the account has gone.
 function find(id: Id) {
   const customer = customers.get(id);
   if (!customer) throw new ApiError("We could not find your account.", 404);
@@ -28,6 +29,7 @@ export function getProfile(id: Id, { signal }: RequestOptions = {}) {
   return mockApi(() => publicCustomer(find(id)), 150, signal);
 }
 
+// A shopper changes only their name and phone here; email changes go through a confirmation.
 export function updateProfile(id: Id, patch: Pick<Partial<Customer>, "name" | "phone">) {
   return mockApi(() => publicCustomer(customers.update(id, patch) ?? find(id)));
 }
@@ -86,5 +88,6 @@ const crud = adminCrud(customers, {
   prepare: (data) => ({ ...(data.notes !== undefined && { notes: data.notes }), ...(data.tags !== undefined && { tags: data.tags }) }),
 });
 
+// Staff may change only the private notes and tags, never the shopper's own details.
 export const updateCustomer = (id: Id, patch: Pick<Partial<Customer>, "notes" | "tags">) => crud.update(id, patch).then(publicCustomer);
 export const removeCustomer = crud.remove;

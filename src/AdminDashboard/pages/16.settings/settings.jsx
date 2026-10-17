@@ -38,6 +38,7 @@ function Editor({ doc }) {
   const { draft, set, dirty, reset, commit } = useDraft(doc.data);
   const canEdit = can("settings", "edit");
 
+  // Zones and Vee's settings are saved on their own pages, so they are left out of this save.
   const save = async () => {
     const { zones: _zones, assistant: _assistant, ...rest } = draft;
     commit(await doc.save(rest));
@@ -48,7 +49,9 @@ function Editor({ doc }) {
       <PageHeader lede="Shop details, delivery, payments and the rules the shop runs on." />
       <Tabs tabs={TABS} value={tab} onChange={setTab} />
       <fieldset disabled={!canEdit} className="m-0 grid gap-6 border-0 p-0">
+        {/* Fields: each tab's groups come from settingsGroups.js */}
         {GROUPS[tab] && <SettingsFields groups={GROUPS[tab]} draft={draft} set={set} />}
+        {/* Delivery: the free-delivery level for every zone, then the zones */}
         {tab === "delivery" && (
           <>
             <Panel title="Free delivery">
@@ -57,6 +60,7 @@ function Editor({ doc }) {
             <DeliveryZones canEdit={canEdit} shopFreeOver={draft.freeShippingOver} />
           </>
         )}
+        {/* Payments */}
         {tab === "payments" && <PaymentMethods canEdit={canEdit} />}
         {tab === "currencies" && <Currencies draft={draft} set={set} />}
         {tab === "display" && (

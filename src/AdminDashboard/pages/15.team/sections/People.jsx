@@ -30,26 +30,32 @@ export default function People({ roles, modules }) {
   const [overrides, setOverrides] = useState({});
   const [removing, setRemoving] = useState(null);
   const canEdit = can("team", "edit");
+  // A person's role, looked up by id (the owner role can't be changed here).
   const roleOf = (id) => roles.find((r) => r.id === id);
   const open = staff.items.find((s) => s.id === openId);
 
+  // Saving your own row refreshes your session, so the sidebar and permissions follow at once.
   const update = async (id, patch) => {
     await staff.update(id, patch);
     if (id === admin.id) refresh();
   };
 
+  // Inviting hands back a link to share, because no email service is connected yet (the honest seam).
   const sendInvite = async () => {
     const out = await invite.mutateAsync(inviting).catch(() => null);
     if (out) setLink(out.inviteLink);
   };
 
+  // What someone can really do: their role's permissions with their own overrides on top.
   const effective = (s) => ({ ...(roleOf(s.roleId)?.permissions ?? {}), ...s.overrides });
 
   return (
     <>
+      {/* Invite Button */}
       <div className="mb-4 flex justify-end">
         {canEdit && <Button onClick={() => { setInviting({ name: "", email: "", roleId: "staff" }); setLink(""); }}><Plus className="h-4 w-4" aria-hidden="true" /> Invite someone</Button>}
       </div>
+      {/* Team Table: change a role in the row, or use the row menu for access, pause and remove */}
       <DataTable
         rows={staff.items}
         loading={staff.isLoading}
@@ -59,7 +65,7 @@ export default function People({ roles, modules }) {
             key: "role",
             label: "Role",
             render: (s) => canEdit ? (
-              <select className="input min-h-9 py-1 text-sm" aria-label={`Role for ${s.name}`} value={s.roleId} onChange={(e) => update(s.id, { roleId: e.target.value })}>
+              <select className="select min-h-9 py-1 text-sm" aria-label={`Role for ${s.name}`} value={s.roleId} onChange={(e) => update(s.id, { roleId: e.target.value })}>
                 {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
               </select>
             ) : roleOf(s.roleId)?.name,
@@ -75,6 +81,7 @@ export default function People({ roles, modules }) {
         ]}
       />
 
+      {/* Invite Dialog: the form first, then the link to send once it is made */}
       <Modal
         isOpen={Boolean(inviting)}
         onClose={() => setInviting(null)}
@@ -99,6 +106,7 @@ export default function People({ roles, modules }) {
         )}
       </Modal>
 
+      {/* Access Drawer: the permission matrix for one person. Only what differs from their role is saved as overrides. */}
       {open && (
         <Drawer
           open
@@ -121,6 +129,7 @@ export default function People({ roles, modules }) {
         </Drawer>
       )}
 
+      {/* Remove Confirmation */}
       <ConfirmDialog isOpen={Boolean(removing)} onClose={() => setRemoving(null)} itemName={removing?.name} confirmLabel="Remove" loading={staff.isRemoving} onConfirm={() => staff.remove(removing.id).then(() => setRemoving(null)).catch(() => setRemoving(null))} />
     </>
   );

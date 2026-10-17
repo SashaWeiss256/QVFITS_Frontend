@@ -25,11 +25,13 @@ const find = (id: Id) => {
   return c;
 };
 
+// A campaign can only be scheduled or sent once it has a subject, a heading and a message.
 function assertReady(c: Campaign) {
   if (!c.subject.trim()) throw new ApiError("Give it a subject line.", 422);
   if (!c.heading.trim() || !c.body.trim()) throw new ApiError("Write the heading and the message first.", 422);
 }
 
+// Sending goes only to subscribers who confirmed (double opt-in). Each email carries that person's own unsubscribe link.
 function deliver(c: Campaign) {
   const list = subscribers.list().filter((s) => s.status === "subscribed");
   if (!list.length) throw new ApiError("Nobody has confirmed their subscription yet, so there is no one to send to.", 422);
@@ -48,6 +50,7 @@ function sweep() {
   }
 }
 
+// Listing also sends any scheduled campaign whose time has come, so scheduling works without a server job.
 export function listCampaigns({ signal }: RequestOptions = {}) {
   return mockApi(() => {
     assertCan("newsletter", "view");
@@ -56,6 +59,7 @@ export function listCampaigns({ signal }: RequestOptions = {}) {
   }, 150, signal);
 }
 
+// Saving needs only a subject so a draft can be kept half done; four pieces at most.
 export function saveCampaign(data: Partial<Campaign> & { id?: Id }) {
   return mockApi(() => {
     assertCan("newsletter", "edit");
@@ -75,6 +79,7 @@ export function saveCampaign(data: Partial<Campaign> & { id?: Id }) {
   });
 }
 
+// The time must be in the future, and the campaign must be complete.
 export function scheduleCampaign(id: Id, sendAt: string) {
   return mockApi(() => {
     assertCan("newsletter", "edit");
@@ -94,6 +99,7 @@ export function unscheduleCampaign(id: Id) {
   });
 }
 
+// Send now: same checks as scheduling, then it is locked as sent.
 export function sendCampaign(id: Id) {
   return mockApi(() => {
     assertCan("newsletter", "edit");
@@ -105,6 +111,7 @@ export function sendCampaign(id: Id) {
   });
 }
 
+// Drafts and scheduled campaigns can go; a sent one stays as the record of what was emailed.
 export function removeCampaign(id: Id) {
   return mockApi(() => {
     assertCan("newsletter", "delete");

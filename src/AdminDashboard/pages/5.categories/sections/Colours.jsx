@@ -9,7 +9,7 @@ export default function Colours() {
   const products = useCollection(productsResource);
   const used = (c) => {
     const n = products.items.filter((p) => p.colorIds.includes(c.id)).length;
-    return n ? `${n} products` : "Not used yet";
+    return n ? `${n} ${n === 1 ? "product" : "products"}` : "Not used yet";
   };
 
   return (

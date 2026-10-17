@@ -5,13 +5,11 @@ import { ArrowRight } from "lucide-react";
 
 import Photo from "@/components/storefront/Photo";
 import { revealItem } from "@/components/motion/revealVariants";
-import { useHomeContent } from "@/store/tanstackStore/queries/site";
 
-// One editorial tile: the campaign from the home page content (src/data/home.json).
-export default function MegaMenuFeature({ onNavigate }) {
-  const { data: content } = useHomeContent();
-  const c = content?.campaign;
-  // An empty div keeps the mega menu grid column when no campaign is live.
+// One editorial tile: a photo, two lines and a link, set in the dashboard
+// (Catalog, Categories, Menu).
+export default function MegaMenuFeature({ feature: c, onNavigate }) {
+  // An empty div keeps the mega menu grid column when the tile is off.
   if (!c?.live) return <div />;
 
   return (

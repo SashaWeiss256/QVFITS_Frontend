@@ -1,4 +1,5 @@
 /* Filter And Sort (from Quivogue shop.html filtered()) */
+import { matchesSearch } from "@/utils/search";
 import { matchesTarget } from "@/utils/shopTargets";
 import { anyInStock, inStock, productSizes, saleOf } from "@/utils/stockLevel";
 
@@ -39,7 +40,7 @@ function pieceFits(p, state, sale, lookup) {
  * the kit price, and is in stock when every piece is.
  */
 export function filterProducts(products, state, sale, lookup, kits = []) {
-  const q = state.query.toLowerCase();
+  const q = state.query;
   const wantKits = state.labels.includes("kits");
   const pieceLabels = state.labels.filter((l) => PIECE_LABELS[l]);
   // Kits alone means kits only; otherwise pieces come too.
@@ -48,7 +49,7 @@ export function filterProducts(products, state, sale, lookup, kits = []) {
 
   const pieces = wantPieces
     ? products.filter((p) => {
-        if (q && ![p.name, p.category, p.blurb, ...p.colors].join(" ").toLowerCase().includes(q)) return false;
+        if (q && !matchesSearch([p.name, p.category, p.blurb, p.fabric, ...p.colors, ...(p.details ?? [])].join(" "), q)) return false;
         if (pieceLabels.length && !pieceLabels.some((l) => PIECE_LABELS[l](p, sale))) return false;
         if (!priceOk(shown(p, sale))) return false;
         if (state.inStock && !anyInStock(p)) return false;
@@ -58,7 +59,7 @@ export function filterProducts(products, state, sale, lookup, kits = []) {
 
   const kitList = wantKits
     ? kits.filter((k) => {
-        if (q && ![k.name, ...k.pieces.map((p) => p.name)].join(" ").toLowerCase().includes(q)) return false;
+        if (q && !matchesSearch([k.name, ...k.pieces.map((p) => p.name)].join(" "), q)) return false;
         if (!priceOk(k.price)) return false;
         if (!k.pieces.length || (state.inStock && !k.pieces.every(anyInStock))) return false;
         // Each group the shopper narrowed by must be met by at least one piece.

@@ -11,6 +11,7 @@ import {
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Download, MoreHorizontal, Search, SlidersHorizontal, X } from "lucide-react";
 
 import Skeleton from "@/components/ui/Skeleton";
+import { matchesSearch } from "@/utils/search";
 import { useClickOutside } from "@/utils/useClickOutside";
 import { cn } from "@/utils/cn";
 import { readStored, writeStored } from "@/utils/storage";
@@ -95,14 +96,9 @@ export default function DataTable({
   const globalFilterFn = useCallback(
     (row, _columnId, filterValue) => {
       if (!filterValue) return true;
-      const needle = String(filterValue).trim().toLowerCase();
-      if (!needle) return true;
-      if (search) {
-        return search(row.original).toLowerCase().includes(needle);
-      }
-      return Object.values(row.original).some((val) =>
-        String(val ?? "").toLowerCase().includes(needle)
-      );
+      // The page says what a row can be found by (search); without that, any text field will do.
+      // Every word typed must be found, plural or singular, in any order (utils/search).
+      return matchesSearch(search ? search(row.original) : Object.values(row.original).join(" "), filterValue);
     },
     [search]
   );
@@ -248,7 +244,7 @@ export default function DataTable({
               aria-hidden="true"
             />
             <input
-              className="input w-full pl-9"
+              className="input h-11 w-full rounded-r-pill py-0 pl-10"
               type="search"
               value={globalFilter ?? ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
@@ -256,41 +252,42 @@ export default function DataTable({
             />
           </label>
         )}
-        {filterDrawer && filters.length > 0 && (
-          <button type="button" className="btn btn--ghost min-h-11 px-4 text-[.85rem]" onClick={() => setDrawerOpen(true)}>
-            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" /> Filters
-            {activeChips.length > 0 && <span className="min-w-5 rounded-r-pill bg-brand-500 px-1.5 text-center text-[.7rem] leading-5 text-white">{activeChips.length}</span>}
-          </button>
-        )}
-        {!filterDrawer && filters.map((f) => (
-          <label key={f.id} className="min-w-[150px]">
-            <span className="sr-only">{f.label}</span>
-            <select
-              className="input w-full"
-              value={filterValues[f.id] ?? ""}
-              onChange={(e) =>
-                setFilterValues((prev) => ({
-                  ...prev,
-                  [f.id]: e.target.value || undefined,
-                }))
-              }
-            >
-              <option value="">{f.label}: all</option>
-              {f.options.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        ))}
         {toolbar}
-        {/* Rows per page, and Export, sit together at the end of the toolbar. */}
-        <div className="ml-auto flex items-center gap-2">
+        {/* The controls sit together on the right: the filters, rows per page, then Export. The
+            search (and anything a page adds, via `toolbar`) stays on the left. */}
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+          {filterDrawer && filters.length > 0 && (
+            <button type="button" className="btn btn--ghost h-11 min-h-0 px-4 text-[.85rem]" onClick={() => setDrawerOpen(true)}>
+              <SlidersHorizontal className="h-4 w-4" aria-hidden="true" /> Filters
+              {activeChips.length > 0 && <span className="min-w-5 rounded-r-pill bg-brand-500 px-1.5 text-center text-[.7rem] leading-5 text-white">{activeChips.length}</span>}
+            </button>
+          )}
+          {!filterDrawer && filters.map((f) => (
+            <label key={f.id} className="min-w-[150px]">
+              <span className="sr-only">{f.label}</span>
+              <select
+                className="select h-11 w-full py-0"
+                value={filterValues[f.id] ?? ""}
+                onChange={(e) =>
+                  setFilterValues((prev) => ({
+                    ...prev,
+                    [f.id]: e.target.value || undefined,
+                  }))
+                }
+              >
+                <option value="">{f.label}: all</option>
+                {f.options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))}
           {rows.length > PAGE_SIZES[0] && (
             <label>
               <span className="sr-only">Rows per page</span>
-              <select className="input w-auto" value={pageSize} onChange={(e) => changeSize(Number(e.target.value))}>
+              <select className="select h-11 w-auto py-0" value={pageSize} onChange={(e) => changeSize(Number(e.target.value))}>
                 {PAGE_SIZES.map((n) => <option key={n} value={n}>{n} per page</option>)}
               </select>
             </label>
@@ -298,7 +295,7 @@ export default function DataTable({
           {exportRow && (
             <button
               type="button"
-              className="btn btn--ghost min-h-11 px-4 text-[.85rem]"
+              className="btn btn--ghost h-11 min-h-0 px-4 text-[.85rem]"
               onClick={handleExport}
               disabled={!totalFilteredRows.length}
             >

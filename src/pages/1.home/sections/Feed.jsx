@@ -18,8 +18,10 @@ const lite = () => {
  */
 export default function Feed({ feed }) {
   const grid = useRef(null);
+  // Shown only while the feed is switched on and has reels.
   const ok = Boolean(feed?.live && feed.items?.length);
 
+  // Each reel plays while at least a quarter of it is on screen and pauses when it leaves.
   useEffect(() => {
     if (!ok || !grid.current || !("IntersectionObserver" in window)) return undefined;
     const io = new IntersectionObserver(
@@ -37,6 +39,7 @@ export default function Feed({ feed }) {
   }, [ok]);
 
   if (!ok) return null;
+  // Decided once per render, since the connection rarely changes mid-visit.
   const saving = lite();
 
   return (
@@ -46,6 +49,7 @@ export default function Feed({ feed }) {
           <span className="kicker">{feed.kicker}</span>
           <h2>{feed.title}</h2>
         </Reveal>
+        {/* Reels: each a link to the piece or part of the shop it shows */}
         <div className="grid-feed" ref={grid}>
           {feed.items.map((it) => (
             <Link key={it.id} className="feedtile" to={it.href} aria-label={`${it.label}: shop it`}>

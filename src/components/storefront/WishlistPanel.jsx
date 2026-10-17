@@ -12,12 +12,15 @@ import Photo from "./Photo";
 export default function WishlistPanel() {
   const { ids, toggle } = useWishlist();
   const { money } = useCurrency();
+  // The saved pieces, read from the shop so prices and names are current.
   const { data: products = [] } = useProductsByIds(ids);
 
+  // Nothing saved yet: a gentle empty state with a way into the shop.
   if (!ids.length) {
     return (
       <>
         <div className="drawer__body">
+          {/* Empty State */}
           <EmptyState icon={Heart}>Nothing saved yet. Tap the heart on anything you love.</EmptyState>
         </div>
         <div className="drawer__foot">
@@ -30,6 +33,7 @@ export default function WishlistPanel() {
   return (
     <>
       <div className="drawer__body">
+        {/* Saved Pieces: each links to its page and can be removed with the X */}
         {products.map((p) => (
           <div key={p.id} className="mini-row">
             <Link className="mini-row__media" to={`/product/${p.slug}`}><Photo photo={p.photos[0]} label={p.name} /></Link>

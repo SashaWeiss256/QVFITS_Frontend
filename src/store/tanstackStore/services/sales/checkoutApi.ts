@@ -43,6 +43,7 @@ function kitSavingOf(priced: OrderLine[]) {
     const kit = getLiveKit(kitId);
     if (!kit) continue;
     const tagged = priced.filter((l) => l.kitId === kitId);
+    // How many of one piece are in the bag; a kit counts as complete only when every one of its pieces is there.
     const qtyOf = (id: string) => tagged.filter((l) => l.productId === id).reduce((n, l) => n + l.qty, 0);
     const sets = Math.min(...kit.kitItems.map(qtyOf));
     if (!Number.isFinite(sets) || sets < 1) continue;
@@ -52,6 +53,7 @@ function kitSavingOf(priced: OrderLine[]) {
   return saving;
 }
 
+// The one place a bag is priced: sale prices, kit prices, the code and delivery are all worked out here, never on the screen, so what is shown is what is charged.
 export async function quote(lines: CartLine[], region: DeliveryRegion, code?: string, { signal, customerId, phone }: RequestOptions & { customerId?: Id; phone?: string } = {}): Promise<Quote> {
   const products = await getProductsByIds(lines.map((l) => l.productId), { signal });
 
@@ -82,6 +84,7 @@ export async function quote(lines: CartLine[], region: DeliveryRegion, code?: st
   };
 }
 
+// The reference a shopper quotes: QV- and six characters, short enough to read out on a call.
 function newRef() {
   return `QV-${Date.now().toString(36).slice(-6).toUpperCase()}`;
 }

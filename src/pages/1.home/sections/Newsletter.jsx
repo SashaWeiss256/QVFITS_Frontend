@@ -1,22 +1,53 @@
 /* Newsletter */
+import { Bell, Gift, Sparkles } from "lucide-react";
+
 import Reveal from "@/components/motion/Reveal";
+import Photo from "@/components/storefront/Photo";
 import NewsletterForm from "@/components/storefront/NewsletterForm";
 
-// The original centred card. Joining is double opt-in: the address is on the
-// list once the emailed link is opened (NewsletterForm).
-export default function Newsletter({ copy }) {
+const PERK_ICON = { sparkles: Sparkles, bell: Bell, gift: Gift };
+
+/**
+ * The reason to join, on the brand gradient: what a subscriber gets, the
+ * form in one white pill, and two of the shop's own photos beside it. Joining
+ * is double opt-in: the address is on the list once the emailed link is
+ * opened (NewsletterForm). The words are in src/data/home.json; `photos`
+ * are the campaign and a hero shot.
+ */
+export default function Newsletter({ copy, photos = [] }) {
   if (!copy) return null;
 
   return (
     <section className="section section--tight" id="newsletter">
       <div className="wrap">
-        <Reveal className="news">
-          <div className="blob blob--a" style={{ width: 260, height: 260, top: -90, left: -60, opacity: 0.5 }} aria-hidden="true" />
-          <div className="relative z-[1]">
-            <span className="kicker">{copy.kicker}</span>
-            <h2>{copy.title}</h2>
-            <p className="lede center">{copy.text}</p>
-            <NewsletterForm source="home" formId="newsForm" placeholder={copy.placeholder} cta={copy.cta} className="mx-auto max-w-[520px]" />
+        <Reveal className="nl">
+          {/* Soft light behind the copy, so the gradient isn't flat */}
+          <span className="nl__glow nl__glow--a" aria-hidden="true" />
+          <span className="nl__glow nl__glow--b" aria-hidden="true" />
+
+          {/* Words, perks and the form */}
+          <div className="nl__copy">
+            <span className="nl__kicker">{copy.kicker}</span>
+            <h2 className="nl__title">{copy.title}</h2>
+            <p className="nl__text">{copy.text}</p>
+            <ul className="nl__perks">
+              {copy.perks?.map((p) => {
+                const Icon = PERK_ICON[p.icon] ?? Sparkles;
+                return (
+                  <li key={p.title}>
+                    <span className="nl__perk-icon"><Icon className="h-[18px] w-[18px]" aria-hidden="true" /></span>
+                    <span><strong>{p.title}</strong> {p.text}</span>
+                  </li>
+                );
+              })}
+            </ul>
+            <NewsletterForm source="home" formId="newsForm" placeholder={copy.placeholder} cta={copy.cta} tone="brand" />
+          </div>
+
+          {/* Two shots, overlapping and tilted, from the shop's own shoot */}
+          <div className="nl__art" aria-hidden="true">
+            <div className="nl__shot nl__shot--a">{photos[0] && <Photo photo={photos[0]} label="" className="absolute inset-0 h-full rounded-none" />}</div>
+            <div className="nl__shot nl__shot--b">{photos[1] && <Photo photo={photos[1]} label="" className="absolute inset-0 h-full rounded-none" />}</div>
           </div>
         </Reveal>
       </div>

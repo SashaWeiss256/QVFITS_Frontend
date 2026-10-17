@@ -288,6 +288,22 @@ body::after {
   border-color: var(--line-2);
   min-height: 48px;
 }
+/* A dropdown draws its own chevron, so it sits a comfortable 1rem in from the
+   edge instead of against it (the browser's own arrow hugs the border). */
+select.input,
+.field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6f83' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.1rem center;
+  background-size: 12px 8px;
+}
+select.input:disabled,
+.field select:disabled {
+  opacity: 0.6;
+}
 /* Radios and checkboxes inside a field stay their own size; the row around
    them is the tap target. */
 .field .check-row {

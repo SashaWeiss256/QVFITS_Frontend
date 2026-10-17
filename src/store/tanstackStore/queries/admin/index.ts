@@ -57,6 +57,7 @@ export {
   veeQuestionsResource,
   campaignQueries,
   newsletterSettingsResource,
+  menuFeatureResource,
   useCampaigns,
   useEraseSubscriber,
   useOutbox,

@@ -1,14 +1,23 @@
 /* Footer */
 import { Link } from "react-router-dom";
+import { Clock, MapPin, Phone } from "lucide-react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useFacets, useNavigation, usePageCopy, useSettings } from "@/store/tanstackStore/queries/site";
 import { fill, shopTokens } from "@/utils/fill";
+import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/ui/BrandIcons";
 import { openCookieSettings } from "@/store/consent/consent";
 import { whatsappLink } from "@/utils/whatsapp";
 import NewsletterForm from "@/components/storefront/NewsletterForm";
 import Logo from "./navbar/Logo";
 
+/**
+ * A deep plum panel in the brand's own colours. The newsletter leads, large
+ * and plain; then the logo with its social buttons, the shop and help links,
+ * and the showroom with an icon per line; legal links sit in the bottom bar
+ * (they were a column of their own, and repeated Delivery and Returns from
+ * Help). A huge faint QVFITS bleeds off the bottom edge.
+ */
 export default function Footer() {
   const { data: settings } = useSettings();
   const { data: facets } = useFacets();
@@ -16,75 +25,83 @@ export default function Footer() {
   const { data: copy } = usePageCopy("footer");
   const { money } = useCurrency();
   const tokens = shopTokens(settings, money);
+  // Help and Legal both list Delivery and Returns; show them once, under Help. Account is in the header.
+  const help = nav?.help.filter((l) => l.href !== "/account") ?? [];
+  const legal = nav?.legal.filter((l) => !help.some((h) => h.href === l.href)) ?? [];
 
   return (
-    <footer className="ftr">
+    <footer className="ftr ftr--dark">
       <div className="wrap">
-        {/* The newsletter on every page, above the columns. */}
-        <section className="ftr__news" aria-labelledby="ftr-news-title">
+        {/* Newsletter: the words large on the left, the form on the right */}
+        <section className="ftr__join" aria-labelledby="ftr-news-title">
           <div>
-            <h2 id="ftr-news-title" className="m-0 font-display text-[1.35rem] font-bold tracking-tight">{copy?.newsTitle}</h2>
-            <p className="m-0 mt-1 text-[.92rem] text-ink-3">{copy?.newsText}</p>
+            <p className="ftr__eyebrow">Members first</p>
+            <h2 id="ftr-news-title" className="ftr__headline">{copy?.newsTitle}</h2>
+            <p className="ftr__lede">{copy?.newsText}</p>
           </div>
-          <NewsletterForm source="footer" cta={copy?.newsCta} />
+          <NewsletterForm source="footer" cta={copy?.newsCta} tone="brand" />
         </section>
+
         <div className="ftr__grid">
           {/* Brand */}
           <div className="ftr__brand">
-            <Logo size="lg" className="mb-[14px]" />
+            <Logo size="lg" tone="dark" className="mb-[16px]" />
+            {settings && <p className="ftr__blurb">{settings.blurb} {copy?.blurbSuffix}</p>}
+            {/* Social: the shop's real accounts, as round icon buttons side by side */}
             {settings && (
-              <p className="max-w-[34ch] text-[.9rem] text-ink-3">{settings.blurb} {copy?.blurbSuffix}</p>
+              <ul className="ftr__social" aria-label="Follow QVFITS">
+                {settings.instagram && <li><a href={settings.instagram} target="_blank" rel="noopener noreferrer" aria-label={`Instagram ${settings.instagramHandle ?? ""}`}><InstagramIcon className="h-[18px] w-[18px]" /></a></li>}
+                {settings.tiktok && <li><a href={settings.tiktok} target="_blank" rel="noopener noreferrer" aria-label={`TikTok ${settings.tiktokHandle ?? ""}`}><TikTokIcon className="h-[18px] w-[18px]" /></a></li>}
+                {settings.whatsapp && <li><a href={whatsappLink(settings.whatsapp)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp us"><WhatsAppIcon className="h-[18px] w-[18px]" /></a></li>}
+              </ul>
             )}
           </div>
 
           {/* Shop */}
-          <div>
+          <nav aria-label="Shop">
             <h2 className="ftr__title">Shop</h2>
             <ul>
               {facets?.categoryList.map((c) => (
                 <li key={c.id}><Link to={`/shop/${c.slug}`}>{c.name}</Link></li>
               ))}
-            </ul>
-          </div>
-
-          {/* Help */}
-          <div>
-            <h2 className="ftr__title">Help</h2>
-            <ul>
-              {nav?.help.map((l) => <li key={l.href}><Link to={l.href}>{l.title}</Link></li>)}
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <nav aria-label="Legal">
-            <h2 className="ftr__title">Legal</h2>
-            <ul>
-              {nav?.legal.map((l) => <li key={l.href}><Link to={l.href}>{l.title}</Link></li>)}
-              <li><button type="button" className="ftr__cookie" onClick={openCookieSettings}>Cookie settings</button></li>
+              <li><Link to="/shop/kits">Shop the kit</Link></li>
             </ul>
           </nav>
 
-          {/* Visit */}
+          {/* Help */}
+          <nav aria-label="Help">
+            <h2 className="ftr__title">Help</h2>
+            <ul>
+              {help.map((l) => <li key={l.href}><Link to={l.href}>{l.title}</Link></li>)}
+            </ul>
+          </nav>
+
+          {/* Visit: an icon for each line, so the showroom reads at a glance */}
           {settings && (
             <div>
-              <h2 className="ftr__title">Visit</h2>
-              <ul>
-                <li><a href={settings.mapsUrl} target="_blank" rel="noopener noreferrer">{settings.address}</a></li>
-                {settings.addressNote && <li><span className="text-[.85rem] text-ink-4">{settings.addressNote}</span></li>}
-                <li><span className="text-[.9rem] text-ink-3">Opens {settings.opensAt}</span></li>
-                <li><a href={`tel:${settings.phone.replace(/\s/g, "")}`}>{settings.phone}</a></li>
-                <li><a href={whatsappLink(settings.whatsapp)} target="_blank" rel="noopener noreferrer">WhatsApp us</a></li>
-                <li><a href={settings.instagram} target="_blank" rel="noopener noreferrer">Instagram {settings.instagramHandle}</a></li>
-                {settings.tiktok && <li><a href={settings.tiktok} target="_blank" rel="noopener noreferrer">TikTok {settings.tiktokHandle}</a></li>}
+              <h2 className="ftr__title">Visit us</h2>
+              <ul className="ftr__visit">
+                <li><MapPin aria-hidden="true" /><a href={settings.mapsUrl} target="_blank" rel="noopener noreferrer">{settings.address}{settings.addressNote && <span className="ftr__note">{settings.addressNote}</span>}</a></li>
+                <li><Clock aria-hidden="true" /><span>Opens {settings.opensAt}</span></li>
+                <li><Phone aria-hidden="true" /><a href={`tel:${settings.phone.replace(/\s/g, "")}`}>{settings.phone}</a></li>
+                <li><WhatsAppIcon className="ftr__vi" /><a href={whatsappLink(settings.whatsapp)} target="_blank" rel="noopener noreferrer">WhatsApp us</a></li>
               </ul>
             </div>
           )}
         </div>
+
+        {/* Bottom bar: copyright and the legal links, then the tagline */}
         <div className="ftr__bot">
           <span>{fill(copy?.copyright, tokens)}</span>
+          <nav aria-label="Legal" className="ftr__legal">
+            {legal.map((l) => <Link key={l.href} to={l.href}>{l.title}</Link>)}
+            <button type="button" className="ftr__cookie" onClick={openCookieSettings}>Cookie settings</button>
+          </nav>
           <span>{copy?.tagline}</span>
         </div>
       </div>
+      {/* The wordmark, huge and faint, cut off by the bottom edge */}
+      <span className="ftr__mark" aria-hidden="true">QVFITS</span>
     </footer>
   );
 }

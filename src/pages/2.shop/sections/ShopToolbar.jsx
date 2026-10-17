@@ -6,24 +6,25 @@ import SortMenu from "./SortMenu";
 const COL_ICON = { 1: Square, 2: Columns2, 3: Columns3, 4: Columns4 };
 
 /**
- * One plain row above the grid. Filter (with how many are on) and Sort sit
- * together on the left, then how many show; how many sit in a row is on
- * the right. It rides under the header as the grid scrolls.
+ * One plain row above the grid, balanced: how many show on the left, and the
+ * controls together on the right (Filter with how many are on, Sort, then
+ * how many sit in a row). On a phone the count takes its own line, and the
+ * controls sit beneath it. It rides under the header as the grid scrolls.
  */
 export default function ShopToolbar({ count, total, active, onOpenFilters, sorts, sort, onSort, grid }) {
   return (
     <div className="shop-bar">
+      <span className="shop-bar__count" aria-live="polite">
+        {count} {count === 1 ? "result" : "results"}
+        {count !== total && <span> of {total}</span>}
+      </span>
+
       <button type="button" className="btn btn--soft min-h-10 px-4 text-[.88rem]" onClick={onOpenFilters} aria-haspopup="dialog" aria-controls="shop-filters">
         <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
         Filter
         {active > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand-500 px-1 text-[.7rem] font-bold text-white">{active}</span>}
       </button>
       <SortMenu sorts={sorts} value={sort} onChange={onSort} />
-
-      <span className="shop-bar__count" aria-live="polite">
-        {count} {count === 1 ? "result" : "results"}
-        {count !== total && <span className="hidden sm:inline"> of {total}</span>}
-      </span>
 
       <div className="gridsize" role="group" aria-label="Products per row">
         {grid.options.map((n) => {

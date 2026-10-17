@@ -31,13 +31,16 @@ export default function AdminCustomers() {
   const [draft, setDraft] = useState(null);
   const [erasing, setErasing] = useState(false);
 
+  // Each row carries the account's orders (cancelled and refunded ones don't count towards what they spent) and whether their email is a confirmed newsletter subscriber.
   const rows = useMemo(() => customers.items.map((c) => {
     const mine = orders.filter((o) => o.customerId === c.id && !["cancelled", "refunded"].includes(o.status));
     return { ...c, orders: mine, spent: mine.reduce((n, o) => n + o.total, 0), subscribed: subscribers.some((s) => s.email === c.email && s.status === "subscribed") };
   }), [customers.items, orders, subscribers]);
   const open = rows.find((c) => c.id === openId);
+  // Every tag in use, so the Tag filter only lists real ones.
   const tags = [...new Set(rows.flatMap((c) => c.tags ?? []))];
 
+  // The table's columns: name with tags, contact, orders, what they have spent, and when they joined.
   const columns = [
     { key: "name", label: "Name", sort: (c) => c.name, render: (c) => <span><strong className="font-display">{c.name}</strong>{c.tags?.length > 0 && <span className="block text-xs text-brand-600">{c.tags.join(", ")}</span>}</span> },
     { key: "email", label: "Contact", render: (c) => <span>{c.email}<span className="block text-xs text-ink-3">{c.phone || "No phone"}</span></span> },
@@ -46,11 +49,14 @@ export default function AdminCustomers() {
     { key: "createdAt", label: "Joined", sort: (c) => c.createdAt, render: (c) => formatDate(c.createdAt) },
   ];
 
+  // Opening a customer starts a draft of the two things staff may change: notes and tags.
   const openCustomer = (c) => { setOpenId(c.id); setDraft({ notes: c.notes ?? "", tags: c.tags ?? [] }); };
 
   return (
     <>
+      {/* Page Header */}
       <PageHeader lede={`${rows.length} accounts. Guests appear on their orders.`} />
+      {/* Customer Table */}
       <Panel>
         <DataTable
           rows={rows}
@@ -67,6 +73,7 @@ export default function AdminCustomers() {
           empty="No accounts yet."
         />
       </Panel>
+      {/* Customer Drawer: totals, contact, addresses and orders, then notes and tags only staff see */}
       {open && draft && (
         <Drawer
           open
@@ -92,10 +99,12 @@ export default function AdminCustomers() {
               {open.orders.map((o) => <li key={o.id} className="flex items-center justify-between gap-2 border-b border-line py-2 text-sm"><Link to={`/admin/orders?order=${o.id}`} className="text-brand-600 underline">{o.ref}</Link><span className="text-ink-3">{formatDate(o.createdAt)}</span><StatusChip status={o.status} /><span>{moneyBase(o.total)}</span></li>)}
             </ul>
           ) : <p className="text-sm text-ink-3">No orders yet.</p>}
+          {/* Notes and tags: read-only without the edit permission */}
           <fieldset disabled={!can("customers", "edit")} className="m-0 mt-6 grid gap-4 border-0 p-0">
             <Field label="Tags">{(id) => <TagInput id={id} value={draft.tags} onChange={(t) => setDraft({ ...draft, tags: t })} placeholder="VIP, wholesale…" />}</Field>
             <Field label="Private notes" as="textarea" rows={4} value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} hint="Only staff see these." />
           </fieldset>
+          {/* Erase: for a data-deletion request (Uganda's Data Protection and Privacy Act, 2019). The orders stay for the books, without the name or contact details. */}
           {can("customers", "delete") && (
             <div className="mt-8 border-t border-line pt-5">
               <h3 className="m-0 text-base">Erase this customer</h3>
@@ -105,6 +114,7 @@ export default function AdminCustomers() {
           )}
         </Drawer>
       )}
+      {/* Erase Confirmation */}
       <ConfirmDialog
         isOpen={erasing}
         onClose={() => setErasing(false)}

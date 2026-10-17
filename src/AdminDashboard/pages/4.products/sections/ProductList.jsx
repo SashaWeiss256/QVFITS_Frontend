@@ -27,9 +27,11 @@ import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
 import SetupChecklist from "./SetupChecklist";
 
+// Units on the shelf: every colour and size of a piece added together.
 const units = (p) => p.variants.reduce((n, v) => n + v.stock, 0);
 const TYPE = [{ value: "piece", label: "Single pieces" }, { value: "kit", label: "Kits" }];
 const STATUS = [{ value: "active", label: "Published" }, { value: "draft", label: "Draft" }, { value: "archived", label: "Archived" }];
+// The labels a product can be filtered by; New, Best seller and Pinned map to the fields saved on the product form.
 const LABELS = [
   { value: "new", label: "New arrival" },
   { value: "bestseller", label: "Best seller (sales or pinned)" },
@@ -59,8 +61,10 @@ export default function ProductList() {
   const [deleting, setDeleting] = useState(null);
   const canEdit = can("products", "edit");
   const canDelete = can("products", "delete");
+  // The same "low stock" number the Overview and the shop's "Only N left" use, set in Settings.
   const low = settings?.lowStockAt ?? 2;
 
+  // What the catalogue needs before a product can be added: a category, a colour and a size (the service refuses a product without them too).
   const setup = {
     categories: categories.items.filter((c) => c.active).length,
     colours: colors.items.length,
@@ -73,6 +77,7 @@ export default function ProductList() {
   // A kit can be sent while every piece has a size in stock.
   const kitReady = (k) => k.kitItems.length >= 2 && k.kitItems.every((id) => units(byId(id) ?? { variants: [] }) > 0);
 
+  // The table's columns. A kit has no stock or sales of its own, so those cells say so instead of showing a number.
   const columns = [
     {
       key: "name",
@@ -94,6 +99,7 @@ export default function ProductList() {
       key: "labels",
       label: "Labels",
       render: (p) => {
+        // Labels shown in the row: New, and Best seller (pinned, or by sales).
         const tags = [p.isNew && "New", p.pinnedBestseller ? "Best seller (pinned)" : p.isBestseller && "Best seller"].filter(Boolean);
         return tags.length ? <span className="flex flex-wrap gap-1">{tags.map((t) => <span key={t} className="rounded-r-pill bg-brand-50 px-2 py-0.5 text-[.72rem] font-semibold text-brand-600">{t}</span>)}</span> : <span className="text-ink-4">None</span>;
       },
@@ -118,6 +124,7 @@ export default function ProductList() {
     },
   ];
 
+  // The filter drawer's sections, in order. Every Shop by group of tags (Movement and so on) gets its own section.
   const filters = [
     { id: "type", label: "Type", options: TYPE, test: (p, v) => p.type === v },
     { id: "status", label: "Status", options: STATUS, test: (p, v) => p.status === v },
@@ -142,11 +149,13 @@ export default function ProductList() {
     },
   ];
 
+  // A bulk action updates every ticked row, then clears the selection.
   const bulk = (patch) => (ids, clear) => bulkUpdate.mutateAsync({ ids, patch }).then(clear);
   const LABEL_PATCH = { new: { isNew: true }, "not-new": { isNew: false }, pin: { pinnedBestseller: true }, unpin: { pinnedBestseller: false } };
 
   return (
     <>
+      {/* Page Header: Add product waits until the catalogue is set up */}
       <PageHeader
         lede={`${products.items.filter((p) => p.type !== "kit").length} pieces and ${products.items.filter((p) => p.type === "kit").length} kits. Drafts and archived ones never show in the shop.`}
         action={
@@ -157,7 +166,9 @@ export default function ProductList() {
           ))
         }
       />
+      {/* Setup Checklist: shown until there is a category, a colour and a size */}
       {!loading && !ready && <SetupChecklist counts={setup} />}
+      {/* Product Table */}
       <Panel>
         <DataTable
           filterDrawer
@@ -174,14 +185,14 @@ export default function ProductList() {
               <>
                 <button type="button" className="btn btn--soft min-h-9 px-3 text-xs" onClick={() => bulk({ status: "active" })(ids, clear)}>Publish</button>
                 <button type="button" className="btn btn--soft min-h-9 px-3 text-xs" onClick={() => bulk({ status: "archived" })(ids, clear)}>Archive</button>
-                <select className="input min-h-9 py-1 text-xs" aria-label="Labels" value="" onChange={(e) => e.target.value && bulk(LABEL_PATCH[e.target.value])(ids, clear)}>
+                <select className="select min-h-9 py-1 text-xs" aria-label="Labels" value="" onChange={(e) => e.target.value && bulk(LABEL_PATCH[e.target.value])(ids, clear)}>
                   <option value="">Labels…</option>
                   <option value="new">Mark as New arrival</option>
                   <option value="not-new">No longer new</option>
                   <option value="pin">Pin to Best sellers</option>
                   <option value="unpin">Unpin from Best sellers</option>
                 </select>
-                <select className="input min-h-9 py-1 text-xs" aria-label="Set sale" value="" onChange={(e) => e.target.value && bulk({ salePercent: Number(e.target.value) || null })(ids, clear)}>
+                <select className="select min-h-9 py-1 text-xs" aria-label="Set sale" value="" onChange={(e) => e.target.value && bulk({ salePercent: Number(e.target.value) || null })(ids, clear)}>
                   <option value="">Sale…</option>
                   {[10, 15, 20, 25, 30, 40, 50].map((n) => <option key={n} value={n}>{n}% off</option>)}
                   <option value="0">End sale</option>
@@ -214,6 +225,7 @@ export default function ProductList() {
           empty={ready ? "No products yet. Add the first one." : "Set up the catalogue above, then add the first product."}
         />
       </Panel>
+      {/* Delete Confirmation: one product from the row menu, or every ticked one */}
       <ConfirmDialog
         isOpen={Boolean(deleting)}
         onClose={() => setDeleting(null)}

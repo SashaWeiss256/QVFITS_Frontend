@@ -50,9 +50,12 @@ function Editor({ doc, groups }) {
 
   // Filter sections: the built-in ones, plus every Shop by group switched on as a filter.
   const shown = groups.filter((g) => g.inFilters && g.active !== false);
+  // Category is the built-in section called "category"; every other group is "group:<id>".
   const idOf = (g) => (g.kind === "category" ? "category" : `group:${g.id}`);
   const groupOf = (id) => shown.find((g) => idOf(g) === id);
+  // Sections saved earlier, minus any group that is no longer a filter.
   const laid = draft.facets.filter((f) => BUILT_IN[f.id] || groupOf(f.id));
+  // Anything new (a group added since the layout was saved, or a built-in section never saved) joins at the end, shown.
   const missing = [...Object.entries(BUILT_IN).map(([id, label]) => ({ id, label })), ...shown.map((g) => ({ id: idOf(g), label: g.name }))]
     .filter((x) => !laid.some((f) => f.id === x.id))
     .map((x, i) => ({ ...x, visible: true, position: laid.length + i }));
@@ -60,7 +63,9 @@ function Editor({ doc, groups }) {
   const setFacet = (id, patch) => set("facets", facets.map((f) => (f.id === id ? { ...f, ...patch } : f)));
 
   const sort = draft.sort;
+  // Sort choices in their saved order.
   const options = [...sort.options].sort((a, b) => a.position - b.position);
+  // The default order must be one shoppers can see, so hiding it moves the default to the first visible choice.
   const setOption = (id, patch) => {
     const next = options.map((o) => (o.id === id ? { ...o, ...patch } : o));
     // The default must be a choice shoppers can see.
@@ -71,8 +76,10 @@ function Editor({ doc, groups }) {
 
   return (
     <>
+      {/* Page Header */}
       <PageHeader lede="The two controls above the shop's products, side by side: Filter opens the drawer, Sort orders the grid." />
       <div className="grid gap-6 xl:grid-cols-2">
+        {/* Filter: the sections of the shop's drawer, in order */}
         <Panel title="Filter" hint="Sections of the drawer, top to bottom">
           <ul className="m-0 list-none p-0">
             {facets.map((f, i) => {
@@ -95,6 +102,7 @@ function Editor({ doc, groups }) {
           </ul>
         </Panel>
 
+        {/* Sort: the choices in the Sort menu, and which one a shop page opens with */}
         <Panel title="Sort" hint="Choices in the Sort menu">
           <ul className="m-0 list-none p-0" role="radiogroup" aria-label="Default order">
             {options.map((o, i) => (
@@ -112,6 +120,7 @@ function Editor({ doc, groups }) {
           <p className="m-0 mt-3 text-xs text-ink-3">Every shop page opens in the default order. Featured puts pinned and best selling pieces first, then new arrivals.</p>
         </Panel>
       </div>
+      {/* Save Bar */}
       {canEdit && <SaveBar dirty={dirty} saving={doc.isSaving} onReset={reset} onSave={async () => commit(await doc.save({ facets, sort: { ...sort, options } }))} />}
     </>
   );

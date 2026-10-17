@@ -11,7 +11,7 @@ import FilterSheet, { FilterSection } from "@/components/ui/FilterSheet";
  */
 export default function FilterDrawer({ open, onClose, filters, values, onChange, onClear, countOf, resultCount }) {
   return (
-    <FilterSheet open={open} onClose={onClose} id="list-filters" title="Filter" count={resultCount} onClear={onClear}>
+    <FilterSheet open={open} onClose={onClose} id="list-filters" side="right" title="Filter" count={resultCount} onClear={onClear}>
       {filters.map((f) => {
         const picked = values[f.id] ?? [];
         const options = f.options.map((o) => ({ value: o.value, label: o.label, swatch: o.swatch, count: countOf(f, o.value) }));

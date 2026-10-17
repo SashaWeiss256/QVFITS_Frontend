@@ -1,5 +1,6 @@
 /* Shop Page (port of Quivogue shop.html) */
 import { useCallback, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import NotFound from "@/pages/not-found";
 import ProductGrid from "@/components/storefront/ProductGrid";
@@ -11,11 +12,15 @@ import Deals from "./sections/Deals";
 import FilterDrawer from "./sections/FilterDrawer";
 import Kits from "./sections/Kits";
 import NoMatches from "./sections/NoMatches";
+import ShowMore from "./sections/ShowMore";
 import ShopHeader from "./sections/ShopHeader";
 import ShopToolbar from "./sections/ShopToolbar";
 import { filterProducts, priceBounds } from "./filterProducts";
 import { useGridSize } from "./useGridSize";
 import { useShopFilters } from "./useShopFilters";
+
+// Products shown at first, and added by each "Show more".
+const PAGE = 24;
 
 /**
  * The shop: everything, or the part an address names (/shop/bras,
@@ -23,11 +28,14 @@ import { useShopFilters } from "./useShopFilters";
  * and Sort side by side, the count and the grid size; the filters open in
  * one drawer, at every width, so the grid keeps the whole page. Kits join the
  * grid as their own cards when Kits is picked. Deals and the kits section
- * show on the plain /shop only.
+ * show on the plain /shop only. A long list is shown PAGE at a time; how far
+ * the shopper has opened it is kept in the address (?n=48), so Back from a
+ * product returns to the same place. Any filter change starts over.
  */
 export default function ShopPage() {
   // Filter selections live in the URL; only the drawer's visibility is local UI state.
   const filters = useShopFilters();
+  const [params, setParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const closeFilters = useCallback(() => setFiltersOpen(false), []);
 
@@ -48,6 +56,9 @@ export default function ShopPage() {
   const bounds = priceBounds([...products, ...kits], offers?.sale);
   // The plain /shop, nothing narrowed: the place for deals and kits.
   const plain = filters.active === 0;
+  // How many to show: at least one page, never more than the list holds.
+  const shown = Math.min(list.length, Math.max(PAGE, Number(params.get("n")) || PAGE));
+  const showMore = () => setParams((p) => { const next = new URLSearchParams(p); next.set("n", String(shown + PAGE)); return next; }, { replace: true, preventScrollReset: true });
   const total = products.length + (state.labels.includes("kits") ? kits.length : 0);
 
   return (
@@ -73,7 +84,10 @@ export default function ShopPage() {
               />
               <AppliedFilters filters={filters} facets={facets} />
               {list.length ? (
-                <ProductGrid products={list} cols={grid.cols} />
+                <>
+                  <ProductGrid products={list.slice(0, shown)} cols={grid.cols} />
+                  <ShowMore shown={shown} total={list.length} step={PAGE} onMore={showMore} />
+                </>
               ) : (
                 <NoMatches sale={state.labels.length === 1 && state.labels[0] === "sale"} onClear={filters.clear} />
               )}

@@ -5,8 +5,10 @@ import Panel from "@/AdminDashboard/components/Panel";
 
 /** The pieces that brought in most, each with a bar for its share against the best. */
 export default function TopSellers({ rows = [], loading, money }) {
+  // The best seller sets the length of the bars; every other bar is a share of it.
   const max = rows[0]?.revenue || 1;
 
+  {/* Best Sellers: the five pieces that took the most money in the period, each linking to its product */}
   return (
     <Panel title="Best sellers" hint="By revenue in this period">
       {loading ? (

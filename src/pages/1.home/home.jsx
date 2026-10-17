@@ -24,7 +24,7 @@ export default function HomePage() {
       <Movements movements={content?.movements} />
       <Campaign campaign={content?.campaign} />
       <Feed feed={content?.feed} />
-      <Newsletter copy={content?.newsletter} />
+      <Newsletter copy={content?.newsletter} photos={[content?.campaign?.photo, content?.heroSlides?.[1]?.photo]} />
     </>
   );
 }

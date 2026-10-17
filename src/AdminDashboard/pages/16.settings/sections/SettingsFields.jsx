@@ -4,6 +4,7 @@ import ListEditor from "@/AdminDashboard/components/ListEditor";
 import Panel from "@/AdminDashboard/components/Panel";
 
 export default function SettingsFields({ groups, draft, set }) {
+  // Each group becomes a panel; a field is [key, label, hint, wide, number], so a new setting is one line in settingsGroups.js.
   return groups.map(([title, fields]) => (
     <Panel key={title} title={title}>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -15,6 +16,7 @@ export default function SettingsFields({ groups, draft, set }) {
             className={wide ? "sm:col-span-2" : undefined}
             inputMode={number ? "numeric" : undefined}
             value={draft[key] ?? ""}
+            // A number field keeps digits only and counts an empty box as 0.
             onChange={(e) => set(key, number ? Number(e.target.value.replace(/\D/g, "")) || 0 : e.target.value)}
           />
         ))}
@@ -30,6 +32,7 @@ export function Currencies({ draft, set }) {
       <p className="mt-0 text-sm text-ink-3">Shoppers abroad can view prices in these. Rates go stale; the date shows on the shop so an old rate looks old.</p>
       <Field label="Rates last checked" className="mb-4 max-w-xs" value={draft.ratesUpdated} onChange={(e) => set("ratesUpdated", e.target.value)} />
       <ListEditor
+        // Currencies need an id for the list editor, so the code stands in for it and is dropped again on save.
         items={draft.currencies.map((c) => ({ ...c, id: c.code }))}
         onChange={(items) => set("currencies", items.map(({ id: _id, ...c }) => c))}
         newItem={() => ({ id: `new-${Date.now()}`, code: "", label: "", perUGX: 0, decimals: 2 })}

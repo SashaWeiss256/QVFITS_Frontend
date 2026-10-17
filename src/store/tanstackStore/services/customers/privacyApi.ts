@@ -19,11 +19,13 @@ function anonymise(customerId: Id) {
   }
 }
 
+// Closing an account also deletes the newsletter record for that address, consent history included.
 function eraseSubscription(email?: string) {
   const s = subscribers.list().find((x) => x.email === email);
   if (s) subscribers.remove(s.id);
 }
 
+// Everything held about the shopper in one file: their profile, orders and newsletter consent.
 export function downloadMyData(customerId: Id) {
   return mockApi(() => {
     const email = customers.get(customerId)?.email;
@@ -34,6 +36,7 @@ export function downloadMyData(customerId: Id) {
   }, 300);
 }
 
+// Orders stay for the books, without the name or contact details; then the shopper is signed out.
 export async function deleteMyAccount(customerId: Id) {
   await mockApi(() => {
     const email = customers.get(customerId)?.email;

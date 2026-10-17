@@ -12,12 +12,14 @@ const MAX = 12;
 const listeners = new Set();
 let ids = readStored(KEY, []);
 
+// The list is kept to the newest 12 and saved on this device every time it changes.
 function set(next) {
   ids = next.slice(0, MAX);
   writeStored(KEY, ids);
   listeners.forEach((l) => l());
 }
 
+// Lets useSyncExternalStore re-render every component that shows the list when it changes.
 const subscribe = (listener) => {
   listeners.add(listener);
   return () => listeners.delete(listener);

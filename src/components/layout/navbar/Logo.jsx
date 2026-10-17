@@ -12,10 +12,11 @@ import { cn } from "@/utils/cn";
  */
 const SUB = "QUIVOGUE".split("");
 
-export default function Logo({ size = "md", to = "/", className }) {
+// tone="dark" is for dark backgrounds (the footer): the white artwork and white words.
+export default function Logo({ size = "md", to = "/", className, tone = "light" }) {
   return (
-    <Link to={to} className={cn("logo", size === "lg" && "logo--lg", className)} aria-label={`QVFITS by Quivogue, ${to === "/" ? "home" : "dashboard"}`}>
-      <img src="/logo/qvfits-logo-stacked.svg" alt="" width="1126" height="1120" className="logo__img" decoding="async" />
+    <Link to={to} className={cn("logo", size === "lg" && "logo--lg", tone === "dark" && "logo--dark", className)} aria-label={`Quivogue (QVFITS), ${to === "/" ? "home" : "dashboard"}`}>
+      <img src={tone === "dark" ? "/logo/qvfits-logo-stacked-white.svg" : "/logo/qvfits-logo-stacked.svg"} alt="" width="1126" height="1120" className="logo__img" decoding="async" />
       <span className="logo__text" aria-hidden="true">
         <span className="logo__name">QVFITS</span>
         <span className="logo__sub">

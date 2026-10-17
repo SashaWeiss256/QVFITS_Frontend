@@ -10,6 +10,7 @@ const ACTIONS = [["view", "See"], ["edit", "Change"], ["delete", "Delete"], ["re
  * `base` marks what the role gives, for a person's overrides.
  */
 export default function PermissionMatrix({ modules, value, onChange, base, disabled = false }) {
+  // Changing, deleting, refunding or recording a payment all need to see the page, so ticking any of them ticks See; unticking See clears the row.
   const toggle = (mod, action) => {
     const had = value[mod] ?? [];
     let next = had.includes(action) ? had.filter((a) => a !== action) : [...had, action];
@@ -21,14 +22,17 @@ export default function PermissionMatrix({ modules, value, onChange, base, disab
   return (
     <div className="overflow-x-auto rounded-r-md border border-line bg-white">
       <table className="w-full border-collapse text-sm">
+        {/* Column Headings */}
         <thead>
           <tr className="border-b border-line">
             <th scope="col" className="eyebrow px-3 py-2 text-left">Module</th>
             {ACTIONS.map(([, l]) => <th key={l} scope="col" className="eyebrow px-3 py-2 text-center">{l}</th>)}
           </tr>
         </thead>
+        {/* One row per module */}
         <tbody>
           {modules.map((m) => {
+            // A row that differs from the role is highlighted, so a person's own access stands out.
             const changed = base && JSON.stringify([...(value[m.id] ?? [])].sort()) !== JSON.stringify([...(base[m.id] ?? [])].sort());
             return (
               <tr key={m.id} className={cn("border-b border-line last:border-0", changed && "bg-brand-50")}>

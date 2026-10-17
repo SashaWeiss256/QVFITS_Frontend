@@ -31,7 +31,9 @@ export default function ShopReady() {
   const { data: settings } = useDocument(settingsResource);
   if (products.isLoading || !settings) return null;
 
+  // Only published pieces count as "a product in the shop".
   const live = products.items.filter((p) => p.status === "active");
+  // The setup in the order it is done, each step a link to where it is done.
   const steps = [
     { label: "Categories", done: categories.some((c) => c.active), to: "/admin/categories" },
     { label: "Colours", done: colors.length > 0, to: "/admin/categories?tab=colours" },
@@ -42,13 +44,16 @@ export default function ShopReady() {
     { label: "Contact details", done: Boolean(settings.phone && settings.whatsapp && settings.email), to: "/admin/settings?tab=contact" },
   ];
   const done = steps.filter((s) => s.done).length;
+  // Once everything is set up the card disappears for good.
   if (done === steps.length) return null;
 
+  {/* Get The Shop Ready: a progress bar, then the steps */}
   return (
     <Panel title="Get the shop ready" hint={`${done} of ${steps.length} done`}>
       <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-cream-2" role="progressbar" aria-valuenow={done} aria-valuemin={0} aria-valuemax={steps.length} aria-label="Setup progress">
         <div className="h-full rounded-full bg-[image:var(--brand-grad)] transition-[width] duration-500 ease-q" style={{ width: `${(done / steps.length) * 100}%` }} />
       </div>
+      {/* Steps: a tick when done, a number when not */}
       <ol className="m-0 grid list-none gap-1 p-0 sm:grid-cols-2">
         {steps.map((s, i) => (
           <li key={s.label}>

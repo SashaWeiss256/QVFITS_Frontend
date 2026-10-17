@@ -7,8 +7,10 @@ import Field from "@/components/ui/Field";
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
+import { withColor } from "@/AdminDashboard/lib/variants";
 import { categoriesResource, colorsResource, groupsResource, productsResource, sizesResource, termsResource, useCollection } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
+import ChipGroup from "@/AdminDashboard/components/ChipGroup";
 import ImageUploader from "@/AdminDashboard/components/ImageUploader";
 import Panel from "@/AdminDashboard/components/Panel";
 import ProductPicker from "@/AdminDashboard/components/ProductPicker";
@@ -75,7 +77,10 @@ function Editor({ existing, products }) {
   const [tried, setTried] = useState(false);
   const errors = tried ? problems(p) : {};
   const readOnly = !can("products", "edit");
-  const patch = (obj) => set({ ...p, ...obj });
+  // The optional details stay folded on a new product, so adding one is short; an existing product opens them.
+  const [moreOpen, setMoreOpen] = useState(Boolean(existing));
+  // Each change builds on the latest draft, so several in one click don't overwrite each other.
+  const patch = (obj) => set((draft) => ({ ...draft, ...(typeof obj === "function" ? obj(draft) : obj) }));
 
   const save = async () => {
     setTried(true);
@@ -103,55 +108,41 @@ function Editor({ existing, products }) {
         </div>
       )}
 
-      <fieldset disabled={readOnly} className="m-0 grid min-w-0 gap-6 border-0 p-0 lg:grid-cols-[1fr_320px]">
-        <div className="grid min-w-0 gap-6">
-          {/* What it is, chosen once: a piece keeps its stock, a kit borrows its pieces'. */}
-          {!existing && (
-            <Panel title="What are you adding?">
-              <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Product type">
-                {TYPES.map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={p.type === t.id}
-                    onClick={() => patch({ type: t.id, isNew: t.id === "piece" })}
-                    className={cn(
-                      "flex gap-3 rounded-r-md border p-4 text-left outline-none transition-[border-color,background-color] duration-200 focus-visible:ring-2 focus-visible:ring-brand-300",
-                      p.type === t.id ? "border-brand-300 bg-brand-50" : "border-line hover:bg-cream",
-                    )}
-                  >
-                    <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-r-sm", p.type === t.id ? "bg-[image:var(--brand-grad)] text-white" : "bg-cream-2 text-ink-3")}>
-                      <t.icon className="h-4 w-4" aria-hidden="true" />
-                    </span>
-                    <span>
-                      <strong className="block text-sm">{t.label}</strong>
-                      <span className="text-[.82rem] text-ink-3">{t.hint}</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </Panel>
-          )}
+      {/* What it is, chosen once: a piece keeps its stock, a kit borrows its pieces'. */}
+      {!existing && (
+        <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="inline-flex rounded-r-pill bg-cream-2 p-1" role="radiogroup" aria-label="What are you adding?">
+            {TYPES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                role="radio"
+                aria-checked={p.type === t.id}
+                onClick={() => patch({ type: t.id, isNew: t.id === "piece" })}
+                className={cn(
+                  "inline-flex min-h-10 items-center gap-2 rounded-r-pill px-5 text-sm font-semibold outline-none transition-[background-color,color,box-shadow] duration-200 focus-visible:ring-2 focus-visible:ring-brand-300",
+                  p.type === t.id ? "bg-white text-brand-600 shadow-sh-1" : "text-ink-3 hover:text-ink",
+                )}
+              >
+                <t.icon className="h-4 w-4" aria-hidden="true" /> {t.label}
+              </button>
+            ))}
+          </div>
+          <p className="m-0 text-sm text-ink-3">{TYPES.find((t) => t.id === p.type)?.hint}</p>
+        </div>
+      )}
 
-          <Panel title="Details">
+      <fieldset disabled={readOnly} className="m-0 grid min-w-0 gap-6 border-0 p-0 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="grid min-w-0 gap-6">
+          <Panel title="Basics">
             <div className="grid gap-4">
               <Field label="Name" value={p.name} onChange={(e) => patch({ name: e.target.value })} error={errors.name} />
               <Field label="Short description" as="textarea" rows={3} value={p.blurb} onChange={(e) => patch({ blurb: e.target.value })} hint={isKit ? "The line under the kit's name, e.g. what it's built for." : "The paragraph under the name on the product page."} />
-              {!isKit && <>
-              <Field label="Details">{(fid) => <TagInput id={fid} value={p.details} onChange={(details) => patch({ details })} placeholder="e.g. Squat-tested opaque, then Enter" allowCommas />}</Field>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Fabric" value={p.fabric} onChange={(e) => patch({ fabric: e.target.value })} />
-                <Field label="Fit" options={FITS} value={p.fit ?? "true"} onChange={(e) => patch({ fit: e.target.value })} />
-              </div>
-              <Field label="Fit note" value={p.fitNote} onChange={(e) => patch({ fitNote: e.target.value })} hint="Shown on the product and used by Vee, e.g. Runs small. Size up if between." />
-              <Field label="Care" as="textarea" rows={2} value={p.care} onChange={(e) => patch({ care: e.target.value })} />
-              </>}
             </div>
           </Panel>
 
-          <Panel title="Photos">
-            <ImageUploader value={p.photos} onChange={(photos) => patch({ photos })} colors={colors.items.filter((c) => p.colorIds.includes(c.id))} label={isKit ? "The kit's own photo, all the pieces worn together." : "The first is the card photo; the second shows on hover and in the gallery."} />
+          <Panel title="Photos" hint={isKit ? "The kit's own photo: all the pieces worn together." : "The first is the card photo and the second shows on hover. Tap a colour under a photo to say which colour it shows."}>
+            <ImageUploader value={p.photos} onChange={(photos) => patch({ photos })} colors={isKit ? undefined : colors.items} productColors={p.colorIds} onColorPick={(id) => patch((draft) => withColor(draft, sizes.items, id))} />
             {errors.photos && <p role="alert" className="mt-2 text-xs font-semibold text-warn">{errors.photos}</p>}
           </Panel>
 
@@ -165,29 +156,75 @@ function Editor({ existing, products }) {
             </Panel>
           ) : (
             <Panel title="Colours, sizes and stock" hint="A change here is logged as a count correction. Log restocks and showroom sales under Products, Stock.">
-              <VariantMatrix product={p} colors={colors.items} sizes={sizes.items} onChange={patch} />
+              <VariantMatrix product={p} colors={colors.items} sizes={sizes.items} onChange={patch} onCreateColor={can("categories", "edit") ? colors.create : undefined} onCreateSize={can("size-guide", "edit") ? sizes.create : undefined} />
               {errors.variants && <p role="alert" className="mt-2 text-xs font-semibold text-warn">{errors.variants}</p>}
+            </Panel>
+          )}
+
+          {!isKit && (
+            <Panel
+              title="More about the piece"
+              hint="Optional. Details, fabric, fit and care show on the product page, and fit also drives the size finder and Vee."
+              action={<button type="button" className="btn btn--ghost min-h-9 px-3 text-xs" aria-expanded={moreOpen} onClick={() => setMoreOpen((o) => !o)}>{moreOpen ? "Hide" : "Add details"}</button>}
+              className={moreOpen ? undefined : "[&>div]:mb-0"}
+            >
+              {moreOpen && <div className="grid gap-4">
+                <Field label="Details">{(fid) => <TagInput id={fid} value={p.details} onChange={(details) => patch({ details })} placeholder="e.g. Squat-tested opaque, then Enter" allowCommas />}</Field>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Fabric" value={p.fabric} onChange={(e) => patch({ fabric: e.target.value })} />
+                  <Field label="Fit" options={FITS} value={p.fit ?? "true"} onChange={(e) => patch({ fit: e.target.value })} />
+                </div>
+                <Field label="Fit note" value={p.fitNote} onChange={(e) => patch({ fitNote: e.target.value })} hint="Shown on the product and used by Vee, e.g. Runs small. Size up if between." />
+                <Field label="Care" as="textarea" rows={2} value={p.care} onChange={(e) => patch({ care: e.target.value })} />
+              </div>}
             </Panel>
           )}
         </div>
 
+        {/* The sell-side decisions, in the order they are made: whether it is live and what it costs,
+            where it sits in the shop, then the labels that promote it. */}
         <div className="grid content-start gap-6">
-          <Panel title="Status">
-            <Field label="Visibility" options={[{ value: "draft", label: "Draft, hidden from the shop" }, { value: "active", label: "Active, on sale" }, { value: "archived", label: "Archived" }]} value={p.status} onChange={(e) => patch({ status: e.target.value })} />
-          </Panel>
-
-          <Panel title="Pricing">
+          <Panel title="Publish and price">
             <div className="grid gap-4">
-              <Field label={isKit ? "Kit price (UGX)" : "Price (UGX)"} inputMode="numeric" value={p.price || ""} placeholder={isKit && separate ? String(separate) : undefined} onChange={(e) => patch({ price: Number(e.target.value.replace(/\D/g, "")) || 0 })} error={errors.price} hint={isKit ? "What the whole kit costs. Lower than the pieces bought one by one to give a saving." : undefined} />
-              {!isKit && <Field label="Sale (% off)" inputMode="numeric" value={p.salePercent ?? ""} onChange={(e) => patch({ salePercent: Math.min(90, Number(e.target.value.replace(/\D/g, ""))) || null })} hint="Shows only while the sale is on (Offers and banners)." />}
+              <Field label="Visibility" options={[{ value: "draft", label: "Draft, hidden from the shop" }, { value: "active", label: "Active, on sale" }, { value: "archived", label: "Archived" }]} value={p.status} onChange={(e) => patch({ status: e.target.value })} />
+              <div className={cn("grid gap-4", !isKit && "sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2")}>
+                <Field label={isKit ? "Kit price (UGX)" : "Price (UGX)"} inputMode="numeric" value={p.price || ""} placeholder={isKit && separate ? String(separate) : undefined} onChange={(e) => patch({ price: Number(e.target.value.replace(/\D/g, "")) || 0 })} error={errors.price} hint={isKit ? "What the whole kit costs. Lower than the pieces bought one by one to give a saving." : undefined} />
+                {!isKit && <Field label="Sale (% off)" inputMode="numeric" value={p.salePercent ?? ""} onChange={(e) => patch({ salePercent: Math.min(90, Number(e.target.value.replace(/\D/g, ""))) || null })} />}
+              </div>
+              {!isKit && <p className="m-0 -mt-1 text-xs text-ink-3">{"Shows only while the sale is on (Offers and banners)."}</p>}
             </div>
           </Panel>
 
+          {!isKit && <Panel title="Organisation">
+            <div className="grid gap-4">
+              {/* Category is one choice (a piece sits in one), the rest are several; all are chips, so the panel reads the same. */}
+              <ChipGroup
+                legend="Category"
+                single
+                items={categories.items.filter((c) => c.active || c.id === p.categoryId)}
+                isOn={(c) => p.categoryId === c.id}
+                onPick={(c) => patch({ categoryId: c.id })}
+                error={errors.categoryId}
+                errorId="category-error"
+              />
+              {/* Every other group takes several terms; each folds behind "+N more" when long. */}
+              {tagGroups.map((g) => (
+                <ChipGroup
+                  key={g.id}
+                  legend={g.name}
+                  items={terms.filter((t) => t.groupId === g.id)}
+                  isOn={(t) => p.termIds.includes(t.id)}
+                  onPick={(t) => patch({ termIds: p.termIds.includes(t.id) ? p.termIds.filter((x) => x !== t.id) : [...p.termIds, t.id] })}
+                />
+              ))}
+            </div>
+          </Panel>}
+
           {!isKit && (
-            <Panel title="Labels" hint="Where the piece shows besides the shop.">
+            <Panel title="Labels" hint="Where else the piece shows.">
               <div className="grid gap-4">
-                <Toggle checked={p.isNew} onChange={(isNew) => patch({ isNew })} label="New arrival" hint="Shows on New in and the home New releases rail. Turn off once it's no longer new." />
-                <Toggle checked={p.pinnedBestseller} onChange={(pinnedBestseller) => patch({ pinnedBestseller })} label="Pin to Best sellers" hint="Always on Best sellers, on top of the pieces that sell the most." />
+                <Toggle checked={p.isNew} onChange={(isNew) => patch({ isNew })} label="New arrival" hint="On New in and the home page, until you turn it off." />
+                <Toggle checked={p.pinnedBestseller} onChange={(pinnedBestseller) => patch({ pinnedBestseller })} label="Pin to Best sellers" hint="Always on Best sellers." />
                 {existing && (
                   <p className="m-0 rounded-r-md bg-cream px-3 py-2 text-[.8rem] text-ink-3">
                     {existing.unitsSold} sold in the last 90 days{existing.isBestseller && !existing.pinnedBestseller ? ", so it's a best seller by sales." : "."}
@@ -196,31 +233,6 @@ function Editor({ existing, products }) {
               </div>
             </Panel>
           )}
-
-          {!isKit && <Panel title="Organisation">
-            <div className="grid gap-4">
-              <Field label="Category" options={[{ value: "", label: "Pick one" }, ...categories.items.map((c) => ({ value: c.id, label: c.name }))]} value={p.categoryId} onChange={(e) => patch({ categoryId: e.target.value })} error={errors.categoryId} />
-              {tagGroups.map((g) => (
-                <fieldset key={g.id} className="m-0 border-0 p-0">
-                  <legend className="mb-2 text-sm font-semibold text-ink-2">{g.name}</legend>
-                  <div className="flex flex-wrap gap-1.5">
-                    {terms.filter((t) => t.groupId === g.id).map((t) => {
-                      const on = p.termIds.includes(t.id);
-                      return <button key={t.id} type="button" aria-pressed={on} className={cn("chip", on && "is-on")} onClick={() => patch({ termIds: on ? p.termIds.filter((x) => x !== t.id) : [...p.termIds, t.id] })}>{t.name}</button>;
-                    })}
-                  </div>
-                </fieldset>
-              ))}
-            </div>
-          </Panel>}
-
-          <Panel title="Search engines">
-            <div className="grid gap-4">
-              <p className="m-0 text-sm text-ink-3">Web address: <code className="rounded-r-sm bg-cream px-1.5 py-0.5 text-[.8rem] text-brand-600">/product/{p.slug || "made-from-the-name"}</code>{existing && (existing.slugLocked || existing.status === "active") ? ", fixed now it has been live." : ", made from the name."}</p>
-              <Field label="Page title" value={p.seo.title} placeholder={p.name} onChange={(e) => patch({ seo: { ...p.seo, title: e.target.value } })} />
-              <Field label="Description" as="textarea" rows={3} value={p.seo.description} placeholder={p.blurb} onChange={(e) => patch({ seo: { ...p.seo, description: e.target.value } })} />
-            </div>
-          </Panel>
         </div>
       </fieldset>
 

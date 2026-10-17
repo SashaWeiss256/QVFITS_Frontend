@@ -122,6 +122,7 @@ export interface Reports {
   stock: { category: string; pieces: number; units: number; low: number; out: number; value: number }[];
 }
 
+// The calendar day of a timestamp, as YYYY-MM-DD.
 const dayOf = (iso: string) => iso.slice(0, 10);
 
 /**
@@ -137,6 +138,7 @@ export async function getReports(range: ReportRange, { signal }: RequestOptions 
     const inRange = (iso: string) => (!range.from || dayOf(iso) >= range.from) && dayOf(iso) <= range.to;
     const all = orders.list();
     const paid = all.filter((o) => COUNTED.has(o.status) && inRange(o.createdAt));
+    // Adds one number up across a list of orders.
     const sum = (rows: Order[], pick: (o: Order) => number) => rows.reduce((n, o) => n + pick(o), 0);
     const refunds = transactions.list().filter((t) => t.type === "refund" && t.status === "succeeded" && inRange(t.createdAt));
 

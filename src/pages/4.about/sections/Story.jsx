@@ -10,12 +10,15 @@ import { useHomeContent, usePageCopy } from "@/store/tanstackStore/queries/site"
 export default function Story() {
   const { data: content } = useHomeContent();
   const { data: copy } = usePageCopy("about");
+  // The words come from the page copy (src/data/pages.json); the photo from the home content.
   const story = copy?.story;
 
   return (
     <section className="section">
       <div className="wrap">
+        {/* Breadcrumb */}
         <p className="crumbs"><Link to="/">Home</Link> / About</p>
+        {/* Story And Studio Photo: side by side on a laptop, stacked on a phone */}
         <div className="about-grid">
           <Reveal>
             {story && (
@@ -30,6 +33,7 @@ export default function Story() {
               </>
             )}
           </Reveal>
+          {/* The studio photo */}
           <Reveal className="about-art">
             <Photo photo={content?.aboutPhoto} label="Inside the QVFITS studio" wide />
           </Reveal>

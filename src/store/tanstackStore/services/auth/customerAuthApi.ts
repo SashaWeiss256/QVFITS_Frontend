@@ -17,11 +17,15 @@ import { orders } from "../sales/ordersApi";
 
 const SESSION = "qvfits:mock:customer";
 const normal = (email: string) => String(email).trim().toLowerCase();
+// The last nine digits of a phone number, so +256 772 410 218 and 0772410218 count as the same one.
 const digits = (phone?: string) => (phone ?? "").replace(/\D/g, "").slice(-9);
+// A random token for the emailed confirm and reset links.
 const token = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
 const HOUR = 3_600_000;
+// A second reset request within a minute is ignored, so the form can't be used to flood someone's inbox.
 const RESET_COOLDOWN = 60_000;
 
+// Remember me keeps the sign-in in local storage; otherwise it ends with the tab. Either way the other storage is cleared first.
 function startSession(customer: Customer, remember: boolean) {
   window.sessionStorage.removeItem(SESSION);
   window.localStorage.removeItem(SESSION);
@@ -41,12 +45,14 @@ function claimGuestOrders(c: CustomerRecord) {
   }
 }
 
+// The sign-up email's link carries a one-time token; the address counts as theirs once it is opened.
 function sendConfirm(c: CustomerRecord) {
   const t = token();
   customers.update(c.id, { confirmToken: t });
   queueEmail({ to: c.email, kind: "account-confirm", subject: "Confirm your QVFITS account", body: `Hi ${c.name.split(" ")[0]}, tap to confirm this is your email.`, link: `/account/confirm?token=${t}` });
 }
 
+// Mock only: the password is checked here. The API replaces this with auth/customer/login and a real token.
 export function login({ email, password, remember = true }: { email: string; password: string; remember?: boolean }) {
   return mockApi(() => {
     const record = customers.list().find((c) => c.email === normal(email) && c.password === password);
@@ -56,6 +62,7 @@ export function login({ email, password, remember = true }: { email: string; pas
   }, 400);
 }
 
+// Signing up claims earlier guest orders, sends the confirmation email and signs the shopper in at once.
 export function signup({ name, email, password, phone, remember = true, guard }: { name: string; email: string; password: string; phone?: string; remember?: boolean; guard?: Guard }) {
   return mockApi(() => {
     assertHuman(guard);
@@ -109,6 +116,7 @@ export function requestPasswordReset(email: string, guard?: Guard) {
   }, 400);
 }
 
+// A used or expired link (one hour) is refused with a 410, and a successful reset burns the token.
 export function resetPassword(t: string, password: string) {
   return mockApi(() => {
     if (password.length < 8) throw new ApiError("Use at least 8 characters.", 422);
@@ -119,6 +127,7 @@ export function resetPassword(t: string, password: string) {
   }, 300);
 }
 
+// Who is signed in, from the token and whichever storage holds the id; nobody if either is missing.
 export function currentCustomer() {
   return mockApi(() => {
     if (!accessToken("customer")) return null;

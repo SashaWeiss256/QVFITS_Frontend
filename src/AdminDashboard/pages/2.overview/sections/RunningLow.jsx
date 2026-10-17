@@ -8,8 +8,10 @@ import Panel from "@/AdminDashboard/components/Panel";
 /** Sizes about to sell out, fewest left first. Sold out reads in the warning tone. */
 export default function RunningLow({ rows = [], loading, canOpen }) {
   const colors = useCollection(colorsResource);
+  // The stock rows carry a colour id; show its name.
   const colorName = (id) => colors.items.find((c) => c.id === id)?.name ?? id;
 
+  {/* Running Low: sizes at or under the Settings low-stock level, fewest first, each linking to the stock page */}
   return (
     <Panel
       title="Running low"

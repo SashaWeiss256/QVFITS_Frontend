@@ -19,9 +19,16 @@ export function useDraft(saved) {
   return {
     draft,
     dirty,
-    /** Replace the draft, or patch one top-level key: set("sale", {...}). */
+    /**
+     * Replace the draft, patch one top-level key (set("sale", {...})), or give a
+     * function of the current draft. The function form is what lets two changes
+     * made in the same click (a photo's colour and the product's colours) both stick.
+     */
     set: (keyOrValue, value) =>
-      setState((s) => ({ ...s, draft: typeof keyOrValue === "string" ? { ...s.draft, [keyOrValue]: value } : keyOrValue })),
+      setState((s) => ({
+        ...s,
+        draft: typeof keyOrValue === "string" ? { ...s.draft, [keyOrValue]: value } : typeof keyOrValue === "function" ? keyOrValue(s.draft) : keyOrValue,
+      })),
     reset: () => setState({ base: saved, draft: saved }),
     /** After a successful save, take what the server returned as the new base. */
     commit: (next) => setState({ base: next ?? draft, draft: next ?? draft }),

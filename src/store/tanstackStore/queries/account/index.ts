@@ -75,6 +75,7 @@ export const useProfile = (id: Id) => useQuery(accountQueries.profile(id));
 export const useMyOrders = (id: Id) => useQuery(accountQueries.orders(id));
 export const useMyOrder = (id: Id, orderId?: Id) => useQuery(accountQueries.order(id, orderId));
 
+// Every account query sits under the shopper's own key, so one invalidation refreshes the profile, orders and addresses.
 export const useUpdateProfile = (id: Id) =>
   useMutation({
     mutationFn: (patch: Pick<Partial<Customer>, "name" | "phone">) => updateProfile(id, patch),

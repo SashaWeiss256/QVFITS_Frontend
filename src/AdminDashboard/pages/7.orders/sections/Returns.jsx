@@ -15,7 +15,9 @@ import Drawer from "@/AdminDashboard/components/Drawer";
 import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
 
+// Every state a return can be in, for the filter.
 const STATUSES = ["requested", "approved", "received", "refunded", "exchanged", "rejected"].map((s) => ({ value: s, label: statusLabel(s) }));
+// What each button says for the state it moves a return to.
 const ACTION = { approved: "Approve", rejected: "Reject", received: "Pieces received", refunded: "Refund", exchanged: "Exchange sent" };
 
 /**
@@ -28,6 +30,7 @@ const ACTION = { approved: "Approve", rejected: "Reject", received: "Pieces rece
 export default function Returns() {
   const { data: returns = [], isLoading } = useReturns();
   const { data: orders = [] } = useOrders();
+  // The refund amount staff typed; empty means the full amount due.
   const [amount, setAmount] = useState("");
   const update = useUpdateReturnStatus();
   const { can } = useAdminAuth();
@@ -36,11 +39,15 @@ export default function Returns() {
   const [note, setNote] = useState("");
   const open = returns.find((r) => r.id === openId);
   const openOrder = open && orders.find((o) => o.id === open.orderId);
+  // What the customer is owed, worked out by the same rule the service uses when it records the refund.
   const due = open && openOrder ? refundDue(open, openOrder) : 0;
+  // The amount about to be refunded; anything below what is due needs a reason.
   const giving = amount === "" ? due : Number(amount);
   const short = giving < due;
+  // The value of the returned lines at the prices paid.
   const value = (r) => r.lines.reduce((n, l) => n + l.price * l.qty, 0);
 
+  // The table's columns.
   const columns = [
     { key: "orderRef", label: "Order", render: (r) => <strong className="font-display">{r.orderRef}</strong> },
     { key: "name", label: "Customer" },
@@ -53,7 +60,9 @@ export default function Returns() {
 
   return (
     <>
+      {/* Page Header: how many are waiting for a decision */}
       <PageHeader lede={`${returns.filter((r) => r.status === "requested").length} waiting for a decision.`} />
+      {/* Returns Table: a row opens its drawer */}
       <Panel>
         <DataTable
           rows={returns}
@@ -66,6 +75,7 @@ export default function Returns() {
           empty="No return requests. They arrive from customers' order pages and Track an order, or open one from an order."
         />
       </Panel>
+      {/* Return Drawer: what was asked, the pieces, and the next steps allowed from this state */}
       {open && (
         <Drawer open onClose={() => setOpenId(null)} title={`Return on ${open.orderRef}`} subtitle={`${open.name} · asked ${formatDateTime(open.createdAt)}`}>
           <div className="mb-5 flex gap-2"><StatusChip status={open.status} /></div>
@@ -79,6 +89,7 @@ export default function Returns() {
           </ul>
           {open.note && <p className="text-sm text-ink-3">Note: {open.note}</p>}
           <Link className="link-arrow text-sm" to={`/admin/orders?order=${open.orderId}`}>Open order {open.orderRef}</Link>
+          {/* Decision: only the next steps allowed from this state are offered; Refund needs the refund permission and never more than is due */}
           {can("orders", "edit") && NEXT_RETURN_STATUS[open.status].length > 0 && (
             <div className="mt-4 grid gap-3 rounded-r-md bg-white p-4 shadow-sh-1">
               {NEXT_RETURN_STATUS[open.status].includes("refunded") && (

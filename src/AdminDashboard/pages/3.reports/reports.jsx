@@ -16,6 +16,7 @@ import ReportTable from "./sections/ReportTable";
 import SalesChart from "./sections/SalesChart";
 import { COLUMNS, REPORTS } from "./sections/reportColumns";
 
+// A date as YYYY-MM-DD, the form the service's range takes.
 const ymd = (d) => d.toISOString().slice(0, 10);
 
 /** The period presets, as on belioras: each one a from and to, both inclusive. */
@@ -32,6 +33,7 @@ function presetRange(id) {
   }
 }
 
+// The period buttons; Custom shows two date boxes.
 const PRESETS = [
   { id: "month", label: "This month" },
   { id: "last-month", label: "Last month" },
@@ -48,13 +50,16 @@ const PRESETS = [
  */
 export default function AdminReports() {
   const [preset, setPreset] = useState("year");
+  // Custom starts as this month, so the boxes open on something sensible.
   const [custom, setCustom] = useState(() => presetRange("month"));
   const [tab, setTab] = useState("sales");
+  // Presets are worked out fresh; a custom range is exactly what was typed.
   const range = useMemo(() => (preset === "custom" ? custom : presetRange(preset)), [preset, custom]);
   const { data, isLoading } = useReports(range);
   const { moneyBase } = useCurrency();
   const rows = data?.[tab] ?? [];
 
+  // The table on show as a CSV named for the report and period; money columns say UGX in their heading.
   const download = () =>
     downloadCsv(
       `qvfits-${tab}-${range.from || "start"}_to_${range.to}`,
@@ -63,11 +68,13 @@ export default function AdminReports() {
 
   return (
     <>
+      {/* Page Header: the download for the table on show */}
       <PageHeader
         lede="Paid orders in the period. Cancelled and refunded orders are left out of sales; refunds are counted on their own. Stock is as it stands today."
         action={<Button variant="ghost" onClick={download} disabled={!rows.length}><Download className="h-4 w-4" aria-hidden="true" /> Download CSV</Button>}
       />
 
+      {/* Period: presets, and the date boxes for a custom one */}
       <div className="mb-6 flex flex-wrap items-end gap-3">
         <div className="flex flex-wrap rounded-r-pill border border-line-2 bg-white p-0.5" role="group" aria-label="Period">
           {PRESETS.map((p) => (
@@ -93,6 +100,7 @@ export default function AdminReports() {
         )}
       </div>
 
+      {/* Totals: sales, paid orders, the average and what was refunded, for the period */}
       <section aria-label="Totals" className="mb-6 grid grid-cols-1 gap-px overflow-hidden rounded-r-lg border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Sales" icon={Wallet} loading={isLoading} value={moneyBase(data?.summary.sales ?? 0)} note="Paid orders, delivery included" />
         <StatCard label="Paid orders" icon={ShoppingBag} loading={isLoading} value={data?.summary.orders ?? 0} note={data ? `${data.summary.unpaid} still awaiting payment` : undefined} />
@@ -100,6 +108,7 @@ export default function AdminReports() {
         <StatCard label="Refunded" icon={RotateCcw} loading={isLoading} value={moneyBase(data?.summary.refunded ?? 0)} note={data ? `${data.summary.refundedCount} refunds` : undefined} />
       </section>
 
+      {/* Reports: one tab each; the chart shows with Sales only */}
       <Tabs tabs={REPORTS.map((r) => ({ ...r, count: data?.[r.id]?.length }))} value={tab} onChange={setTab} />
       {tab === "sales" && rows.length > 0 && <SalesChart rows={rows} money={moneyBase} />}
       <Panel flush className={cn(tab === "sales" && rows.length > 0 && "mt-6")}>

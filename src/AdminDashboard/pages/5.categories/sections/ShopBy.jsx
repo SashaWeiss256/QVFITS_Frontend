@@ -44,7 +44,9 @@ export default function ShopBy() {
 
   if (groups.isLoading || categories.isLoading || terms.isLoading) return <PageLoader />;
 
+  // What the address builders need to turn an item into its shop address.
   const lookup = { groups: groups.items, categories: categories.items, terms: terms.items, products: products.items };
+  // Categories live in their own table; the items of every other group share one.
   const tableOf = (g) => (g.kind === "category" ? categories : terms);
   const itemsOf = (g) => (g.kind === "category" ? categories.items : terms.items.filter((t) => t.groupId === g.id));
   const countOf = (g, x) =>
@@ -54,6 +56,7 @@ export default function ShopBy() {
   const pathOf = (g, x) =>
     targetHref(g.kind === "category" ? { categories: [x.id] } : g.kind === "tags" ? { terms: [x.id] } : x.target ?? {}, lookup);
 
+  // Moves an item (or a group) one place and saves the new order.
   const reorder = (table, list, i, by) => {
     const ids = list.map((x) => x.id);
     const [id] = ids.splice(i, 1);
@@ -61,12 +64,14 @@ export default function ShopBy() {
     table.reorder(ids);
   };
 
+  // Saves a new group or the edits to one.
   const saveGroup = async (data) => {
     if (data.id) await groups.update(data.id, data);
     else await groups.create(data);
     setGroupDialog(null);
   };
 
+  // Saves a new item or the edits to one. The photo is a view field, so only the stored picture goes back.
   const saveItem = async ({ group, value }) => {
     // The view carries the resolved photo; only the stored picture is saved.
     const { photo: _photo, ...data } = value;
@@ -76,6 +81,7 @@ export default function ShopBy() {
     setItemDialog(null);
   };
 
+  // Deleting a category with products moves them to the one chosen first; the service refuses anything still in use.
   const remove = async () => {
     const { group, item } = removing;
     if (!item) await groups.remove(group.id);
@@ -91,12 +97,14 @@ export default function ShopBy() {
 
   return (
     <>
+      {/* Page Header */}
       <PageHeader
         lede="Each group is a way into the shop: a column in the Shop menu, a filter and its own addresses, made from the names. Products pick their category and tags on the product form."
         action={canEdit && <Button onClick={() => setGroupDialog({ name: "", kind: "tags", inMenu: true, inFilters: true, active: true })}><Plus className="h-4 w-4" aria-hidden="true" /> Add group</Button>}
       />
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
+        {/* Groups: one card each, in the order the Shop menu shows them */}
         {groups.items.map((g, i) => (
           <GroupCard
             key={g.id}
@@ -120,9 +128,12 @@ export default function ShopBy() {
         ))}
       </div>
 
+      {/* Group Form */}
       <GroupDialog value={groupDialog} onChange={setGroupDialog} onClose={() => setGroupDialog(null)} onSave={saveGroup} saving={groups.isSaving} />
+      {/* Item Form */}
       <ItemDialog dialog={itemDialog} onChange={setItemDialog} onClose={() => setItemDialog(null)} onSave={saveItem} saving={categories.isSaving || terms.isSaving} />
 
+      {/* Delete: what happens depends on whether anything uses it */}
       <Modal isOpen={Boolean(removing)} onClose={() => setRemoving(null)} title={`Delete ${removing?.item?.name ?? removing?.group?.name ?? ""}`} size="sm">
         {removing && (
           <div className="grid gap-4">

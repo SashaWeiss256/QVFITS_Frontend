@@ -87,8 +87,10 @@ export default function AdminLayout() {
     },
   });
 
+  // `relative`: screen-reader-only text is absolutely placed, and deep in a long page it would
+  // otherwise escape the scroller and stretch the window, so it scrolled beside the sidebar.
   return (
-    <div className="flex h-dvh overflow-hidden bg-cream">
+    <div className="relative flex h-dvh overflow-hidden bg-cream">
       <AdminSidebar
         mobileOpen={menuOpen}
         onClose={() => setMenuOpen(false)}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import StatusChip from "@/components/ui/StatusChip";
 import { returnWindow, useMyReturns, useRequestReturn } from "@/store/tanstackStore/queries/account";
 
+// The reasons offered; the shop reads them in the Returns queue.
 const REASONS = ["Wrong size", "Not as expected", "Faulty or damaged", "Changed my mind", "Something else"];
 
 /**
@@ -19,6 +20,7 @@ export default function ReturnRequest({ order, customerId }) {
   const [reason, setReason] = useState(REASONS[0]);
   const [resolution, setResolution] = useState("exchange");
 
+  // One open request per order: while it exists its status shows instead of the form (a rejected one lets the shopper try again).
   const existing = returns.find((r) => r.orderId === order.id && r.status !== "rejected");
   if (existing) {
     return (
@@ -29,12 +31,15 @@ export default function ReturnRequest({ order, customerId }) {
     );
   }
 
+  // Returns are only taken for a set number of days after delivery (Settings, Exchange window); after that the reason is shown instead.
   const window = returnWindow(order);
   if (!window.open) return order.status === "delivered" ? <p className="mt-6 text-sm text-ink-3">{window.reason}</p> : null;
 
+  // A line is identified by piece, size and colour, since the same piece can be in the order twice.
   const key = (l) => `${l.productId}|${l.size}|${l.color}`;
   const toggle = (l) => setPicked((p) => (p.includes(key(l)) ? p.filter((k) => k !== key(l)) : [...p, key(l)]));
 
+  // Only the ticked lines are sent, trimmed to what the Returns queue needs; a refusal shows under the form.
   const submit = async (e) => {
     e.preventDefault();
     const lines = order.lines
@@ -51,9 +56,11 @@ export default function ReturnRequest({ order, customerId }) {
     );
   }
 
+  {/* Return Form */}
   return (
     <form className="mt-6 border-t border-line pt-5" onSubmit={submit} noValidate>
       <h3 className="text-[1.05rem]">Return or exchange</h3>
+      {/* Which pieces */}
       <fieldset className="mt-3 border-0 p-0">
         <legend className="mb-2 text-sm text-ink-3">Which pieces?</legend>
         {order.lines.map((l) => (
@@ -69,6 +76,7 @@ export default function ReturnRequest({ order, customerId }) {
           {REASONS.map((r) => <option key={r}>{r}</option>)}
         </select>
       </div>
+      {/* Exchange or refund */}
       <fieldset className="field m-0 border-0 p-0">
         <legend className="mb-1.5 text-[.8rem] font-medium text-ink-3">What would you like?</legend>
         <label className="check-row"><input type="radio" checked={resolution === "exchange"} onChange={() => setResolution("exchange")} /> An exchange</label>

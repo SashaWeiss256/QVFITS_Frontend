@@ -20,9 +20,12 @@ export const subscribers = createCollection<Subscriber>("subscribers", subscribe
 export const newsletterSettings = createDocument<NewsletterSettings>("newsletter", newsletterSeed as NewsletterSettings);
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// A random token for the confirm and unsubscribe links.
 const token = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
+// Asking again within a minute doesn't send another confirmation email.
 const COOLDOWN = 60_000;
 
+// The confirmation carries the consent words they agreed to; they only join the list once the link is opened.
 function sendConfirm(s: Subscriber) {
   queueEmail({
     to: s.email,
@@ -93,6 +96,7 @@ export function unsubscribe(t: string) {
 export function subscriptionOf(email: string) {
   return mockApi(() => subscribers.list().find((s) => s.email === email.trim().toLowerCase())?.status ?? null, 100);
 }
+// Unsubscribing keeps the record (so a second signup can be told apart from a first) and never fails, even for an address that was never on the list.
 export function unsubscribeEmail(email: string) {
   return mockApi(() => {
     const s = subscribers.list().find((x) => x.email === email.trim().toLowerCase());
@@ -115,6 +119,7 @@ export const listSubscribers = ({ signal }: RequestOptions = {}) =>
     return [...subscribers.list()].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }, 150, signal);
 
+// Staff can unsubscribe someone on request; the record stays, marked unsubscribed.
 export function unsubscribeSubscriber(id: Id) {
   return mockApi(() => {
     assertCan("newsletter", "edit");
@@ -136,6 +141,7 @@ export function eraseSubscriber(id: Id) {
 }
 
 export const getNewsletterSettings = ({ signal }: RequestOptions = {}) => mockApi(() => newsletterSettings.get(), 100, signal);
+// A welcome email that is switched on needs a subject, a heading and some words, or new subscribers would get a blank message.
 export function updateNewsletterSettings(patch: DocumentPatch<NewsletterSettings>) {
   return mockApi(() => {
     assertCan("newsletter", "edit");

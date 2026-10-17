@@ -22,7 +22,7 @@ export default function AccountOrders() {
   }
 
   return (
-    <div className="rounded-r-lg bg-white shadow-sh-1">
+    <div className="rounded-r-xl bg-white shadow-sh-1">
       {/* The account layout already shows the page title; keep the heading for screen readers. */}
       <h2 className="sr-only">Orders</h2>
       {orders.map((o) => (

@@ -21,10 +21,12 @@ import Tabs from "@/AdminDashboard/components/Tabs";
 import ProductPicker from "@/AdminDashboard/components/ProductPicker";
 import Toggle from "@/AdminDashboard/components/Toggle";
 
+// A new code starts as a percentage off everything, usable once per shopper, and switched on. Fixed text stays in one place so the form and Duplicate agree.
 const BLANK = {
   code: "", description: "", type: "percent", value: 10, minSpend: 0, startsAt: null, endsAt: null,
   usageLimit: null, perCustomerLimit: 1, appliesTo: { scope: "all", ids: [] }, onSaleItems: false, active: true,
 };
+// A day in milliseconds, for the "ends soon" warning and Extend 30 days.
 const DAY = 86_400_000;
 // The tabs group the states the way the shop thinks of them.
 const TABS = [
@@ -34,6 +36,7 @@ const TABS = [
   { id: "off", label: "Switched off" },
   { id: "ended", label: "Ended" },
 ];
+// Maps a code's state (see stateOf) to the tab that lists it.
 const TAB_OF = { active: "live", pending: "scheduled", inactive: "off", archived: "ended" };
 const TYPES = [{ value: "percent", label: "Percentage off" }, { value: "fixed", label: "Amount off (UGX)" }, { value: "free_shipping", label: "Free delivery" }];
 
@@ -47,8 +50,10 @@ function stateOf(d) {
   return { id: "active", label: "Live" };
 }
 
+// The date inputs speak YYYY-MM-DD; the stored dates are full timestamps, and an end date means the end of that day.
 const day = (iso) => (iso ? iso.slice(0, 10) : "");
 const toIso = (v, end) => (v ? new Date(`${v}T${end ? "23:59:59" : "00:00:00"}`).toISOString() : null);
+// An empty field means "no limit" (null); anything else is a whole number, never negative.
 const intOrNull = (v) => (v === "" ? null : Math.max(0, Number(String(v).replace(/\D/g, "")) || 0));
 
 /**
@@ -70,11 +75,14 @@ export default function AdminDiscounts() {
   const items = discounts.items;
   const shown = tab === "all" ? items : items.filter((d) => TAB_OF[stateOf(d).id] === tab);
   const totals = items.reduce((t, d) => ({ orders: t.orders + d.orders, revenue: t.revenue + d.revenue, given: t.given + d.given }), { orders: 0, revenue: 0, given: 0 });
+  // How many shoppers used a code, summed over every code.
   const customers = items.reduce((n, d) => n + d.customers, 0);
   const copy = (code) => navigator.clipboard?.writeText(code).then(() => notify(`${code} copied.`, { tone: "success" }));
+  // Extending an expired code gives it 30 more days and switches it back on.
   const extend = (d) => discounts.update(d.id, { endsAt: new Date(Date.now() + 30 * DAY).toISOString(), active: true });
 
   const worth = (d) => (d.type === "percent" ? `${d.value}% off` : d.type === "fixed" ? `${moneyBase(d.value)} off` : "Free delivery");
+  // The table's columns: the code with a copy button, what it gives, its rules, how it has been used, and its state.
   const columns = [
     {
       key: "code",
@@ -95,6 +103,7 @@ export default function AdminDiscounts() {
       key: "rules",
       label: "Rules",
       render: (d) => {
+        // A code ending within 14 days is flagged so it isn't left to lapse by accident.
         const soon = d.endsAt && Date.parse(d.endsAt) > Date.now() && Date.parse(d.endsAt) - Date.now() < 14 * DAY;
         return (
           <span className="text-sm text-ink-3">
@@ -136,17 +145,21 @@ export default function AdminDiscounts() {
 
   return (
     <>
+      {/* Page Header */}
       <PageHeader
         lede="Codes shoppers type at checkout: create, switch off, extend. Uses are counted from orders, and a cancelled or refunded order gives its use back."
         action={canEdit && <Button onClick={() => setEditing({ ...BLANK, code: randomCode() })}><Plus className="h-4 w-4" aria-hidden="true" /> New code</Button>}
       />
+      {/* Summary Cards: what codes did, from orders */}
       <section aria-label="What codes did" className="mb-6 grid gap-px overflow-hidden rounded-r-lg border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Redemptions" icon={Receipt} loading={discounts.isLoading} value={totals.orders} note={`Across ${items.filter((d) => stateOf(d).id === "active").length} live codes`} />
         <StatCard label="Shoppers" icon={UsersRound} loading={discounts.isLoading} value={customers} note="Who used a code" />
         <StatCard label="Revenue from codes" icon={Wallet} loading={discounts.isLoading} value={moneyBase(totals.revenue)} />
         <StatCard label="Discount given" icon={Tag} loading={discounts.isLoading} value={moneyBase(totals.given)} note={totals.orders ? `${moneyBase(Math.round(totals.given / totals.orders))} per order` : undefined} />
       </section>
+      {/* State Tabs: counts per state */}
       <Tabs tabs={TABS.map((t) => ({ ...t, count: t.id === "all" ? items.length : items.filter((d) => TAB_OF[stateOf(d).id] === t.id).length }))} value={tab} onChange={setTab} />
+      {/* Codes Table: a row opens its drawer for editing (needs edit permission) */}
       <Panel>
         <DataTable
           rows={shown}
@@ -168,6 +181,7 @@ export default function AdminDiscounts() {
         />
       </Panel>
 
+      {/* Code Drawer: every rule a code can have, from the right like the other dashboard drawers */}
       <Drawer
         open={Boolean(e)}
         onClose={() => setEditing(null)}
@@ -198,6 +212,7 @@ export default function AdminDiscounts() {
               <Field label="Uses per shopper" inputMode="numeric" value={e.perCustomerLimit ?? ""} placeholder="Unlimited" onChange={(ev) => set({ perCustomerLimit: intOrNull(ev.target.value) })} hint="Counted for signed-in shoppers." />
             </div>
 
+            {/* What the code covers: everything, some categories, or some pieces */}
             <fieldset className="m-0 border-0 p-0">
               <legend className="mb-2 text-sm font-semibold text-ink-2">Covers</legend>
               <div className="mb-3 flex flex-wrap gap-2">
@@ -222,6 +237,7 @@ export default function AdminDiscounts() {
           </div>
         )}
       </Drawer>
+      {/* Delete Confirmation */}
       <ConfirmDialog isOpen={Boolean(removing)} onClose={() => setRemoving(null)} itemName={removing?.code} loading={discounts.isRemoving} onConfirm={() => discounts.remove(removing.id).then(() => setRemoving(null))} />
     </>
   );

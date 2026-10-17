@@ -674,7 +674,6 @@ table.size td a::after,
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px 40px; align-items: center;
   padding-bottom: clamp(28px, 4vw, 44px); margin-bottom: clamp(28px, 4vw, 44px); border-bottom: 1px solid var(--line);
 }
-.ftr__news .news__form { margin: 0; max-width: none; }
 @media (max-width: 760px) { .ftr__news { grid-template-columns: 1fr; } }
 .ftr__title { font-size: .86rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-family: var(--body); font-weight: 600; margin-bottom: 14px; }
 .ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }

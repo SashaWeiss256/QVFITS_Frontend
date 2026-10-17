@@ -16,11 +16,15 @@ export default function GuestReturn({ order, refCode, phone }) {
   const [qty, setQty] = useState({});
   const [reason, setReason] = useState(REASONS[0]);
   const [resolution, setResolution] = useState("exchange");
+  // A line is identified by piece, colour and size.
   const keyOf = (l) => `${l.productId}|${l.color}|${l.size}`;
+  // Only the pieces with a quantity above zero go in the request.
   const lines = order.lines.filter((l) => (qty[keyOf(l)] ?? 0) > 0).map((l) => ({ productId: l.productId, name: l.name, size: l.size, color: l.color, qty: qty[keyOf(l)], price: l.price }));
 
+  // After sending, the form gives way to a thank-you line: the team follows up by phone.
   if (send.isSuccess) return <p role="status" className="mt-5 text-sm text-ink-2">Request sent. We'll be in touch on {phone} about how to send the pieces back.</p>;
 
+  {/* Return Or Exchange: opens from a button; no account needed, since the reference and phone already matched */}
   return (
     <div className="mt-5 border-t border-line pt-4">
       {!open ? (

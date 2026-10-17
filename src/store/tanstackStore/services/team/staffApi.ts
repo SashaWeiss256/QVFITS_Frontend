@@ -23,6 +23,7 @@ export const listStaff = ({ signal }: RequestOptions = {}) =>
 export const listRoles = ({ signal }: RequestOptions = {}) => mockApi(() => roles.list(), 120, signal);
 export const listPermissionModules = ({ signal }: RequestOptions = {}) => mockApi(() => PERMISSION_MODULES, 50, signal);
 
+// How many active owners there would be without one person, so the shop can never be left with none.
 const activeOwners = (except?: Id) => staff.list().filter((s) => s.roleId === "owner" && s.status === "active" && s.id !== except).length;
 
 /** An invite: the person is added as `invited` and gets a link to set a password. */
@@ -43,6 +44,7 @@ export function inviteStaff(input: Pick<StaffMember, "name" | "email" | "roleId"
   });
 }
 
+// Demoting or pausing the last active owner is refused, and nobody can suspend themselves.
 export function updateStaff(id: Id, patch: Partial<Pick<StaffMember, "name" | "roleId" | "overrides" | "status">>) {
   return mockApi(() => {
     assertCan("team", "edit");
@@ -57,6 +59,7 @@ export function updateStaff(id: Id, patch: Partial<Pick<StaffMember, "name" | "r
   });
 }
 
+// Same guards as updateStaff: not yourself, and not the last active owner.
 export function removeStaff(id: Id) {
   return mockApi(() => {
     assertCan("team", "delete");

@@ -9,7 +9,9 @@ import ProductCard from "./ProductCard";
 // as many as the width allows. A kit (kind "kit") gets its own card.
 export default function ProductGrid({ products, className, cols }) {
   return (
-    <RevealGroup className={cn("grid-products", cols && "grid-products--cols", className)} style={cols ? { "--cols": cols } : undefined} stagger={0.06}>
+    // Keyed by what it holds: cards that join a grid that has already revealed
+    // would stay hidden (they never get their turn), so a new set starts the reveal again.
+    <RevealGroup key={products.map((p) => p.id).join("|")} className={cn("grid-products", cols && "grid-products--cols", className)} style={cols ? { "--cols": cols } : undefined} stagger={0.06}>
       {products.map((p) => (
         <RevealItem key={p.id}>
           {p.kind === "kit" ? <KitCard kit={p} /> : <ProductCard product={p} />}

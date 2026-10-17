@@ -14,6 +14,8 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.9.1",
+    "@iconify-icons/simple-icons": "^2.0.7",
+    "@iconify/react": "^6.0.2",
     "@mui/material": "^9.5.0",
     "@mui/x-charts": "^9.15.0",
     "@tailwindcss/vite": "^4.3.3",

@@ -53,7 +53,7 @@ export interface HomeContent {
   movements: { title: string; items: MovementTile[] };
   campaign: Linked & { live: boolean; kicker: string; title: string; text: string; cta: string; image?: Picture };
   feed: { live: boolean; kicker: string; title: string; items: (Linked & { id: string; label: string; post?: string })[] };
-  newsletter: { kicker: string; title: string; text: string; cta: string; placeholder: string };
+  newsletter: { kicker: string; title: string; text: string; cta: string; placeholder: string; perks: { icon: "sparkles" | "bell" | "gift"; title: string; text: string }[] };
 }
 
 const content = homeSeed as unknown as HomeContent;

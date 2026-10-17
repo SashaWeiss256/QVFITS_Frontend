@@ -1,6 +1,8 @@
 /* Table State */
 import { useMemo, useState } from "react";
 
+import { matchesSearch } from "@/utils/search";
+
 /**
  * Search, filters, sort, paging and selection for one admin table, all in
  * memory. With the API the same state becomes the list query's params, so a
@@ -15,7 +17,7 @@ export function useTable(rows, { search, filters = [], columns = [], pageSize = 
 
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    let list = rows.filter((r) => (!needle || !search || search(r).toLowerCase().includes(needle)) &&
+    let list = rows.filter((r) => (!needle || !search || matchesSearch(search(r), needle)) &&
       filters.every((f) => !values[f.id] || f.test(r, values[f.id])));
     const col = sort && columns.find((c) => c.key === sort.key);
     if (col?.sort) {

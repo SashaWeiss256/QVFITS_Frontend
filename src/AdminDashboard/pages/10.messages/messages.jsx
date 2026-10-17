@@ -13,6 +13,7 @@ import Drawer from "@/AdminDashboard/components/Drawer";
 import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
 
+// The states a message moves through: new, read, replied, archived.
 const STATUSES = [{ value: "new", label: "New" }, { value: "read", label: "Read" }, { value: "replied", label: "Replied" }, { value: "archived", label: "Archived" }];
 
 /**
@@ -26,6 +27,7 @@ export default function AdminMessages() {
   const open = messages.items.find((m) => m.id === openId);
   const canEdit = can("messages", "edit");
 
+  // Opening a new message marks it read, so the "new" count only holds ones nobody has seen.
   const openMessage = (m) => {
     setOpenId(m.id);
     if (m.status === "new" && canEdit) messages.update(m.id, { status: "read" });
@@ -33,7 +35,9 @@ export default function AdminMessages() {
 
   return (
     <>
+      {/* Page Header: how many are new */}
       <PageHeader lede={`${messages.items.filter((m) => m.status === "new").length} new from the contact form.`} />
+      {/* Messages Table: new ones are bold */}
       <Panel>
         <DataTable
           rows={messages.items}
@@ -52,6 +56,7 @@ export default function AdminMessages() {
           empty="No messages yet. The contact form sends them here."
         />
       </Panel>
+      {/* Message Drawer: the message, then ways to answer it */}
       {open && (
         <Drawer
           open
@@ -67,6 +72,7 @@ export default function AdminMessages() {
         >
           <div className="mb-4"><StatusChip status={open.status} /></div>
           <p className="whitespace-pre-line rounded-r-md bg-white p-4 shadow-sh-1">{open.message}</p>
+          {/* Reply: WhatsApp or email, whichever they left; with neither, they chose where to send it from the form */}
           <div className="mt-4 flex flex-wrap gap-2">
             {open.phone && <a className="btn btn--soft" href={whatsappLink(open.phone.replace(/\D/g, "").replace(/^0/, "256"), `Hi ${open.name.split(" ")[0]}, thanks for your message to QVFITS.`)} target="_blank" rel="noopener noreferrer"><MessageCircle className="h-4 w-4" /> WhatsApp</a>}
             {open.email && <a className="btn btn--soft" href={`mailto:${open.email}?subject=${encodeURIComponent(`Re: ${open.topic ?? "your message"}`)}`}><Mail className="h-4 w-4" /> Email</a>}

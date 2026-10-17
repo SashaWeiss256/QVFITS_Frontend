@@ -51,6 +51,7 @@ export const productsResource: CollectionResource<Product, NewRow<ProductRecord>
   noun: "Product",
 };
 
+// A product write refreshes the admin's lists and the shop (prices, labels and stock all show there).
 const productWrite = { invalidates: [productQueries.all(), ...SITE] };
 
 export const useBulkUpdateProducts = () =>
@@ -59,6 +60,7 @@ export const useBulkRemoveProducts = () =>
   useMutation({ mutationFn: (ids: Id[]) => bulkRemoveProducts(ids), meta: { ...productWrite, success: "Products deleted" } });
 export const useDuplicateProduct = () =>
   useMutation({ mutationFn: (id: Id) => duplicateProduct(id), meta: { ...productWrite, success: "Copy saved as a draft" } });
+// Moving products to another category also refreshes the categories, since their counts change.
 export const useReassignCategory = () =>
   useMutation({
     mutationFn: ({ from, to }: { from: Id; to: Id }) => reassignCategory(from, to),
@@ -73,6 +75,7 @@ export const useProductPreview = (slug: string | undefined, enabled: boolean) =>
 export const useStockMovements = () =>
   useQuery(queryOptions({ queryKey: stockMovementKey, queryFn: ({ signal }) => listStockMovements({ signal }), meta: { label: "the stock log" } }));
 
+// A stock edit refreshes the stock log, the Overview's low-stock list and the activity log as well as the products.
 export const useSetVariantStock = () =>
   useMutation({
     mutationFn: ({ productId, variantId, stock, reason }: { productId: Id; variantId: Id; stock: number; reason: StockReason }) =>

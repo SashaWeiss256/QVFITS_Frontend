@@ -14,7 +14,9 @@ import DataTable from "@/AdminDashboard/components/DataTable";
 import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
 
+// Waiting reviews are hidden from the shop until someone approves them.
 const STATUS = [{ value: "pending", label: "Waiting" }, { value: "approved", label: "Approved" }, { value: "hidden", label: "Hidden" }];
+// A review added by hand starts approved, since staff are quoting it from WhatsApp or Instagram themselves.
 const BLANK = { name: "", text: "", stars: 5, productId: "", status: "approved" };
 
 /**
@@ -29,6 +31,7 @@ export default function AdminReviews() {
   const [adding, setAdding] = useState(null);
   const [removing, setRemoving] = useState(null);
   const canEdit = can("products", "edit");
+  // A review with no piece is about the shop in general.
   const productName = (id) => products.items.find((p) => p.id === id)?.name;
 
   const columns = [
@@ -41,10 +44,12 @@ export default function AdminReviews() {
 
   return (
     <>
+      {/* Page Header: how many are waiting */}
       <PageHeader
         lede={`${reviews.items.filter((r) => r.status === "pending").length} waiting for approval.`}
         action={canEdit && <Button onClick={() => setAdding(BLANK)}><Plus className="h-4 w-4" aria-hidden="true" /> Add review</Button>}
       />
+      {/* Reviews Table: approve or hide in a row, or tick several */}
       <Panel>
         <DataTable
           rows={reviews.items}
@@ -68,6 +73,7 @@ export default function AdminReviews() {
         />
       </Panel>
 
+      {/* Add A Review: a quote from a customer, word for word, with their permission */}
       <Modal
         isOpen={Boolean(adding)}
         onClose={() => setAdding(null)}
@@ -84,6 +90,7 @@ export default function AdminReviews() {
           </div>
         )}
       </Modal>
+      {/* Delete Confirmation */}
       <ConfirmDialog isOpen={Boolean(removing)} onClose={() => setRemoving(null)} itemName={removing && `the review from ${removing.name}`} loading={reviews.isRemoving} onConfirm={() => reviews.remove(removing.id).then(() => setRemoving(null))} />
     </>
   );

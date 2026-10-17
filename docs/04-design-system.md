@@ -49,7 +49,9 @@ Shadows and photo scrims are tinted with the ink hue, `rgba(23, 33, 31, …)`, n
 
 ## Logo
 
-The brand is **Quivogue** (said Q-Vogue: Q for quality, Vogue for fashionable). **QVFITS** is its short form, always one word, never "QV FITS".
+The brand is **Quivogue (QVFITS)**: one brand, one name, never described as two. Qui for quality, Vogue for fashionable.
+
+**Spacing (client rule):** in sentences, page titles, alt text and descriptions, write **QVFITS** as one word, never "QV FITS". The spaced **QV FITS** belongs to the logo artwork only and is kept exactly as the client supplied it; never close it up or retype it.
 
 **The format (client rule, as on the original Quivogue site):** on the left, the supplied artwork (the wave mark with QVFITS under it and EST. 2023 beneath). On the right, **QVFITS** large in Anton with the brand gradient, and **QUIVOGUE** small beneath it in the body font, in `ink-3`, its letters spread to exactly the width of QVFITS. The block sits centred on the artwork.
 
@@ -77,7 +79,7 @@ The brand is **Quivogue** (said Q-Vogue: Q for quality, Vogue for fashionable). 
 | `qvfits-logo-stacked.*`, `-stacked-white.*` | The supplied artwork alone: what `Logo.jsx` draws; also square spaces such as profile pictures |
 | `qvfits-icon.*` | The wave mark alone: favicon, app icons, page loader, admin sign-in card |
 
-**Never:** retype QVFITS under the mark (it is in the artwork), put QUIVOGUE above QVFITS or in another colour or face, set QVFITS with a space, or recolour, stretch or rotate the artwork. The image files are regenerated from the original artwork with outlined text (no fonts needed); ask Raijin Tech Hub for new versions rather than editing them by hand.
+**Never:** retype or respace the QV FITS under the mark (it is the client's original artwork, spacing included), put QUIVOGUE above QVFITS or in another colour or face, set QVFITS with a space, or recolour, stretch or rotate the artwork. The image files are regenerated from the original artwork with outlined text (no fonts needed); ask Raijin Tech Hub for new versions rather than editing them by hand.
 
 ## Navbar
 

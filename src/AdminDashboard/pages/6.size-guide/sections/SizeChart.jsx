@@ -10,6 +10,7 @@ import { useDraft } from "@/AdminDashboard/lib/useDraft";
 
 // Body measurements in cm, as a range per size; the shop converts to inches.
 const RANGES = [["bust", "Bust"], ["waist", "Waist"], ["hip", "Hips"]];
+// The size names a row carries: the shop's own, then UK, US and EU.
 const LABELS = [["size", "Size"], ["uk", "UK"], ["us", "US"], ["eu", "EU"]];
 
 /** The size chart the size guide, the finder and Vee all read. */
@@ -23,15 +24,20 @@ function Editor({ doc }) {
   const { can } = useAdminAuth();
   const { draft: rows, set, dirty, reset, commit } = useDraft(doc.data);
   const canEdit = can("size-guide", "edit");
+  // Changes one row of the chart and leaves the rest.
   const update = (i, patch) => set(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)));
+  // A measurement typed as text becomes a number; anything else counts as 0.
   const num = (v) => Number(String(v).replace(/[^\d.]/g, "")) || 0;
+  // One look for every cell, so the grid lines up.
   const cell = "w-16 rounded-r-sm border border-line-2 px-2 py-1.5 text-center";
 
   return (
     <>
       <Panel>
+        {/* Chart: readable without the edit permission, editable with it */}
         <fieldset disabled={!canEdit} className="m-0 overflow-x-auto border-0 p-0">
           <table className="w-full border-collapse text-sm">
+            {/* Column Headings */}
             <thead>
               <tr className="border-b border-line">
                 {LABELS.map(([, l]) => <th key={l} scope="col" className="eyebrow px-2 py-2 text-left">{l}</th>)}
@@ -39,6 +45,7 @@ function Editor({ doc }) {
                 <th scope="col"><span className="sr-only">Remove</span></th>
               </tr>
             </thead>
+            {/* One row per size: its names, then a from and a to for each measurement */}
             <tbody>
               {rows.map((r, i) => (
                 <tr key={i} className="border-b border-line last:border-0">
@@ -64,6 +71,7 @@ function Editor({ doc }) {
           </button>
         </fieldset>
       </Panel>
+      {/* Save Bar */}
       <SaveBar dirty={dirty} saving={doc.isSaving} onReset={reset} onSave={async () => commit(await doc.save(rows))} />
     </>
   );

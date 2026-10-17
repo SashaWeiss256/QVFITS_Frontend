@@ -11,6 +11,7 @@ import SaveBar from "@/AdminDashboard/components/SaveBar";
 import Toggle from "@/AdminDashboard/components/Toggle";
 import { useDraft } from "@/AdminDashboard/lib/useDraft";
 
+// The deal cards' looks: the three colour treatments the shop's CSS has.
 const TONES = [{ value: "brand", label: "Brand gradient" }, { value: "dark", label: "Dark" }, { value: "teal", label: "Teal" }];
 
 /**
@@ -32,8 +33,10 @@ function Editor({ doc }) {
 
   return (
     <>
+      {/* Page Header */}
       <PageHeader lede="The promo bar, the sale, the deal cards on the shop page, and the sign-up sticker." />
       <fieldset disabled={!can("offers", "edit")} className="m-0 grid gap-6 border-0 p-0">
+        {/* Sale: the switch that makes each piece's own sale % show */}
         <Panel title="Sale">
           <div className="grid gap-4 sm:grid-cols-2 sm:items-end">
             <Toggle checked={sale.live} onChange={(live) => set("sale", { ...sale, live })} label="Sale is on" hint="Pieces with a sale % show reduced prices and fill the /shop?sale=1 rail." />
@@ -42,6 +45,7 @@ function Editor({ doc }) {
           <p className="mt-3 mb-0 text-xs text-ink-3">Set each piece's own % on the product, or tick several in Products and use "Sale…".</p>
         </Panel>
 
+        {/* Promo Bar: lines that rotate above the header */}
         <Panel title="Promo bar">
           <p className="mt-0 text-sm text-ink-3">The strip above the header. {"{freeShipping}"} and {"{phone}"} fill in from Settings.</p>
           <ListEditor
@@ -54,6 +58,7 @@ function Editor({ doc }) {
           />
         </Panel>
 
+        {/* Deal Cards: the offers on the shop page. A card with no target opens WhatsApp. */}
         <Panel title="Deal cards">
           <ListEditor
             items={draft.deals}
@@ -77,6 +82,7 @@ function Editor({ doc }) {
           />
         </Panel>
 
+        {/* Sign-Up Sticker: the corner offer that sends shoppers to the newsletter */}
         <Panel title="Sign-up sticker">
           <div className="grid gap-3 sm:grid-cols-2">
             <Toggle className="sm:col-span-2" checked={sticker.live} onChange={(live) => set("sticker", { ...sticker, live })} label="Show the sticker" hint="The small card bottom-left. It promises the code to anyone who signs up." />
@@ -88,6 +94,7 @@ function Editor({ doc }) {
           </div>
         </Panel>
       </fieldset>
+      {/* Save Bar: appears once something changes */}
       <SaveBar dirty={dirty} saving={doc.isSaving} onReset={reset} onSave={async () => commit(await doc.save(draft))} />
     </>
   );

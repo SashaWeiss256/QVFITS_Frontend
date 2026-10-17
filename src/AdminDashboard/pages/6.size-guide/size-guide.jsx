@@ -30,7 +30,7 @@ export default function AdminSizeGuide() {
   const products = useCollection(productsResource);
   const used = (s) => {
     const n = products.items.filter((p) => p.variants.some((v) => v.size === s.label)).length;
-    return n ? `${n} products` : "Not used yet";
+    return n ? `${n} ${n === 1 ? "product" : "products"}` : "Not used yet";
   };
 
   // The old Shop filters tab lives on Categories now.
@@ -43,7 +43,7 @@ export default function AdminSizeGuide() {
       {tab === "chart" && <SizeChart />}
       {tab === "sizes" && (
         <Panel>
-          <AttributeList resource={sizesResource} module="size-guide" noun="size" blank={{ label: "", group: "apparel" }} name={(s) => s.label} usage={used}
+          <AttributeList resource={sizesResource} module="size-guide" noun="size" blank={{ label: "", group: "apparel" }} name={(s) => s.label} caption={(s) => SIZE_GROUPS.find((g) => g.value === s.group)?.label ?? ""} usage={used}
             fields={[{ key: "label", label: "Size", required: true, hint: "As shoppers see it: XS, M, 38…" }, { key: "group", label: "Kind", options: SIZE_GROUPS }]} />
         </Panel>
       )}

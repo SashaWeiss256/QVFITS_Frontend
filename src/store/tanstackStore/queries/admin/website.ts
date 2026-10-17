@@ -7,12 +7,13 @@ import { listOutbox } from "../../services/notifications/outboxApi";
 
 import { listVeeQuestions, veeQuestionsCrud } from "../../services/assistant/veeQuestionsApi";
 import { listMessages, messagesCrud } from "../../services/content/contactApi";
+import { getMenuFeatureForEdit, updateMenuFeature, type MenuFeature } from "../../services/content/pagesApi";
 import { getSettings, updateSettings } from "../../services/content/settingsApi";
 import { getOffersForEdit, updateOffers, type Offers } from "../../services/marketing/offersApi";
 import { listAllPaymentMethods, paymentMethodsCrud } from "../../services/settings/paymentMethodsApi";
 import { listAllShippingZones, shippingCrud } from "../../services/settings/shippingApi";
 import type { DocumentPatch } from "../../services/store/collectionStore";
-import type { Campaign, ContactMessage, Id, VeeQuestion, NewsletterSettings, PaymentMethodOption, ShippingZone, ShopSettings, Subscriber } from "../../services/types";
+import type { Photo, Campaign, ContactMessage, Id, VeeQuestion, NewsletterSettings, PaymentMethodOption, ShippingZone, ShopSettings, Subscriber } from "../../services/types";
 import { adminRoot, siteRoot } from "../keys";
 import { collectionQueries, crudResource, documentQueries, type DocumentResource } from "./collection";
 
@@ -23,6 +24,13 @@ export const offersResource: DocumentResource<Offers, DocumentPatch<Offers>> = {
   queries: documentQueries("offers", getOffersForEdit, "offers"),
   update: updateOffers,
   saved: "Offers saved",
+  alsoInvalidates: SITE,
+};
+
+export const menuFeatureResource: DocumentResource<MenuFeature & { photo?: Photo }, DocumentPatch<MenuFeature & { photo?: Photo }>> = {
+  queries: documentQueries("menu-feature", getMenuFeatureForEdit, "the menu tile"),
+  update: updateMenuFeature,
+  saved: "Menu tile saved",
   alsoInvalidates: SITE,
 };
 
@@ -43,6 +51,7 @@ export const subscriberQueries = collectionQueries<Subscriber>("subscribers", li
 export const useSubscribers = () => useQuery(subscriberQueries.list());
 export const useUnsubscribeSubscriber = () =>
   useMutation({ mutationFn: (id: Id) => unsubscribeSubscriber(id), meta: { invalidates: [subscriberQueries.all()], success: "Unsubscribed" } });
+// Erasing deletes the subscriber and their consent record entirely (a privacy request).
 export const useEraseSubscriber = () =>
   useMutation({ mutationFn: (id: Id) => eraseSubscriber(id), meta: { invalidates: [subscriberQueries.all()], success: "Erased" } });
 
@@ -63,5 +72,6 @@ export const newsletterSettingsResource: DocumentResource<NewsletterSettings, Do
   saved: "Newsletter settings saved",
 };
 
+// The emails the shop would have sent, until an email service is connected.
 export const useOutbox = () =>
   useQuery(queryOptions({ queryKey: outboxKey, queryFn: ({ signal }) => listOutbox({ signal }), meta: { label: "the outbox" } }));

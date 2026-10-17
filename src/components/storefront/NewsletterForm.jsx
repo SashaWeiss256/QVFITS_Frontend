@@ -14,7 +14,9 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * opened. Honest seam: until an email service is connected the email waits
  * in the admin's outbox; a dev build shows its link here to try the flow.
  */
-export default function NewsletterForm({ source, placeholder = "Your email", cta = "Sign up", className, formId }) {
+export default function NewsletterForm({ source, placeholder = "Your email", cta = "Sign up", className, formId, tone = "light" }) {
+  // On the brand gradient the form is one white pill (field and button together) and the words turn white.
+  const onBrand = tone === "brand";
   const [email, setEmail] = useState("");
   const [result, setResult] = useState(null);
   const subscribe = useSubscribe();
@@ -39,16 +41,16 @@ export default function NewsletterForm({ source, placeholder = "Your email", cta
 
   return (
     <div className={className}>
-      <form className="news__form" id={formId} noValidate onSubmit={onSubmit}>
+      <form className={cn("news__form", onBrand && "news__form--pill")} id={formId} noValidate onSubmit={onSubmit}>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={placeholder} aria-label="Email address" autoComplete="email" required />
         <button className="btn btn--primary" type="submit" disabled={subscribe.isPending}>{cta}</button>
       </form>
-      <p className={cn("news__msg", result?.tone === "warn" && "text-warn")} role="status">
+      <p className={cn("news__msg", onBrand && "news__msg--brand", result?.tone === "warn" && !onBrand && "text-warn")} role="status">
         {result?.text}
         {result?.demo && <> <Link to={result.demo} className="underline">Open the link (demo)</Link></>}
       </p>
       {consent && (
-        <p className="m-0 mt-1 text-[.78rem] text-ink-3">
+        <p className={cn("m-0 mt-1 text-[.78rem]", onBrand ? "nl__fine" : "text-ink-3")}>
           {consent} See our <Link to="/privacy" className="underline">privacy policy</Link>.
         </p>
       )}

@@ -8,6 +8,7 @@ import Panel from "@/AdminDashboard/components/Panel";
 
 /** The six newest orders in any state, as a compact table. */
 export default function RecentOrders({ orders = [], loading, money, canOpen }) {
+  {/* Latest Orders: the six newest, whatever their state; All orders opens the full list for anyone who may view orders */}
   return (
     <Panel
       flush
@@ -24,6 +25,7 @@ export default function RecentOrders({ orders = [], loading, money, canOpen }) {
         <p className="m-0 p-6 text-sm text-ink-3">No orders yet. Orders from the shop and WhatsApp land here.</p>
       ) : (
         <div className="overflow-x-auto">
+          {/* Orders Table: scrolls sideways on a phone instead of squeezing */}
           <table className="w-full min-w-[560px] border-collapse text-sm">
             <thead>
               <tr className="text-left text-[.7rem] uppercase tracking-[0.14em] text-ink-4">

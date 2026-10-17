@@ -22,15 +22,18 @@ export default function Welcome() {
 
 function Editor({ doc }) {
   const { can } = useAdminAuth();
+  // Only codes that are switched on can be put in the email, so it never offers one checkout would refuse.
   const codes = useCollection(discountsResource).items.filter((d) => d.active);
   const { draft, set, dirty, reset, commit } = useDraft(doc.data);
   const w = draft.welcome;
+  // Changes the welcome email and leaves the consent wording alone.
   const setW = (patch) => set("welcome", { ...w, ...patch });
 
   return (
     <>
       <PageHeader lede="What a new subscriber receives once they confirm, and the words they agree to when they join." />
       <fieldset disabled={!can("newsletter", "edit")} className="m-0 grid gap-6 border-0 p-0">
+        {/* Welcome Email: sent once to each address after it confirms */}
         <Panel title="Welcome email">
           <div className="grid gap-4">
             <Toggle checked={w.enabled} onChange={(enabled) => setW({ enabled })} label="Send a welcome email" hint="Once per address, even if they leave and join again." />
@@ -40,6 +43,7 @@ function Editor({ doc }) {
             <Field label="Message" as="textarea" rows={4} value={w.body} onChange={(e) => setW({ body: e.target.value })} />
           </div>
         </Panel>
+        {/* Consent Wording: the words under every signup form, kept with each address as the record of what they agreed to */}
         <Panel title="Consent wording" hint="Shown under every signup form and kept with each address, as the record of what they agreed to.">
           <Field label="What they agree to" as="textarea" rows={3} value={draft.consentText} onChange={(e) => set("consentText", e.target.value)} />
         </Panel>

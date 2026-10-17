@@ -75,6 +75,7 @@ function cancelUnpaid(order: Order, by: string) {
   return updated;
 }
 
+// A signed-in shopper may cancel only their own order, and only while nothing is paid (cancelUnpaid enforces that).
 export function cancelMyOrder(customerId: Id, id: Id) {
   return mockApi(() => {
     const order = orders.get(id);
@@ -83,6 +84,7 @@ export function cancelMyOrder(customerId: Id, id: Id) {
   }, 300);
 }
 
+// A guest proves the order is theirs with its reference and the phone number it was placed with.
 export function cancelGuestOrder(ref: string, phone: string) {
   return mockApi(() => {
     const order = orders.list().find((o) => o.ref.toLowerCase() === ref.trim().toLowerCase() && digits(o.phone) === digits(phone));
@@ -99,6 +101,7 @@ export function listOrderEmails(ref: string, { signal }: RequestOptions = {}) {
   }, 80, signal);
 }
 
+// Reference plus phone is the only key a guest has, so a wrong pair gets the same answer as an unknown order.
 export function trackOrder(ref: string, phone: string, { signal }: RequestOptions = {}) {
   return mockApi(() => {
     expireUnpaid();
@@ -117,6 +120,7 @@ export function listMyOrders(customerId: Id, { signal }: RequestOptions = {}) {
   }, 200, signal);
 }
 
+// Orders are read through the expiry sweep, so a hold that has run out shows as cancelled straight away.
 export function getMyOrder(customerId: Id, id: Id, { signal }: RequestOptions = {}) {
   return mockApi(() => {
     expireUnpaid();
@@ -135,6 +139,7 @@ export function listOrders({ signal }: RequestOptions = {}) {
   }, 200, signal);
 }
 
+// An order by id, or a 404 if it has gone.
 function find(id: Id) {
   const order = orders.get(id);
   if (!order) throw new ApiError("That order no longer exists.", 404);
@@ -189,6 +194,7 @@ export function settlePayment(order: Order, { method, reference = "", amount }: 
   })!;
 }
 
+// Each step is checked against NEXT_STATUS by the screens; the service applies it, restores stock on a cancel, and tells the customer.
 export function updateOrderStatus(id: Id, status: OrderStatus, note?: string) {
   return mockApi(() => {
     // Marking paid by hand records money, so it needs the payment permission.
@@ -220,6 +226,7 @@ export function markOrderPaid(id: Id, { method, reference, amount }: { method: P
   });
 }
 
+// Staff notes are private to the dashboard and signed with the staff member's name.
 export function addOrderNote(id: Id, text: string) {
   return mockApi(() => {
     const admin = assertCan("orders", "edit");

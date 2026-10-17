@@ -14,8 +14,10 @@ import Toggle from "@/AdminDashboard/components/Toggle";
 export default function ItemDialog({ dialog, onChange, onClose, onSave, saving }) {
   const group = dialog?.group;
   const x = dialog?.value;
+  // Changes one field of the item being edited.
   const set = (patch) => onChange({ ...dialog, value: { ...x, ...patch } });
 
+  {/* Item Form: an Edits item is a name and what it opens; a category or a tag also has a picture and a line for its page */}
   return (
     <Modal
       isOpen={Boolean(dialog)}
@@ -23,6 +25,7 @@ export default function ItemDialog({ dialog, onChange, onClose, onSave, saving }
       title={x?.id ? `Edit ${x.name}` : `Add to ${group?.name ?? ""}`}
       footer={<div className="flex justify-end gap-2.5"><Button variant="ghost" onClick={onClose}>Cancel</Button><Button onClick={() => onSave(dialog)} loading={saving} disabled={!x?.name.trim()}>Save</Button></div>}
     >
+      {/* Edits Item: its link is picked, never typed */}
       {x && group.kind === "edits" && (
         <div className="grid gap-4">
           <Field label="Name" value={x.name} placeholder="New in" onChange={(e) => set({ name: e.target.value })} autoFocus />
@@ -34,6 +37,7 @@ export default function ItemDialog({ dialog, onChange, onClose, onSave, saving }
         </div>
       )}
 
+      {/* Category Or Tag: its web address is made from its name */}
       {x && group.kind !== "edits" && (
         <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
           <ImageUploader single label="Picture" value={x.photo ? [x.photo] : []} onChange={(photos) => set({ image: photos[0] ?? null, photo: photos[0] ?? null })} />

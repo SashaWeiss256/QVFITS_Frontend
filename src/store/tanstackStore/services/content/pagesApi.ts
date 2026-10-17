@@ -1,10 +1,15 @@
 /* Page Copy And Navigation Service */
 import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
+import { assertCan } from "../auth/adminSession";
+import { logActivity } from "../admin/activityApi";
+import { localPhoto } from "../catalog/photos";
+import { createDocument, type DocumentPatch } from "../store/collectionStore";
 import { linkLookup, sortedCategories, sortedTerms } from "../catalog/attributesApi";
-import type { Linked } from "../types";
-import { shopMenuColumns, targetExists, topBarLinks, withHrefs } from "@/utils/shopTargets";
+import type { Linked, Photo } from "../types";
+import { shopMenuColumns, targetExists, topBarLinks, withHrefs, withoutHrefs } from "@/utils/shopTargets";
 import navigationSeed from "@/data/navigation.json";
+import featureSeed from "@/data/menu-feature.json";
 import pagesSeed from "@/data/pages.json";
 
 /**
@@ -30,14 +35,40 @@ export interface NavLink extends Linked {
  */
 export interface ShopMenu {
   columns: { id: string; title: string; links: { id: string; title: string; href: string }[] }[];
-  feature: "campaign";
+  feature: MenuFeatureView;
 }
+
+/** The picture tile at the end of the Shop menu: a photo, two lines and a link, all set in the dashboard. */
+export interface MenuFeature extends Linked {
+  live: boolean;
+  kicker: string;
+  title: string;
+  cta: string;
+  /** A photo id in /photos, or an uploaded photo. */
+  image?: string | Photo | null;
+}
+export type MenuFeatureView = MenuFeature & { href: string; photo?: Photo };
 
 export interface Navigation {
   header: NavLink[];
   help: NavLink[];
   legal: NavLink[];
   popularSearches: string[];
+}
+
+/**
+ * The Shop menu's picture tile is dashboard data (Catalog, Categories, Menu):
+ * its photo can be uploaded, swapped or taken away, and it can be switched
+ * off. A deleted photo falls back to the shoot's campaign banner.
+ */
+const feature = createDocument<MenuFeature>("menu-feature", featureSeed as unknown as MenuFeature);
+
+function featureView(doc: MenuFeature, lookup = linkLookup()): MenuFeatureView {
+  const view = withHrefs(doc, lookup) as MenuFeature & { href?: string };
+  const photo = doc.image && typeof doc.image === "object" ? doc.image : localPhoto(doc.image || "banner-campaign");
+  // A link to something deleted leaves the tile off rather than pointing nowhere.
+  const live = doc.live && (!doc.target || targetExists(doc.target, lookup));
+  return { ...view, live, href: view.href ?? "/shop", photo };
 }
 
 type FixedNav = { header: NavLink[]; help: NavLink[]; legal: NavLink[] };
@@ -67,9 +98,25 @@ function navigationView(): Navigation & { shopMenu: ShopMenu } {
     help: withHrefs(live(fixed.help), lookup) as NavLink[],
     legal: withHrefs(live(fixed.legal), lookup) as NavLink[],
     popularSearches: popularSearches(),
-    shopMenu: { columns: shopMenuColumns(lookup), feature: "campaign" },
+    shopMenu: { columns: shopMenuColumns(lookup), feature: featureView(feature.get(), lookup) },
   };
 }
 
 export const getPages = ({ signal }: RequestOptions = {}) => mockApi(() => pagesSeed, 80, signal);
 export const getNavigation = ({ signal }: RequestOptions = {}) => mockApi(() => navigationView(), 80, signal);
+
+/* Admin (realm: admin) */
+
+/** The tile as stored, with its photo resolved for the editor. */
+export const getMenuFeatureForEdit = ({ signal }: RequestOptions = {}) => mockApi<MenuFeature & { photo?: Photo }>(() => ({ ...feature.get(), photo: featureView(feature.get()).photo }), 80, signal);
+
+export function updateMenuFeature(patch: DocumentPatch<MenuFeature & { photo?: Photo }>) {
+  return mockApi(() => {
+    assertCan("categories", "edit");
+    // The editor sends the resolved photo back; only the stored picture is kept.
+    const { photo: _photo, ...rest } = withoutHrefs(patch) as typeof patch;
+    const doc = feature.update(rest);
+    logActivity({ module: "categories", action: "update", summary: "Updated the Shop menu tile" });
+    return { ...doc, photo: featureView(doc).photo } as MenuFeature & { photo?: Photo };
+  });
+}

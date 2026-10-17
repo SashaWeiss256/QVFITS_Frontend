@@ -8,9 +8,12 @@ import { cn } from "@/utils/cn";
  * leave it out when there is nothing to compare with, and `note` says why.
  */
 export default function StatCard({ label, value, change, note, icon: Icon, loading = false }) {
+  // A change arrow shows only when a real percentage was given.
   const hasChange = typeof change === "number" && Number.isFinite(change);
+  // Up is green; down is amber, since a dip isn't an error.
   const up = hasChange && change >= 0;
 
+  {/* Card: label and icon, the figure, then the change and a note */}
   return (
     <div className="group bg-white p-5 transition-colors duration-200 sm:p-6">
       <div className="flex items-center justify-between gap-3">

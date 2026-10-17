@@ -12,14 +12,19 @@ import { cn } from "@/utils/cn";
  * folding sections, and a footer with Clear and "Show N results". Escape
  * closes it, and focus goes back to the button that opened it.
  *
+ * The shop's comes in from the left; the dashboard's (`side="right"`) from
+ * the right, like its other drawers. Both are a bottom sheet on a phone.
+ *
  *   <FilterSheet open onClose title="Filter" count={12} onClear={clear}>
  *     <FilterSection title="Category" picked={2}>…chips…</FilterSection>
  *   </FilterSheet>
  */
-export default function FilterSheet({ open, onClose, id = "filters", title = "Filter", count, onClear, children }) {
+export default function FilterSheet({ open, onClose, id = "filters", title = "Filter", count, onClear, side = "left", children }) {
+  // While open, the page behind stops scrolling and floating buttons (Vee, the offer sticker) step aside.
   useOverlayFlag(open);
   useFocusReturn(open);
 
+  // Escape closes the sheet.
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => e.key === "Escape" && onClose();
@@ -29,15 +34,19 @@ export default function FilterSheet({ open, onClose, id = "filters", title = "Fi
 
   return (
     <>
+      {/* Scrim: tapping outside closes it */}
       <div className={cn("sheet-scrim", open && "is-on")} onClick={onClose} />
-      <aside id={id} className={cn("sheet fdrawer", open && "is-open")} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} inert={!open}>
+      <aside id={id} className={cn("sheet fdrawer", side === "right" && "fdrawer--right", open && "is-open")} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} inert={!open}>
+        {/* Header */}
         <div className="fdrawer__head">
           <p id={`${id}-title`} className="m-0 font-display text-xl font-bold tracking-tight">{title}</p>
           <button type="button" className="icon-btn" aria-label="Close filters" onClick={onClose}>
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
+        {/* Sections scroll; the header and footer stay put */}
         <div className="fdrawer__body">{children}</div>
+        {/* Footer: Clear, and a button that shows how many results the filters leave */}
         <div className="fdrawer__foot">
           <Button variant="ghost" onClick={onClear}>Clear</Button>
           <Button block onClick={onClose}>Show {count} {count === 1 ? "result" : "results"}</Button>

@@ -65,6 +65,7 @@ export function requestGuestReturn(ref: string, phone: string, input: Omit<Retur
   }, 300);
 }
 
+// A shopper sees only the returns on their own account.
 export function listMyReturns(customerId: Id, { signal }: RequestOptions = {}) {
   return mockApi(() => returns.list().filter((r) => r.customerId === customerId), 150, signal);
 }
@@ -115,6 +116,7 @@ export const NEXT_RETURN_STATUS: Record<ReturnStatus, ReturnStatus[]> = {
   exchanged: [],
 };
 
+// Moves a return along its allowed path. Marking it refunded records the money out, at the amount due unless staff lower it with a reason.
 export function updateReturnStatus(id: Id, status: ReturnStatus, note?: string, amount?: number) {
   return mockApi(() => {
     // A refund moves money, so it has its own permission (gap M3).

@@ -18,7 +18,8 @@ export default function Sticker() {
   const s = offers?.sticker;
   const key = `qvfits:sticker:${s?.tag ?? "offer"}`;
   const [shown, setShown] = useState(false);
-  const [closed, setClosed] = useState(() => Date.now() < Number(readStored(key, 0)));
+  // Closed for snoozeDays (saved), or for this visit at least if storage is blocked.
+  const [closed, setClosed] = useState(() => Date.now() < Number(readStored(key, 0)) || window.sessionStorage?.getItem(key) === "1");
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const live = Boolean(s?.live) && !closed;
@@ -47,10 +48,12 @@ export default function Sticker() {
 
   if (!live) return null;
 
+  // Closing takes effect at once: the scroll listener is removed with it, so a scroll can't bring the card back.
   const dismiss = () => {
-    setShown(false);
     writeStored(key, Date.now() + (Number(s.snoozeDays) || 14) * 864e5);
-    setTimeout(() => setClosed(true), 280);
+    try { window.sessionStorage.setItem(key, "1"); } catch { /* storage blocked: the state alone holds */ }
+    setShown(false);
+    setClosed(true);
   };
 
   const go = () => {

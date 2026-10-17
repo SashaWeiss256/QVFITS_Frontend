@@ -18,8 +18,10 @@ export function AdminAuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
 
+  // On sign-out every admin query is dropped, so a different person signing in never sees the last person's data.
   const forget = useCallback(() => queryClient.removeQueries({ queryKey: realmRoot("admin") }), [queryClient]);
 
+  // Reads the current session once, then listens for the token being cleared (the idle sign-out, for one) to sign out here too.
   useEffect(() => {
     let alive = true;
     auth.currentAdmin()

@@ -53,7 +53,7 @@
     "newReleases": {
       "kicker": "Just in",
       "title": "New releases",
-      "cta": "Shop the new",
+      "cta": "See more",
       "target": {
         "label": "new"
       }
@@ -167,10 +167,27 @@
     ]
   },
   "newsletter": {
-    "kicker": "First access",
-    "title": "Get the drop first",
-    "text": "New drops and restocks. No spam. We only send when there is something to send.",
+    "kicker": "Members first",
+    "title": "Be first to the next drop",
+    "text": "Small drops sell out fast. Join the list and we'll tell you before anyone else, about twice a month.",
     "cta": "Join the list",
-    "placeholder": "your@email.com"
+    "placeholder": "your@email.com",
+    "perks": [
+      {
+        "icon": "sparkles",
+        "title": "First look",
+        "text": "New drops before they reach the shop page."
+      },
+      {
+        "icon": "bell",
+        "title": "Restocks",
+        "text": "A word the day a sold-out size is back."
+      },
+      {
+        "icon": "gift",
+        "title": "A welcome code",
+        "text": "For your first order, in your first email."
+      }
+    ]
   }
 }

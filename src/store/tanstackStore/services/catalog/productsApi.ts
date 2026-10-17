@@ -1,4 +1,5 @@
 /* Products Service */
+import { matchesSearch } from "@/utils/search";
 import { ApiError, mockApi } from "../api/mock";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
@@ -89,6 +90,7 @@ function toRecordPatch(patch: Partial<Product>): Partial<ProductRecord> {
   return clean as Partial<ProductRecord>;
 }
 
+// Every product as the shop and the admin read it (names for ids, stock per size, units sold), with the sales counted once for the whole list.
 const views = () => {
   const sales = salesContext();
   return products.list().map((r) => toView(r, sales));
@@ -96,12 +98,15 @@ const views = () => {
 
 /* Storefront */
 
+// Featured order: best sellers first, then new arrivals, then the rest.
 const FEATURED: Record<string, number> = { Bestseller: 0, New: 1 };
 const LABEL_MATCH: Record<string, (p: Product) => boolean> = { New: (p) => p.isNew, Bestseller: (p) => p.isBestseller };
+// The price a shopper pays: the sale percent comes off when the piece has one (the shop only shows it while the sale is switched on).
 const salePrice = (p: Product) => (p.salePercent ? Math.round(p.price * (1 - p.salePercent / 100)) : p.price);
 
+// Whether a product passes every filter given; an empty filter lets everything through, and a size or "in stock" filter only counts units actually on the shelf.
 function matches(p: Product, f: ProductFilters) {
-  const q = f.q?.trim().toLowerCase();
+  const q = f.q?.trim();
   return (
     (!f.categoryId || p.categoryId === f.categoryId) &&
     (!f.size || (p.stock[f.size] ?? 0) > 0) &&
@@ -111,10 +116,12 @@ function matches(p: Product, f: ProductFilters) {
     (!f.sale || Boolean(p.salePercent)) &&
     (!f.inStock || Object.values(p.stock).some((n) => n > 0)) &&
     (!f.maxPrice || salePrice(p) <= f.maxPrice) &&
-    (!q || [p.name, p.category, p.blurb, ...p.colors].join(" ").toLowerCase().includes(q))
+    // Every word typed must be found (name, category, description, colours, details, fabric), plural or singular.
+    (!q || matchesSearch([p.name, p.category, p.blurb, p.fabric, ...p.colors, ...(p.details ?? [])].join(" "), q))
   );
 }
 
+// Sorting works on a copy, so the stored list's order is never changed.
 function sorted(rows: Product[], sort: ProductFilters["sort"] = "featured") {
   const list = [...rows];
   if (sort === "price-asc") return list.sort((a, b) => salePrice(a) - salePrice(b));
@@ -213,6 +220,7 @@ export function getProductsByIds(ids: Id[], { signal }: RequestOptions = {}) {
 const movements = createCollection<StockMovement>("stock-movements", [], { idPrefix: "mov" });
 const KEEP_MOVEMENTS = 1000;
 
+// One line in the stock log: who changed which size of which colour, from how many to how many, and why. No change writes nothing.
 function recordMovement(row: ProductRecord, colorId: Id, size: string, from: number, to: number, reason: StockReason, ref?: string) {
   if (from === to) return;
   movements.create({
@@ -395,6 +403,7 @@ export function updateProduct(id: Id, patch: Partial<Product>) {
   });
 }
 
+// A piece that sits in a kit can't be deleted, or the kit couldn't be sent.
 export function removeProduct(id: Id) {
   return mockApi(() => {
     assertCan("products", "delete");
@@ -429,6 +438,7 @@ export function bulkUpdateProducts(ids: Id[], patch: Partial<ProductRecord>) {
   });
 }
 
+// Several products removed together, as ticked in the list.
 export function bulkRemoveProducts(ids: Id[]) {
   return mockApi(() => {
     assertCan("products", "delete");
