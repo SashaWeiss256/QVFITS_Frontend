@@ -8,6 +8,7 @@ import { lazy } from "react";
 // The staff door: full screen, outside the guard
 export const AdminLogin = lazy(() => import("./pages/1.auth/login"));
 export const AdminInvite = lazy(() => import("./pages/1.auth/invite"));
+export const AdminSetup = lazy(() => import("./pages/1.auth/setup"));
 
 export const AdminLayout = lazy(() => import("./AdminLayout"));
 

@@ -44,6 +44,7 @@ export default function adminRoutes() {
       {/* The staff door: full screen, outside the guard */}
       <Route path="admin/login" element={<P.AdminLogin />} />
       <Route path="admin/invite" element={<P.AdminInvite />} />
+      <Route path="admin/setup" element={<P.AdminSetup />} />
 
       <Route
         path="admin"

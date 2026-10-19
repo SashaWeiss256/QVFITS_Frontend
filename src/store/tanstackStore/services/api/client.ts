@@ -9,6 +9,8 @@ export interface HttpOptions {
   realm?: Realm;
   headers?: Record<string, string>;
   signal?: AbortSignal;
+  /** Skip renewing the token on a 401: for the sign-in and refresh calls themselves. */
+  noRefresh?: boolean;
 }
 
 interface RequestInit_ extends HttpOptions {
@@ -20,7 +22,7 @@ interface RequestInit_ extends HttpOptions {
  * customer request.
  */
 async function request<T>(method: string, path: string, options: RequestInit_ = {}): Promise<Envelope<T>> {
-  const { body, params, realm = "customer", headers, signal } = options;
+  const { body, params, realm = "customer", headers, signal, noRefresh } = options;
   const control = abortAfter(apiTimeout, signal);
   let response: Response;
 
@@ -38,10 +40,37 @@ async function request<T>(method: string, path: string, options: RequestInit_ = 
     control.done();
   }
 
-  // A rejected token is dropped; the auth context hears it and signs out.
-  if (response.status === 401 && accessToken(realm)) clearAccessToken(realm);
+  if (response.status === 401 && accessToken(realm)) {
+    // An expired access token is renewed once and the request sent again.
+    if (!noRefresh && (await renew(realm))) return request<T>(method, path, { ...options, noRefresh: true });
+    // A rejected token is dropped; the auth context hears it and signs out.
+    clearAccessToken(realm);
+  }
 
   return unwrap<T>(response);
+}
+
+type Refresher = () => Promise<boolean>;
+const refreshers: Partial<Record<Realm, Refresher>> = {};
+const renewing: Partial<Record<Realm, Promise<boolean>>> = {};
+
+/**
+ * A realm's auth service registers how to get a new access token (the admin's
+ * comes from its httpOnly refresh cookie). The transport stays unaware of
+ * auth routes; it only knows a realm can be renewed.
+ */
+export function setRefresher(realm: Realm, refresh: Refresher) {
+  refreshers[realm] = refresh;
+}
+
+// Requests that fail together share one renewal, so the refresh token is spent once.
+function renew(realm: Realm) {
+  const refresh = refreshers[realm];
+  if (!refresh) return Promise.resolve(false);
+  renewing[realm] ??= refresh()
+    .catch(() => false)
+    .finally(() => delete renewing[realm]);
+  return renewing[realm];
 }
 
 function buildHeaders({ body, headers, realm }: { body: unknown; headers?: Record<string, string>; realm: Realm }) {

@@ -2,6 +2,7 @@
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
 import { listActivity } from "../../services/admin/activityApi";
+import { setupStatus } from "../../services/auth/adminAuthApi";
 import { inviteStaff, listPermissionModules, listRoles, listStaff, removeStaff, rolesCrud, updateStaff } from "../../services/team/staffApi";
 import type { ActivityEntry, Id, Role, StaffMember } from "../../services/types";
 import { adminRoot } from "../keys";
@@ -22,6 +23,12 @@ export const rolesResource = crudResource<Role>("roles", rolesCrud, { noun: "Rol
 export const permissionModuleQueries = {
   list: () => queryOptions({ queryKey: [...adminRoot, "permission-modules"] as const, queryFn: ({ signal }) => listPermissionModules({ signal }), staleTime: Infinity }),
 };
+
+// Whether the shop still needs its first owner. Never cached: it closes for good the moment one is made.
+export const adminSetupQueries = {
+  status: () => queryOptions({ queryKey: [...adminRoot, "setup"] as const, queryFn: ({ signal }) => setupStatus({ signal }), staleTime: 0, gcTime: 0, meta: { label: "the setup status" } }),
+};
+export const useAdminSetup = () => useQuery(adminSetupQueries.status());
 
 // Only for someone who may read the log; pass can("activity").
 export const useActivity = (enabled = true) => useQuery({ ...activityQueries.list(), enabled });

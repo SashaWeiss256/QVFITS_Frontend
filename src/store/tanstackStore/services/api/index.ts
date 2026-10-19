@@ -2,7 +2,7 @@
 export { apiBaseUrl, apiRoot, apiUrl, apiVersion, useMockApi } from "./config";
 export { ApiError, apiErrorFromBody, isServerError, networkError } from "./error";
 export { API_NAMESPACES, routes } from "./routes";
-export { http } from "./client";
+export { http, setRefresher } from "./client";
 export {
   REALMS,
   accessToken,

@@ -1,48 +1,87 @@
 /* Admin Auth Service (realm: admin) */
-import { ApiError, mockApi } from "../api/mock";
-import { clearAccessToken, setAccessToken } from "../api/tokens";
-import { staff } from "../team/teamStore";
+import { http, setRefresher } from "../api/client";
+import { routes } from "../api/routes";
+import { accessToken, clearAccessToken, onTokenChange, setAccessToken } from "../api/tokens";
 import type { AdminUser } from "../types";
-import { SESSION, sessionAdmin, toAdminUser } from "./adminSession";
+import { rememberAdmin } from "./adminSession";
 
 /**
  * The staff door, kept apart from shopper sign-in so 2FA and a stricter rate
- * limit can attach to it on the API. Mock mode only: passwords are checked
- * against the team table and the token is a fake.
+ * limit can attach to it on the API. The access token lives in the tab; the
+ * refresh token is an httpOnly cookie the API sets and the browser sends.
  */
 
-export function login({ email, password }: { email: string; password: string }) {
-  return mockApi(() => {
-    const record = staff.list().find((a) => a.email.toLowerCase() === String(email).trim().toLowerCase() && a.password === password);
-    if (!record) throw new ApiError("Email or password is incorrect.", 401);
-    if (record.status === "suspended") throw new ApiError("Your access has been paused. Ask the owner.", 403);
-    if (record.status === "invited") throw new ApiError("Finish setting up your account from the invite link first.", 403);
-    sessionStorage.setItem(SESSION, record.id);
-    setAccessToken("admin", `mock.admin.${record.id}.${Date.now().toString(36)}`);
-    staff.update(record.id, { lastSeenAt: new Date().toISOString() });
-    return toAdminUser(record);
-  }, 400);
+interface AdminSession {
+  admin: AdminUser;
+  accessToken: string;
+}
+
+const AUTH = { realm: "admin", noRefresh: true } as const;
+
+function begin({ admin, accessToken: token }: AdminSession) {
+  rememberAdmin(admin);
+  setAccessToken("admin", token);
+  return admin;
+}
+
+/** Swap the refresh cookie for a new access token. False means the session is over. */
+async function renew() {
+  try {
+    begin(await http.post<AdminSession>(routes.adminAuth.refresh, undefined, AUTH));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// An expired access token is renewed from the cookie before a request gives up.
+setRefresher("admin", renew);
+
+// However the token goes (sign-out, the idle timer, a refused refresh), the remembered admin goes with it.
+onTokenChange((realm, token) => {
+  if (realm === "admin" && !token) rememberAdmin(null);
+});
+
+/** Whether the shop still needs its first owner. */
+export function setupStatus({ signal }: { signal?: AbortSignal } = {}) {
+  return http.get<{ open: boolean }>(routes.adminAuth.setup, { signal });
+}
+
+/** The one-time registration: the first admin becomes the owner and is signed straight in. */
+export async function setupOwner(input: { name: string; email: string; password: string }) {
+  return begin(await http.post<AdminSession>(routes.adminAuth.setup, input, AUTH));
+}
+
+export async function login({ email, password }: { email: string; password: string }) {
+  return begin(await http.post<AdminSession>(routes.adminAuth.login, { email, password }, AUTH));
 }
 
 /** An invited team member sets their password and is signed straight in. */
-export function acceptInvite({ token, password }: { token: string; password: string }) {
-  return mockApi(() => {
-    const record = staff.list().find((s) => (s as { inviteToken?: string }).inviteToken === token && s.status === "invited");
-    if (!record) throw new ApiError("This invite link has been used or has expired. Ask for a new one.", 404);
-    const updated = staff.update(record.id, { password, status: "active", inviteToken: undefined, lastSeenAt: new Date().toISOString() } as never)!;
-    sessionStorage.setItem(SESSION, updated.id);
-    setAccessToken("admin", `mock.admin.${updated.id}.${Date.now().toString(36)}`);
-    return toAdminUser(updated);
-  }, 400);
+export async function acceptInvite({ token, password }: { token: string; password: string }) {
+  return begin(await http.post<AdminSession>(routes.adminAuth.acceptInvite, { token, password }, AUTH));
 }
 
-export function currentAdmin() {
-  return mockApi<AdminUser | null>(() => sessionAdmin(), 0);
+/**
+ * The signed-in admin, read fresh so a role change applies at once. A tab
+ * with no token is signed out, even if another tab is signed in.
+ */
+export async function currentAdmin() {
+  if (!accessToken("admin")) return null;
+  try {
+    const admin = await http.get<AdminUser>(routes.adminAuth.me, { realm: "admin" });
+    rememberAdmin(admin);
+    return admin;
+  } catch {
+    // The transport already tried a refresh and dropped the token if it failed.
+    return null;
+  }
 }
 
-export function logout() {
-  return mockApi(() => {
+export async function logout() {
+  try {
+    await http.post(routes.adminAuth.logout, undefined, AUTH);
+  } finally {
+    // Signed out here even if the server couldn't be reached.
     clearAccessToken("admin");
-    sessionStorage.removeItem(SESSION);
-  }, 0);
+  }
 }

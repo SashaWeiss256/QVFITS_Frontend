@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
+import { useAdminSetup } from "@/store/tanstackStore/queries/admin";
 import { useSeo } from "@/seo/useSeo";
 import AuthCard from "./AuthCard";
 import { adminLoginSchema } from "./schemas";
@@ -16,6 +17,7 @@ import { adminLoginSchema } from "./schemas";
 export default function AdminLogin() {
   useSeo({ title: "Admin sign in", noindex: true });
   const { admin, signIn } = useAdminAuth();
+  const setup = useAdminSetup();
   const navigate = useNavigate();
   const location = useLocation();
   // RequireAdmin passes the page that bounced here; return there after sign in.
@@ -28,6 +30,11 @@ export default function AdminLogin() {
   useEffect(() => {
     if (admin) navigate(back, { replace: true });
   }, [admin, back, navigate]);
+
+  // A shop with no owner yet has nobody to sign in as: send the first visitor to the one-time setup.
+  useEffect(() => {
+    if (setup.data?.open) navigate("/admin/setup", { replace: true });
+  }, [setup.data?.open, navigate]);
 
   const onSubmit = async (values) => {
     setServerError("");

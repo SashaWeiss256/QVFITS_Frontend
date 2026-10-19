@@ -65,7 +65,7 @@ src/store/
 | `settings/` | `shippingApi` (delivery zones, fees), `paymentMethodsApi` | site, admin |
 | `marketing/` | `offersApi` (sale, promo bar, deals, sticker), `subscribersApi` (double opt-in, welcome email, newsletter settings), `campaignsApi` | site, admin |
 | `notifications/` | `outboxApi`: every email the shop would send, until an email service is connected | every area that emails |
-| `team/` | `teamStore`, `staffApi` (invites, roles, the last-owner rule) | admin |
+| `team/` | `teamStore` (the permission modules), `staffApi` (people, invites, roles: live on the API) | admin |
 | `admin/` | `activityApi` (the audit log every admin write feeds) | admin |
 | `auth/` | `customerAuthApi` (stay signed in, confirm email, password reset), `adminAuthApi`, `adminSession` (who is signed in, `can`, `assertCan`) | the two auth contexts, every admin service |
 | `assistant/` | `fitAssistantApi` + `vee/` (Quivogue's full intent parser: language, search, looks, reply) over the live catalogue, stock and size chart; replies are blocks (text, product cards, links), never HTML. It is rules, not a language model: it never invents a piece or claims stock it lacks, and needs no AI key or outside service; everything comes from the catalogue, stock and settings. **Outfits:** `vee/colour.ts` reads each colour's hex into OKLCH and scores pairs (neutrals go with anything, one loud colour at most, near-identical or fighting shades are kept apart; the team's "always" and "never" pairs in Vee, Pairing rules win), `vee/outfit.ts` builds kits first then up to three custom mixes (one per mood: tonal, neutral, one pop, contrast) from in-stock colourways in her size, `vee/outfitReply.ts` turns that into replies and follow-ups ("in black", "bolder", "cheaper", "I'm a M"), `vee/voice.ts` holds the tone (playful, balanced, straight; no jokes about money, sizing, delivery or problems). She remembers name, size, budget and colours on the device ("Forget me" clears them). `suggestOutfits(productId)` serves the product page's "Style it with" and the bag's "Complete the look". An AI language layer behind `assistant/ask` is a later option and would call this same engine | site |
@@ -135,7 +135,7 @@ A mock never claims something happened that did not:
 
 1. Add the seed, `data/things.json`, shaped like the API's table (ids, relations by id), and list it in `07-data.md`.
 2. Add the type to `services/types.ts` and the service `services/<area>/thingsApi.ts`: `createCollection<Thing>("things", seed)`, and `adminCrud(things, { module, noun, label })` if the admin edits it. Reads take `{ signal }`.
-3. Add the module to `data/permissions.json` and give it to the roles in `data/roles.json`.
+3. Add the module to `data/permissions.json` and give it to the roles in `data/roles.json`. The API keeps its own copy of both (`server/src/data/`): change them there too, or the server drops the new module from every role.
 4. Add the query factory:
    - Storefront: under `siteRoot` in `queries/site/`, a `useThings` hook in `queries/site/index.ts`.
    - Customer: under `customerRoot(id)` in `queries/account/`.

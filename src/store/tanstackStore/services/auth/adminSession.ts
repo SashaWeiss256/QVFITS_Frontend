@@ -1,33 +1,34 @@
 /* Admin Session And Permissions */
 import { ApiError } from "../api/mock";
 import { accessToken } from "../api/tokens";
-import { roles, staff, type StaffRecord } from "../team/teamStore";
-import type { AdminUser, PermissionAction, PermissionMap } from "../types";
+import type { AdminUser, PermissionAction } from "../types";
 
 /**
- * Who is signed in to the admin, and what they may do. The mock keeps the
- * staff id in sessionStorage and works the permissions out fresh on every
- * call, so a role change applies at once. The API does the same check on the
- * server; this one exists so the mock refuses what the API will refuse.
+ * Who is signed in to the admin, and what they may do. The API decides both;
+ * the admin it returns at sign-in (and on every refresh) is kept here for the
+ * tab, so the services still on mocks can refuse what the API will refuse.
  */
-export const SESSION = "qvfits:mock:admin";
+const SESSION = "qvfits:admin:user";
 
-/** The role's permissions with the person's own overrides laid over them. */
-export function permissionsFor(member: Pick<StaffRecord, "roleId" | "overrides">): PermissionMap {
-  const role = roles.get(member.roleId);
-  return { ...(role?.permissions ?? {}), ...(member.overrides ?? {}) };
-}
-
-export function toAdminUser(member: StaffRecord): AdminUser {
-  return { id: member.id, name: member.name, email: member.email, role: member.roleId, permissions: permissionsFor(member) };
+/** Keep the signed-in admin for this tab, or forget them with null. */
+export function rememberAdmin(admin: AdminUser | null) {
+  try {
+    if (admin) sessionStorage.setItem(SESSION, JSON.stringify(admin));
+    else sessionStorage.removeItem(SESSION);
+  } catch {
+    // Storage unavailable: services fall back to treating the tab as signed out.
+  }
 }
 
 /** The signed-in admin, or null. Synchronous, for services to check against. */
 export function sessionAdmin(): AdminUser | null {
   if (!accessToken("admin")) return null;
-  const id = sessionStorage.getItem(SESSION);
-  const member = id ? staff.get(id) : null;
-  return member && member.status === "active" ? toAdminUser(member) : null;
+  try {
+    const saved = sessionStorage.getItem(SESSION);
+    return saved ? (JSON.parse(saved) as AdminUser) : null;
+  } catch {
+    return null;
+  }
 }
 
 export function can(admin: AdminUser | null, module: string, action: PermissionAction = "view") {

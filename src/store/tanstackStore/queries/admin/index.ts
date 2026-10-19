@@ -71,7 +71,7 @@ export {
   useUnsubscribeSubscriber,
   useSubscribers,
 } from "./website";
-export { activityQueries, rolesResource, staffQueries, staffResource, useActivity, useInviteStaff, usePermissionModules } from "./team";
+export { activityQueries, adminSetupQueries, rolesResource, staffQueries, staffResource, useActivity, useAdminSetup, useInviteStaff, usePermissionModules } from "./team";
 export type {
   ActivityEntry,
   AdminUser,

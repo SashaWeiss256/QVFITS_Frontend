@@ -28,7 +28,7 @@ Responses use one envelope: `{ data, meta? }` on success, `{ error: { code, mess
 | Realm | Who | Sign-in | Routes |
 |---|---|---|---|
 | `customer` | Shoppers with an account | `POST auth/customer/login`, `signup`, `confirm-email`, `forgot-password`, `reset-password` | `account/*` |
-| `admin` | Owner and staff, with roles (owner, staff) | `POST auth/admin/login`, `accept-invite` | `admin/*` |
+| `admin` | Owner and staff, with roles (owner, staff) | `POST auth/admin/login`, `accept-invite`; the first owner once, through `setup` | `admin/*` |
 
 An admin route rejects a customer token even when its signature is valid. Guests can browse, check out, and with an order's reference and phone number track it, cancel it while unpaid, or ask for a return.
 
@@ -38,7 +38,7 @@ Shoppers choose "Stay signed in" (on by default). Admin sessions stay per tab an
 
 | Namespace | Public | Customer | Admin |
 |---|---|---|---|
-| `auth` | none | login, signup, confirm email, refresh, logout, password reset | login, refresh, logout, invite |
+| `auth` | none | login, signup, confirm email, refresh, logout, password reset | **live:** setup (once), login, refresh, logout, me, invite, accept-invite |
 | `catalog` | products (list, filter, detail by slug), kits, categories, size chart, approved reviews | none (reviews are written by staff for now) | products and kits, variants, stock per colour/size and the stock log, photos, categories, reviews, draft preview |
 | `checkout` | quote (lines, kits, delivery, discount code), create order, start payment | same, linked to the account | record a sale (showroom, WhatsApp; paid on the spot) |
 | `payments` | gateway webhook | none | payments and refunds, always against an order |

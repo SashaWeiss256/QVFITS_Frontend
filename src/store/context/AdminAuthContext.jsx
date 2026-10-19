@@ -50,6 +50,13 @@ export function AdminAuthProvider({ children }) {
     forget();
   }, [forget]);
 
+  // The one-time owner registration signs the new owner straight in.
+  const setupOwner = useCallback(async (input) => {
+    const a = await auth.setupOwner(input);
+    setAdmin(a);
+    return a;
+  }, []);
+
   // Setting a password from an invite signs the person straight in.
   const acceptInvite = useCallback(async (input) => {
     const a = await auth.acceptInvite(input);
@@ -65,8 +72,8 @@ export function AdminAuthProvider({ children }) {
   const can = useCallback((module, action = "view") => Boolean(admin?.permissions?.[module]?.includes(action)), [admin]);
 
   const value = useMemo(
-    () => ({ admin, loading, signIn, signOut, acceptInvite, refresh, can }),
-    [admin, loading, signIn, signOut, acceptInvite, refresh, can],
+    () => ({ admin, loading, signIn, signOut, setupOwner, acceptInvite, refresh, can }),
+    [admin, loading, signIn, signOut, setupOwner, acceptInvite, refresh, can],
   );
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;

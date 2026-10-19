@@ -9,6 +9,7 @@
 | This site (built `dist/`) | DigitalOcean Droplet, served by Nginx | `deploy/nginx/qvfits.conf` |
 | `qvfits-api` | Same Droplet, Node.js under PM2, port 5000 | Nginx proxies `/api` to it |
 | Database | DigitalOcean Managed MongoDB | Daily automatic backups |
+| Redis | Same Droplet (`apt install redis-server`), bound to localhost only | Rate-limit counters shared by every PM2 process; later job queues (email, photos) and the Socket.IO adapter. Set `REDIS_URL`; the API will not start without it |
 | Photos | DigitalOcean Spaces + CDN | Uploaded through the API, served as WebP |
 | SSL | Let's Encrypt (certbot), auto-renewing | |
 | Email | Resend or Brevo | Transactional only |

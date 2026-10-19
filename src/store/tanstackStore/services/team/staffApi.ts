@@ -1,88 +1,66 @@
 /* Team Service (realm: admin) */
-import { ApiError, mockApi } from "../api/mock";
+import { http } from "../api/client";
+import { mockApi } from "../api/mock";
+import { routes } from "../api/routes";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
-import { assertCan, sessionAdmin } from "../auth/adminSession";
-import { adminCrud } from "../store/adminCrud";
-import type { NewRow } from "../store/collectionStore";
 import type { Role, StaffMember } from "../types";
-import { PERMISSION_MODULES, publicStaff, roles, staff, type StaffRecord } from "./teamStore";
+import { PERMISSION_MODULES } from "./teamStore";
 
 /**
  * The people who can sign in to the admin, their roles, and the permission
- * matrix. Only someone with Team access (the owner, by default) can change
- * any of it, and nobody can lock the shop out of its last owner.
+ * matrix. The API checks Team access, keeps the shop from losing its last
+ * owner and lets only an owner make another. The activity log is still a
+ * mock, so each change is written to it here once the API has accepted it.
  */
 
-export const listStaff = ({ signal }: RequestOptions = {}) =>
-  mockApi(() => {
-    assertCan("team", "view");
-    return staff.list().map(publicStaff);
-  }, 150, signal);
+const ADMIN = { realm: "admin" } as const;
 
-export const listRoles = ({ signal }: RequestOptions = {}) => mockApi(() => roles.list(), 120, signal);
-export const listPermissionModules = ({ signal }: RequestOptions = {}) => mockApi(() => PERMISSION_MODULES, 50, signal);
+export const listStaff = ({ signal }: RequestOptions = {}) => http.get<StaffMember[]>(routes.team.staff, { ...ADMIN, signal });
 
-// How many active owners there would be without one person, so the shop can never be left with none.
-const activeOwners = (except?: Id) => staff.list().filter((s) => s.roleId === "owner" && s.status === "active" && s.id !== except).length;
+export const listRoles = ({ signal }: RequestOptions = {}) => http.get<Role[]>(routes.team.roles, { ...ADMIN, signal });
+
+// The modules are part of the code, not data, so they need no request.
+export const listPermissionModules = ({ signal }: RequestOptions = {}) => mockApi(() => PERMISSION_MODULES, 0, signal);
 
 /** An invite: the person is added as `invited` and gets a link to set a password. */
-export function inviteStaff(input: Pick<StaffMember, "name" | "email" | "roleId">) {
-  return mockApi(() => {
-    assertCan("team", "edit");
-    const email = input.email.trim().toLowerCase();
-    if (staff.list().some((s) => s.email === email)) throw new ApiError("Someone on the team already uses that email.", 409);
-    if (!roles.get(input.roleId)) throw new ApiError("Pick a role.", 422);
-    const token = Math.random().toString(36).slice(2, 10);
-    const member = staff.create({
-      name: input.name.trim(), email, roleId: input.roleId, overrides: {}, status: "invited", lastSeenAt: null,
-      createdAt: new Date().toISOString(), inviteToken: token,
-    } as NewRow<StaffRecord>);
-    logActivity({ module: "team", action: "create", entityId: member.id, summary: `Invited ${member.name} as ${roles.get(input.roleId)?.name}` });
-    // Honest seam: no email goes out until the API sends one, so the link is handed back to share by hand.
-    return { member: publicStaff(member), inviteLink: `${window.location.origin}/admin/invite?token=${token}` };
-  });
+export async function inviteStaff(input: Pick<StaffMember, "name" | "email" | "roleId">) {
+  const out = await http.post<{ member: StaffMember; inviteLink: string }>(routes.adminAuth.invite, input, ADMIN);
+  logActivity({ module: "team", action: "create", entityId: out.member.id, summary: `Invited ${out.member.name}` });
+  return out;
 }
 
-// Demoting or pausing the last active owner is refused, and nobody can suspend themselves.
-export function updateStaff(id: Id, patch: Partial<Pick<StaffMember, "name" | "roleId" | "overrides" | "status">>) {
-  return mockApi(() => {
-    assertCan("team", "edit");
-    const member = staff.get(id);
-    if (!member) throw new ApiError("That person is no longer on the team.", 404);
-    const losingOwner = member.roleId === "owner" && ((patch.roleId && patch.roleId !== "owner") || (patch.status && patch.status !== "active"));
-    if (losingOwner && activeOwners(id) === 0) throw new ApiError("The shop needs at least one active owner.", 409);
-    if (id === sessionAdmin()?.id && patch.status && patch.status !== "active") throw new ApiError("You cannot suspend yourself.", 409);
-    const updated = staff.update(id, patch)!;
-    logActivity({ module: "team", action: "update", entityId: id, summary: `Updated ${updated.name}` });
-    return publicStaff(updated);
-  });
+export async function updateStaff(id: Id, patch: Partial<Pick<StaffMember, "name" | "roleId" | "overrides" | "status">>) {
+  const member = await http.patch<StaffMember>(`${routes.team.staff}/${id}`, patch, ADMIN);
+  logActivity({ module: "team", action: "update", entityId: id, summary: `Updated ${member.name}` });
+  return member;
 }
 
-// Same guards as updateStaff: not yourself, and not the last active owner.
-export function removeStaff(id: Id) {
-  return mockApi(() => {
-    assertCan("team", "delete");
-    const member = staff.get(id);
-    if (!member) return;
-    if (id === sessionAdmin()?.id) throw new ApiError("You cannot remove yourself.", 409);
-    if (member.roleId === "owner" && activeOwners(id) === 0) throw new ApiError("The shop needs at least one active owner.", 409);
-    staff.remove(id);
-    logActivity({ module: "team", action: "delete", entityId: id, summary: `Removed ${member.name} from the team` });
-  });
+export async function removeStaff(id: Id) {
+  await http.del(`${routes.team.staff}/${id}`, ADMIN);
+  logActivity({ module: "team", action: "delete", entityId: id, summary: "Removed someone from the team" });
 }
 
-export const rolesCrud = adminCrud(roles, {
-  module: "team",
-  noun: "role",
-  label: (r: Role) => r.name,
-  prepare: (data, existing) => {
-    if (existing?.id === "owner" && data.permissions) throw new ApiError("The owner always has full access.", 409);
-    return existing ? data : { description: "", permissions: {}, ...data, system: false };
+/** Roles, shaped like an adminCrud so the Team page's resource stays the same. */
+export const rolesCrud = {
+  list: listRoles,
+
+  async create(data: Partial<Role>) {
+    const role = await http.post<Role>(routes.team.roles, data, ADMIN);
+    logActivity({ module: "team", action: "create", entityId: role.id, summary: `Added role ${role.name}` });
+    return role;
   },
-  beforeRemove: (r) => {
-    if (r.system) throw new ApiError("Owner, Manager and Showroom staff come with the shop and cannot be deleted.", 409);
-    const using = staff.list().filter((s) => s.roleId === r.id).length;
-    if (using) throw new ApiError(`${using} ${using === 1 ? "person has" : "people have"} this role. Give them another first.`, 409);
+
+  async update(id: Id, data: Partial<Role>) {
+    // Only what a role may change; the id and the system flag belong to the server.
+    const { name, description, permissions } = data;
+    const role = await http.patch<Role>(`${routes.team.roles}/${id}`, { name, description, permissions }, ADMIN);
+    logActivity({ module: "team", action: "update", entityId: id, summary: `Updated role ${role.name}` });
+    return role;
   },
-});
+
+  async remove(id: Id) {
+    await http.del(`${routes.team.roles}/${id}`, ADMIN);
+    logActivity({ module: "team", action: "delete", entityId: id, summary: `Deleted role ${id}` });
+  },
+};
