@@ -3,8 +3,7 @@ import { ApiError, mockApi } from "../api/mock";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 import { assertCan } from "../auth/adminSession";
-import { getLiveKit, getProductsByIds, moveStock, variantStock } from "../catalog/productsApi";
-import { colors } from "../catalog/attributesApi";
+import { colorIdFor, getProductsByIds, listKits, variantStock, type KitView } from "../catalog/productsApi";
 import { readSettings } from "../content/settingsApi";
 import { settlePayment } from "./ordersApi";
 import { feeFor } from "../settings/shippingApi";
@@ -37,17 +36,17 @@ export interface Quote {
  * in the bag is charged the kit's price; a set that is broken up (a piece
  * removed) falls back to the pieces' own prices.
  */
-function kitSavingOf(priced: OrderLine[]) {
+function kitSavingOf(priced: OrderLine[], kits: KitView[]) {
   let saving = 0;
   for (const kitId of new Set(priced.map((l) => l.kitId).filter(Boolean) as string[])) {
-    const kit = getLiveKit(kitId);
+    const kit = kits.find((k) => k.id === kitId);
     if (!kit) continue;
     const tagged = priced.filter((l) => l.kitId === kitId);
     // How many of one piece are in the bag; a kit counts as complete only when every one of its pieces is there.
     const qtyOf = (id: string) => tagged.filter((l) => l.productId === id).reduce((n, l) => n + l.qty, 0);
-    const sets = Math.min(...kit.kitItems.map(qtyOf));
+    const sets = Math.min(...kit.items.map(qtyOf));
     if (!Number.isFinite(sets) || sets < 1) continue;
-    const separate = kit.kitItems.reduce((n, id) => n + (tagged.find((l) => l.productId === id)?.price ?? 0), 0);
+    const separate = kit.items.reduce((n, id) => n + (tagged.find((l) => l.productId === id)?.price ?? 0), 0);
     saving += Math.max(0, separate - kit.price) * sets;
   }
   return saving;
@@ -55,18 +54,18 @@ function kitSavingOf(priced: OrderLine[]) {
 
 // The one place a bag is priced: sale prices, kit prices, the code and delivery are all worked out here, never on the screen, so what is shown is what is charged.
 export async function quote(lines: CartLine[], region: DeliveryRegion, code?: string, { signal, customerId, phone }: RequestOptions & { customerId?: Id; phone?: string } = {}): Promise<Quote> {
-  const products = await getProductsByIds(lines.map((l) => l.productId), { signal });
+  const [products, kits] = await Promise.all([getProductsByIds(lines.map((l) => l.productId), { signal }), listKits({ signal })]);
 
   const priced: OrderLine[] = lines.flatMap((line) => {
     const p = products.find((x) => x.id === line.productId);
     if (!p) return [];
     const price = p.salePercent ? Math.round(p.price * (1 - p.salePercent / 100)) : p.price;
-    const colorId = colors.list().find((c) => c.name === line.color)?.id;
+    const colorId = colorIdFor(p, line.color);
     return [{ ...line, name: p.name, price, colorId }];
   });
 
   const subtotal = priced.reduce((sum, l) => sum + l.price * l.qty, 0);
-  const kitSaving = kitSavingOf(priced);
+  const kitSaving = kitSavingOf(priced, kits);
   const applied = applyDiscount(code, priced, products, { customerId, phone });
   // A code never takes the goods below nothing; delivery is always charged on its own.
   const discount = Math.min(applied.amount, subtotal - kitSaving);
@@ -91,15 +90,16 @@ function newRef() {
 
 /**
  * Honest seam: with mocks on no money moves. The order is recorded as
- * `pending`, its stock is held, and the page offers the WhatsApp hand-off.
+ * `pending` and the page offers the WhatsApp hand-off. Stock is checked
+ * here but only taken once orders are on the API.
  */
 export async function placeOrder(input: CheckoutInput, customerId?: Id, { source = "web", by = "Checkout" }: { source?: Order["source"]; by?: string } = {}): Promise<Order> {
   if (!input.lines.length) throw new ApiError("Your bag is empty.", 422);
   const products = await getProductsByIds(input.lines.map((l) => l.productId));
   for (const l of input.lines) {
     const p = products.find((x) => x.id === l.productId);
-    const colorId = colors.list().find((c) => c.name === l.color)?.id ?? l.color;
     if (!p) throw new ApiError("A piece in your bag is no longer sold. Remove it to carry on.", 409);
+    const colorId = colorIdFor(p, l.color);
     const left = variantStock(p, colorId, l.size);
     if (left < l.qty) throw new ApiError(`${p.name} in ${l.color}, ${l.size} has ${left} left. Lower the quantity to carry on.`, 409);
   }
@@ -132,7 +132,6 @@ export async function placeOrder(input: CheckoutInput, customerId?: Id, { source
       source,
       createdAt,
     });
-    priced.lines.forEach((l) => moveStock(l.productId, l.colorId ?? l.color, l.size, -l.qty, "order", order.ref));
     return order;
   }, 400);
 }

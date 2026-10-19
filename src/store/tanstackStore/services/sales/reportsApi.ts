@@ -11,7 +11,7 @@ import { reviewsCrud } from "../catalog/reviewsApi";
 import type { Order } from "../types";
 import { expireUnpaid, orders } from "./ordersApi";
 import { transactions } from "./transactionsApi";
-import { categories } from "../catalog/attributesApi";
+import { categoriesCrud } from "../catalog/attributesApi";
 
 export interface Overview {
   days: number;
@@ -132,7 +132,7 @@ const dayOf = (iso: string) => iso.slice(0, 10);
  */
 export async function getReports(range: ReportRange, { signal }: RequestOptions = {}): Promise<Reports> {
   assertCan("reports", "view");
-  const products = await listAllProducts({ signal });
+  const [products, categories] = await Promise.all([listAllProducts({ signal }), categoriesCrud.list({ signal })]);
   return mockApi(() => {
     expireUnpaid();
     const inRange = (iso: string) => (!range.from || dayOf(iso) >= range.from) && dayOf(iso) <= range.to;
@@ -189,7 +189,7 @@ export async function getReports(range: ReportRange, { signal }: RequestOptions 
     }
 
     const low = readSettings().lowStockAt;
-    const stock = categories.list().map((c) => {
+    const stock = categories.map((c) => {
       const pieces = products.filter((p) => p.categoryId === c.id && p.status !== "archived");
       const variants = pieces.flatMap((p) => p.variants.map((v) => ({ ...v, price: p.price })));
       return {

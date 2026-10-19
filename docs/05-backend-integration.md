@@ -39,7 +39,7 @@ Shoppers choose "Stay signed in" (on by default). Admin sessions stay per tab an
 | Namespace | Public | Customer | Admin |
 |---|---|---|---|
 | `auth` | none | login, signup, confirm email, refresh, logout, password reset | **live:** setup (once), login, refresh, logout, me, invite, accept-invite |
-| `catalog` | products (list, filter, detail by slug), kits, categories, size chart, approved reviews | none (reviews are written by staff for now) | products and kits, variants, stock per colour/size and the stock log, photos, categories, reviews, draft preview |
+| `catalog` | **live:** products (list, filter, detail by slug, by ids), kits, facets, size chart, approved reviews, review submission | none (reviews are written by staff for now) | **live** (`admin/catalog/*`, `admin/uploads`): products and kits, variants, stock per colour/size and the stock log, photos (ImageKit), categories, groups, terms, colours, sizes, filters, reviews, draft preview |
 | `checkout` | quote (lines, kits, delivery, discount code), create order, start payment | same, linked to the account | record a sale (showroom, WhatsApp; paid on the spot) |
 | `payments` | gateway webhook | none | payments and refunds, always against an order |
 | `orders` | track, cancel unpaid, ask for a return (reference + phone) | own orders, cancel unpaid, returns | list, detail, status changes (pending, paid, packed, out for delivery, delivered, cancelled, exchanged), part payments, returns and refunds, messages sent |

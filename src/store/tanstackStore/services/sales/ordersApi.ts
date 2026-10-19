@@ -3,7 +3,8 @@ import { ApiError, mockApi } from "../api/mock";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 import { assertCan } from "../auth/adminSession";
-import { moveStock, registerOrders } from "../catalog/productsApi";
+// Stock lives on the API now and only staff can change it there, so these mock orders no longer move it.
+// Taking stock for an order, and putting it back on a cancellation or return, moves to the orders API (next phase).
 import { readSettings } from "../content/settingsApi";
 import { emailsForOrder, queueEmail } from "../notifications/outboxApi";
 import { createCollection } from "../store/collectionStore";
@@ -18,7 +19,6 @@ import orderSeed from "@/data/orders.json";
  */
 export const orders = createCollection<Order>("orders", orderSeed as unknown as Order[], { idPrefix: "ord" });
 // Best sellers are counted from these (productsApi).
-registerOrders(() => orders.list());
 
 const digits = (phone: string) => phone.replace(/\D/g, "").slice(-9);
 
@@ -59,7 +59,6 @@ export function expireUnpaid() {
   const now = Date.now();
   for (const o of orders.list()) {
     if (o.status !== "pending" || o.paymentStatus !== "unpaid" || holdsUntil(o) > now) continue;
-    o.lines.forEach((l) => moveStock(l.productId, l.colorId ?? l.color, l.size, l.qty, "cancel", o.ref));
     const at = new Date(holdsUntil(o)).toISOString();
     const updated = orders.update(o.id, { status: "cancelled", history: [...o.history, { status: "cancelled", at, by: "The shop", note: "Not paid in time, so the pieces went back on the shelf." }] })!;
     notifyCustomer(updated, "cancelled", "It wasn't paid in time. You're welcome to order again.");
@@ -69,7 +68,6 @@ export function expireUnpaid() {
 /** A customer calls off an order they haven't paid for (gap O1). */
 function cancelUnpaid(order: Order, by: string) {
   if (order.status !== "pending" || order.paymentStatus !== "unpaid") throw new ApiError("Only an order that hasn't been paid can be cancelled here. Message us about this one.", 409);
-  order.lines.forEach((l) => moveStock(l.productId, l.colorId ?? l.color, l.size, l.qty, "cancel", order.ref));
   const updated = orders.update(order.id, { status: "cancelled", history: [...order.history, { status: "cancelled", at: new Date().toISOString(), by, note: "Cancelled by the customer." }] })!;
   notifyCustomer(updated, "cancelled");
   return updated;
@@ -201,8 +199,6 @@ export function updateOrderStatus(id: Id, status: OrderStatus, note?: string) {
     const admin = assertCan("orders", status === "paid" ? "payment" : "edit");
     const order = find(id);
     if (order.status === status) return order;
-    // Cancelling puts the pieces back on the shelf.
-    if (status === "cancelled") order.lines.forEach((l) => moveStock(l.productId, l.colorId ?? l.color, l.size, l.qty, "cancel", order.ref));
     if (status === "paid") ensurePayment(order, order.payment);
     const updated = orders.update(id, {
       status,

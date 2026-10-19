@@ -3,7 +3,7 @@ import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 import { assertCan } from "../auth/adminSession";
-import { linkLookup, registerLinkSource } from "../catalog/attributesApi";
+import { linkLookup } from "../catalog/attributesApi";
 import { createDocument, type DocumentPatch } from "../store/collectionStore";
 import type { Linked } from "../types";
 import { withHrefs, withoutHrefs } from "@/utils/shopTargets";
@@ -43,11 +43,11 @@ export interface Offers {
 }
 
 const offers = createDocument<Offers>("offers", offerSeed as Offers);
-registerLinkSource("offers", () => offers.get());
 
 /** Offers as the shop reads them, every deal link with its href. */
-export function getOffers({ signal }: RequestOptions = {}) {
-  return mockApi(() => withHrefs(offers.get(), linkLookup()) as Offers, 100, signal);
+export async function getOffers({ signal }: RequestOptions = {}) {
+  const lookup = await linkLookup({ signal });
+  return mockApi(() => withHrefs(offers.get(), lookup) as Offers, 100, signal);
 }
 
 /** Offers as stored, for the admin editor. */

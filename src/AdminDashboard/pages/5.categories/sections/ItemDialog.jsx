@@ -40,7 +40,7 @@ export default function ItemDialog({ dialog, onChange, onClose, onSave, saving }
       {/* Category Or Tag: its web address is made from its name */}
       {x && group.kind !== "edits" && (
         <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
-          <ImageUploader single label="Picture" value={x.photo ? [x.photo] : []} onChange={(photos) => set({ image: photos[0] ?? null, photo: photos[0] ?? null })} />
+          <ImageUploader single folder="categories" label="Picture" value={x.photo ? [x.photo] : []} onChange={(photos) => set({ image: photos[0] ?? null, photo: photos[0] ?? null })} />
           <div className="grid content-start gap-4">
             <Field label="Name" value={x.name} placeholder={group.kind === "category" ? "Bras" : "High support"} onChange={(e) => set({ name: e.target.value })} autoFocus />
           </div>

@@ -3,7 +3,7 @@ import { ApiError, mockApi } from "../api/mock";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 import { assertCan } from "../auth/adminSession";
-import { moveStock } from "../catalog/productsApi";
+// A received return puts stock back once returns move to the API; the mock no longer changes stock.
 import { readSettings } from "../content/settingsApi";
 import { createCollection } from "../store/collectionStore";
 import type { Order, ReturnRequest, ReturnStatus } from "../types";
@@ -127,7 +127,6 @@ export function updateReturnStatus(id: Id, status: ReturnStatus, note?: string, 
     const order = orders.get(ret.orderId);
     let refunded = 0;
 
-    if (status === "received") ret.lines.forEach((l) => moveStock(l.productId, l.color, l.size, l.qty, "return", ret.orderRef));
     if (status === "refunded" && order) {
       const due = refundDue(ret, order);
       const give = amount === undefined ? due : Math.round(amount);

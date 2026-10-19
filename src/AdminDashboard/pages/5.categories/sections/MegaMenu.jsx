@@ -128,7 +128,7 @@ function TileEditor({ doc, canEdit }) {
   return (
     <Panel title="Menu tile" hint="The picture at the end of the Shop menu">
       <fieldset disabled={!canEdit} className="m-0 grid gap-4 border-0 p-0 md:grid-cols-[220px_1fr]">
-        <ImageUploader single label="Picture" value={draft.photo ? [draft.photo] : []} onChange={(photos) => { set("image", photos[0] ?? null); set("photo", photos[0]); }} />
+        <ImageUploader single folder="categories" label="Picture" value={draft.photo ? [draft.photo] : []} onChange={(photos) => { set("image", photos[0] ?? null); set("photo", photos[0]); }} />
         <div className="grid gap-3 sm:grid-cols-2">
           <Toggle className="sm:col-span-2" checked={draft.live} onChange={(live) => set("live", live)} label="Showing" hint="Off hides the tile; the menu columns stay." />
           <Field label="Small heading" value={draft.kicker} onChange={(e) => set("kicker", e.target.value)} />

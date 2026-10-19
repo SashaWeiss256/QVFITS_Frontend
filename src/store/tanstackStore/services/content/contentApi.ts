@@ -1,7 +1,7 @@
 /* Home Content Service */
 import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
-import { linkLookup, sortedTerms } from "../catalog/attributesApi";
+import { linkLookup, type LinkLookup } from "../catalog/attributesApi";
 import { termView } from "../catalog/categoriesApi";
 import { localPhoto } from "../catalog/photos";
 import { targetLabel, withHrefs } from "@/utils/shopTargets";
@@ -72,10 +72,9 @@ export type HomeContentView = HomeContent & {
 
 // Every link gets its href from the live slugs. A tile with no label or picture
 // of its own borrows the first term it opens.
-function view(stored: HomeContent): HomeContentView {
-  const lookup = linkLookup();
+function view(stored: HomeContent, lookup: LinkLookup): HomeContentView {
   const doc = withHrefs(stored, lookup) as HomeContent & { movements: { items: (MovementTile & { href: string })[] } };
-  const termOf = (t: MovementTile) => sortedTerms().find((x) => x.id === t.target?.terms?.[0]);
+  const termOf = (t: MovementTile) => lookup.terms.find((x) => x.id === t.target?.terms?.[0]);
   return {
     ...doc,
     heroSlides: doc.heroSlides.filter((s) => s.live !== false).map((s) => ({ ...s, photo: resolve(s.image, s.id) })),
@@ -96,6 +95,8 @@ function view(stored: HomeContent): HomeContentView {
   };
 }
 
-export function getContent({ signal }: RequestOptions = {}) {
-  return mockApi(() => view(content), 100, signal);
+// The live catalogue comes from the API; the home page document itself is still a mock.
+export async function getContent({ signal }: RequestOptions = {}) {
+  const lookup = await linkLookup({ signal });
+  return mockApi(() => view(content, lookup), 100, signal);
 }

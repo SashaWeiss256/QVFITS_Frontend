@@ -3,30 +3,26 @@ import { useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, ImagePlus, Palette, Trash2 } from "lucide-react";
 
 import Photo from "@/components/storefront/Photo";
+import { useUploadPhoto } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
 import { resizeToWebp } from "../lib/media";
-
-const blobToDataUrl = (blob) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error("Could not read that image"));
-    reader.readAsDataURL(blob);
-  });
 
 /**
  * Photos for a product, a slide or a tile. Each file is shrunk to a 1200px
  * WebP in the browser first, so a 4 MB phone photo lands at well under
- * 200 KB. Honest seam: until the API stores photos in Spaces, uploads live in
- * this browser only. The first photo is the cover; arrows reorder.
+ * 200 KB, then uploaded to ImageKit through the API, which serves every size
+ * the shop asks for. The first photo is the cover; arrows reorder.
  *
  *   value: Photo[]; onChange(Photo[]); `single` keeps at most one.
+ *   folder: what the photos are for ("products" or "categories"), which
+ *   decides the permission the upload needs.
  *   colors: [{ id, name, hex }] to tag a photo to a colourway; `productColors`
  *   (ids) are the ones the product lists, shown first on each card; `onColorPick(id)`
  *   tells the caller a colour was picked, so it can add it to the product.
  */
-export default function ImageUploader({ value = [], onChange, single = false, colors, onColorPick, productColors, label = null }) {
+export default function ImageUploader({ value = [], onChange, single = false, colors, onColorPick, productColors, label = null, folder = "products" }) {
   const input = useRef(null);
+  const upload = useUploadPhoto();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   // Which photo has its colour palette open.
@@ -35,17 +31,17 @@ export default function ImageUploader({ value = [], onChange, single = false, co
   const add = async (files) => {
     setError("");
     setBusy(true);
+    const added = [];
     try {
-      const added = [];
       for (const file of [...files].slice(0, single ? 1 : 8)) {
-        const { blob, width, height } = await resizeToWebp(file, 1200);
-        const url = await blobToDataUrl(blob);
-        added.push({ id: `upload-${Date.now().toString(36)}-${added.length}`, url, width, height, widths: [], colorId: null });
+        const { blob } = await resizeToWebp(file, 1200);
+        added.push(await upload.mutateAsync({ file: blob, folder }));
       }
-      onChange(single ? added.slice(0, 1) : [...value, ...added]);
     } catch (err) {
       setError(err.message);
     } finally {
+      // Photos that uploaded before one failed are kept, so nothing has to be sent twice.
+      if (added.length) onChange(single ? added.slice(0, 1) : [...value, ...added]);
       setBusy(false);
       if (input.current) input.current.value = "";
     }
@@ -158,7 +154,7 @@ export default function ImageUploader({ value = [], onChange, single = false, co
             <span className={cn("flex items-center gap-3", value.length ? "flex-col" : "flex-col sm:flex-row")}>
               <ImagePlus className="h-6 w-6" aria-hidden="true" />
               <span className="text-center sm:text-left">
-                <strong className="block text-sm font-semibold">{busy ? "Resizing…" : single && value.length ? "Replace" : value.length ? "Add more" : "Add photos"}</strong>
+                <strong className="block text-sm font-semibold">{busy ? "Uploading…" : single && value.length ? "Replace" : value.length ? "Add more" : "Add photos"}</strong>
                 {!value.length && <span className="block text-xs text-ink-4">Click or drop them here. Several at once is fine.</span>}
               </span>
             </span>

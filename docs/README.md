@@ -38,7 +38,7 @@ Delivery is 15 working days (proposal QV-2026-001).
 | 4 | Storefront pages ported from Quivogue | `04-design-system.md` | 4 to 11 | done: every Quivogue page and section, one section per file; Vee's full assistant; responsive audit passed (320px to 4K TV) |
 | 5 | Customer dashboard | `02-folder-structure.md` | 6 to 9 | done (mock): sign-up, sign-in, profile, orders, return and exchange requests, saved pieces, addresses |
 | 6 | Admin dashboard | `02-folder-structure.md` | 4 to 11 | done (mock): 22 modules, roles and permissions, activity log; verified end to end in the browser |
-| 7 | Backend integration (payments, email) | `05-backend-integration.md` | 8 to 12 | in-progress: admin sign-in, one-time owner setup (`/admin/setup`), invites, token refresh and Team (people and roles) are live on the API; everything else is still mock |
+| 7 | Backend integration (payments, email) | `05-backend-integration.md` | 8 to 12 | in-progress: admin sign-in, one-time owner setup (`/admin/setup`), invites, token refresh and Team (people and roles) are live on the API, and so is the whole catalog (products and kits, stock and the stock log, categories, groups, terms, colours, sizes, filters, reviews, size chart) with photo uploads to ImageKit. Orders, checkout and returns are still mock and do not move stock until they move to the API; everything else is still mock |
 | 8 | DigitalOcean deploy | `06-deployment.md` | 2 to 3, 15 | pending |
 | 9 | QA, client review, launch | none | 12 to 15 | pending |
 

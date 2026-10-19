@@ -58,7 +58,7 @@ src/store/
 
 | Area | Files | Used by |
 |---|---|---|
-| `catalog/` | `productsApi` (records in, expanded views out; kits, best sellers, setup and publish checks, stock and the stock log, draft preview, bulk edits), `attributesApi` (shop groups, categories, terms, colours, sizes, filter layout, the link lookup), `categoriesApi` (facets), `collectionsApi` (the worked-out rails, live kits), `reviewsApi`, `sizeChartApi`, `photos` | site, admin |
+| `catalog/` | All live on the API: `productsApi` (the shop's reads, admin writes, stock and the stock log, draft preview, bulk edits, photo upload), `attributesApi` (shop groups, categories, terms, colours, sizes, and the async link lookup the menus, home page and offers use), `categoriesApi` (facets, filter layout), `collectionsApi` (the worked-out rails, live kits), `reviewsApi`, `sizeChartApi`, `photos` (the local /photos folder). Admin tables share `store/httpCrud` | site, admin |
 | `sales/` | `checkoutApi` (quote with kit pricing, place, record a sale), `ordersApi` (statuses, payments and part payments, unpaid expiry, cancel, customer messages, notes), `discountsApi` (rules, uses counted from orders), `transactionsApi`, `returnsApi` (guest and staff returns, refund due), `reportsApi` (overview and Reports) | site, account, admin |
 | `customers/` | `customersApi` (profile, addresses, wishlist, bag, recently viewed; staff notes and tags), `privacyApi` (download my data, close my account, staff erase) | account, admin |
 | `content/` | `contentApi` (home page), `pagesApi` (page copy, the built menus), `faqApi`: all three read only, over JSON in the code. Then `settingsApi`, `contactApi` (messages inbox) | site, admin |

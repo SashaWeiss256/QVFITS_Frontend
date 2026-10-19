@@ -22,6 +22,7 @@ export {
   useSetVariantStock,
   useProductPreview,
   useStockMovements,
+  useUploadPhoto,
 } from "./catalog";
 export {
   customerQueries,

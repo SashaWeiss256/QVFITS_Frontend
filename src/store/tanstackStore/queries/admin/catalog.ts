@@ -26,6 +26,7 @@ import {
   removeProduct,
   setVariantStock,
   updateProduct,
+  uploadPhoto,
   type StockReason,
   listStockMovements,
 } from "../../services/catalog/productsApi";
@@ -81,6 +82,13 @@ export const useSetVariantStock = () =>
     mutationFn: ({ productId, variantId, stock, reason }: { productId: Id; variantId: Id; stock: number; reason: StockReason }) =>
       setVariantStock(productId, variantId, stock, reason),
     meta: { invalidates: [productQueries.all(), stockMovementKey, [...adminRoot, "overview"], [...adminRoot, "activity"], ...SITE], success: "Stock saved" },
+  });
+
+// A photo goes to ImageKit through the API; the caller keeps the Photo it returns in its own draft.
+export const useUploadPhoto = () =>
+  useMutation({
+    mutationFn: ({ file, folder }: { file: Blob; folder: "products" | "categories" }) => uploadPhoto(file, folder),
+    meta: { handlesErrors: true },
   });
 
 export const categoriesResource = crudResource("categories", categoriesCrud, { noun: "Category", label: "categories", list: listCategories });

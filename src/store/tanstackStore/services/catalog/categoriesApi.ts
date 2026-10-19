@@ -1,24 +1,11 @@
 /* Facets Service */
-import { mockApi } from "../api/mock";
+import { http } from "../api/client";
+import { routes } from "../api/routes";
 import type { RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
-import { assertCan } from "../auth/adminSession";
 import type { DocumentPatch } from "../store/collectionStore";
 import type { Category, Color, FilterConfig, Photo, ShopGroup, SizeOption, Term } from "../types";
-import { byPosition } from "../store/adminCrud";
-import {
-  categoriesCrud,
-  colorsCrud,
-  filterConfig,
-  groupsCrud,
-  sizesCrud,
-  sortedCategories,
-  sortedColors,
-  sortedGroups,
-  sortedSizes,
-  sortedTerms,
-  termsCrud,
-} from "./attributesApi";
+import { categoriesCrud, colorsCrud, groupsCrud, sizesCrud, termsCrud } from "./attributesApi";
 import { localPhoto } from "./photos";
 
 /**
@@ -39,46 +26,34 @@ export interface Facets {
   filters: FilterConfig;
 }
 
-/** A picture as stored: an uploaded photo, a /photos id, or nothing. */
+/** A picture as stored: an uploaded photo, a /photos id, or nothing. The API leaves /photos ids for the client to resolve. */
 const photoOf = (image: string | Photo | null | undefined) => (image && typeof image === "object" ? image : image ? localPhoto(image) : undefined);
 export const categoryView = (c: Category): CategoryView => ({ ...c, photo: photoOf(c.image) });
 export const termView = (t: Term): TermView => ({ ...t, photo: photoOf(t.image) });
 
-export function getFacets({ signal }: RequestOptions = {}) {
-  return mockApi<Facets>(() => {
-    const groups = sortedGroups().filter((g) => g.active);
-    const live = new Set(groups.map((g) => g.id));
-    const filters = filterConfig.get();
-    return {
-      groups,
-      categoryList: sortedCategories().filter((c) => c.active).map(categoryView),
-      terms: sortedTerms().filter((t) => t.active && live.has(t.groupId)).map(termView),
-      colors: sortedColors().map((c) => ({ id: c.id, name: c.name, swatch: c.hex })),
-      sizes: sortedSizes().map((s) => s.label),
-      filters: { ...filters, facets: byPosition(filters.facets), sort: { ...filters.sort, options: byPosition(filters.sort?.options ?? []) } },
-    };
-  }, 100, signal);
+export async function getFacets({ signal }: RequestOptions = {}): Promise<Facets> {
+  const facets = await http.get<Facets>(routes.catalog.facets, { signal });
+  return { ...facets, categoryList: facets.categoryList.map(categoryView), terms: facets.terms.map(termView) };
 }
 
 /* Admin (realm: admin) */
 
-export const listGroups = ({ signal }: RequestOptions = {}) => mockApi<ShopGroup[]>(sortedGroups, 120, signal);
-export const listCategories = ({ signal }: RequestOptions = {}) => mockApi<CategoryView[]>(() => sortedCategories().map(categoryView), 120, signal);
-export const listTerms = ({ signal }: RequestOptions = {}) => mockApi<TermView[]>(() => sortedTerms().map(termView), 120, signal);
-export const listColors = ({ signal }: RequestOptions = {}) => mockApi<Color[]>(sortedColors, 120, signal);
-export const listSizes = ({ signal }: RequestOptions = {}) => mockApi<SizeOption[]>(sortedSizes, 120, signal);
+const ADMIN = { realm: "admin" } as const;
+
+export const listGroups = ({ signal }: RequestOptions = {}) => groupsCrud.list({ signal });
+export const listCategories = async ({ signal }: RequestOptions = {}) => (await categoriesCrud.list({ signal })).map(categoryView);
+export const listTerms = async ({ signal }: RequestOptions = {}) => (await termsCrud.list({ signal })).map(termView);
+export const listColors = ({ signal }: RequestOptions = {}): Promise<Color[]> => colorsCrud.list({ signal });
+export const listSizes = ({ signal }: RequestOptions = {}): Promise<SizeOption[]> => sizesCrud.list({ signal });
 
 export { categoriesCrud, colorsCrud, groupsCrud, sizesCrud, termsCrud };
 
 export function getFilterConfig({ signal }: RequestOptions = {}) {
-  return mockApi(() => filterConfig.get(), 100, signal);
+  return http.get<FilterConfig>(routes.adminCatalog.filters, { ...ADMIN, signal });
 }
 
-export function updateFilterConfig(patch: DocumentPatch<FilterConfig>) {
-  return mockApi(() => {
-    assertCan("categories", "edit");
-    const doc = filterConfig.update(patch);
-    logActivity({ module: "categories", action: "update", summary: "Updated the shop's filter and sort" });
-    return doc;
-  });
+export async function updateFilterConfig(patch: DocumentPatch<FilterConfig>) {
+  const doc = await http.patch<FilterConfig>(routes.adminCatalog.filters, patch, ADMIN);
+  logActivity({ module: "categories", action: "update", summary: "Updated the shop's filter and sort" });
+  return doc;
 }
