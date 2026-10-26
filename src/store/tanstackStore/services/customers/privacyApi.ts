@@ -1,58 +1,34 @@
 /* Customer Privacy Service */
-import { mockApi } from "../api/mock";
+import { http } from "../api/client";
+import { routes } from "../api/routes";
 import type { Id } from "../api/types";
 import { logActivity } from "../admin/activityApi";
-import { assertCan } from "../auth/adminSession";
 import { logout } from "../auth/customerAuthApi";
-import { subscribers } from "../marketing/subscribersApi";
-import { orders } from "../sales/ordersApi";
-import { customers, eraseCustomerRecord, exportCustomerData } from "./customersApi";
 
 /**
  * Uganda's Data Protection and Privacy Act 2019 (gap A6): a customer can
- * download what the shop holds about them, and close their account. Orders
- * are kept for the books but no longer name the person.
+ * download what the shop holds about them, and close their account. The API
+ * keeps orders for the books but no longer names the person, and deletes the
+ * newsletter record for the address, consent history included.
  */
-function anonymise(customerId: Id) {
-  for (const o of orders.list().filter((x) => x.customerId === customerId)) {
-    orders.update(o.id, { customerId: undefined, name: "Closed account", phone: "", email: undefined, address: undefined, note: undefined });
-  }
-}
 
-// Closing an account also deletes the newsletter record for that address, consent history included.
-function eraseSubscription(email?: string) {
-  const s = subscribers.list().find((x) => x.email === email);
-  if (s) subscribers.remove(s.id);
-}
-
-// Everything held about the shopper in one file: their profile, orders and newsletter consent.
-export function downloadMyData(customerId: Id) {
-  return mockApi(() => {
-    const email = customers.get(customerId)?.email;
-    return exportCustomerData(customerId, {
-      orders: orders.list().filter((o) => o.customerId === customerId),
-      newsletter: subscribers.list().find((s) => s.email === email) ?? null,
-    });
-  }, 300);
+// Everything held about the shopper in one file: their profile, orders and returns, and their newsletter consent.
+export async function downloadMyData(_customerId: Id) {
+  const [data, newsletter] = await Promise.all([
+    http.get<Record<string, unknown>>(routes.account.export, { realm: "customer" }),
+    http.get<string | null>(routes.newsletter.mine, { realm: "customer" }),
+  ]);
+  return { ...data, newsletter };
 }
 
 // Orders stay for the books, without the name or contact details; then the shopper is signed out.
-export async function deleteMyAccount(customerId: Id) {
-  await mockApi(() => {
-    const email = customers.get(customerId)?.email;
-    eraseCustomerRecord(customerId, anonymise);
-    eraseSubscription(email);
-  }, 400);
-  await logout();
+export async function deleteMyAccount(_customerId: Id) {
+  await http.del(routes.account.profile, { realm: "customer" });
+  await logout().catch(() => {});
 }
 
 /** Staff carry out a request made by phone or in the showroom. */
-export function eraseCustomer(customerId: Id) {
-  return mockApi(() => {
-    assertCan("customers", "delete");
-    const c = customers.get(customerId);
-    eraseCustomerRecord(customerId, anonymise);
-    eraseSubscription(c?.email);
-    logActivity({ module: "customers", action: "delete", entityId: customerId, summary: `Closed ${c?.name ?? "a customer"}'s account at their request` });
-  });
+export async function eraseCustomer(customerId: Id) {
+  await http.del(`${routes.adminSales.customers}/${customerId}`, { realm: "admin" });
+  logActivity({ module: "customers", action: "delete", entityId: customerId, summary: "Closed a customer's account at their request" });
 }

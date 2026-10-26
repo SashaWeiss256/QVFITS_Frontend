@@ -1,146 +1,90 @@
 /* Customer Auth Service (realm: customer) */
-import { ApiError, mockApi } from "../api/mock";
-import { assertHuman, type Guard } from "../api/guard";
-import { accessToken, clearAccessToken, sessionStore, setAccessToken } from "../api/tokens";
+import { http, setRefresher } from "../api/client";
+import type { Guard } from "../api/guard";
+import { routes } from "../api/routes";
+import { accessToken, clearAccessToken, isRemembered, setAccessToken } from "../api/tokens";
 import type { Customer } from "../types";
-import { customers, publicCustomer, type CustomerRecord } from "../customers/customersApi";
-import { queueEmail } from "../notifications/outboxApi";
-import { orders } from "../sales/ordersApi";
+import { rememberDemoLink } from "../notifications/outboxApi";
 
 /**
- * Shopper accounts. Mock mode only: passwords are checked against the
- * collection store and the token is a fake. qvfits-api replaces all of this
- * with `auth/customer/*` (docs/05-backend-integration.md). Emails (confirm
- * the address, reset the password) wait in the admin's outbox until an
- * email service is connected.
+ * Shopper accounts on the API (auth/customer/*). The access token lives in
+ * the tab, or in the browser when they stay signed in; the refresh token is
+ * an httpOnly cookie the API sets. Signing up or in joins earlier guest
+ * orders with the same email or phone to the account. Emails (confirm the
+ * address, reset the password) wait in the outbox until an email service is
+ * connected.
  */
 
-const SESSION = "qvfits:mock:customer";
-const normal = (email: string) => String(email).trim().toLowerCase();
-// The last nine digits of a phone number, so +256 772 410 218 and 0772410218 count as the same one.
-const digits = (phone?: string) => (phone ?? "").replace(/\D/g, "").slice(-9);
-// A random token for the emailed confirm and reset links.
-const token = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
-const HOUR = 3_600_000;
-// A second reset request within a minute is ignored, so the form can't be used to flood someone's inbox.
-const RESET_COOLDOWN = 60_000;
+interface CustomerSession {
+  customer: Customer;
+  accessToken: string;
+  /** Outside production: the emailed link, so the flow can be tried without an inbox. */
+  devLink?: string;
+}
 
-// Remember me keeps the sign-in in local storage; otherwise it ends with the tab. Either way the other storage is cleared first.
-function startSession(customer: Customer, remember: boolean) {
-  window.sessionStorage.removeItem(SESSION);
-  window.localStorage.removeItem(SESSION);
-  sessionStore("customer", remember).setItem(SESSION, customer.id);
-  setAccessToken("customer", `mock.customer.${customer.id}.${Date.now().toString(36)}`, { remember });
+const AUTH = { realm: "customer", noRefresh: true } as const;
+
+function begin({ customer, accessToken: token }: CustomerSession, remember: boolean) {
+  setAccessToken("customer", token, { remember });
   return customer;
 }
 
-/**
- * Orders placed as a guest with the same email or phone join the account
- * (gap O3), so a shopper who signs up later sees everything they bought.
- */
-function claimGuestOrders(c: CustomerRecord) {
-  for (const o of orders.list()) {
-    if (o.customerId) continue;
-    if ((o.email && normal(o.email) === c.email) || (c.phone && digits(o.phone) === digits(c.phone))) orders.update(o.id, { customerId: c.id });
+// An expired access token is renewed from the cookie, kept where the session already was.
+setRefresher("customer", async () => {
+  try {
+    begin(await http.post<CustomerSession>(routes.customerAuth.refresh, undefined, AUTH), isRemembered("customer"));
+    return true;
+  } catch {
+    return false;
   }
+});
+
+export async function login({ email, password, remember = true }: { email: string; password: string; remember?: boolean }) {
+  return begin(await http.post<CustomerSession>(routes.customerAuth.login, { email, password, remember }, AUTH), remember);
 }
 
-// The sign-up email's link carries a one-time token; the address counts as theirs once it is opened.
-function sendConfirm(c: CustomerRecord) {
-  const t = token();
-  customers.update(c.id, { confirmToken: t });
-  queueEmail({ to: c.email, kind: "account-confirm", subject: "Confirm your QVFITS account", body: `Hi ${c.name.split(" ")[0]}, tap to confirm this is your email.`, link: `/account/confirm?token=${t}` });
-}
-
-// Mock only: the password is checked here. The API replaces this with auth/customer/login and a real token.
-export function login({ email, password, remember = true }: { email: string; password: string; remember?: boolean }) {
-  return mockApi(() => {
-    const record = customers.list().find((c) => c.email === normal(email) && c.password === password);
-    if (!record) throw new ApiError("Email or password is incorrect.", 401);
-    claimGuestOrders(record);
-    return startSession(publicCustomer(record), remember);
-  }, 400);
-}
-
-// Signing up claims earlier guest orders, sends the confirmation email and signs the shopper in at once.
-export function signup({ name, email, password, phone, remember = true, guard }: { name: string; email: string; password: string; phone?: string; remember?: boolean; guard?: Guard }) {
-  return mockApi(() => {
-    assertHuman(guard);
-    if (customers.list().some((c) => c.email === normal(email))) {
-      throw new ApiError("An account with that email already exists. Sign in instead.", 409);
-    }
-    // One account per phone, so order history and one-per-shopper codes stay with one person (gap A5).
-    if (phone && customers.list().some((c) => c.phone && digits(c.phone) === digits(phone))) {
-      throw new ApiError("An account already uses that phone number. Sign in, or reset its password.", 409);
-    }
-    const record = customers.create({
-      name: name.trim(),
-      email: normal(email),
-      phone,
-      password,
-      addresses: [],
-      wishlist: [],
-      emailConfirmedAt: null,
-      createdAt: new Date().toISOString(),
-    });
-    claimGuestOrders(record);
-    sendConfirm(record);
-    return startSession(publicCustomer(record), remember);
-  }, 500);
+// Signing up sends the confirmation email and signs the shopper in at once.
+export async function signup({ name, email, password, phone, remember = true, guard }: { name: string; email: string; password: string; phone?: string; remember?: boolean; guard?: Guard }) {
+  const session = await http.post<CustomerSession>(routes.customerAuth.signup, { name, email, password, phone: phone || undefined, remember, guard }, AUTH);
+  if (session.devLink) rememberDemoLink(session.customer.email, "account-confirm", session.devLink);
+  return begin(session, remember);
 }
 
 /** The sign-up email's link: the address is theirs. */
-export function confirmEmail(t: string) {
-  return mockApi(() => {
-    const record = customers.list().find((c) => c.confirmToken === t);
-    if (!record) throw new ApiError("That link isn't valid any more. Sign in and we'll send a new one.", 404);
-    return publicCustomer(customers.update(record.id, { emailConfirmedAt: new Date().toISOString(), confirmToken: null })!);
-  }, 200);
+export function confirmEmail(token: string) {
+  return http.post<Customer>(routes.customerAuth.confirmEmail, { token }, AUTH);
 }
 
 /**
- * A reset link by email, valid for an hour (gap A1). The answer is the same
- * whether or not the address has an account, so nobody can use the form to
- * find out who shops here.
+ * A reset link by email, valid for an hour. The answer is the same whether or
+ * not the address has an account, so nobody can use the form to find out who shops here.
  */
-export function requestPasswordReset(email: string, guard?: Guard) {
-  return mockApi(() => {
-    assertHuman(guard);
-    const record = customers.list().find((c) => c.email === normal(email));
-    if (record && !(record.resetExpires && record.resetExpires - HOUR + RESET_COOLDOWN > Date.now())) {
-      const t = token();
-      customers.update(record.id, { resetToken: t, resetExpires: Date.now() + HOUR });
-      queueEmail({ to: record.email, kind: "password-reset", subject: "Reset your QVFITS password", body: "Tap to choose a new password. The link works for an hour. If you didn't ask, ignore this email.", link: `/reset-password?token=${t}` });
-    }
-    return { sent: true as const, email: normal(email) };
-  }, 400);
+export async function requestPasswordReset(email: string, guard?: Guard) {
+  const out = await http.post<{ sent: true; email: string; devLink?: string }>(routes.customerAuth.forgotPassword, { email, guard }, AUTH);
+  if (out.devLink) rememberDemoLink(out.email, "password-reset", out.devLink);
+  return { sent: out.sent, email: out.email };
 }
 
-// A used or expired link (one hour) is refused with a 410, and a successful reset burns the token.
-export function resetPassword(t: string, password: string) {
-  return mockApi(() => {
-    if (password.length < 8) throw new ApiError("Use at least 8 characters.", 422);
-    const record = customers.list().find((c) => c.resetToken === t);
-    if (!record || !record.resetExpires || record.resetExpires < Date.now()) throw new ApiError("That link has expired. Ask for a new one.", 410);
-    customers.update(record.id, { password, resetToken: null, resetExpires: null });
-    return { email: record.email };
-  }, 300);
+// A used or expired link (one hour) is refused with a 410; a reset signs every device out.
+export function resetPassword(token: string, password: string) {
+  return http.post<{ email: string }>(routes.customerAuth.resetPassword, { token, password }, AUTH);
 }
 
-// Who is signed in, from the token and whichever storage holds the id; nobody if either is missing.
-export function currentCustomer() {
-  return mockApi(() => {
-    if (!accessToken("customer")) return null;
-    const id = window.sessionStorage.getItem(SESSION) ?? window.localStorage.getItem(SESSION) ?? "";
-    const record = customers.get(id);
-    return record ? publicCustomer(record) : null;
-  }, 0);
+/** Who is signed in: nobody without a token; otherwise the API says (renewing an expired token first). */
+export async function currentCustomer() {
+  if (!accessToken("customer")) return null;
+  try {
+    return await http.get<Customer>(routes.customerAuth.me, { realm: "customer" });
+  } catch {
+    return null;
+  }
 }
 
-export function logout() {
-  return mockApi(() => {
+export async function logout() {
+  try {
+    await http.post(routes.customerAuth.logout, undefined, AUTH);
+  } finally {
+    // Signed out here even if the server couldn't be reached.
     clearAccessToken("customer");
-    window.sessionStorage.removeItem(SESSION);
-    window.localStorage.removeItem(SESSION);
-  }, 0);
+  }
 }

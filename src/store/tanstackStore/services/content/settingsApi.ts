@@ -1,38 +1,37 @@
 /* Shop Settings Service */
-import { mockApi } from "../api/mock";
+import { http } from "../api/client";
+import { routes } from "../api/routes";
 import type { RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
-import { assertCan } from "../auth/adminSession";
-import { createDocument, type DocumentPatch } from "../store/collectionStore";
-import { activeZones } from "../settings/shippingApi";
+import type { DocumentPatch } from "../store/collectionStore";
 import type { ShopSettings } from "../types";
 import settingsSeed from "@/data/settings.json";
 
 /**
- * One settings document: shop details, contact and socials, stock alerts,
- * the exchange window and display currencies. The storefront reads it
- * everywhere (header, footer, cart); the admin edits it under Settings.
- * Exchange rates move to a daily feed on the API; until then they show their date.
+ * One settings document on the API: shop details, contact and socials,
+ * stock alerts, the exchange window, the unpaid hold and display currencies.
+ * The storefront reads it everywhere (header, footer, cart); the admin edits
+ * it under Settings. Exchange rates move to a daily feed later; until then
+ * they show their date.
  */
-const settings = createDocument<ShopSettings>("settings", settingsSeed as ShopSettings);
+
+// The last settings read, for the few screens that check one synchronously (the return window). The seed until the first read.
+let latest = settingsSeed as ShopSettings;
 
 /** The document plus the live delivery zones. */
-export function getSettings({ signal }: RequestOptions = {}) {
-  return mockApi<ShopSettings>(() => ({ ...settings.get(), zones: activeZones() }), 100, signal);
+export async function getSettings({ signal }: RequestOptions = {}) {
+  latest = await http.get<ShopSettings>(routes.shop.settings, { signal });
+  return latest;
 }
 
-/** Read synchronously by other services (checkout, inventory alerts). */
-export const readSettings = () => settings.get();
+/** The settings as last read; the API checks against its own copy whenever it matters. */
+export const readSettings = () => latest;
 
-export function updateSettings(patch: DocumentPatch<ShopSettings>) {
-  return mockApi<ShopSettings>(() => {
-    // Vee's own page may save Vee's settings; everything else needs Settings.
-    const onlyVee = Object.keys(patch).every((k) => k === "assistant");
-    assertCan(onlyVee ? "vee" : "settings", "edit");
-    // Zones are edited on their own; never save the read-only copy back.
-    const { zones: _zones, ...rest } = patch;
-    const doc = settings.update(rest);
-    logActivity({ module: onlyVee ? "vee" : "settings", action: "update", summary: `Updated settings (${Object.keys(patch).join(", ")})` });
-    return { ...doc, zones: activeZones() };
-  });
+export async function updateSettings(patch: DocumentPatch<ShopSettings>) {
+  // Zones are edited on their own; never send the read-only copy back.
+  const { zones: _zones, ...rest } = patch;
+  latest = await http.patch<ShopSettings>(routes.adminSales.settings, rest, { realm: "admin" });
+  const onlyVee = Object.keys(rest).every((k) => k === "assistant");
+  logActivity({ module: onlyVee ? "vee" : "settings", action: "update", summary: `Updated settings (${Object.keys(rest).join(", ")})` });
+  return latest;
 }

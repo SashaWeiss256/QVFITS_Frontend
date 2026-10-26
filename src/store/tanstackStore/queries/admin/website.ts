@@ -3,7 +3,7 @@ import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
 import { listCampaigns, removeCampaign, saveCampaign, scheduleCampaign, sendCampaign, unscheduleCampaign } from "../../services/marketing/campaignsApi";
 import { eraseSubscriber, getNewsletterSettings, listSubscribers, unsubscribeSubscriber, updateNewsletterSettings } from "../../services/marketing/subscribersApi";
-import { listOutbox } from "../../services/notifications/outboxApi";
+import { listOutbox, retryEmail } from "../../services/notifications/outboxApi";
 
 import { listVeeQuestions, veeQuestionsCrud } from "../../services/assistant/veeQuestionsApi";
 import { listMessages, messagesCrud } from "../../services/content/contactApi";
@@ -73,5 +73,7 @@ export const newsletterSettingsResource: DocumentResource<NewsletterSettings, Do
 };
 
 // The emails the shop would have sent, until an email service is connected.
+// Refetched every 15 seconds while open, so a queued email is seen going out.
 export const useOutbox = () =>
-  useQuery(queryOptions({ queryKey: outboxKey, queryFn: ({ signal }) => listOutbox({ signal }), meta: { label: "the outbox" } }));
+  useQuery(queryOptions({ queryKey: outboxKey, queryFn: ({ signal }) => listOutbox({ signal }), meta: { label: "the outbox" }, refetchInterval: 15_000 }));
+export const useRetryEmail = () => useMutation({ mutationFn: (id: Id) => retryEmail(id), meta: { invalidates: [outboxKey], success: "Sending again" } });

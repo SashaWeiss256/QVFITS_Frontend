@@ -614,21 +614,23 @@ export interface NewsletterSettings {
   welcome: { enabled: boolean; code: string; subject: string; heading: string; body: string };
 }
 
-/**
- * An email the shop would send. Honest seam: with no email service
- * connected yet, it lands in this outbox (Newsletter, Outbox) instead, and
- * the shop's dev build offers the link in it so the flow can be tried.
- */
+/** An email the shop sends, sent through Zoho Mail by the API's queue, with what happened to it (Newsletter, Outbox). */
 export interface OutboxEmail {
   id: Id;
   to: string;
-  kind: "newsletter-confirm" | "newsletter-welcome" | "campaign" | "order-update" | "password-reset" | "account-confirm" | "low-stock";
+  kind: "newsletter-confirm" | "newsletter-welcome" | "campaign" | "order-update" | "password-reset" | "account-confirm" | "low-stock" | "staff-invite" | "new-message";
   subject: string;
   body: string;
-  /** The one link that matters (confirm, unsubscribe, reset), for the demo. */
+  /** The one link that matters (confirm, track, reset). */
   link?: string;
-  /** The order it belongs to, for order updates. */
+  /** The order it belongs to, for order updates; the campaign, for campaigns. */
   ref?: string;
+  /** queued (sending), sent, failed (gave up after retries), held (no mailbox set up), no_email (only a phone). */
+  status: "queued" | "sent" | "failed" | "held" | "no_email";
+  attempts: number;
+  /** Why the last try failed. */
+  error?: string | null;
+  sentAt?: string | null;
   createdAt: string;
 }
 

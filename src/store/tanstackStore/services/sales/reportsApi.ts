@@ -3,14 +3,14 @@ import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
 import { assertCan } from "../auth/adminSession";
 import { listAllProducts } from "../catalog/productsApi";
-import { readSettings } from "../content/settingsApi";
+import { getSettings } from "../content/settingsApi";
 import { listMessages } from "../content/contactApi";
-import { customers } from "../customers/customersApi";
+import { listCustomers } from "../customers/customersApi";
 import { listReturns } from "./returnsApi";
 import { reviewsCrud } from "../catalog/reviewsApi";
 import type { Order } from "../types";
-import { expireUnpaid, orders } from "./ordersApi";
-import { transactions } from "./transactionsApi";
+import { listOrders } from "./ordersApi";
+import { listTransactions } from "./transactionsApi";
 import { categoriesCrud } from "../catalog/attributesApi";
 
 export interface Overview {
@@ -37,19 +37,21 @@ const DAY = 86_400_000;
 /** Headline numbers for the admin overview over the last `days`, from paid orders only. */
 export async function getOverview(days = 30, { signal }: RequestOptions = {}): Promise<Overview> {
   assertCan("overview", "view");
-  const [products, returns, reviews, messages] = await Promise.all([
+  // Orders, customers and stock from the API (which expires unpaid orders as it lists them); messages are still a mock.
+  const [products, returns, reviews, messages, all, customers, settings] = await Promise.all([
     listAllProducts({ signal }),
     listReturns({ signal }),
     reviewsCrud.list({ signal }),
     listMessages({ signal }),
+    listOrders({ signal }),
+    listCustomers({ signal }),
+    getSettings({ signal }),
   ]);
 
   return mockApi(() => {
-    expireUnpaid();
     const now = Date.now();
     const from = now - days * DAY;
     const prevFrom = from - days * DAY;
-    const all = orders.list();
     const inRange = (o: Order, a: number, b: number) => Date.parse(o.createdAt) >= a && Date.parse(o.createdAt) < b;
     const paid = all.filter((o) => COUNTED.has(o.status) && inRange(o, from, now + DAY));
     const prev = all.filter((o) => COUNTED.has(o.status) && inRange(o, prevFrom, from));
@@ -75,7 +77,7 @@ export async function getOverview(days = 30, { signal }: RequestOptions = {}): P
       top.set(l.productId, row);
     }
 
-    const threshold = readSettings().lowStockAt;
+    const threshold = settings.lowStockAt;
     const lowStock = products
       .filter((p) => p.status === "active")
       .flatMap((p) => p.variants.filter((v) => v.stock <= threshold).map((v) => ({ productId: p.id, name: p.name, size: v.size, color: v.colorId, stock: v.stock })))
@@ -88,7 +90,7 @@ export async function getOverview(days = 30, { signal }: RequestOptions = {}): P
       orders: paid.length,
       pending: all.filter((o) => o.status === "pending").length,
       averageOrder: paid.length ? Math.round(revenue / paid.length) : 0,
-      newCustomers: customers.list().filter((c) => Date.parse(c.createdAt) >= from).length,
+      newCustomers: customers.filter((c) => Date.parse(c.createdAt) >= from).length,
       previous: { revenue: prev.reduce((s, o) => s + o.total, 0), orders: prev.length },
       buckets,
       topProducts: [...top.values()].sort((a, b) => b.revenue - a.revenue).slice(0, 5),
@@ -132,15 +134,19 @@ const dayOf = (iso: string) => iso.slice(0, 10);
  */
 export async function getReports(range: ReportRange, { signal }: RequestOptions = {}): Promise<Reports> {
   assertCan("reports", "view");
-  const [products, categories] = await Promise.all([listAllProducts({ signal }), categoriesCrud.list({ signal })]);
+  const [products, categories, all, money, settings] = await Promise.all([
+    listAllProducts({ signal }),
+    categoriesCrud.list({ signal }),
+    listOrders({ signal }),
+    listTransactions({ signal }),
+    getSettings({ signal }),
+  ]);
   return mockApi(() => {
-    expireUnpaid();
     const inRange = (iso: string) => (!range.from || dayOf(iso) >= range.from) && dayOf(iso) <= range.to;
-    const all = orders.list();
     const paid = all.filter((o) => COUNTED.has(o.status) && inRange(o.createdAt));
     // Adds one number up across a list of orders.
     const sum = (rows: Order[], pick: (o: Order) => number) => rows.reduce((n, o) => n + pick(o), 0);
-    const refunds = transactions.list().filter((t) => t.type === "refund" && t.status === "succeeded" && inRange(t.createdAt));
+    const refunds = money.filter((t) => t.type === "refund" && t.status === "succeeded" && inRange(t.createdAt));
 
     const months = new Map<string, Order[]>();
     for (const o of paid) months.set(o.createdAt.slice(0, 7), [...(months.get(o.createdAt.slice(0, 7)) ?? []), o]);
@@ -188,7 +194,7 @@ export async function getReports(range: ReportRange, { signal }: RequestOptions 
       byCustomer.set(key, row);
     }
 
-    const low = readSettings().lowStockAt;
+    const low = settings.lowStockAt;
     const stock = categories.map((c) => {
       const pieces = products.filter((p) => p.categoryId === c.id && p.status !== "archived");
       const variants = pieces.flatMap((p) => p.variants.map((v) => ({ ...v, price: p.price })));

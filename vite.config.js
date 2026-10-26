@@ -19,6 +19,10 @@ export default defineConfig({
   server: {
     // Mirrors the Nginx proxy, so the client calls a relative /api in every
     // environment.
-    proxy: { '/api': 'http://localhost:5000' },
+    proxy: {
+      '/api': 'http://localhost:5000',
+      // Live updates (new orders in the admin, a shopper's order page): WebSocket to the API.
+      '/socket.io': { target: 'http://localhost:5000', ws: true },
+    },
   },
 })

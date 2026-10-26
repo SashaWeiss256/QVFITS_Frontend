@@ -5,11 +5,10 @@
  * exist in the same browser at once, and neither may stand in for the other.
  * Signing out of one leaves the other signed in.
  *
- * Held in sessionStorage while the API runs on mocks, so a reload keeps you
- * signed in during development. A shopper who ticks "Stay signed in" keeps
- * theirs in localStorage instead, so closing the tab doesn't sign them out
- * (gap A3); staff sessions always end with the tab. When the backend lands,
- * tokens move to memory with an httpOnly refresh cookie, as in belioras.
+ * The short-lived access token is kept in sessionStorage, so a reload keeps
+ * you signed in; the API's httpOnly refresh cookie renews it. A shopper who
+ * ticks "Stay signed in" keeps theirs in localStorage instead, so closing the
+ * tab doesn't sign them out (gap A3); staff sessions always end with the tab.
  */
 
 import type { Realm } from "./types";
@@ -44,6 +43,15 @@ export function setAccessToken(realm: Realm, token: string | null, { remember = 
     // Storage unavailable: the session lasts until the next reload.
   }
   listeners.forEach((fn) => fn(realm, token ?? null));
+}
+
+/** Whether this realm's session was kept past the tab ("Stay signed in"), so a renewed token stays there too. */
+export function isRemembered(realm: Realm) {
+  try {
+    return window.localStorage.getItem(KEY(assertRealm(realm))) !== null;
+  } catch {
+    return false;
+  }
 }
 
 export function clearAccessToken(realm: Realm) {

@@ -4,6 +4,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 import PageLoader from "@/components/ui/PageLoader";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
+import { useLiveAccount } from "@/store/tanstackStore/queries/account";
 import { useSeo } from "@/seo/useSeo";
 import AccountMenu from "./components/AccountMenu";
 
@@ -13,6 +14,8 @@ export default function CustomerLayout() {
   const { customer, signOut } = useCustomerAuth();
   const navigate = useNavigate();
   useSeo({ title: "Your account", noindex: true });
+  // An order the shop moves (paid, packed, on its way) updates here without a reload.
+  useLiveAccount(customer?.id);
 
   const handleSignOut = async () => {
     await signOut();

@@ -9,10 +9,12 @@
 | This site (built `dist/`) | DigitalOcean Droplet, served by Nginx | `deploy/nginx/qvfits.conf` |
 | `qvfits-api` | Same Droplet, Node.js under PM2, port 5000 | Nginx proxies `/api` to it |
 | Database | DigitalOcean Managed MongoDB | Daily automatic backups |
-| Redis | Same Droplet (`apt install redis-server`), bound to localhost only | Rate-limit counters shared by every PM2 process; later job queues (email, photos) and the Socket.IO adapter. Set `REDIS_URL`; the API will not start without it |
-| Photos | DigitalOcean Spaces + CDN | Uploaded through the API, served as WebP |
+| Redis | Same Droplet (`apt install redis-server`), bound to localhost only | Rate-limit counters shared by every PM2 process, the email queue, the background tasks' locks and the Socket.IO adapter. Set `REDIS_URL`; the API will not start without it |
+| Photos | ImageKit | Uploaded through the API (IMAGEKIT_PRIVATE_KEY, IMAGEKIT_URL_ENDPOINT), resized and served as WebP or AVIF by ImageKit |
 | SSL | Let's Encrypt (certbot), auto-renewing | |
-| Email | Resend or Brevo | Transactional only |
+| Email | Zoho Mail (SMTP, app password) | Sent by the API's email queue (BullMQ on Redis), up to 20 a minute, retried 5 times. Set ZOHO_SMTP_HOST (smtppro.zoho.com for a domain account), ZOHO_SMTP_USER, ZOHO_SMTP_PASSWORD, MAIL_FROM. For larger newsletters, Zoho's ZeptoMail is the better fit |
+| Live updates | Socket.IO on the API | Nginx proxies `/socket.io/` with the WebSocket upgrade (`deploy/nginx/qvfits.conf`); WebSocket only, so PM2 needs no sticky sessions; the Redis adapter reaches every process |
+| Photo clean-up | The API, daily | Production only: deletes ImageKit uploads under /qvfits that nothing uses and are over a week old. Development uploads go to /qvfits-dev |
 
 Two environments: **staging** (`staging.qvfits.com`, live from day 3) and **production** (`qvfits.com`).
 

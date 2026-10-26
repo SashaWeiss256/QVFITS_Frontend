@@ -1,5 +1,6 @@
 /* Admin Sales Resources */
-import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { listCustomers, updateCustomer } from "../../services/customers/customersApi";
 import { eraseCustomer } from "../../services/customers/privacyApi";
@@ -10,6 +11,7 @@ import { getOverview, getReports, type ReportRange } from "../../services/sales/
 import { listOrderEmails } from "../../services/sales/ordersApi";
 import { listReturns, NEXT_RETURN_STATUS, openReturn, refundDue, returnWindow, updateReturnStatus } from "../../services/sales/returnsApi";
 import { listTransactions, transactionsCrud } from "../../services/sales/transactionsApi";
+import { listenLive } from "../../services/realtime/liveApi";
 import type { CheckoutInput, Customer, Discount, Id, Order, OrderStatus, PaymentMethod, ReturnRequest, ReturnStatus, Transaction } from "../../services/types";
 import { adminRoot, siteRoot } from "../keys";
 import { collectionQueries, crudResource, type CollectionResource } from "./collection";
@@ -95,5 +97,24 @@ export const useUpdateReturnStatus = () =>
     mutationFn: ({ id, status, note, amount }: { id: Id; status: ReturnStatus; note?: string; amount?: number }) => updateReturnStatus(id, status, note, amount),
     meta: { invalidates: [returnQueries.all(), ...orderWrite], success: "Return updated" },
   });
+
+/**
+ * A new order is pushed by the API the moment it is placed: the orders and
+ * the overview (its badge, the tab title and the "new order" notice) refresh
+ * at once instead of at the next minute's poll.
+ */
+export function useLiveAdmin(enabled = true) {
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!enabled) return;
+    return listenLive("admin", {
+      "order:new": () => {
+        queryClient.invalidateQueries({ queryKey: orderQueries.all() });
+        queryClient.invalidateQueries({ queryKey: [...adminRoot, "overview"] });
+        queryClient.invalidateQueries({ queryKey: [...adminRoot, "products"] });
+      },
+    });
+  }, [enabled, queryClient]);
+}
 
 export { NEXT_RETURN_STATUS, NEXT_STATUS, randomCode, refundDue, returnWindow };

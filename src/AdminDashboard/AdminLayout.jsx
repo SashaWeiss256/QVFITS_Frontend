@@ -7,7 +7,7 @@ import QueryErrorBoundary from "@/components/layout/QueryErrorBoundary";
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { notify } from "@/store/tanstackStore/notices";
-import { useOverview } from "@/store/tanstackStore/queries/admin";
+import { useLiveAdmin, useOverview } from "@/store/tanstackStore/queries/admin";
 import { useSeo } from "@/seo/useSeo";
 import AdminHeader from "./components/header/AdminHeader";
 import AdminSidebar from "./components/sidebar/AdminSidebar";
@@ -31,6 +31,8 @@ export default function AdminLayout() {
   const { signOut, can } = useAdminAuth();
   // Counts beside Orders (unpaid + return requests), Products (reviews to approve) and Messages.
   const { data: overview } = useOverview(30, can("overview"), 60_000);
+  // New orders arrive live; the minute's poll above stays as the fallback if the socket drops.
+  useLiveAdmin(can("orders"));
   const badges = overview
     ? { orders: overview.pending + overview.inbox.returns, products: overview.inbox.reviews, messages: overview.inbox.messages }
     : {};

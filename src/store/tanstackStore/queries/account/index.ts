@@ -1,13 +1,15 @@
 /* Account Queries (realm: customer) */
 // The customer dashboard's door to data. Every key sits under
 // ["customer", id], so signing out removes all of it at once.
-import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getProfile, saveAddresses, updateProfile } from "../../services/customers/customersApi";
 import { cancelMyOrder, getMyOrder, listMyOrders } from "../../services/sales/ordersApi";
 import { deleteMyAccount, downloadMyData } from "../../services/customers/privacyApi";
-import { subscribe, subscriptionOf, unsubscribeEmail } from "../../services/marketing/subscribersApi";
+import { setMyNewsletter, subscriptionOf } from "../../services/marketing/subscribersApi";
 import { listMyReturns, requestReturn, returnWindow } from "../../services/sales/returnsApi";
+import { listenLive } from "../../services/realtime/liveApi";
 import type { Address, Customer, Id, ReturnRequest } from "../../services/types";
 import { adminRoot } from "../keys";
 import { customerRoot } from "../keys";
@@ -63,13 +65,19 @@ export const useNewsletterStatus = (id: Id, email?: string) =>
   useQuery({ queryKey: [...customerRoot(id), "newsletter", email], queryFn: () => subscriptionOf(email!), enabled: Boolean(email) });
 export const useSetNewsletter = (id: Id) =>
   useMutation({
-    mutationFn: async ({ email, on, name }: { email: string; on: boolean; name?: string }) => {
-      if (on) return (await subscribe(email, { source: "account", name, customerId: id })).status;
-      await unsubscribeEmail(email);
-      return "unsubscribed" as const;
-    },
+    // Always the account's own email: on sends the confirmation (double opt-in), off unsubscribes.
+    mutationFn: ({ on }: { email: string; on: boolean; name?: string }) => setMyNewsletter(on),
     meta: { invalidates: [[...customerRoot(id), "newsletter"], [...adminRoot, "subscribers"], [...adminRoot, "outbox"]], handlesErrors: true },
   });
+
+/** The shopper's orders refresh the moment the shop moves one (paid, packed, on its way). */
+export function useLiveAccount(id?: Id) {
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!id) return;
+    return listenLive("customer", { "order:updated": () => queryClient.invalidateQueries({ queryKey: [...customerRoot(id), "orders"] }) });
+  }, [id, queryClient]);
+}
 
 export const useProfile = (id: Id) => useQuery(accountQueries.profile(id));
 export const useMyOrders = (id: Id) => useQuery(accountQueries.orders(id));

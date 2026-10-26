@@ -16,6 +16,8 @@ const TONE = {
   out_for_delivery: DONE, delivered: DONE, succeeded: DONE, active: DONE, replied: DONE,
   cancelled: ENDED, exchanged: ENDED, refunded: ENDED, partially_refunded: ENDED, archived: ENDED, hidden: ENDED, inactive: ENDED,
   rejected: BAD, failed: BAD, suspended: BAD,
+  // Emails in the Outbox.
+  queued: MOVING, sent: DONE, held: WAITING, no_email: ENDED,
 };
 
 export default function StatusChip({ status, label }) {

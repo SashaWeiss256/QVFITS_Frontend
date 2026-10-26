@@ -1,5 +1,6 @@
 /* Lookup Form */
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import PaymentDue from "@/components/storefront/PaymentDue";
 import StatusChip from "@/components/ui/StatusChip";
@@ -11,7 +12,9 @@ import { formatDate } from "@/utils/format";
 // A guest finds an order by its reference and the phone it was placed with;
 // both must match, so a reference alone reveals nothing.
 export default function LookupForm() {
-  const [ref, setRef] = useState("");
+  const [params] = useSearchParams();
+  // An order email links here with ?ref=, so only the phone is left to type.
+  const [ref, setRef] = useState(() => params.get("ref") ?? "");
   const [phone, setPhone] = useState("");
   const track = useTrackOrder();
   const cancel = useCancelGuestOrder();

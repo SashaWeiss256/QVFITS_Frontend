@@ -7,6 +7,7 @@ export {
   REALMS,
   accessToken,
   clearAccessToken,
+  isRemembered,
   onTokenChange,
   setAccessToken,
 } from "./tokens";

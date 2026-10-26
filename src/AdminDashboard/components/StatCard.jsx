@@ -15,7 +15,8 @@ export default function StatCard({ label, value, change, note, icon: Icon, loadi
 
   {/* Card: label and icon, the figure, then the change and a note */}
   return (
-    <div className="group bg-white p-5 transition-colors duration-200 sm:p-6">
+    // A size container, so the figure scales to the card: a long amount (UGX 5,636,500) fits a quarter-width card.
+    <div className="group @container min-w-0 bg-white p-5 transition-colors duration-200 sm:p-6">
       <div className="flex items-center justify-between gap-3">
         <p className="m-0 text-[.7rem] font-semibold uppercase tracking-[0.16em] text-ink-4">{label}</p>
         {Icon && (
@@ -27,7 +28,7 @@ export default function StatCard({ label, value, change, note, icon: Icon, loadi
       {loading ? (
         <span className="skel mt-3 block h-8 w-28 rounded-r-sm" aria-hidden="true" />
       ) : (
-        <p className="m-0 mt-3 font-display text-[1.65rem] leading-none font-bold tracking-tight tabular-nums text-ink sm:text-[1.9rem]">{value}</p>
+        <p className="m-0 mt-3 font-display text-[clamp(1.2rem,12cqi,1.9rem)] leading-none font-bold tracking-tight tabular-nums whitespace-nowrap text-ink">{value}</p>
       )}
       <div className="mt-3 flex min-h-5 flex-wrap items-center gap-2 text-[.78rem]">
         {hasChange && (

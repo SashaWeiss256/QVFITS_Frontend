@@ -1,15 +1,15 @@
 /* Page Copy And Navigation Service */
+import { http } from "../api/client";
 import { mockApi } from "../api/mock";
+import { routes } from "../api/routes";
 import type { RequestOptions } from "../api/types";
-import { assertCan } from "../auth/adminSession";
 import { logActivity } from "../admin/activityApi";
 import { localPhoto } from "../catalog/photos";
-import { createDocument, type DocumentPatch } from "../store/collectionStore";
+import type { DocumentPatch } from "../store/collectionStore";
 import { linkLookup, type LinkLookup } from "../catalog/attributesApi";
 import type { Linked, Photo } from "../types";
 import { shopMenuColumns, targetExists, topBarLinks, withHrefs, withoutHrefs } from "@/utils/shopTargets";
 import navigationSeed from "@/data/navigation.json";
-import featureSeed from "@/data/menu-feature.json";
 import pagesSeed from "@/data/pages.json";
 
 /**
@@ -57,11 +57,10 @@ export interface Navigation {
 }
 
 /**
- * The Shop menu's picture tile is dashboard data (Catalog, Categories, Menu):
- * its photo can be uploaded, swapped or taken away, and it can be switched
- * off. A deleted photo falls back to the shoot's campaign banner.
+ * The Shop menu's picture tile is dashboard data on the API (Catalog,
+ * Categories, Menu): its photo can be uploaded, swapped or taken away, and it
+ * can be switched off. A deleted photo falls back to the shoot's campaign banner.
  */
-const feature = createDocument<MenuFeature>("menu-feature", featureSeed as unknown as MenuFeature);
 
 // The tile's picture: an uploaded photo, a /photos id, or the campaign banner.
 const featurePhoto = (doc: MenuFeature) => (doc.image && typeof doc.image === "object" ? doc.image : localPhoto(doc.image || "banner-campaign"));
@@ -93,36 +92,36 @@ function popularSearches(lookup: LinkLookup): string[] {
  * anything switched off or deleted dropped, and the Shop menu built from the
  * groups.
  */
-function navigationView(lookup: LinkLookup): Navigation & { shopMenu: ShopMenu } {
+function navigationView(lookup: LinkLookup, feature: MenuFeature): Navigation & { shopMenu: ShopMenu } {
   const live = <T extends Linked>(links: T[]) => links.filter((l) => !l.target || targetExists(l.target, lookup));
   return {
     header: withHrefs(headerLinks(lookup), lookup) as NavLink[],
     help: withHrefs(live(fixed.help), lookup) as NavLink[],
     legal: withHrefs(live(fixed.legal), lookup) as NavLink[],
     popularSearches: popularSearches(lookup),
-    shopMenu: { columns: shopMenuColumns(lookup), feature: featureView(feature.get(), lookup) },
+    shopMenu: { columns: shopMenuColumns(lookup), feature: featureView(feature, lookup) },
   };
 }
 
 export const getPages = ({ signal }: RequestOptions = {}) => mockApi(() => pagesSeed, 80, signal);
 // The live catalogue comes from the API; the menu tile itself is still a mock.
 export async function getNavigation({ signal }: RequestOptions = {}) {
-  const lookup = await linkLookup({ signal });
-  return mockApi(() => navigationView(lookup), 80, signal);
+  const [lookup, feature] = await Promise.all([linkLookup({ signal }), http.get<MenuFeature>(routes.site.menuFeature, { signal })]);
+  return mockApi(() => navigationView(lookup, feature), 80, signal);
 }
 
 /* Admin (realm: admin) */
 
 /** The tile as stored, with its photo resolved for the editor. */
-export const getMenuFeatureForEdit = ({ signal }: RequestOptions = {}) => mockApi<MenuFeature & { photo?: Photo }>(() => ({ ...feature.get(), photo: featurePhoto(feature.get()) }), 80, signal);
+export async function getMenuFeatureForEdit({ signal }: RequestOptions = {}) {
+  const doc = await http.get<MenuFeature>(routes.adminSite.menuFeature, { realm: "admin", signal });
+  return { ...doc, photo: featurePhoto(doc) } as MenuFeature & { photo?: Photo };
+}
 
-export function updateMenuFeature(patch: DocumentPatch<MenuFeature & { photo?: Photo }>) {
-  return mockApi(() => {
-    assertCan("categories", "edit");
-    // The editor sends the resolved photo back; only the stored picture is kept.
-    const { photo: _photo, ...rest } = withoutHrefs(patch) as typeof patch;
-    const doc = feature.update(rest);
-    logActivity({ module: "categories", action: "update", summary: "Updated the Shop menu tile" });
-    return { ...doc, photo: featurePhoto(doc) } as MenuFeature & { photo?: Photo };
-  });
+// The editor sends the resolved photo back; only the stored picture is kept, and links keep their target only.
+export async function updateMenuFeature(patch: DocumentPatch<MenuFeature & { photo?: Photo }>) {
+  const { photo: _photo, ...rest } = withoutHrefs(patch) as typeof patch;
+  const doc = await http.patch<MenuFeature>(routes.adminSite.menuFeature, rest, { realm: "admin" });
+  logActivity({ module: "categories", action: "update", summary: "Updated the Shop menu tile" });
+  return { ...doc, photo: featurePhoto(doc) } as MenuFeature & { photo?: Photo };
 }
