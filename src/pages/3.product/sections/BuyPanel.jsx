@@ -17,7 +17,7 @@ import SizePicker from "./SizePicker";
 
 // The first colour and the first size in stock are chosen to start, so one
 // tap adds to the bag. Sizes show the stock of the colour picked.
-export default function BuyPanel({ product: p }) {
+export default function BuyPanel({ product: p, onColor }) {
   const { data: facets } = useFacets();
   const idOf = (name) => facets?.colors.find((c) => c.name === name)?.id;
   const [color, setColor] = useState(() => p.colors.find((c) => anyInStock(forColor(p, idOf(c)))) ?? p.colors[0]);
@@ -29,6 +29,7 @@ export default function BuyPanel({ product: p }) {
   // A new colour keeps the size if that colour has it, otherwise the first it has.
   const chooseColor = (c) => {
     setColor(c);
+    onColor?.(idOf(c));
     const next = forColor(p, idOf(c));
     if (!size || !inStock(next, size)) setSize(productSizes(next).find((s) => inStock(next, s)) ?? null);
   };

@@ -1,5 +1,5 @@
 /* Product Page (port of Quivogue product.html) */
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 
 import RecentlyViewed from "@/components/storefront/RecentlyViewed";
@@ -23,6 +23,9 @@ export default function ProductPage() {
   const live = useProduct(previewing ? undefined : slug);
   const draft = useProductPreview(slug, previewing);
   const { data: p, isLoading, error } = previewing ? draft : live;
+  // The colour last picked, for the gallery to go to its photo. A new object
+  // each pick, so picking the same colour again goes back to it.
+  const [focus, setFocus] = useState(null);
   // Avoid indexing stale product URLs; the title and description follow the loaded piece.
   const { record } = useRecentlyViewed();
   // A draft seen in preview isn't a shopper's visit, so it stays off the list.
@@ -59,9 +62,9 @@ export default function ProductPage() {
             <Link to="/">Home</Link> / <Link to="/shop">Shop</Link> / <Link to={`/shop/${p.categorySlug}`}>{p.category}</Link> / {p.name}
           </p>
           <div className="pdp">
-            <Gallery product={p} />
+            <Gallery product={p} focus={focus} />
             {/* Reset local size and colour selections when navigating between products. */}
-            <BuyPanel key={p.id} product={p} />
+            <BuyPanel key={p.id} product={p} onColor={(colorId) => setFocus({ productId: p.id, colorId })} />
           </div>
         </div>
       </section>

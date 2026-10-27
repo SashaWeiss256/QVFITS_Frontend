@@ -1,5 +1,5 @@
 /* Gallery (from Quivogue product.html) */
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Photo from "@/components/storefront/Photo";
 import { cn } from "@/utils/cn";
@@ -8,11 +8,19 @@ import { cn } from "@/utils/cn";
  * Laptop: every view stacked down the page beside the pinned buy panel.
  * Phone and tablet: one view at a time, swiped sideways, with dots. Only
  * views that exist are shown, so there are no empty "photo coming" tiles.
+ * `focus` ({ colorId }) is set when a colour is picked: the gallery goes to
+ * the first photo tagged with that colour, down the page or sideways.
  */
-export default function Gallery({ product }) {
+export default function Gallery({ product, focus }) {
   const photos = product.photos;
   const [at, setAt] = useState(0);
   const track = useRef(null);
+
+  useEffect(() => {
+    if (focus?.productId !== product.id) return;
+    const i = photos.findIndex((photo) => photo.colorId === focus.colorId);
+    track.current?.children[i]?.scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
+  }, [focus, photos, product.id]);
 
   const onScroll = () => {
     const el = track.current;

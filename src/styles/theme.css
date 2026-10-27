@@ -403,6 +403,8 @@ body[data-overlay] .sticker {
   border-radius: var(--r-sm);
   overflow: hidden;
   background: var(--cream-2);
+  /* Clear of the sticky header when a colour pick scrolls to it. */
+  scroll-margin-top: calc(var(--hdr-h) + 16px);
 }
 .gallery__slide .ph {
   position: absolute;

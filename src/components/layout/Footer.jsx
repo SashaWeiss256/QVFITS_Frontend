@@ -45,7 +45,7 @@ export default function Footer() {
         <div className="ftr__grid">
           {/* Brand */}
           <div className="ftr__brand">
-            <Logo size="lg" tone="dark" className="mb-[16px]" />
+            <Logo size="lg" className="mb-[16px]" />
             {settings && <p className="ftr__blurb">{settings.blurb} {copy?.blurbSuffix}</p>}
             {/* Social: the shop's real accounts, as round icon buttons side by side */}
             {settings && (

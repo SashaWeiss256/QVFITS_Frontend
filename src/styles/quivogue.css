@@ -667,7 +667,7 @@ table.size td a::after,
 .news__msg { font-size: .86rem; margin-top: 12px; min-height: 1.4em; color: var(--brand-600); font-weight: 600; }
 
 /* ---------------------------------------------------------------- footer */
-.ftr { background: var(--white); border-top: 1px solid var(--line); padding-block: clamp(44px, 6vw, 70px) 28px; margin-top: clamp(40px, 6vw, 80px); }
+.ftr { background: var(--cream-2); border-top: 1px solid var(--line); padding-block: clamp(44px, 6vw, 70px) 28px; margin-top: clamp(40px, 6vw, 80px); }
 .ftr__grid { display: grid; gap: 34px; grid-template-columns: 1.4fr repeat(4, 1fr); }
 /* The newsletter band above the footer columns: words left, form right. */
 .ftr__news {
