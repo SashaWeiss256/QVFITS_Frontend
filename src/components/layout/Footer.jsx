@@ -150,16 +150,16 @@ export default function Footer() {
       )}
 
       {/* Bottom bar: copyright, social, currency */}
-      <div className="wrap mt-7 flex flex-col gap-5 border-t border-line-2 py-7 text-[0.82rem] text-ink-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="wrap mt-7 flex flex-col gap-5 border-t border-line-2 pt-7 pb-24 text-[0.82rem] sm:py-7 text-ink-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
           {/* The full colour logo, as the brand book shows it on a light ground */}
           <Logo />
           <span>{fill(copy?.copyright, tokens)}</span>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
           {/* Social: the shop's real accounts */}
           {s && (
-            <ul className="flex gap-1" aria-label={t("Follow Quivogue")}>
+            <ul className="-ml-2.5 flex gap-1 sm:ml-0" aria-label={t("Follow Quivogue")}>
               {s.instagram && <li><a className="grid h-10 w-10 place-items-center text-ink-2 transition-colors hover:text-ink" href={s.instagram} target="_blank" rel="noopener noreferrer" aria-label={`Instagram ${s.instagramHandle ?? ""}`}><InstagramIcon className="h-[17px] w-[17px]" /></a></li>}
               {s.tiktok && <li><a className="grid h-10 w-10 place-items-center text-ink-2 transition-colors hover:text-ink" href={s.tiktok} target="_blank" rel="noopener noreferrer" aria-label={`TikTok ${s.tiktokHandle ?? ""}`}><TikTokIcon className="h-[17px] w-[17px]" /></a></li>}
               {s.whatsapp && <li><a className="grid h-10 w-10 place-items-center text-ink-2 transition-colors hover:text-ink" href={whatsappLink(s.whatsapp)} target="_blank" rel="noopener noreferrer" aria-label={t("WhatsApp us")}><WhatsAppIcon className="h-[17px] w-[17px]" /></a></li>}

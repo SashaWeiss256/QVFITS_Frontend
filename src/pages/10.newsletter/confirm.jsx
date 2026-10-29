@@ -41,7 +41,7 @@ export default function NewsletterConfirm() {
           <p className="lede center mt-5">{state.message}</p>
         </>
       )}
-      <div className="mt-6 flex flex-wrap justify-center gap-3">
+      <div className="mt-6 flex flex-wrap gap-3 sm:justify-center">
         <Link to="/shop" className="btn btn--primary">{t("Shop the range")}</Link>
         <Link to="/" className="btn btn--ghost">{t("Back home")}</Link>
       </div>

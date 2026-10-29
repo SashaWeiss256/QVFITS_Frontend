@@ -7,7 +7,7 @@ import { t } from "@/i18n/translate";
 export default function BagEmpty() {
   return (
     <div className="empty">
-      <ShoppingBag className="mx-auto mb-2.5 h-5 w-5 text-brand-300" aria-hidden="true" />
+      <ShoppingBag className="mb-2.5 h-5 w-5 text-brand-300 sm:mx-auto" aria-hidden="true" />
       <h2>{t("Your bag is empty")}</h2>
       <p className="lede center mt-2">Let&apos;s find your fit. The range is this way.</p>
       <Link className="btn btn--primary" to="/shop/new">{t("Shop new in")}</Link>

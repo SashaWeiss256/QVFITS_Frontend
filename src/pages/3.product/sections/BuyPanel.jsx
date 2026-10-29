@@ -13,6 +13,7 @@ import { anyInStock, forColor, inStock, productSizes } from "@/utils/stockLevel"
 import ColorPicker from "./ColorPicker";
 import MobileAddBar from "./MobileAddBar";
 import Details from "./Details";
+import ShareProduct from "./ShareProduct";
 import SizePicker from "./SizePicker";
 
 // The first colour and the first size in stock are chosen to start, so one
@@ -98,6 +99,9 @@ export default function BuyPanel({ product: p, onColor }) {
         </button>
         <p className="flex items-center gap-2.5"><Truck className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Delivered across Uganda, or collect from the showroom</p>
       </div>
+
+      {/* Share: copy the link, WhatsApp, or any app */}
+      <ShareProduct product={p} />
 
       {/* Details */}
       <div className="mt-10">

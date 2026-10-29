@@ -51,7 +51,7 @@ export default function CustomerSignup() {
         <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" {...register("website")} />
         {serverError && <p role="alert" className="m-0 text-sm font-semibold text-warn">{serverError}</p>}
         <Button type="submit" block loading={isSubmitting}>Create account</Button>
-        <p className="m-0 text-center text-xs text-ink-3">
+        <p className="m-0 text-xs text-ink-3">
           By creating an account you agree to our <Link to="/terms" className="underline">terms of sale</Link> and{" "}
           <Link to="/privacy" className="underline">privacy policy</Link>.
         </p>

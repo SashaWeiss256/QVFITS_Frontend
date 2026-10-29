@@ -10,7 +10,7 @@ export default function ShowMore({ shown, total, step, onMore }) {
   if (total <= shown) return null;
   const next = Math.min(step, total - shown);
   return (
-    <div className="mx-auto mt-20 flex max-w-xs flex-col items-center gap-5 text-center">
+    <div className="mt-20 flex max-w-xs flex-col gap-5 sm:mx-auto sm:items-center sm:text-center">
       <p className="text-[0.85rem] text-ink-3" role="status">You have seen {shown} of {total}</p>
       {/* Progress through the list */}
       <div className="h-px w-full bg-line-2" aria-hidden="true">

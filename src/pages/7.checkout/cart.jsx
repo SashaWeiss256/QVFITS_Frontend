@@ -36,7 +36,7 @@ export default function CartPage() {
               {/* Region defaults to Kampala here; the delivery step picks the real one. */}
               <OrderSummary bag={bag}>
                 <Link className="btn btn--primary btn--block mt-3.5" to="/checkout">{t("Continue to delivery")}</Link>
-                <p className="mt-3 text-center text-[.78rem] text-ink-4">{t("Delivery and payment come next. Nothing is charged yet.")}</p>
+                <p className="mt-3 text-[.78rem] text-ink-4">{t("Delivery and payment come next. Nothing is charged yet.")}</p>
               </OrderSummary>
             </CartLayout>
           </>

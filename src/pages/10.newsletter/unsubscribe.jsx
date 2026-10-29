@@ -39,7 +39,7 @@ export default function NewsletterUnsubscribe() {
           <p className="lede center mt-5">{state.message}</p>
         </>
       )}
-      <div className="mt-6 flex justify-center">
+      <div className="mt-6 flex sm:justify-center">
         <Link to="/" className="btn btn--ghost">{t("Back home")}</Link>
       </div>
     </section>

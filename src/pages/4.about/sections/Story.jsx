@@ -33,7 +33,7 @@ export default function Story() {
       {/* The name: the statement across the page */}
       <section className="border-y border-line py-24 lg:py-36">
         <Reveal className="wrap">
-          <p className="mx-auto max-w-5xl text-center font-display text-[clamp(2rem,4.6vw,4.2rem)] leading-[1.15]">{STORY.statement}</p>
+          <p className="mx-auto max-w-5xl font-display sm:text-center text-[clamp(2rem,4.6vw,4.2rem)] leading-[1.15]">{STORY.statement}</p>
         </Reveal>
       </section>
 
