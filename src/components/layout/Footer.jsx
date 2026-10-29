@@ -6,7 +6,7 @@ import { ChevronDown, Lock } from "lucide-react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { cn } from "@/utils/cn";
-import { useFacets, usePageCopy, usePaymentMethods, useSettings } from "@/store/tanstackStore/queries/site";
+import { useFacets, usePageCopy, usePaymentMethods, useProducts, useSettings } from "@/store/tanstackStore/queries/site";
 import { fill, shopTokens } from "@/utils/fill";
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/ui/BrandIcons";
 import { openCookieSettings } from "@/store/consent/consent";
@@ -14,9 +14,13 @@ import { whatsappLink } from "@/utils/whatsapp";
 import CurrencyPicker from "@/components/storefront/CurrencyPicker";
 import LanguagePicker from "@/components/storefront/LanguagePicker";
 import NewsletterForm from "@/components/storefront/NewsletterForm";
+import Photo from "@/components/storefront/Photo";
 import FooterWordmark from "./FooterWordmark";
 import Logo from "./navbar/Logo";
 import { t } from "@/i18n/translate";
+
+// What joining the list brings; the same three things the newsletter copy promises.
+const PERKS = ["New drops, first", "Restocks, as they land", "Members-only offers"];
 
 const LINK = "inline-flex min-h-11 items-center text-[0.95rem] text-ink-3 transition-colors duration-300 hover:text-brand-600";
 const TITLE = "mb-6 font-display text-[1.15rem] text-ink";
@@ -70,13 +74,28 @@ export default function Footer() {
           </ul>
         )}
 
-        {/* Newsletter: the invitation large, the form beside it */}
-        <section className="grid gap-8 border-b border-line-2 py-12 sm:gap-10 sm:py-16 lg:grid-cols-[1.2fr_1fr] lg:items-end lg:gap-24 lg:py-24" aria-labelledby="ftr-news-title">
-          <div>
-            <h2 id="ftr-news-title" className="max-w-xl text-[clamp(2.2rem,4.6vw,4rem)] leading-[1.04] text-ink">{copy?.newsTitle}</h2>
-            <p className="mt-5 max-w-md text-[1rem] leading-relaxed text-ink-2">{copy?.newsText}</p>
+        {/* Newsletter: the one dark moment in the footer. A panel in ink under a gradient rule, the
+            invitation and what joining brings, the form, and a fan of pieces from the current range. */}
+        <section className="relative my-10 overflow-hidden bg-ink text-cream sm:my-14 lg:my-20" aria-labelledby="ftr-news-title">
+          <span className="absolute inset-x-0 top-0 h-[3px] bg-brand-grad" aria-hidden="true" />
+          <div className="grid gap-10 px-5 pb-8 pt-10 sm:p-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-center lg:gap-16 lg:p-16">
+            <div>
+              <p className="kicker kicker--light">{t("The QVFITS list")}</p>
+              <h2 id="ftr-news-title" className="max-w-xl text-[clamp(2.4rem,5vw,4.2rem)] leading-[1.02] text-cream">{copy?.newsTitle}</h2>
+              <p className="mt-4 max-w-md text-[1rem] leading-relaxed text-cream/75">{copy?.newsText}</p>
+              {/* What joining brings, numbered */}
+              <ol className="mt-8 grid list-none gap-x-6 gap-y-3 border-t border-cream/15 p-0 pt-6 sm:grid-cols-3">
+                {PERKS.map((p, i) => (
+                  <li key={p} className="flex items-baseline gap-3 text-[0.92rem] text-cream/90 sm:flex-col sm:gap-1.5">
+                    <span className="font-display text-[0.8rem] tabular-nums text-brand-200">{String(i + 1).padStart(2, "0")}</span>
+                    {t(p)}
+                  </li>
+                ))}
+              </ol>
+              <NewsletterForm className="mt-8" source="footer" cta={copy?.newsCta} tone="dark" variant="boxed" formId="newsForm" />
+            </div>
+            <PhotoFan className="max-lg:order-first" />
           </div>
-          <NewsletterForm source="footer" cta={copy?.newsCta} tone="light" formId="newsForm" />
         </section>
 
         {/* Columns: four side by side on a laptop; on a phone, four rows that fold open */}
@@ -182,5 +201,35 @@ function FooterGroup({ title, nav = false, children }) {
       </h2>
       <ul className={cn("space-y-0.5 max-md:pb-4", !open && "max-md:hidden")}>{children}</ul>
     </Tag>
+  );
+}
+
+/**
+ * Three pieces from the range, fanned like cards held in a hand; they spread a
+ * little further under a mouse. Purely a picture: hidden from screen readers.
+ */
+function PhotoFan({ className }) {
+  const { data: products = [] } = useProducts();
+  const picks = products.filter((p) => p.photos?.length).slice(0, 3);
+  if (picks.length < 3) return null;
+  const FAN = [
+    "-translate-x-[62%] -rotate-[9deg] group-hover:-translate-x-[78%] group-hover:-rotate-[13deg]",
+    "-translate-x-1/2 -translate-y-[4%] z-[1] group-hover:-translate-y-[8%]",
+    "-translate-x-[38%] rotate-[9deg] group-hover:-translate-x-[22%] group-hover:rotate-[13deg]",
+  ];
+  return (
+    <div className={cn("group relative mx-auto h-[220px] w-full max-w-[420px] sm:h-[300px] lg:h-[400px]", className)} aria-hidden="true">
+      {picks.map((p, i) => (
+        <div
+          key={p.id}
+          className={cn(
+            "absolute left-1/2 top-[6%] aspect-[3/4] h-[88%] origin-bottom overflow-hidden bg-sand-100 shadow-[0_18px_40px_rgb(0_0_0/0.35)] ring-1 ring-cream/10 transition-[translate,rotate] duration-700 ease-q",
+            FAN[i],
+          )}
+        >
+          <Photo photo={p.photos[0]} label={p.name} labels={false} />
+        </div>
+      ))}
+    </div>
   );
 }
