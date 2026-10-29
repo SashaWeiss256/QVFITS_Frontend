@@ -415,7 +415,8 @@
     font-size: 0.8rem;
     color: var(--color-ink-3);
   }
-  .crumbs a { transition: color 0.2s; }
+  /* Each link gets a full-height tap area without moving the line */
+  .crumbs a { display: inline-block; padding-block: 11px; margin-block: -11px; transition: color 0.2s; }
   .crumbs a:hover { color: var(--color-ink); text-decoration: underline; text-underline-offset: 3px; }
 
   /* A section's heading block; --row puts a link or button at its end */
