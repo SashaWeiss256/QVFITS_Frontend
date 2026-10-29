@@ -33,7 +33,7 @@ export default function ProductCard({ product: p }) {
   const sale = saleOf(p, offers?.sale);
   const wished = wishlist.has(p.id);
   // Colour names map to swatches in the facets; grey until they load.
-  const swatch = (c) => facets?.colors.find((x) => x.name === c)?.swatch ?? "var(--line-2)";
+  const swatch = (c) => facets?.colors.find((x) => x.name === c)?.swatch ?? "var(--color-line-2)";
   const href = `/product/${p.slug}`;
   const label = sold ? "Sold out" : sale ? `${sale.pct}% off` : p.badge;
 
@@ -70,15 +70,18 @@ export default function ProductCard({ product: p }) {
           </span>
         )}
 
-        {/* Save */}
+        {/* Save: on a cream disc, so the heart reads on light and dark photos alike */}
         <button
           type="button"
-          className={cn("absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-full transition-colors", wished ? "text-brand-600" : "text-ink/70 hover:text-ink")}
+          className={cn(
+            "absolute right-2 top-2 grid h-10 w-10 place-items-center rounded-full bg-cream/90 shadow-sh-1 backdrop-blur-sm transition-colors hover:bg-cream",
+            wished ? "text-brand-600" : "text-ink-2 hover:text-ink",
+          )}
           onClick={toggleWish}
           aria-label={`Save ${p.name} to wishlist`}
           aria-pressed={wished}
         >
-          <Heart className={cn("h-[18px] w-[18px]", wished && "fill-current")} strokeWidth={1.5} aria-hidden="true" />
+          <Heart className={cn("h-[18px] w-[18px]", wished && "fill-current")} strokeWidth={1.75} aria-hidden="true" />
         </button>
 
         {/* Add to bag: slides up on hover, always there on touch */}
