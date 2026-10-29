@@ -8,6 +8,7 @@ import { useCurrency } from "@/store/context/CurrencyContext";
 import { useRecordSale } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
 import Drawer from "@/AdminDashboard/components/Drawer";
+import PieceSearch from "./PieceSearch";
 
 // An empty customer form. The mobile money reference is kept in the same form but sent separately from the order details.
 const BLANK = { name: "", phone: "", email: "", region: "", address: "", note: "", discountCode: "", reference: "" };
@@ -37,7 +38,6 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
   const zones = settings?.zones ?? [];
   const [form, setForm] = useState(BLANK);
   const [lines, setLines] = useState([]);
-  const [pick, setPick] = useState("");
   // Only published pieces can be sold.
   const live = products.filter((p) => p.status === "active");
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
@@ -47,12 +47,9 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
   const collect = zones.find((z) => z.id === region)?.collect;
 
   // Adds the piece in the first size that has stock, in its first colour; both can be changed on the line.
-  const addLine = () => {
-    const p = live.find((x) => x.id === pick);
-    if (!p) return;
+  const addPiece = (p) => {
     const size = Object.keys(p.stock).find((s) => p.stock[s] > 0) ?? Object.keys(p.stock)[0];
     setLines((ls) => [...ls, { productId: p.id, color: p.colors[0], size, qty: 1 }]);
-    setPick("");
   };
   const updateLine = (i, patch) => setLines((ls) => ls.map((l, j) => (j === i ? { ...l, ...patch } : l)));
   // A guide for the person at the till; the service works out the real total (sale prices, kits, codes, delivery) when the sale is recorded.
@@ -99,13 +96,7 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
         <section>
           {/* Pieces: each line has its own colour, size and quantity */}
           <h3 className="mb-3 text-base">Pieces</h3>
-          <div className="flex gap-2">
-            <select className="select flex-1" value={pick} onChange={(e) => setPick(e.target.value)} aria-label="Add a piece">
-              <option value="">Pick a piece…</option>
-              {live.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-            <Button variant="soft" onClick={addLine} disabled={!pick}>Add</Button>
-          </div>
+          <PieceSearch pieces={live} onPick={addPiece} />
           <ul className="m-0 mt-3 grid list-none gap-2 p-0">
             {lines.map((l, i) => {
               const p = live.find((x) => x.id === l.productId);

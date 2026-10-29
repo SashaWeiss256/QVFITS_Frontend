@@ -31,7 +31,7 @@ export default function ShopHeader({ state, lookup }) {
     : scoped
       ? targetLabel({ ...scope, label: alone ?? undefined }, lookup)
       : (alone && LABEL_TITLE[alone]) || titles.all || "";
-  const lede = alone === "kits" && !scoped ? copy?.kits.lede : only?.description || copy?.lede;
+  const lede = alone === "kits" && !scoped ? copy?.kits.lede : only?.description || (alone && !scoped && copy?.ledes?.[alone]) || copy?.lede;
   // A search is a private view, so it stays out of results; every other view is a page of its own.
   const description = only?.description || copy?.seo || (scoped || alone ? `${title} from QVFITS, Kampala. ${PAGES.shop.description}` : PAGES.shop.description);
   const crumbJson = [{ name: "Home", path: "/" }, { name: "Shop", path: "/shop" }, ...(scoped || alone ? [{ name: title, path: window.location.pathname }] : [])];
@@ -56,12 +56,12 @@ export default function ShopHeader({ state, lookup }) {
         {crumbs.map((c) => (
           <span key={c.to}> / <Link to={c.to}>{c.label}</Link></span>
         ))}
-        {scoped && <> / {title}</>}
+        {(scoped || alone) && title && <> / {title}</>}
       </p>
       {/* Title on the left, its line on the right */}
       <div className="grid gap-5 lg:grid-cols-12 lg:items-end">
         <div className="lg:col-span-7">
-          <p className="kicker">{scoped ? "Shop" : copy?.kicker}</p>
+          <p className="kicker">{scoped || alone ? "Shop" : copy?.kicker}</p>
           <h1 id="shopTitle">{title}</h1>
         </div>
         {lede && <p className="max-w-md text-[1rem] leading-relaxed text-ink-2 lg:col-span-4 lg:col-start-9 lg:justify-self-end">{lede}</p>}

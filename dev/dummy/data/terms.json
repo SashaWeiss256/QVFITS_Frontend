@@ -120,6 +120,21 @@
     "inHeader": true
   },
   {
+    "id": "sale",
+    "groupId": "edits",
+    "name": "Sale",
+    "slug": "sale",
+    "previousSlugs": [],
+    "image": null,
+    "description": "",
+    "target": {
+      "label": "sale"
+    },
+    "position": 3,
+    "active": true,
+    "inHeader": true
+  },
+  {
     "id": "kits",
     "groupId": "edits",
     "name": "Shop the kit",
@@ -130,7 +145,7 @@
     "target": {
       "label": "kits"
     },
-    "position": 3,
+    "position": 4,
     "active": true,
     "inHeader": false
   },
@@ -145,7 +160,7 @@
     "target": {
       "page": "/size-guide"
     },
-    "position": 4,
+    "position": 5,
     "active": true,
     "inHeader": false
   }

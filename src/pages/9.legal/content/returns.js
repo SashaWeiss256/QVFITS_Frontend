@@ -26,6 +26,7 @@ export const returns = (s) => ({
           `Bought anywhere: you may exchange within ${s.exchangeDays} days of receiving it, for another size, colour or piece.`,
           "Pieces must come back unworn, unwashed, with every tag attached and in their original packaging. Swimwear and bodysuits must have the hygiene liner in place.",
           "Faulty or wrong items are always put right, at our cost.",
+          "Sale pieces bought online keep your 7 day right to cancel. Sale pieces bought in the showroom are final sale, unless they are faulty.",
         ] },
       ],
     },
@@ -80,8 +81,15 @@ export const returns = (s) => ({
       id: "sale",
       heading: "Sale pieces and offers",
       blocks: [
-        "Online sale pieces keep your 7-day right to cancel. Sale pieces bought in the showroom are final, unless they are faulty.",
+        "Sale pieces are real pieces at a lower price, made and checked to the same standard as everything else we sell. What changes is how returns work, and that depends on where you bought them.",
+        { list: [
+          "Online and WhatsApp sale orders: you keep your 7 day right to cancel and return, as set out above. The law gives you this right and we will always honour it.",
+          "Showroom sale purchases: these are final sale. You have tried the piece on and chosen it at the reduced price, so it cannot be returned, exchanged or credited because you changed your mind. We will still put right any fault, at our cost.",
+          "Sale pieces are marked on the product page and on your order confirmation, so you always know before you pay.",
+          "Sale prices apply while stock lasts and may end at any time. An order we have confirmed always keeps the price shown when you paid.",
+        ] },
         "If you return part of an order that qualified for an offer (for example a bundle price or free delivery), we refund what you paid less the value of the offer you no longer qualify for, as far as the law allows.",
+        "Nothing in this section limits your rights for faulty or wrongly described pieces, which are the same for sale and full price pieces.",
       ],
     },
     {

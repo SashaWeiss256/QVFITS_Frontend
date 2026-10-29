@@ -52,6 +52,12 @@ Sending itself is yours: the frontend only shows status. A campaign needs `draft
 - On phones the buy bar sets `--addbar`; the Vee launcher and the offer card sit above it.
 - The hero has no pause control yet.
 
+## Sale
+
+- Sale is an item in the Edits group (`src/data/terms.json`, target label `sale`). Shown in the top bar by default; the owner can move it, hide it or switch it off in the admin under Categories. Its page is `/shop/sale`, and `?sale=1` filters any shop page.
+- A piece is on sale when its `salePercent` is set and Sale is live in Offers. Three sample pieces carry one; clear them with the rest of the sample data before launch.
+- Returns: online sale orders keep the 7 day right to cancel (the Electronic Transactions Act does not allow it to be waived). Showroom sale purchases are final sale. This is written in `src/pages/9.legal/content/returns.js` and `terms.js`.
+
 ## Still open
 
 - Pesapal checkout and payment confirmation (yours).

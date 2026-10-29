@@ -8,7 +8,7 @@
       "New": "New",
       "Bestseller": "Best sellers",
       "sale": "The sale",
-      "search": "Results for \u201c{query}\u201d"
+      "search": "Results for “{query}”"
     },
     "kits": {
       "kicker": "Complete kits",
@@ -35,6 +35,11 @@
         "kicker": "For now",
         "lede": "Pieces marked down while the sale runs. When it ends they go back to full price."
       }
+    },
+    "ledes": {
+      "new": "The newest pieces, just landed in the showroom.",
+      "bestseller": "The pieces our customers come back for.",
+      "sale": "Selected pieces at reduced prices, while stock lasts. Sale pieces bought online can still be returned within 7 days, see our returns policy."
     }
   },
   "product": {
@@ -45,10 +50,10 @@
   "about": {
     "story": {
       "kicker": "Our story",
-      "title": "Built for the way you actually train",
+      "title": "Activewear that fits, and looks good doing it",
       "paragraphs": [
-        "QVFITS makes premium seamless and seam-fit activewear, swim and lounge wear, from a showroom at THE CUBE in Kisementi. Seamless where you want no seams to rub, seam-fit where you want structure: the construction is chosen per piece, not per season.",
-        "We keep the range tight on purpose. Every piece is worn and tested before it goes in, which is why we can tell you honestly when something runs small, and why we would rather move you to a different piece than sell you the wrong size."
+        "QVFITS, by Quivogue, is a Kampala label of activewear, swim and lounge wear for women, sold from our showroom at THE CUBE in Kisementi and delivered across Uganda. The name joins quality and vogue: well made, and worn with style.",
+        "Every piece is worn and tested before it joins the range, and carries an honest fit note, so you can choose the right size the first time."
       ],
       "primaryCta": {
         "label": "Shop the range",
@@ -61,22 +66,22 @@
     },
     "values": {
       "kicker": "How we build",
-      "title": "How we do things",
+      "title": "How we work",
       "items": [
         {
           "icon": "heart",
-          "title": "Chosen, not bulk-ordered",
-          "text": "Small drops per colourway. If you see it in the studio, only a handful of people in Kampala will be training in it."
+          "title": "Small drops",
+          "text": "We make limited quantities of each colourway, so the range stays tight and the quality consistent."
         },
         {
           "icon": "check",
           "title": "Honest about fit",
-          "text": "Every piece carries a real fit note: runs small, cut relaxed, true to size. We would rather you order once."
+          "text": "Every piece carries a real fit note, such as runs small, cut relaxed or true to size, so you can order with confidence."
         },
         {
           "icon": "clock",
-          "title": "Styled, not just sold",
-          "text": "Tell us what you train in and we'll have pieces waiting. Come and move in them before you buy."
+          "title": "Styled in person",
+          "text": "Tell us what you train in and we will have pieces ready. Come and try them in the showroom before you buy."
         },
         {
           "icon": "sparkles",
@@ -162,7 +167,7 @@
   },
   "footer": {
     "blurbSuffix": "Made for the way you actually train.",
-    "copyright": "\u00a9 {year} {brand}. Kampala, Uganda.",
+    "copyright": "© {year} {brand}. Kampala, Uganda.",
     "tagline": "Seamless. Seam-fit. Swim. Lounge.",
     "newsTitle": "First to know",
     "newsText": "New drops, restocks and members-only offers, about twice a month.",

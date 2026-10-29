@@ -7,7 +7,7 @@
     "categoryId": "sets",
     "price": 210000,
     "compareAtPrice": null,
-    "salePercent": null,
+    "salePercent": 20,
     "colorIds": [
       "ivory",
       "pink",
@@ -355,7 +355,7 @@
     "categoryId": "sets",
     "price": 195000,
     "compareAtPrice": null,
-    "salePercent": null,
+    "salePercent": 30,
     "colorIds": [
       "navy",
       "sand",
@@ -703,7 +703,7 @@
     "categoryId": "bras",
     "price": 85000,
     "compareAtPrice": null,
-    "salePercent": null,
+    "salePercent": 50,
     "colorIds": [
       "ivory",
       "mocha",

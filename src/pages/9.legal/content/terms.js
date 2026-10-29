@@ -72,6 +72,8 @@ export const terms = (s) => ({
         { list: [
           "One code per order, unless the offer says otherwise. Codes have no cash value and cannot be applied to past orders.",
           "Codes are personal unless published by us for everyone. Codes shared, sold or obtained by creating several accounts may be cancelled.",
+          "Sale prices cannot be combined with a code unless the offer says so. Discounts apply to the price of the pieces only, not to delivery or to any taxes.",
+          "Sale pieces bought in the showroom are final sale. Sale pieces bought online keep the 7 day right to cancel described in our returns policy.",
           "We may end an offer at any time, but we will honour it for orders already confirmed.",
           "If an order uses an offer in a way that breaks its terms, we may cancel the order or charge the difference before dispatch.",
         ] },
