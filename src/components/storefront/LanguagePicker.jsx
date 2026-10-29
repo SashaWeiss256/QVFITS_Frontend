@@ -20,7 +20,7 @@ export default function LanguagePicker() {
         <span>{language.native}</span>
         <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")} strokeWidth={1.5} aria-hidden="true" />
       </button>
-      <div className="absolute bottom-full end-0 z-20 mb-2 w-48 border border-line bg-cream p-2 text-ink shadow-sh-3" role="listbox" hidden={!open}>
+      <div className="absolute bottom-full end-0 z-20 mb-2 w-48 max-w-[calc(100vw-2rem)] border border-line bg-cream p-2 text-ink shadow-sh-3" role="listbox" hidden={!open}>
         {languages.map((l) => (
           <button
             key={l.code}
