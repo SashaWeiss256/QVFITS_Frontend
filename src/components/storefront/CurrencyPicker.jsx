@@ -38,7 +38,7 @@ export default function CurrencyPicker({ tone = "light" }) {
       </button>
 
       {/* Menu: opens upward */}
-      <div className={cn("absolute bottom-full left-0 z-20 mb-2 w-72 border p-2 shadow-sh-3", dark ? "border-cream/15 bg-ink text-cream" : "border-line bg-cream text-ink")} role="listbox" hidden={!open}>
+      <div className={cn("absolute bottom-full end-0 z-20 mb-2 w-72 max-w-[calc(100vw-2rem)] border p-2 shadow-sh-3 sm:end-auto sm:start-0", dark ? "border-cream/15 bg-ink text-cream" : "border-line bg-cream text-ink")} role="listbox" hidden={!open}>
         {currencies.map((c) => (
           <button
             key={c.code}
