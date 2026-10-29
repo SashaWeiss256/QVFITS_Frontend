@@ -149,6 +149,9 @@
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* A safety net against sideways scroll on phones. clip, not hidden: it trims what sticks out
+       without making the body a scroll container, so sticky headers and bars keep working. */
+    overflow-x: clip;
   }
   h1,
   h2,
