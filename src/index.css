@@ -253,8 +253,6 @@
   .btn--soft:hover { background: var(--color-brand-100); }
   .btn--light { background: var(--color-cream); color: var(--color-ink); }
   .btn--light:hover { background: var(--color-white); }
-  .btn--outline-light { background: transparent; color: var(--color-cream); border-color: rgb(251 248 243 / 0.7); }
-  .btn--outline-light:hover { background: var(--color-cream); color: var(--color-ink); }
   .btn--danger { background: var(--color-warn); color: #fff; }
   .btn--lg {
     min-height: 54px;
@@ -348,13 +346,13 @@
   }
   .sheet-scrim.is-on { opacity: 1; pointer-events: auto; }
 
-  /* Filter and suggestion chips */
+  /* Filter and suggestion chips. Full 44px on touch screens. */
   .chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.5em;
-    min-height: 36px;
-    padding: 0.4em 1em;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 14px;
     border: 1px solid var(--color-line-2);
     border-radius: 999px;
     background: transparent;
@@ -364,6 +362,9 @@
   }
   .chip:hover { border-color: var(--color-ink); color: var(--color-ink); }
   .chip.is-on { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-cream); }
+  @media (pointer: coarse) {
+    .chip { min-height: 44px; }
+  }
 
   /* Product grids: two across on a phone, up to four on a laptop */
   .grid-products {
@@ -442,7 +443,6 @@
 
   /* Chips inside a filter group */
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px; }
   .chip[disabled] { opacity: 0.35; cursor: not-allowed; }
   /* Admin choice chips: square and quiet, the chosen one filled with ink */
   .chip--raised { background: var(--color-white); border-color: var(--color-line); box-shadow: 0 1px 2px rgb(23 33 31 / 0.06), 0 6px 16px rgb(23 33 31 / 0.09); }
@@ -516,7 +516,7 @@
     box-shadow: 0 0 0 3px var(--color-brand-50);
   }
   .input[aria-invalid="true"] {
-    border-color: var(--warn);
+    border-color: var(--color-warn);
   }
 
   /* Select: the same quiet field as .input, with its own chevron */
@@ -577,8 +577,7 @@
   .cart-row { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--color-line); }
   @media (min-width: 640px) { .cart-row { grid-template-columns: 124px minmax(0, 1fr) auto; gap: 28px; } }
   .cart-row__media { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--color-beige); }
-  /* The bag row's name link gets the 24px box Quivogue gives .card__name;
-     the photo beside it is a second, larger link to the same piece. */
+  /* The name link gets a 24px tap box; the photo beside it links to the same piece. */
   .cart-row__name { display: inline-block; padding: 4px 0; min-height: 24px; font-family: var(--font-display); font-size: 1.08rem; line-height: 1.3; transition: color 0.2s; }
   .cart-row__name:hover { color: var(--color-brand-600); }
   .cart-row__meta { margin-top: 2px; font-size: 0.86rem; color: var(--color-ink-3); }
@@ -692,21 +691,33 @@
   table.size tbody tr:last-child th, table.size tbody tr:last-child td { border-bottom: 0; }
   table.size tbody tr:hover { background: var(--color-sand-50); }
 
-  /* The filter sidebar is taller than most laptop windows (1,100px with the
-     colour list). Sticky but taller than the viewport, it re-pinned to the
-     top whenever the result count changed the grid's height, throwing the
-     price slider off screen mid-drag. Capped to the window, it scrolls on
-     its own and stays put. Below 880px it is an inline panel again. */
+  /* Deal cards on the shop page: one card per live offer */
+  .deals { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .deal {
+    position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 220px;
+    padding: clamp(22px, 2.4vw, 32px); border-radius: 22px; border: 1px solid transparent;
+    transition: transform 0.5s var(--ease-q), box-shadow 0.5s var(--ease-q);
+  }
+  .deal:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgb(23 33 31 / 0.14); }
+  .deal__tag { align-self: flex-start; padding: 0.3em 0.9em; border-radius: 999px; font-size: 0.74rem; font-weight: 500; }
+  .deal h3 { margin: 6px 0 0; color: inherit; font-size: clamp(1.55rem, 2.4vw, 2.1rem); line-height: 1.05; }
+  .deal p { margin: 0; flex: 1; max-width: 34ch; font-size: 0.95rem; }
+  .deal .link-arrow { align-self: flex-start; margin-top: 10px; }
+  .deal--brand { background: var(--color-sand-100); border-color: var(--color-line); color: var(--color-ink); }
+  .deal--brand .deal__tag { background: var(--brand-grad); color: var(--color-white); }
+  .deal--brand p { color: var(--color-ink-2); }
+  .deal--dark { background: var(--color-ink); color: var(--color-cream); }
+  .deal--dark .deal__tag { background: rgb(251 248 243 / 0.14); }
+  .deal--dark p { color: rgb(251 248 243 / 0.78); }
+  .deal--dark .link-arrow, .deal--teal .link-arrow { color: var(--color-cream); }
+  .deal--teal { background: var(--color-teal-500); color: var(--color-cream); }
+  .deal--teal .deal__tag { background: rgb(251 248 243 / 0.16); }
+  .deal--teal p { color: rgb(251 248 243 / 0.85); }
+
+  /* The filter sidebar is taller than most laptop windows. Capped to the
+     window, it scrolls on its own instead of re-pinning mid-drag. Below
+     880px it is an inline panel again. */
   @media (min-width: 881px) {
-    /* And the window stays where it is while the grid grows and shrinks:
-       scroll anchoring otherwise chases the cards and drags the page. */
-    .shop-layout {
-      overflow-anchor: none;
-      transition: grid-template-columns 0.25s ease;
-    }
-    .shop-layout.is-full {
-      grid-template-columns: 1fr;
-    }
     .filters {
       max-height: calc(100dvh - 112px);
       overflow-y: auto;
@@ -715,43 +726,11 @@
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
   }
-
-  .grid-products.density-compact {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
-  }
-  .grid-products.density-editorial {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-  }
-
-  /* Filter chips: full 44px on touch screens. The rows sit 7px apart, so an
-     invisible touch area would overlap the next row. */
-  @media (pointer: coarse) {
-    .chip {
-      min-height: 44px;
-    }
-  }
-
-  /* Five footer columns: brand, Shop, Help, Legal, Visit. On a tablet the
-     brand takes its own row above the four link columns; Quivogue's own
-     rules stack them to two (760px) and one (440px) below that. */
-  @media (min-width: 1081px) {
-    .ftr__grid {
-      grid-template-columns: 1.4fr repeat(4, 1fr);
-    }
-  }
-  @media (max-width: 1080px) and (min-width: 761px) {
-    .ftr__grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-    .ftr__brand {
-      grid-column: 1 / -1;
-    }
-  }
 }
 
 /*
-  Large desktops and TVs. Quivogue's layout caps its column at 1620px, which
-  on a 4K TV leaves type and tap targets far too small to use from a sofa.
+  Large desktops and TVs. The page column caps at 1440px, which on a 4K TV
+  leaves type and tap targets far too small to use from a sofa.
   Zoom scales the whole page instead: a 4K screen lays out like a 1920px
   desktop at twice the size, a 2560px screen like a 2048px one. Breakpoints
   still read the real width, so nothing else changes.
@@ -795,30 +774,6 @@
   to { opacity: 1; transform: none; }
 }
 
-/* Deal cards on the shop page: one card per live offer */
-@layer components {
-  .deals { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-  .deal {
-    position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 220px;
-    padding: clamp(22px, 2.4vw, 32px); border-radius: 22px; border: 1px solid transparent;
-    transition: transform 0.5s var(--ease-q), box-shadow 0.5s var(--ease-q);
-  }
-  .deal:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgb(23 33 31 / 0.14); }
-  .deal__tag { align-self: flex-start; padding: 0.3em 0.9em; border-radius: 999px; font-size: 0.74rem; font-weight: 500; }
-  .deal h3 { margin: 6px 0 0; color: inherit; font-size: clamp(1.55rem, 2.4vw, 2.1rem); line-height: 1.05; }
-  .deal p { margin: 0; flex: 1; max-width: 34ch; font-size: 0.95rem; }
-  .deal .link-arrow { align-self: flex-start; margin-top: 10px; }
-  .deal--brand { background: var(--color-sand-100); border-color: var(--color-line); color: var(--color-ink); }
-  .deal--brand .deal__tag { background: var(--brand-grad); color: var(--color-white); }
-  .deal--brand p { color: var(--color-ink-2); }
-  .deal--dark { background: var(--color-ink); color: var(--color-cream); }
-  .deal--dark .deal__tag { background: rgb(251 248 243 / 0.14); }
-  .deal--dark p { color: rgb(251 248 243 / 0.78); }
-  .deal--dark .link-arrow, .deal--teal .link-arrow { color: var(--color-cream); }
-  .deal--teal { background: var(--color-teal-500); color: var(--color-cream); }
-  .deal--teal .deal__tag { background: rgb(251 248 243 / 0.16); }
-  .deal--teal p { color: rgb(251 248 243 / 0.85); }
-}
 
 /* Arabic and Chinese: scripts the brand faces do not carry, so a matching family leads */
 html[lang="ar"] { --font-display: "Noto Sans Arabic", "Archivo", sans-serif; --font-body: "Noto Sans Arabic", "Inter", system-ui, sans-serif; --font-logo: "Anton", "Impact", sans-serif; }
