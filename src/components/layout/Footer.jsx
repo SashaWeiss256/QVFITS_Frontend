@@ -56,8 +56,8 @@ export default function Footer() {
             {promises.map((p, i) => {
               const inner = (
                 <>
-                  <span className="block font-display text-[1rem] leading-snug text-ink transition-colors group-hover:text-brand-600 sm:text-[1.1rem]">{p.title}</span>
-                  <span className="mt-1 block text-[0.8rem] leading-snug text-ink-3 sm:text-[0.85rem]">{p.text}</span>
+                  <span className="block font-display text-[1rem] text-ink max-sm:leading-snug transition-colors group-hover:text-brand-600 sm:text-[1.1rem]">{p.title}</span>
+                  <span className="mt-1 block text-[0.8rem] text-ink-3 max-sm:leading-snug sm:text-[0.85rem]">{p.text}</span>
                 </>
               );
               const cls = "group block py-6 sm:py-8 lg:py-10";
@@ -172,7 +172,7 @@ function FooterGroup({ title, nav = false, children }) {
   const [open, setOpen] = useState(false);
   const Tag = nav ? "nav" : "div";
   return (
-    <Tag aria-label={nav ? title : undefined} className="border-b border-line-2 first:border-t md:border-0">
+    <Tag aria-label={nav ? title : undefined} className="max-md:border-b max-md:border-line-2 max-md:first:border-t">
       <h2 className={cn(TITLE, "max-md:hidden")}>{title}</h2>
       <h2 className="md:hidden">
         <button type="button" className="flex min-h-14 w-full items-center justify-between text-left font-display text-[1.05rem] text-ink" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
