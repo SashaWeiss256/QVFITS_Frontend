@@ -1,6 +1,6 @@
 /* Cart Panel */
 import { Link } from "react-router-dom";
-import { ShoppingBag } from "lucide-react";
+import { Minus, Plus, ShoppingBag } from "lucide-react";
 
 import EmptyState from "@/components/ui/EmptyState";
 import { useCart } from "@/store/context/CartContext";
@@ -9,11 +9,12 @@ import { useOffers, useProductsByIds, useSettings, useStyleWith } from "@/store/
 import { saleOf } from "@/utils/stockLevel";
 import OutfitCard from "./OutfitCard";
 import Photo from "./Photo";
+import { t } from "@/i18n/translate";
 
 // The bag in the drawer. Totals here are a preview; checkout prices the bag
 // again on the server side before anything is ordered.
 export default function CartPanel() {
-  const { lines, remove } = useCart();
+  const { lines, remove, setQty } = useCart();
   const { money } = useCurrency();
   const { data: products = [] } = useProductsByIds(lines.map((l) => l.productId));
   const { data: settings } = useSettings();
@@ -25,11 +26,11 @@ export default function CartPanel() {
   if (!lines.length) {
     return (
       <>
-        <div className="drawer__body">
-          <EmptyState icon={ShoppingBag}>Your bag is empty. Let&apos;s fix that.</EmptyState>
+        <div data-lenis-prevent className="flex flex-1 flex-col justify-center overflow-y-auto px-6 sm:px-8">
+          <EmptyState icon={ShoppingBag}>{t("Your bag is empty. Begin with what is new.")}</EmptyState>
         </div>
-        <div className="drawer__foot">
-          <Link className="btn btn--primary btn--block" to="/shop/new">Shop new in</Link>
+        <div className="border-t border-line px-6 py-6 sm:px-8">
+          <Link className="btn btn--primary btn--block btn--lg" to="/shop/new">{t("Shop new in")}</Link>
         </div>
       </>
     );
@@ -41,49 +42,78 @@ export default function CartPanel() {
   const rows = lines.map((l) => ({ line: l, product: products.find((p) => p.id === l.productId) })).filter((r) => r.product);
   const subtotal = rows.reduce((sum, r) => sum + priceOf(r.product) * r.line.qty, 0);
   // Hidden (0) until settings load, so the nudge never shows a wrong threshold.
-  const left = settings ? settings.freeShippingOver - subtotal : 0;
+  const threshold = settings?.freeShippingOver ?? 0;
+  const left = threshold ? threshold - subtotal : 0;
+  const progress = threshold ? Math.min(1, subtotal / threshold) : 0;
 
   return (
     <>
-      <div className="drawer__body">
-        {rows.map(({ line, product: p }) => (
-          <div key={`${p.id}-${line.size}-${line.color}`} className="mini-row">
-            <Link className="mini-row__media" to={`/product/${p.slug}`}><Photo photo={p.photos[0]} label={p.name} /></Link>
-            <div>
-              <strong>{p.name}</strong>
-              <small>{line.color} · {line.size} · ×{line.qty}</small>
-            </div>
-            <div className="text-right">
-              <div className="text-[.86rem] font-semibold">{money(priceOf(p) * line.qty)}</div>
-              <button type="button" className="remove" onClick={() => remove(line)}>Remove</button>
+      <div data-lenis-prevent className="flex-1 overflow-y-auto px-6 sm:px-8">
+        {/* Free delivery: a thin line that fills as the bag grows */}
+        {threshold > 0 && (
+          <div className="border-b border-line py-5">
+            <p className="text-[0.88rem] text-ink-2">
+              {left > 0 ? <>You are {money(left)} away from free delivery.</> : <span className="font-medium text-success">{t("Free delivery is yours.")}</span>}
+            </p>
+            <div className="mt-3 h-px w-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)} aria-label={t("Progress to free delivery")}>
+              <div className="h-px origin-left bg-[image:var(--brand-grad)] transition-transform duration-700 ease-q" style={{ transform: `scaleX(${progress})` }} />
             </div>
           </div>
-        ))}
+        )}
+
+        {/* Pieces: a photograph, the name and details, a quantity, the price */}
+        <ul>
+          {rows.map(({ line, product: p }) => (
+            <li key={`${p.id}-${line.size}-${line.color}`} className="grid grid-cols-[84px_minmax(0,1fr)] gap-5 border-b border-line py-6">
+              <Link to={`/product/${p.slug}`} className="relative block aspect-[3/4] overflow-hidden bg-beige">
+                <Photo photo={p.photos[0]} label={p.name} />
+              </Link>
+              <div className="flex min-w-0 flex-col">
+                <div className="flex items-start justify-between gap-3">
+                  <Link to={`/product/${p.slug}`} className="font-display text-[1.02rem] leading-snug hover:text-brand-600">{p.name}</Link>
+                  <span className="shrink-0 text-[0.92rem] font-semibold tabular-nums">{money(priceOf(p) * line.qty)}</span>
+                </div>
+                <p className="mt-1 text-[0.84rem] text-ink-3">{line.color}, size {line.size}</p>
+                <div className="mt-auto flex items-center justify-between pt-4">
+                  <div className="inline-flex items-center border border-line">
+                    <button type="button" className="grid h-9 w-9 place-items-center text-ink-2 transition-colors hover:bg-ink/5 disabled:opacity-30" aria-label={`Fewer ${p.name}`} disabled={line.qty <= 1} onClick={() => setQty(line, line.qty - 1)}>
+                      <Minus className="h-3.5 w-3.5" aria-hidden="true" />
+                    </button>
+                    <span className="w-8 text-center text-[0.88rem] tabular-nums" aria-live="polite">{line.qty}</span>
+                    <button type="button" className="grid h-9 w-9 place-items-center text-ink-2 transition-colors hover:bg-ink/5" aria-label={`More ${p.name}`} onClick={() => setQty(line, line.qty + 1)}>
+                      <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                    </button>
+                  </div>
+                  <button type="button" className="text-[0.84rem] text-ink-3 underline underline-offset-4 transition-colors hover:text-brand-600" onClick={() => remove(line)}>{t("Remove")}</button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+
         {/* Complete The Look: one outfit around what is in the bag, adding only what is missing */}
         {(() => {
           const inBag = lines.map((l) => l.productId);
           const next = looks.find((o) => o.pieces.some((pc) => !inBag.includes(pc.product.id)));
           if (!next || new Set(inBag).size > 2) return null;
           return (
-            <div className="mt-5 px-[22px] pb-4">
-              <p className="m-0 mb-2 text-[.72rem] font-semibold uppercase tracking-[0.14em] text-ink-4">Complete the look</p>
+            <div className="py-7">
+              <p className="mb-3 font-display text-[1.15rem]">{t("Complete the look")}</p>
               <OutfitCard outfit={next} skip={inBag} />
             </div>
           );
         })()}
       </div>
-      <div className="drawer__foot">
-        {/* Free Delivery Nudge */}
-        {left > 0 ? (
-          <p className="mb-2.5 text-[.82rem] text-ink-3">{money(left)} away from free delivery</p>
-        ) : (
-          <p className="mb-2.5 text-[.82rem] font-semibold text-success">Free delivery unlocked</p>
-        )}
-        <div className="sum-row sum-row--total" style={{ margin: "0 0 14px", border: 0, padding: 0 }}>
-          <span>Subtotal</span><span>{money(subtotal)}</span>
+
+      {/* Foot: the subtotal and the way through */}
+      <div className="border-t border-line bg-cream px-6 py-6 sm:px-8">
+        <div className="mb-1 flex items-baseline justify-between">
+          <span className="text-[0.95rem] text-ink-2">{t("Subtotal")}</span>
+          <span className="font-display text-[1.4rem] tabular-nums">{money(subtotal)}</span>
         </div>
+        <p className="mb-5 text-[0.8rem] text-ink-3">{t("Delivery and any discount are worked out at checkout.")}</p>
         {/* Checkout starts from the full bag page, where sizes and quantities can still change. */}
-        <Link className="btn btn--primary btn--block" to="/cart">Checkout</Link>
+        <Link className="btn btn--primary btn--block btn--lg" to="/cart">{t("Checkout")}</Link>
       </div>
     </>
   );

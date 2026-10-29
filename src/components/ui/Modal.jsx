@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 import { cn } from "@/utils/cn";
+import { t } from "@/i18n/translate";
 
 const SIZES = { sm: "max-w-md", md: "max-w-2xl", lg: "max-w-4xl" };
 
@@ -30,23 +31,23 @@ export default function Modal({ isOpen, onClose, title, size = "md", dismissable
 
   return createPortal(
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-      <div className="scrim is-on" onClick={dismissable ? onClose : undefined} />
+      <div className="sheet-scrim is-on" onClick={dismissable ? onClose : undefined} />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={cn("relative z-[81] flex max-h-[90dvh] w-full flex-col overflow-hidden rounded-r-xl bg-cream shadow-sh-4", SIZES[size])}
+        className={cn("relative z-[81] flex max-h-[90dvh] w-full flex-col overflow-hidden rounded-[22px] border border-line bg-cream shadow-sh-3", SIZES[size])}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-line px-6 py-4">
           <h2 id={titleId} className="text-[1.2rem]">{title}</h2>
-          <button type="button" onClick={onClose} disabled={!dismissable} aria-label="Close" className="icon-btn">
+          <button type="button" onClick={onClose} disabled={!dismissable} aria-label={t("Close")} className="icon-btn">
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6">{children}</div>
+        <div data-lenis-prevent className="flex-1 overflow-y-auto p-6">{children}</div>
 
         {footer && <div className="border-t border-line bg-white px-6 py-4">{footer}</div>}
       </div>

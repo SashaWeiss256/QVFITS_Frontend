@@ -1,15 +1,17 @@
 /* Size Guide Page (port of Quivogue size-guide.html) */
 import { Link, useSearchParams } from "react-router-dom";
 
+import { PAGES } from "@/seo/shared";
 import { useSeo } from "@/seo/useSeo";
 import { usePageCopy } from "@/store/tanstackStore/queries/site";
 import BodyMap from "./sections/BodyMap";
 import FitNotes from "./sections/FitNotes";
 import Chart from "./sections/Chart";
 import Finder from "./sections/Finder";
+import { t } from "@/i18n/translate";
 
 export default function SizeGuidePage() {
-  useSeo({ title: "Size guide", description: "QVFITS size chart in cm and inches, a size finder, and how each piece fits." });
+  useSeo(PAGES.sizeGuide);
   const [params] = useSearchParams();
   const { data: copy } = usePageCopy("sizeGuide");
 
@@ -18,7 +20,7 @@ export default function SizeGuidePage() {
       {/* Intro */}
       <section className="section section--tight">
         <div className="wrap">
-          <p className="crumbs"><Link to="/">Home</Link> / Size guide</p>
+          <p className="crumbs"><Link to="/">{t("Home")}</Link> / Size guide</p>
           <div className="section-head center">
             <span className="kicker">{copy?.kicker}</span>
             <h1>{copy?.title}</h1>

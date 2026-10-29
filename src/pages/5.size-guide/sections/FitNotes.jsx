@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Reveal from "@/components/motion/Reveal";
 import { useProducts } from "@/store/tanstackStore/queries/site";
 import { FIT_LABELS } from "@/utils/sizing";
+import { t } from "@/i18n/translate";
 
 // Built from the live catalogue, so a new piece's fit note shows up here without editing the page.
 export default function FitNotes() {
@@ -19,7 +20,7 @@ export default function FitNotes() {
         </Reveal>
         <div className="table-wrap">
           <table className="size">
-            <thead><tr><th scope="col">Piece</th><th scope="col">Category</th><th scope="col">Fit</th><th scope="col">Note</th></tr></thead>
+            <thead><tr><th scope="col">Piece</th><th scope="col">{t("Category")}</th><th scope="col">Fit</th><th scope="col">Note</th></tr></thead>
             <tbody>
               {products.map((p) => (
                 <tr key={p.id}>

@@ -43,7 +43,7 @@ export default function AdminTransactions() {
   return (
     <>
       <PageHeader lede="Every payment in and refund out, in UGX, each tied to its order. Record payments and refunds on the order itself." />
-      <section aria-label="Totals" className="mb-6 grid gap-px overflow-hidden rounded-r-lg border border-line bg-line sm:grid-cols-3">
+      <section aria-label="Totals" className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatCard label="Taken" icon={ArrowDownLeft} value={moneyBase(inflow)} note={`${done.filter((t) => t.type === "payment").length} payments`} />
         <StatCard label="Refunded" icon={ArrowUpRight} value={moneyBase(outflow)} note={`${done.filter((t) => t.type === "refund").length} refunds`} />
         <StatCard label="Net" icon={Scale} value={moneyBase(inflow - outflow)} />

@@ -1,10 +1,10 @@
 /* Send A Message */
 import { useState } from "react";
 
-import Reveal from "@/components/motion/Reveal";
 import { notify } from "@/store/tanstackStore/notices";
 import { usePageCopy, useSendMessage, useSettings } from "@/store/tanstackStore/queries/site";
 import { whatsappLink } from "@/utils/whatsapp";
+import { t } from "@/i18n/translate";
 
 // Composes the message and keeps a copy in the admin's Messages inbox, then
 // hands it to the channel the visitor picks. No mail server yet, so the form
@@ -41,41 +41,50 @@ export default function MessageForm() {
     }
   };
 
+  const LABEL = "mb-1 block text-[0.82rem] text-ink-3";
+  const INPUT = "w-full border-0 border-b border-ink/25 bg-transparent py-3 text-[1rem] outline-none transition-colors focus:border-ink";
+
   return (
-    <Reveal className="info-card">
-      <h2 className="sub-h mb-1">{words?.form.title}</h2>
-      <p className="text-[.9rem] text-ink-3">{words?.form.text}</p>
-      <form noValidate className="mt-4" onSubmit={submit}>
-        <div className="field">
-          <label htmlFor="cName">Your name</label>
-          <input id="cName" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" required />
+    <div>
+      {/* Heading */}
+      <h2 className="text-[clamp(1.8rem,3vw,2.6rem)]">{words?.form.title}</h2>
+      <p className="mt-3 max-w-md text-[0.95rem] leading-relaxed text-ink-3">{words?.form.text}</p>
+
+      {/* Form */}
+      <form noValidate className="mt-10 grid gap-8 sm:grid-cols-2" onSubmit={submit}>
+        <div>
+          <label htmlFor="cName" className={LABEL}>{t("Your name")}</label>
+          <input id="cName" className={INPUT} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" required />
         </div>
-        <div className="field">
-          <label htmlFor="cTopic">What&apos;s it about?</label>
-          <select id="cTopic" value={topic || topics[0] || ""} onChange={(e) => setTopic(e.target.value)}>
+        <div>
+          <label htmlFor="cTopic" className={LABEL}>About</label>
+          <select id="cTopic" className={`${INPUT} cursor-pointer`} value={topic || topics[0] || ""} onChange={(e) => setTopic(e.target.value)}>
             {topics.map((t) => <option key={t}>{t}</option>)}
           </select>
         </div>
-        <div className="field">
-          <label htmlFor="cMsg">Your message</label>
-          <textarea id="cMsg" rows={5} value={body} onChange={(e) => setBody(e.target.value)} placeholder="Hi QVFITS! I was looking at…" required />
+        <div className="sm:col-span-2">
+          <label htmlFor="cMsg" className={LABEL}>Your message</label>
+          <textarea id="cMsg" rows={4} className={`${INPUT} resize-none`} value={body} onChange={(e) => setBody(e.target.value)} placeholder="I was looking at…" required />
         </div>
-        {error && <p role="alert" className="mt-3 text-sm font-semibold text-warn">{error}</p>}
-        <button className="btn btn--primary btn--block mt-4" type="submit">Compose message</button>
+        {error && <p role="alert" className="text-[0.9rem] text-warn sm:col-span-2">{error}</p>}
+        <div className="sm:col-span-2">
+          <button className="btn btn--primary btn--lg" type="submit">Write my message</button>
+        </div>
       </form>
-      {/* Send Options: shown once the message is composed and the shop's contacts have loaded. */}
+
+      {/* Send Options: shown once the message is composed and the shop's contacts have loaded */}
       {composed && s && (
-        <div className="mt-4 text-center" role="status">
-          <p className="news__msg">Your message is ready. Send it wherever suits you:</p>
-          <div className="mt-3 flex flex-wrap justify-center gap-2">
-            <a className="btn btn--soft" href={whatsappLink(s.whatsapp, composed)} target="_blank" rel="noopener noreferrer">Send on WhatsApp</a>
+        <div className="mt-10 border-t border-line pt-8" role="status">
+          <p className="font-display text-[1.3rem]">Your message is ready. Where shall we send it?</p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <a className="btn btn--primary" href={whatsappLink(s.whatsapp, composed)} target="_blank" rel="noopener noreferrer">{t("Send on WhatsApp")}</a>
             {/* Email only when the shop has an address on file. */}
-            {s.email && <a className="btn btn--soft" href={`mailto:${s.email}?subject=${encodeURIComponent(`${topic || topics[0]}: ${name}`)}&body=${encodeURIComponent(composed)}`}>Send by email</a>}
-            <a className="btn btn--soft" href={s.instagram} target="_blank" rel="noopener noreferrer" onClick={copy}>Open Instagram DM</a>
-            <button className="btn btn--soft" type="button" onClick={copy}>Copy message</button>
+            {s.email && <a className="btn btn--ghost" href={`mailto:${s.email}?subject=${encodeURIComponent(`${topic || topics[0]}: ${name}`)}&body=${encodeURIComponent(composed)}`}>Send by email</a>}
+            <a className="btn btn--ghost" href={s.instagram} target="_blank" rel="noopener noreferrer" onClick={copy}>Open Instagram</a>
+            <button className="btn btn--ghost" type="button" onClick={copy}>Copy message</button>
           </div>
         </div>
       )}
-    </Reveal>
+    </div>
   );
 }

@@ -31,6 +31,8 @@ export interface HeroSlide extends Linked {
   /** The round tag on the picture, e.g. "Sale". */
   sticker?: string;
   image?: Picture;
+  /** The picture is three portraits side by side (a triptych); the hero shows each as its own panel. */
+  triptych?: boolean;
   live: boolean;
 }
 

@@ -6,7 +6,7 @@ const RIGHT = new Set(["money", "num"]);
 
 /** One report as a plain table with a totals row for money and counts. */
 export default function ReportTable({ columns, rows, loading, money }) {
-  if (loading) return <div className="grid gap-2 p-5">{[0, 1, 2, 3].map((i) => <span key={i} className="skel block h-9 rounded-r-md" aria-hidden="true" />)}</div>;
+  if (loading) return <div className="grid gap-2 p-5">{[0, 1, 2, 3].map((i) => <span key={i} className="skel block h-9 rounded-[14px]" aria-hidden="true" />)}</div>;
   if (!rows.length) return <p className="m-0 p-8 text-center text-sm text-ink-3">Nothing in this period yet.</p>;
 
   // How a cell is written: money in the shown currency, a yes for a true flag, anything else as it is.

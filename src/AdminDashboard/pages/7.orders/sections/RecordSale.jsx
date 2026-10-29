@@ -89,7 +89,7 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
               role="radio"
               aria-checked={source === x.id}
               onClick={() => { setSource(x.id); set({ region: "" }); }}
-              className={cn("rounded-r-md border p-3 text-left transition-colors duration-150", source === x.id ? "border-brand-300 bg-brand-50" : "border-line bg-white hover:bg-cream")}
+              className={cn("rounded-[14px] border p-3 text-left transition-colors duration-150", source === x.id ? "border-brand-300 bg-brand-50" : "border-line bg-white hover:bg-cream")}
             >
               <strong className="block text-sm">{x.label}</strong>
               <span className="text-[.8rem] text-ink-3">{x.hint}</span>
@@ -110,7 +110,7 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
             {lines.map((l, i) => {
               const p = live.find((x) => x.id === l.productId);
               return (
-                <li key={i} className="grid items-end gap-2 rounded-r-md bg-white p-3 shadow-sh-1 sm:grid-cols-[1fr_auto_auto_auto_auto]">
+                <li key={i} className="grid items-end gap-2 rounded-[14px] bg-white p-3 shadow-sh-1 sm:grid-cols-[1fr_auto_auto_auto_auto]">
                   <strong className="text-sm sm:self-center">{p?.name}</strong>
                   <Field label="Colour" options={p.colors.map((c) => ({ value: c, label: c }))} value={l.color} onChange={(e) => updateLine(i, { color: e.target.value })} />
                   <Field label="Size" options={Object.keys(p.stock).map((s) => ({ value: s, label: `${s} (${p.stock[s]})` }))} value={l.size} onChange={(e) => updateLine(i, { size: e.target.value })} />

@@ -8,6 +8,7 @@ import BagRow from "./sections/BagRow";
 import Steps from "./sections/Steps";
 import OrderSummary from "./sections/OrderSummary";
 import { useCheckoutBag } from "./useCheckoutBag";
+import { t } from "@/i18n/translate";
 
 export default function CartPage() {
   useSeo({ title: "Your bag", noindex: true });
@@ -16,8 +17,8 @@ export default function CartPage() {
   return (
     <section className="section section--tight">
       <div className="wrap">
-        <p className="crumbs"><Link to="/">Home</Link> / Your bag</p>
-        <h1 className="sr-only">Your bag</h1>
+        <p className="crumbs"><Link to="/">{t("Home")}</Link> / Your bag</p>
+        <h1 className="mb-8 text-[clamp(2rem,4vw,3rem)] leading-[1.05]">{t("Your bag")}</h1>
         {/* Empty state takes precedence; show the checkout skeleton only for a non-empty bag still resolving. */}
         {bag.empty ? (
           <BagEmpty />
@@ -33,8 +34,8 @@ export default function CartPage() {
               </div>
               {/* Region defaults to Kampala here; the delivery step picks the real one. */}
               <OrderSummary bag={bag}>
-                <Link className="btn btn--primary btn--block mt-3.5" to="/checkout">Continue to delivery</Link>
-                <p className="mt-3 text-center text-[.78rem] text-ink-4">Delivery and payment come next. Nothing is charged yet.</p>
+                <Link className="btn btn--primary btn--block mt-3.5" to="/checkout">{t("Continue to delivery")}</Link>
+                <p className="mt-3 text-center text-[.78rem] text-ink-4">{t("Delivery and payment come next. Nothing is charged yet.")}</p>
               </OrderSummary>
             </div>
           </>

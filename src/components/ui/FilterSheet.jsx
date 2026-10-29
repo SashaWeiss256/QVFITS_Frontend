@@ -5,6 +5,7 @@ import { ChevronDown, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useFocusReturn, useOverlayFlag } from "@/components/layout/useOverlayFlag";
 import { cn } from "@/utils/cn";
+import { t } from "@/i18n/translate";
 
 /**
  * The shell of every filter drawer, in the shop and in the dashboard: from
@@ -15,8 +16,8 @@ import { cn } from "@/utils/cn";
  * The shop's comes in from the left; the dashboard's (`side="right"`) from
  * the right, like its other drawers. Both are a bottom sheet on a phone.
  *
- *   <FilterSheet open onClose title="Filter" count={12} onClear={clear}>
- *     <FilterSection title="Category" picked={2}>…chips…</FilterSection>
+ *   <FilterSheet open onClose title={t("Filter")} count={12} onClear={clear}>
+ *     <FilterSection title={t("Category")} picked={2}>…chips…</FilterSection>
  *   </FilterSheet>
  */
 export default function FilterSheet({ open, onClose, id = "filters", title = "Filter", count, onClear, side = "left", children }) {
@@ -48,7 +49,7 @@ export default function FilterSheet({ open, onClose, id = "filters", title = "Fi
         <div className="fdrawer__body">{children}</div>
         {/* Footer: Clear, and a button that shows how many results the filters leave */}
         <div className="fdrawer__foot">
-          <Button variant="ghost" onClick={onClear}>Clear</Button>
+          <Button variant="ghost" onClick={onClear}>{t("Clear")}</Button>
           <Button block onClick={onClose}>Show {count} {count === 1 ? "result" : "results"}</Button>
         </div>
       </aside>

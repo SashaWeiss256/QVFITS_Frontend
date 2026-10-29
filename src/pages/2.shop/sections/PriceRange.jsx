@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
+import { t } from "@/i18n/translate";
 
 /**
  * Two thumbs on one track, the span between them filled. It moves freely
@@ -26,7 +27,7 @@ export default function PriceRange({ min, max, step = 5000, value, onChange }) {
         <span className="prange__fill" style={{ left: `${pct(lo)}%`, right: `${100 - pct(hi)}%` }} aria-hidden="true" />
         <input
           type="range" min={min} max={max} step={step} value={lo}
-          aria-label="Lowest price" aria-valuetext={money(lo)}
+          aria-label={t("Lowest price")} aria-valuetext={money(lo)}
           // Raised once the thumbs meet at the top, so the low one can still be grabbed.
           className={pct(lo) > 90 ? "z-[3]" : "z-[2]"}
           onChange={(e) => setRange([Math.min(Number(e.target.value), hi - step), hi])}
@@ -34,7 +35,7 @@ export default function PriceRange({ min, max, step = 5000, value, onChange }) {
         />
         <input
           type="range" min={min} max={max} step={step} value={hi}
-          aria-label="Highest price" aria-valuetext={money(hi)}
+          aria-label={t("Highest price")} aria-valuetext={money(hi)}
           className="z-[2]"
           onChange={(e) => setRange([lo, Math.max(Number(e.target.value), lo + step)])}
           {...end}

@@ -41,26 +41,31 @@ export default function Kits({ products }) {
             const saving = look.separate - look.price;
             return (
               <Reveal as="article" key={look.id} className="look">
+                {/* The kit worn together */}
                 <div className="look__media"><Photo photo={look.photo} label={look.title} /></div>
                 <div className="look__body">
-                  <h3>{look.title}</h3>
-                  <p className="mt-1.5 mb-0 text-[.9rem] text-ink-3">{look.note}</p>
+                  <p className="look__count">{items.length} {items.length === 1 ? "piece" : "pieces"}</p>
+                  <h3 className="look__title">{look.title}</h3>
+                  <p className="look__note">{look.note}</p>
+                  {/* The pieces in it, each a link to its own page */}
                   <ul className="look__items">
                     {items.map((p) => (
                       <li key={p.id}>
                         <Link to={`/product/${p.slug}`}>
                           <span className="look__thumb"><Photo photo={p.photos[0]} label={p.name} /></span>
-                          <span><strong>{p.name}</strong><em>{money(p.price)}</em></span>
+                          <span className="look__piece">{p.name}</span>
+                          <span className="look__price">{money(p.price)}</span>
                         </Link>
                       </li>
                     ))}
                   </ul>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="font-semibold">
-                      {money(look.price)} the lot
-                      {saving > 0 && <span className="ml-2 text-[.82rem] font-semibold text-brand-600">Save {money(saving)}</span>}
-                    </span>
-                    <button type="button" className="btn btn--soft" onClick={() => addAll(look)}>Add all to bag</button>
+                  {/* The kit's price, the saving against buying one by one, and the one action */}
+                  <div className="look__foot">
+                    <div>
+                      <p className="look__total">{money(look.price)}<span> for the lot</span></p>
+                      {saving > 0 && <p className="look__save">You save {money(saving)}</p>}
+                    </div>
+                    <button type="button" className="btn btn--primary" onClick={() => addAll(look)}>Add all to bag</button>
                   </div>
                 </div>
               </Reveal>

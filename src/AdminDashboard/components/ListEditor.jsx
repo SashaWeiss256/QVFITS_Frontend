@@ -22,7 +22,7 @@ export default function ListEditor({ items = [], onChange, render, newItem, addL
   return (
     <div className="grid gap-3">
       {items.map((item, i) => (
-        <div key={item.id ?? i} className="rounded-r-md border border-line bg-white p-4">
+        <div key={item.id ?? i} className="rounded-[14px] border border-line bg-white p-4">
           <div className="mb-3 flex items-center gap-1">
             <strong className="mr-auto text-sm">{itemLabel(item, i)}</strong>
             <button type="button" className="icon-btn" aria-label="Move up" disabled={i === 0} onClick={() => move(i, -1)}><ArrowUp className="h-4 w-4" /></button>

@@ -22,11 +22,11 @@ export default function AccountOrders() {
   }
 
   return (
-    <div className="rounded-r-xl bg-white shadow-sh-1">
+    <div className="overflow-hidden rounded-[22px] border border-line bg-white shadow-sh-1">
       {/* The account layout already shows the page title; keep the heading for screen readers. */}
       <h2 className="sr-only">Orders</h2>
       {orders.map((o) => (
-        <Link key={o.id} to={`/account/orders/${o.id}`} className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-4 last:border-0 hover:bg-brand-50">
+        <Link key={o.id} to={`/account/orders/${o.id}`} className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-4 last:border-0 hover:bg-sand-50">
           <div>
             <strong className="font-display">{o.ref}</strong>
             <p className="m-0 text-sm text-ink-3">{formatDate(o.createdAt)} · {o.lines.length} {o.lines.length === 1 ? "piece" : "pieces"}</p>

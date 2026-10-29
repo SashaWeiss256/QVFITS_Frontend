@@ -30,8 +30,8 @@ export default function ProductPicker({ products, value = [], onChange, max, ord
       {/* Chosen Pieces: a draft or archived piece is flagged, because it can't be sold yet */}
       <ul className="m-0 mb-3 grid list-none gap-2 p-0">
         {picked.map((p, i) => (
-          <li key={p.id} className="flex items-center gap-3 rounded-r-md border border-line bg-white p-2">
-            <span className="block h-12 w-9 flex-none overflow-hidden rounded-r-sm bg-sand-100">{p.photos[0] && <Photo photo={p.photos[0]} label={p.name} className="h-full rounded-none" />}</span>
+          <li key={p.id} className="flex items-center gap-3 rounded-[14px] border border-line bg-white p-2">
+            <span className="block h-12 w-9 flex-none overflow-hidden rounded-[10px] bg-sand-100">{p.photos[0] && <Photo photo={p.photos[0]} label={p.name} className="h-full rounded-none" />}</span>
             <span className="flex-1 text-sm"><strong>{p.name}</strong>{p.status !== "active" && <span className="ml-2 text-xs text-warn">({p.status}, not shown)</span>}</span>
             {ordered && (
               <>
@@ -49,10 +49,10 @@ export default function ProductPicker({ products, value = [], onChange, max, ord
         <div className="relative">
           <input className="input w-full rounded-r-pill px-5" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Type a product name to add it" aria-label="Find a product to add" />
           {matches.length > 0 && (
-            <ul className="absolute z-20 mt-1 w-full list-none rounded-r-md border border-line bg-white p-1 shadow-sh-3">
+            <ul className="absolute z-20 mt-1 w-full list-none rounded-[14px] border border-line bg-white p-1 shadow-sh-3">
               {matches.map((p) => (
                 <li key={p.id}>
-                  <button type="button" className="w-full rounded-r-sm px-3 py-2 text-left text-sm hover:bg-brand-50" onClick={() => { onChange([...value, p.id]); setQ(""); }}>
+                  <button type="button" className="w-full rounded-[10px] px-3 py-2 text-left text-sm hover:bg-brand-50" onClick={() => { onChange([...value, p.id]); setQ(""); }}>
                     {p.name} <span className="text-ink-3">· {p.category}</span>
                   </button>
                 </li>

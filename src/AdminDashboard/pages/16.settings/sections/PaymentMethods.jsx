@@ -12,7 +12,7 @@ export default function PaymentMethods({ canEdit }) {
     <Panel title="Payment methods">
       <ul className="m-0 grid list-none gap-4 p-0">
         {methods.items.map((m) => (
-          <li key={m.id} className="grid gap-3 rounded-r-md border border-line bg-white p-4 sm:grid-cols-[auto_1fr_1fr] sm:items-end">
+          <li key={m.id} className="grid gap-3 rounded-[14px] border border-line bg-white p-4 sm:grid-cols-[auto_1fr_1fr] sm:items-end">
             <Toggle checked={m.active} disabled={!canEdit} onChange={(active) => methods.update(m.id, { active })} label={m.label} />
             <Field label="Name at checkout" disabled={!canEdit} defaultValue={m.label} onBlur={(e) => e.target.value !== m.label && methods.update(m.id, { label: e.target.value })} />
             <Field label="Help text" disabled={!canEdit} defaultValue={m.instructions} onBlur={(e) => e.target.value !== m.instructions && methods.update(m.id, { instructions: e.target.value })} />

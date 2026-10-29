@@ -10,7 +10,7 @@ The API is a separate repo, `qvfits-api` (Express + MongoDB). Until it is live, 
 
 ## Stack
 
-Vite 8 · React 19 · React Router 7 · Tailwind CSS 4 · TanStack Query · react-hook-form + zod · Lucide · Motion · Recharts. Hosted on DigitalOcean behind Nginx.
+Vite 8 · React 19 · React Router 7 · Tailwind CSS 4 · TanStack Query · react-hook-form + zod · Lucide · Motion · GSAP · Lenis · Recharts. Hosted on DigitalOcean behind Nginx.
 
 ## Run
 
@@ -18,6 +18,7 @@ Vite 8 · React 19 · React Router 7 · Tailwind CSS 4 · TanStack Query · reac
 npm install
 cp .env.example .env.local   # mocks on by default
 npm run dev                  # http://localhost:5173
+npm run dev:dummy            # same, with sample newsletter data (see docs/08-handoff.md)
 npm run typecheck && npm run lint && npm run build
 ```
 

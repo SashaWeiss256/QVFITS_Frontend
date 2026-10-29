@@ -46,7 +46,7 @@ export default function CustomerLogin() {
           <input type="checkbox" defaultChecked {...register("remember")} />
           Stay signed in on this device
         </label>
-        <Link to="/forgot-password" className="self-end text-sm text-brand-600">Forgot your password?</Link>
+        <Link to="/forgot-password" className="inline-flex min-h-11 items-center self-end text-sm text-brand-600">Forgot your password?</Link>
         {serverError && <p role="alert" className="m-0 text-sm font-semibold text-warn">{serverError}</p>}
         <Button type="submit" block loading={isSubmitting}>Sign in</Button>
       </form>

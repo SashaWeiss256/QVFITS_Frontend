@@ -40,7 +40,7 @@ export default function AdminInvite() {
     <AuthCard title="Join the team" lede="Choose a password to finish setting up your account.">
       <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         {/* Someone already signed in on this tab (often the owner testing the link) is replaced by the invited person. Hidden once the form is sent, so the new person's own session never shows here. */}
-        {admin && !isSubmitting && !joined && <p role="status" className="m-0 rounded-r-md bg-brand-50 px-3 py-2 text-sm text-ink-2">You are signed in as {admin.name}. Setting this password signs you in as the invited person instead.</p>}
+        {admin && !isSubmitting && !joined && <p role="status" className="m-0 rounded-[14px] bg-brand-50 px-3 py-2 text-sm text-ink-2">You are signed in as {admin.name}. Setting this password signs you in as the invited person instead.</p>}
         <Field label="Password" type="password" autoComplete="new-password" input={register("password")} error={errors.password?.message} />
         <Field label="Confirm password" type="password" autoComplete="new-password" input={register("confirm")} error={errors.confirm?.message} />
         {serverError && <p role="alert" className="m-0 text-sm font-semibold text-warn">{serverError}</p>}

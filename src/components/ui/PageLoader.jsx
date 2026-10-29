@@ -13,13 +13,13 @@ const Head = () => (
 
 // One white panel holding a few labelled fields, like the admin and checkout forms.
 const Panel = ({ rows = 3 }) => (
-  <div className="rounded-r-lg border border-line bg-white p-6">
+  <div className="rounded-[22px] border border-line bg-white p-6">
     <Skeleton className="h-5 w-40" />
     <div className="mt-5 grid gap-5">
       {Array.from({ length: rows }, (_, i) => (
         <div key={i}>
           <Skeleton className="h-3 w-28" />
-          <Skeleton className="mt-2 h-11 w-full rounded-full" />
+          <Skeleton className="mt-2 h-12 w-full" />
         </div>
       ))}
     </div>
@@ -38,7 +38,7 @@ const SHAPES = {
   // The product page: photos on the left, the buy panel on the right.
   product: () => (
     <div className="wrap section--tight grid gap-8 md:grid-cols-[1.2fr_1fr]">
-      <Skeleton className="aspect-[4/5] w-full rounded-r-lg" />
+      <Skeleton className="aspect-[4/5] w-full" />
       <div>
         <Skeleton className="h-3 w-20" />
         <Skeleton className="mt-4 h-9 w-3/4" />
@@ -46,8 +46,8 @@ const SHAPES = {
         <Skeleton className="mt-8 h-3 w-16" />
         <div className="mt-3 flex gap-2.5">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-9 w-9 rounded-full" />)}</div>
         <Skeleton className="mt-8 h-3 w-16" />
-        <div className="mt-3 flex gap-2.5">{Array.from({ length: 5 }, (_, i) => <Skeleton key={i} className="h-11 w-14 rounded-full" />)}</div>
-        <Skeleton className="mt-8 h-[50px] w-full rounded-full" />
+        <div className="mt-3 flex gap-2.5">{Array.from({ length: 5 }, (_, i) => <Skeleton key={i} className="h-11 w-14" />)}</div>
+        <Skeleton className="mt-8 h-[54px] w-full" />
       </div>
     </div>
   ),
@@ -67,7 +67,7 @@ const SHAPES = {
   ),
   // A list of rows, like orders or the Shop by groups.
   list: () => (
-    <div className="overflow-hidden rounded-r-lg border border-line bg-white">
+    <div className="overflow-hidden rounded-[22px] border border-line bg-white">
       {Array.from({ length: 5 }, (_, i) => (
         <div key={i} className="flex items-center gap-4 border-b border-line px-5 py-4 last:border-0">
           <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
@@ -82,8 +82,8 @@ const SHAPES = {
     <div className="p-6">
       <Skeleton className="h-3 w-20" />
       <Skeleton className="mt-3 h-8 w-56" />
-      <div className="mt-8 flex gap-3"><Skeleton className="h-11 w-64 rounded-full" /><Skeleton className="h-11 w-24 rounded-full" /></div>
-      <div className="mt-5 overflow-hidden rounded-r-lg border border-line bg-white">
+      <div className="mt-8 flex gap-3"><Skeleton className="h-11 w-64" /><Skeleton className="h-11 w-24" /></div>
+      <div className="mt-5 overflow-hidden rounded-[22px] border border-line bg-white">
         {Array.from({ length: 6 }, (_, i) => <div key={i} className="border-b border-line px-4 py-4 last:border-0"><Skeleton className="h-5 w-full" /></div>)}
       </div>
     </div>

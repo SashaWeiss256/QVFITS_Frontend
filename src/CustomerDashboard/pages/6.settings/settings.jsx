@@ -9,7 +9,7 @@ import { useDeleteMyAccount, useDownloadMyData, useNewsletterStatus, useSetNewsl
 import { demoEmailLink } from "@/store/tanstackStore/queries/site";
 
 // One card look for every block on the page.
-const card = "rounded-r-xl bg-white p-5 shadow-sh-1 sm:p-6";
+const card = "rounded-[22px] border border-line bg-white p-5 shadow-sh-1 sm:p-8";
 // Text on the left, its action on the right from sm up.
 const row = "flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between";
 

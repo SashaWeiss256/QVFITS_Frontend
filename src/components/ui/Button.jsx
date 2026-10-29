@@ -3,7 +3,7 @@ import { LoaderCircle } from "lucide-react";
 
 import { cn } from "@/utils/cn";
 
-// Quivogue's button classes (styles/quivogue.css): a gradient primary, a
+// Quivogue's button classes (formerly styles/quivogue.css, now removed): a gradient primary, a
 // white ghost, a soft brand tint.
 const VARIANTS = {
   primary: "btn--primary",

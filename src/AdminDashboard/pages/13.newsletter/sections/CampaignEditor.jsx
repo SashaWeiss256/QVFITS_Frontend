@@ -3,13 +3,13 @@ import { useState } from "react";
 
 import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
-import Photo from "@/components/storefront/Photo";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
-import { useCurrency } from "@/store/context/CurrencyContext";
 import { productsResource, useCollection, useRemoveCampaign, useSaveCampaign, useScheduleCampaign, useSendCampaign, useUnscheduleCampaign } from "@/store/tanstackStore/queries/admin";
 import Drawer from "@/AdminDashboard/components/Drawer";
 import LinkPicker from "@/AdminDashboard/components/LinkPicker";
+import EmailPreview from "@/AdminDashboard/components/EmailPreview";
 import ProductPicker from "@/AdminDashboard/components/ProductPicker";
+import { Block, count } from "../parts";
 
 /**
  * Write a campaign with a live preview of the email beside it. Every
@@ -27,7 +27,6 @@ export default function CampaignEditor({ initial, confirmed, onClose }) {
   const remove = useRemoveCampaign();
   const products = useCollection(productsResource).items.filter((p) => p.status === "active" && p.type !== "kit");
   const { can } = useAdminAuth();
-  const { moneyBase } = useCurrency();
   const locked = c.status === "sent" || !can("newsletter", "edit");
   const set = (patch) => setC((x) => ({ ...x, ...patch }));
   const busy = save.isPending || schedule.isPending || send.isPending || unschedule.isPending;
@@ -66,46 +65,34 @@ export default function CampaignEditor({ initial, confirmed, onClose }) {
         )
       }
     >
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <fieldset disabled={locked} className="m-0 grid content-start gap-4 border-0 p-0">
-          <Field label="Subject line" value={c.subject} onChange={(e) => set({ subject: e.target.value })} placeholder="The court range just landed" />
-          <Field label="Preview text" value={c.previewText} onChange={(e) => set({ previewText: e.target.value })} hint="The line inboxes show after the subject." />
-          <Field label="Heading" value={c.heading} onChange={(e) => set({ heading: e.target.value })} />
-          <Field label="Message" as="textarea" rows={6} value={c.body} onChange={(e) => set({ body: e.target.value })} />
-          <Field label="Pieces to show (up to 4)">{() => <ProductPicker products={products} value={c.productIds} onChange={(productIds) => set({ productIds })} max={4} />}</Field>
-          <Field label="Button text" value={c.cta.label} onChange={(e) => set({ cta: { ...c.cta, label: e.target.value } })} />
-          <LinkPicker label="Button goes to" value={c.cta} onChange={(patch) => set({ cta: { ...c.cta, ...patch } })} />
-          <Field label="Send at (for scheduling)" type="datetime-local" value={sendAt} onChange={(e) => setSendAt(e.target.value)} hint="Leave empty and use Send now to send straight away." />
-          {confirming && <p role="alert" className="m-0 rounded-r-md bg-brand-50 px-3 py-2 text-sm text-ink-2">This goes to {confirmed} confirmed subscribers and can't be unsent. Press Send again to go ahead.</p>}
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        {/* The form, in the order an email is written */}
+        <fieldset disabled={locked} className="m-0 grid min-w-0 content-start gap-7 border-0 p-0">
+          <Block title="In the inbox" hint="The two lines people read before they open it.">
+            <Field label="Subject line" value={c.subject} onChange={(e) => set({ subject: e.target.value })} placeholder="The court range just landed" hint={count(c.subject, 60)} />
+            <Field label="Preview text" value={c.previewText} onChange={(e) => set({ previewText: e.target.value })} hint={count(c.previewText, 110)} />
+          </Block>
+          <Block title="The message">
+            <Field label="Heading" value={c.heading} onChange={(e) => set({ heading: e.target.value })} />
+            <Field label="Message" as="textarea" rows={6} value={c.body} onChange={(e) => set({ body: e.target.value })} />
+          </Block>
+          <Block title="Pieces to show" hint="Up to four. Their photo, name and price appear in the email.">
+            <Field label="Choose pieces">{() => <ProductPicker products={products} value={c.productIds} onChange={(productIds) => set({ productIds })} max={4} />}</Field>
+          </Block>
+          <Block title="The button">
+            <Field label="Button text" value={c.cta.label} onChange={(e) => set({ cta: { ...c.cta, label: e.target.value } })} />
+            <LinkPicker label="Button goes to" value={c.cta} onChange={(patch) => set({ cta: { ...c.cta, ...patch } })} />
+          </Block>
+          <Block title="Delivery" hint={`Goes to ${confirmed} confirmed ${confirmed === 1 ? "subscriber" : "subscribers"}.`}>
+            <Field label="Send at (to schedule)" type="datetime-local" value={sendAt} onChange={(e) => setSendAt(e.target.value)} hint="Leave empty and use Send now to send straight away." />
+            {confirming && <p role="alert" className="m-0 rounded-[14px] bg-brand-50 px-4 py-3 text-sm text-ink-2">This goes to {confirmed} confirmed subscribers and can't be unsent. Press Send again to go ahead.</p>}
+          </Block>
         </fieldset>
 
-        {/* The email as subscribers will see it. */}
-        <div className="lg:sticky lg:top-0 lg:self-start">
-          <p className="m-0 mb-2 text-[.7rem] font-semibold uppercase tracking-[0.16em] text-ink-4">Preview</p>
-          <div className="overflow-hidden rounded-r-lg border border-line bg-white">
-            <div className="border-b border-line bg-cream px-4 py-3 text-sm">
-              <strong className="block">{c.subject || "Subject line"}</strong>
-              <span className="text-ink-3">{c.previewText || "Preview text"}</span>
-            </div>
-            <div className="grid gap-4 p-5 text-center">
-              <span className="font-display text-sm font-bold tracking-[0.2em] text-brand-600">QVFITS</span>
-              <h3 className="m-0 font-display text-xl">{c.heading || "Your heading"}</h3>
-              <p className="m-0 whitespace-pre-line text-sm text-ink-2">{c.body || "Your message."}</p>
-              {picked.length > 0 && (
-                <div className="grid grid-cols-2 gap-3 text-left">
-                  {picked.map((p) => (
-                    <div key={p.id}>
-                      <div className="aspect-[3/4] overflow-hidden rounded-r-sm bg-cream-2">{p.photos[0] && <Photo photo={p.photos[0]} label={p.name} className="h-full w-full object-cover" />}</div>
-                      <p className="m-0 mt-1 text-xs font-semibold">{p.name}</p>
-                      <p className="m-0 text-xs text-ink-3">{moneyBase(p.price)}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <span className="btn btn--primary mx-auto">{c.cta.label || "Shop now"}</span>
-              <p className="m-0 text-[.7rem] text-ink-4">You're getting this because you joined the QVFITS newsletter. Unsubscribe.</p>
-            </div>
-          </div>
+        {/* The email as subscribers will see it, in view while the form scrolls */}
+        <div className="lg:sticky lg:top-0">
+          <p className="m-0 mb-3 text-[.7rem] font-semibold uppercase tracking-[0.16em] text-ink-4">Preview</p>
+          <EmailPreview subject={c.subject} previewText={c.previewText} heading={c.heading} body={c.body} pieces={picked} button={c.cta.label || "Shop now"} />
         </div>
       </div>
     </Drawer>

@@ -11,6 +11,7 @@ import DataTable from "@/AdminDashboard/components/DataTable";
 import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
 import StatCard from "@/AdminDashboard/components/StatCard";
+import { SplitBar, StatRow } from "../parts";
 
 const STATUS = [{ value: "subscribed", label: "Subscribed" }, { value: "pending", label: "Awaiting confirmation" }, { value: "unsubscribed", label: "Unsubscribed" }];
 const SOURCE = { footer: "Footer", home: "Home page", checkout: "Checkout", account: "Their account", resubscribe: "Rejoined" };
@@ -33,14 +34,24 @@ export default function Subscribers() {
 
   return (
     <>
-      <PageHeader lede="Everyone who joined from the shop. Only confirmed subscribers get campaigns; the rest are waiting for them to tap the link we emailed." />
-      <section aria-label="The list" className="mb-6 grid gap-px overflow-hidden rounded-r-lg border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
+      <PageHeader lede="Everyone who joined from the shop. Only confirmed subscribers get campaigns; the rest are waiting to tap the link we emailed." />
+      <StatRow label="The list">
         <StatCard label="Subscribed" icon={MailCheck} loading={isLoading} value={count("subscribed")} note="Get every campaign" />
         <StatCard label="Awaiting confirmation" icon={MailQuestion} loading={isLoading} value={count("pending")} note="Haven't tapped the link yet" />
         <StatCard label="Unsubscribed" icon={MailX} loading={isLoading} value={count("unsubscribed")} note="Never mailed again" />
-        <StatCard label="Joined in 30 days" icon={UserPlus} loading={isLoading} value={subs.filter((s) => now - Date.parse(s.createdAt) < MONTH).length} />
-      </section>
-      <Panel>
+        <StatCard label="Joined in 30 days" icon={UserPlus} loading={isLoading} value={subs.filter((s) => now - Date.parse(s.createdAt) < MONTH).length} note="New this month" />
+      </StatRow>
+      {/* How the list divides, at a glance */}
+      {subs.length > 0 && (
+        <Panel title="List health" hint="Confirmed addresses are your real audience. A large awaiting group usually means the confirmation email is not reaching people." className="mb-6">
+          <SplitBar parts={[
+            { label: "Subscribed", value: count("subscribed"), className: "bg-[image:var(--brand-grad)]" },
+            { label: "Awaiting confirmation", value: count("pending"), className: "bg-brand-200" },
+            { label: "Unsubscribed", value: count("unsubscribed"), className: "bg-line-2" },
+          ]} />
+        </Panel>
+      )}
+      <Panel title="Everyone on the list" hint="Open the filters to narrow by status or where they joined. Export downloads the confirmed addresses." flush={false}>
         <DataTable
           filterDrawer
           rows={subs}

@@ -17,16 +17,17 @@ import { resizeToWebp } from "../lib/media";
  *   folder: what the photos are for ("products" or "categories"), which
  *   decides the permission the upload needs.
  *   colors: [{ id, name, hex }] to tag a photo to a colourway; `productColors`
- *   (ids) are the ones the product lists, shown first on each card; `onColorPick(id)`
- *   tells the caller a colour was picked, so it can add it to the product.
+ *   (ids) are the colours the product lists. A photo can only be tagged to one
+ *   of those, so until some are chosen the cards ask for that first, with
+ *   `onChooseColours` taking the person to where they are chosen.
  */
-export default function ImageUploader({ value = [], onChange, single = false, colors, onColorPick, productColors, label = null, folder = "products" }) {
+export default function ImageUploader({ value = [], onChange, single = false, colors, productColors, onChooseColours, label = null, folder = "products" }) {
   const input = useRef(null);
   const upload = useUploadPhoto();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  // Which photo has its colour palette open.
-  const [pickingId, setPickingId] = useState(null);
+  // Only the colours the product lists can be tagged; the rest are chosen below the photos first.
+  const chosen = colors?.filter((c) => productColors?.includes(c.id)) ?? [];
 
   const add = async (files) => {
     setError("");
@@ -57,25 +58,18 @@ export default function ImageUploader({ value = [], onChange, single = false, co
   return (
     <div>
       {label && <p className="mb-2 text-sm font-semibold text-ink-2">{label}</p>}
-      <div className={cn("grid gap-3", single ? "grid-cols-1 sm:max-w-xs" : "grid-cols-2 sm:grid-cols-4")}>
+      <div className={cn("grid gap-3", single ? "grid-cols-1 sm:max-w-xs" : "grid-cols-2 sm:grid-cols-3")}>
         {value.map((photo, i) => {
           const colour = colors?.find((c) => c.id === photo.colorId);
-          const picking = pickingId === photo.id;
-          // Colours the product already lists (ticked below); with none ticked yet, every colour is offered.
-          const chosen = colors?.filter((c) => productColors?.includes(c.id)) ?? [];
-          const setColour = (id) => {
-            onChange(value.map((p) => (p.id === photo.id ? { ...p, colorId: id } : p)));
-            if (id) onColorPick?.(id);
-            setPickingId(null);
-          };
+          const setColour = (id) => onChange(value.map((p) => (p.id === photo.id ? { ...p, colorId: id } : p)));
           return (
-            <figure key={photo.id} className="m-0 flex flex-col overflow-hidden rounded-r-md border border-line bg-white">
+            <figure key={photo.id} className="m-0 flex flex-col overflow-hidden rounded-[18px] border border-line bg-white">
               <div className="relative aspect-[3/4]">
                 <Photo photo={photo} label={`Photo ${i + 1}`} className="absolute inset-0 h-full rounded-none" />
-                {i === 0 && !single && <span className="absolute top-2 left-2 rounded-r-pill bg-white/90 px-2 py-0.5 text-[.7rem] font-semibold">Cover</span>}
+                {i === 0 && !single && <span className="absolute top-2 left-2 rounded-full bg-cream px-2.5 py-1 text-[.74rem] font-medium">Cover</span>}
                 {/* The colour it belongs to, on the photo itself, so a glance shows which is which. */}
                 {colour && (
-                  <span className="absolute right-2 bottom-2 inline-flex items-center gap-1.5 rounded-r-pill bg-white/95 py-1 pr-2.5 pl-1.5 text-xs font-semibold shadow-sh-1">
+                  <span className="absolute right-2 bottom-2 inline-flex items-center gap-1.5 rounded-full bg-cream py-1 pr-2.5 pl-1.5 text-xs font-medium">
                     <i className="sw h-4 w-4 ring-1 ring-line" style={{ background: colour.hex }} aria-hidden="true" />
                     {colour.name}
                   </span>
@@ -94,11 +88,11 @@ export default function ImageUploader({ value = [], onChange, single = false, co
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-                {colors?.length > 0 && (
+                {colors?.length > 0 && (chosen.length ? (
                   <div className="grid gap-1.5">
-                    {/* The colours picked for this product sit right on the card, one tap each. */}
+                    {/* The product's own colours, one tap each; tap the chosen one again to clear it. */}
                     <div className="flex flex-wrap items-center gap-1.5 px-0.5" role="group" aria-label="Colour of this photo">
-                      {(picking || !chosen.length ? colors : chosen).map((c) => {
+                      {chosen.map((c) => {
                         const on = c.id === photo.colorId;
                         return (
                           <button
@@ -115,11 +109,6 @@ export default function ImageUploader({ value = [], onChange, single = false, co
                           </button>
                         );
                       })}
-                      {chosen.length > 0 && (
-                        <button type="button" className="min-h-7 rounded-r-pill px-2 text-xs font-semibold text-ink-3 hover:text-brand-600" aria-expanded={picking} onClick={() => setPickingId(picking ? null : photo.id)}>
-                          {picking ? "Fewer" : "More"}
-                        </button>
-                      )}
                     </div>
                     <p className="m-0 flex min-h-5 items-center gap-1.5 px-0.5 text-xs font-semibold text-ink-3">
                       {colour ? (
@@ -128,12 +117,17 @@ export default function ImageUploader({ value = [], onChange, single = false, co
                         </>
                       ) : (
                         <>
-                          <Palette className="h-3.5 w-3.5 text-ink-4" aria-hidden="true" /> Any colour
+                          <Palette className="h-3.5 w-3.5 text-ink-4" aria-hidden="true" /> Shows for every colour
                         </>
                       )}
                     </p>
                   </div>
-                )}
+                ) : (
+                  <p className="m-0 px-0.5 pb-1 text-xs text-ink-3">
+                    Choose this piece&apos;s colours first, then say which one this photo shows.
+                    {onChooseColours && <> <button type="button" className="font-semibold text-brand-600 underline underline-offset-2" onClick={onChooseColours}>Choose colours</button></>}
+                  </p>
+                ))}
               </figcaption>
             </figure>
           );
@@ -143,7 +137,7 @@ export default function ImageUploader({ value = [], onChange, single = false, co
           <button
             type="button"
             className={cn(
-              "grid place-items-center rounded-r-md border-2 border-dashed border-line-2 bg-cream/60 text-sm text-ink-3 transition-colors duration-150 hover:border-brand-300 hover:bg-brand-50/50 hover:text-brand-600",
+              "grid place-items-center rounded-[18px] border border-dashed border-line-2 bg-sand-50 text-sm text-ink-3 transition-colors duration-200 hover:border-ink hover:bg-sand-100 hover:text-ink",
               value.length ? "min-h-64" : "col-span-full min-h-40 py-8",
             )}
             onClick={() => input.current?.click()}
@@ -154,7 +148,7 @@ export default function ImageUploader({ value = [], onChange, single = false, co
             <span className={cn("flex items-center gap-3", value.length ? "flex-col" : "flex-col sm:flex-row")}>
               <ImagePlus className="h-6 w-6" aria-hidden="true" />
               <span className="text-center sm:text-left">
-                <strong className="block text-sm font-semibold">{busy ? "Uploading…" : single && value.length ? "Replace" : value.length ? "Add more" : "Add photos"}</strong>
+                <strong className="block text-sm font-medium">{busy ? "Uploading…" : single && value.length ? "Replace" : value.length ? "Add more" : "Add photos"}</strong>
                 {!value.length && <span className="block text-xs text-ink-4">Click or drop them here. Several at once is fine.</span>}
               </span>
             </span>

@@ -9,6 +9,7 @@ import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { notify } from "@/store/tanstackStore/notices";
 import { useLiveAdmin, useOverview } from "@/store/tanstackStore/queries/admin";
 import { useSeo } from "@/seo/useSeo";
+import { useRoundedUi } from "@/utils/useRoundedUi";
 import AdminHeader from "./components/header/AdminHeader";
 import AdminSidebar from "./components/sidebar/AdminSidebar";
 import { HeaderSlotContext } from "./lib/headerSlot";
@@ -25,6 +26,7 @@ function getStoredCollapsed() {
 
 // The admin's own app: no storefront chrome, same Quivogue tokens and type.
 export default function AdminLayout() {
+  useRoundedUi();
   const [menuOpen, setMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(getStoredCollapsed);
   const [headerSlot, setHeaderSlot] = useState(null);
@@ -105,7 +107,7 @@ export default function AdminLayout() {
         <AdminHeader title={title} trail={trail} onOpenMenu={() => setMenuOpen(true)} actionsRef={setHeaderSlot} />
         <div className="mx-auto w-full max-w-[1400px] min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
           {viewOnly && (
-            <p className="m-0 mb-6 flex items-center gap-2.5 rounded-r-md border border-brand-100 bg-brand-50 px-4 py-2.5 text-[.85rem] text-ink-2">
+            <p className="m-0 mb-6 flex items-center gap-2.5 rounded-[14px] border border-brand-100 bg-brand-50 px-4 py-2.5 text-[.85rem] text-ink-2">
               <Eye className="h-4 w-4 shrink-0 text-brand-500" aria-hidden="true" />
               <span><strong className="font-semibold text-ink">View only.</strong> Your role can look at {active.label} but not change it.</span>
             </p>
@@ -121,7 +123,7 @@ export default function AdminLayout() {
         </div>
       </main>
       {warning && (
-        <div role="alertdialog" aria-live="assertive" aria-labelledby="idleTitle" className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md rounded-r-lg bg-white p-5 shadow-sh-2 ring-1 ring-line sm:inset-x-auto sm:right-6">
+        <div role="alertdialog" aria-live="assertive" aria-labelledby="idleTitle" className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md rounded-[18px] bg-white p-5 shadow-sh-2 ring-1 ring-line sm:inset-x-auto sm:right-6">
           <p id="idleTitle" className="m-0 font-semibold">Still there?</p>
           <p className="m-0 mt-1 text-sm text-ink-3">You'll be signed out in 2 minutes to keep the shop safe on a shared computer.</p>
           <div className="mt-4 flex gap-2">

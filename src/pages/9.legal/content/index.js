@@ -9,7 +9,7 @@ import { terms } from "./terms";
 export const LEGAL_DOCS = [
   { path: "/privacy", label: "Privacy policy", build: privacy },
   { path: "/terms", label: "Terms of sale", build: terms },
-  { path: "/returns", label: "Exchanges and returns", build: returns },
+  { path: "/returns", label: "Returns and exchanges", build: returns },
   { path: "/delivery", label: "Delivery", build: delivery },
 ];
 

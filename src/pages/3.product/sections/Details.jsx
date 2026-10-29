@@ -5,6 +5,7 @@ import Accordion from "@/components/ui/Accordion";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { usePageCopy, useSettings } from "@/store/tanstackStore/queries/site";
 import { fill, shopTokens } from "@/utils/fill";
+import { t } from "@/i18n/translate";
 
 // The details (open), fit and sizing, care, and delivery and exchanges.
 // Care is per product; fees and the exchange window come from the settings.
@@ -30,7 +31,7 @@ export default function Details({ product }) {
       body: (
         <>
           {product.fitNote && <p>{product.fitNote}</p>}
-          <p>{copy?.fitHelp} <Link to="/size-guide" className="text-brand-600 underline">Open the size guide</Link></p>
+          <p>{copy?.fitHelp} <Link to="/size-guide" className="text-brand-600 underline">{t("Open the size guide")}</Link></p>
         </>
       ),
     },

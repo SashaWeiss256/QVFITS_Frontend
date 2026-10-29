@@ -11,14 +11,13 @@ import { activeNavItem } from "../../lib/navMatch";
 
 /**
  * Fixed on desktop, a drawer on a phone. Links sit in labelled groups that
- * fold away, so the whole list fits a laptop screen without its own
- * scrollbar; the group holding the open page always stays open. A group
+ * fold away, so the list stays tidy; the group holding the open page always stays open. A group
  * goes when the role can open none of it. The footer holds who is signed
  * in and sign out. Collapsed, the desktop sidebar shows icons only.
  */
-// Groups start folded, except the one holding the open page; the ones a
-// person opens stay open (remembered in the browser).
-const OPEN_KEY = "qvfits:admin:nav:open";
+// Groups start open; the ones a person folds stay folded (remembered in the
+// browser), except the one holding the open page, which never folds.
+const OPEN_KEY = "qvfits:admin:nav:folded";
 
 function readOpened() {
   try { return new Set(JSON.parse(localStorage.getItem(OPEN_KEY) ?? "[]")); }
@@ -29,10 +28,10 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
   const { can, admin } = useAdminAuth();
   const { pathname } = useLocation();
   const active = activeNavItem(pathname);
-  const [opened, setOpened] = useState(readOpened);
+  const [folded, setFolded] = useState(readOpened);
   const navRef = useRef(null);
   const toggleGroup = (id) =>
-    setOpened((prev) => {
+    setFolded((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -50,7 +49,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
   return (
     <>
       {/* Tapping the scrim closes the phone drawer. */}
-      <div className={cn("scrim lg:hidden", mobileOpen && "is-on")} onClick={onClose} />
+      <div className={cn("sheet-scrim lg:hidden", mobileOpen && "is-on")} onClick={onClose} />
 
       <aside
         className={cn(
@@ -68,7 +67,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
           <span className={cn(collapsed && "lg:hidden")}>
             <Logo to="/admin" />
           </span>
-          <span aria-hidden="true" className={cn("hidden h-9 w-9 place-items-center rounded-r-md bg-[image:var(--brand-grad)] font-display text-[1.05rem] font-bold text-white", collapsed && "lg:grid")}>
+          <span aria-hidden="true" className={cn("hidden h-9 w-9 place-items-center rounded-[14px] bg-[image:var(--brand-grad)] font-display text-[1.05rem] font-bold text-white", collapsed && "lg:grid")}>
             Q
           </span>
           <button type="button" className="icon-btn lg:hidden" aria-label="Close menu" onClick={onClose}>
@@ -97,7 +96,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
         <nav ref={navRef} className="flex-1 overflow-y-auto overscroll-contain px-3 py-3" aria-label="Admin">
           {groups.map((group, gi) => {
             const holdsActive = group.items.some((i) => i.to === active?.to);
-            const open = !group.label || holdsActive || opened.has(group.id);
+            const open = !group.label || holdsActive || !folded.has(group.id);
             return (
             <div key={group.id} className={cn(gi > 0 && "mt-3")}>
               {group.label && (
@@ -108,7 +107,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
                     disabled={holdsActive}
                     aria-expanded={open}
                     className={cn(
-                      "group/label mb-1 flex w-full items-center justify-between rounded-r-sm px-2 py-1 text-[.66rem] font-semibold uppercase tracking-[0.16em] text-ink-4 outline-none",
+                      "group/label mb-1 flex w-full items-center justify-between rounded-[10px] px-2 py-2.5 text-[.66rem] font-semibold uppercase tracking-[0.16em] text-ink-4 outline-none",
                       "transition-colors duration-200 hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-brand-300 disabled:cursor-default disabled:hover:text-ink-4",
                       collapsed && "lg:sr-only",
                     )}
@@ -133,7 +132,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
                         aria-current={isActive ? "page" : undefined}
                         title={collapsed ? label : undefined}
                         className={cn(
-                          "group relative flex min-h-9 items-center gap-3 rounded-r-md px-2 text-[.86rem] outline-none",
+                          "group relative flex min-h-9 items-center gap-3 rounded-[14px] px-2 text-[.86rem] outline-none",
                           "transition-[background-color,color,box-shadow,transform] duration-200 ease-q active:scale-[0.98]",
                           "focus-visible:ring-2 focus-visible:ring-brand-300",
                           collapsed && "lg:justify-center lg:px-0",
@@ -153,7 +152,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
                         {/* Icon tile: brand gradient when active, a small nudge on hover */}
                         <span
                           className={cn(
-                            "relative grid h-6 w-6 shrink-0 place-items-center rounded-r-sm transition-[background-color,color,transform] duration-200 ease-q",
+                            "relative grid h-6 w-6 shrink-0 place-items-center rounded-[10px] transition-[background-color,color,transform] duration-200 ease-q",
                             isActive
                               ? "bg-[image:var(--brand-grad)] text-white shadow-[0_4px_10px_-4px_rgba(150,48,110,.55)]"
                               : "text-ink-3 group-hover:translate-x-0.5 group-hover:text-brand-500",
@@ -189,7 +188,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
 
         {/* Account row: who is signed in, with sign out at the end of the same row */}
         <div className="shrink-0 border-t border-line p-2">
-          <div className={cn("flex items-center gap-3 rounded-r-md p-2", collapsed && "lg:flex-col lg:gap-2 lg:px-0")}>
+          <div className={cn("flex items-center gap-3 rounded-[14px] p-2", collapsed && "lg:flex-col lg:gap-2 lg:px-0")}>
             {/* Initials inside a thin brand gradient ring */}
             <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[image:var(--brand-grad)] p-[2px]">
               <span className="grid h-full w-full place-items-center rounded-full bg-white text-[.7rem] font-bold tracking-wider text-brand-600">
@@ -206,7 +205,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
               aria-label="Sign out"
               title="Sign out"
               className={cn(
-                "grid h-9 w-9 shrink-0 place-items-center rounded-r-md text-ink-3 outline-none",
+                "grid h-9 w-9 shrink-0 place-items-center rounded-[14px] text-ink-3 outline-none",
                 "transition-[background-color,color,transform] duration-200 ease-q hover:bg-warn/10 hover:text-warn active:scale-95",
                 "focus-visible:ring-2 focus-visible:ring-brand-300",
               )}

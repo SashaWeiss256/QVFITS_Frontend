@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
+import { t } from "@/i18n/translate";
 
 /**
  * The code box under the order summary. Checking a code prices the bag on
@@ -14,16 +15,16 @@ export default function DiscountCode({ applied, onApply, onRemove, checking, err
 
   if (applied?.discountCode) {
     return (
-      <div className="mt-4 flex items-center justify-between gap-2 rounded-r-md bg-brand-50 px-3 py-2.5 text-sm">
+      <div className="mt-4 flex items-center justify-between gap-2 bg-white px-3 py-2.5 text-sm">
         <span><strong>{applied.discountCode}</strong> {applied.discount ? `saves ${money(applied.discount)}` : "gives free delivery"}</span>
-        <button type="button" className="text-ink-3 underline" onClick={() => { setCode(""); onRemove(); }}>Remove</button>
+        <button type="button" className="text-ink-3 underline" onClick={() => { setCode(""); onRemove(); }}>{t("Remove")}</button>
       </div>
     );
   }
 
   return (
     <form className="mt-4" noValidate onSubmit={(e) => { e.preventDefault(); if (code.trim()) onApply(code.trim()); }}>
-      <label htmlFor="discountCode" className="mb-1.5 block text-[.8rem] font-medium text-ink-3">Discount code</label>
+      <label htmlFor="discountCode" className="mb-1.5 block text-[.8rem] font-medium text-ink-3">{t("Discount code")}</label>
       <div className="flex gap-2">
         <input id="discountCode" className="input min-w-0 flex-1 uppercase" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" />
         <button type="submit" className="btn btn--soft" disabled={!code.trim() || checking}>{checking ? "Checking…" : "Apply"}</button>

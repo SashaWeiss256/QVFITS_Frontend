@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import { useSeo } from "@/seo/useSeo";
 import { useConfirmSubscription } from "@/store/tanstackStore/queries/site";
+import { t } from "@/i18n/translate";
 
 // Where the confirmation email's link lands: the address joins the list.
 export default function NewsletterConfirm() {
@@ -31,18 +32,18 @@ export default function NewsletterConfirm() {
       {state.status === "done" && (
         <>
           <h1>You're on the list</h1>
-          <p className="lede">{state.email} will hear about new drops and restocks first. Your welcome email is on its way.</p>
+          <p className="lede center mt-5">{state.email} will hear about new drops and restocks first. Your welcome email is on its way.</p>
         </>
       )}
       {state.status === "failed" && (
         <>
           <h1>That link didn't work</h1>
-          <p className="lede">{state.message}</p>
+          <p className="lede center mt-5">{state.message}</p>
         </>
       )}
       <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <Link to="/shop" className="btn btn--primary">Shop the range</Link>
-        <Link to="/" className="btn btn--ghost">Back home</Link>
+        <Link to="/shop" className="btn btn--primary">{t("Shop the range")}</Link>
+        <Link to="/" className="btn btn--ghost">{t("Back home")}</Link>
       </div>
     </section>
   );

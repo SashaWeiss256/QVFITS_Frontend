@@ -27,9 +27,9 @@ export default function AccountProfile() {
   return (
     <div className="grid gap-6">
       {/* Counts: one panel split by hairlines, each a link to its page */}
-      <div className="grid grid-cols-3 divide-x divide-line overflow-hidden rounded-r-xl bg-white shadow-sh-1">
+      <div className="grid grid-cols-3 divide-x divide-line overflow-hidden rounded-[22px] border border-line bg-white shadow-sh-1">
         {stats.map((s) => (
-          <Link key={s.to} to={s.to} className="group relative px-4 py-5 transition-colors hover:bg-brand-50 sm:px-6">
+          <Link key={s.to} to={s.to} className="group relative px-4 py-5 transition-colors hover:bg-sand-50 sm:px-6">
             <p className="m-0 font-display text-[clamp(1.7rem,3.5vw,2.4rem)] font-bold leading-none tracking-tight">{s.value}</p>
             <p className="m-0 mt-2 text-[.82rem] text-ink-3">{s.label}</p>
             <ArrowUpRight className="absolute right-3 top-3 h-4 w-4 text-ink-3 opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
@@ -38,7 +38,7 @@ export default function AccountProfile() {
       </div>
 
       {/* Details: label left, value right, split by hairlines instead of boxes */}
-      <section className="rounded-r-xl bg-white p-5 shadow-sh-1 sm:p-6" aria-label="Your details">
+      <section className="rounded-[22px] border border-line bg-white p-5 shadow-sh-1 sm:p-8" aria-label="Your details">
         <h2 className="text-[1.15rem]">Your details</h2>
         <dl className="m-0 mt-2 divide-y divide-line">
           {rows.map(([k, v]) => (

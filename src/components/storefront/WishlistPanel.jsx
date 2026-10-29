@@ -1,12 +1,13 @@
 /* Wishlist Panel */
 import { Link } from "react-router-dom";
-import { Heart, X } from "lucide-react";
+import { Heart } from "lucide-react";
 
 import EmptyState from "@/components/ui/EmptyState";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useWishlist } from "@/store/context/WishlistContext";
 import { useProductsByIds } from "@/store/tanstackStore/queries/site";
 import Photo from "./Photo";
+import { t } from "@/i18n/translate";
 
 // The saved pieces drawer. Removing here un-hearts the piece everywhere.
 export default function WishlistPanel() {
@@ -19,12 +20,12 @@ export default function WishlistPanel() {
   if (!ids.length) {
     return (
       <>
-        <div className="drawer__body">
+        <div data-lenis-prevent className="flex flex-1 flex-col justify-center overflow-y-auto px-6 sm:px-8">
           {/* Empty State */}
-          <EmptyState icon={Heart}>Nothing saved yet. Tap the heart on anything you love.</EmptyState>
+          <EmptyState icon={Heart}>{t("Nothing saved yet. Tap the heart on anything you love.")}</EmptyState>
         </div>
-        <div className="drawer__foot">
-          <Link className="btn btn--primary btn--block" to="/shop">Start browsing</Link>
+        <div className="border-t border-line px-6 py-6 sm:px-8">
+          <Link className="btn btn--primary btn--block btn--lg" to="/shop">{t("Start browsing")}</Link>
         </div>
       </>
     );
@@ -32,23 +33,28 @@ export default function WishlistPanel() {
 
   return (
     <>
-      <div className="drawer__body">
-        {/* Saved Pieces: each links to its page and can be removed with the X */}
-        {products.map((p) => (
-          <div key={p.id} className="mini-row">
-            <Link className="mini-row__media" to={`/product/${p.slug}`}><Photo photo={p.photos[0]} label={p.name} /></Link>
-            <div>
-              <strong>{p.name}</strong>
-              <small>{money(p.price)}</small>
-            </div>
-            <button type="button" className="icon-btn" aria-label={`Remove ${p.name} from wishlist`} onClick={() => toggle(p.id)}>
-              <X className="h-[19px] w-[19px]" aria-hidden="true" />
-            </button>
-          </div>
-        ))}
+      <div data-lenis-prevent className="flex-1 overflow-y-auto px-6 sm:px-8">
+        {/* Saved Pieces: each links to its page and can be removed */}
+        <ul>
+          {products.map((p) => (
+            <li key={p.id} className="grid grid-cols-[84px_minmax(0,1fr)] gap-5 border-b border-line py-6">
+              <Link to={`/product/${p.slug}`} className="relative block aspect-[3/4] overflow-hidden bg-beige">
+                <Photo photo={p.photos[0]} label={p.name} />
+              </Link>
+              <div className="flex min-w-0 flex-col">
+                <Link to={`/product/${p.slug}`} className="font-display text-[1.02rem] leading-snug hover:text-brand-600">{p.name}</Link>
+                <p className="mt-1 text-[0.92rem] tabular-nums text-ink-2">{money(p.price)}</p>
+                <div className="mt-auto flex items-center gap-6 pt-4 text-[0.84rem]">
+                  <Link to={`/product/${p.slug}`} className="underline underline-offset-4 transition-colors hover:text-brand-600">{t("Choose size")}</Link>
+                  <button type="button" className="text-ink-3 underline underline-offset-4 transition-colors hover:text-brand-600" aria-label={`Remove ${p.name} from saved pieces`} onClick={() => toggle(p.id)}>{t("Remove")}</button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
-      <div className="drawer__foot">
-        <Link className="btn btn--primary btn--block" to="/shop">Keep shopping</Link>
+      <div className="border-t border-line px-6 py-6 sm:px-8">
+        <Link className="btn btn--primary btn--block btn--lg" to="/shop">{t("Keep shopping")}</Link>
       </div>
     </>
   );

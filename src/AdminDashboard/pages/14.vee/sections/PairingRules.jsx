@@ -65,7 +65,7 @@ function Editor({ doc, colours }) {
             <span className="text-ink-4">+</span>
             <i className="sw h-4 w-4 ring-1 ring-line" style={{ background: byId(r[1])?.hex }} aria-hidden="true" />
             {byId(r[1])?.name}
-            {canEdit && <button type="button" className="icon-btn h-7 min-h-0 w-7" aria-label={`Remove this rule`} onClick={() => remove(key, r)}><X className="h-3.5 w-3.5" /></button>}
+            {canEdit && <button type="button" className="icon-btn h-9 min-h-0 w-9" aria-label={`Remove this rule`} onClick={() => remove(key, r)}><X className="h-3.5 w-3.5" /></button>}
           </li>
         ))}
         {!draft[key].length && <li className="text-sm text-ink-4">None yet.</li>}
@@ -83,7 +83,7 @@ function Editor({ doc, colours }) {
             {picker(b, setB, "Second colour")}
           </div>
           {verdict && a !== b && (
-            <div className={cn("mt-4 flex flex-wrap items-center justify-between gap-3 rounded-r-md px-4 py-3", verdict.ok ? "bg-[#e8f1ec]" : "bg-[#f8e9e9]")}>
+            <div className={cn("mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[14px] px-4 py-3", verdict.ok ? "bg-[#e8f1ec]" : "bg-[#f8e9e9]")}>
               <p className="m-0 flex items-center gap-2 text-[.92rem]">
                 {verdict.ok ? <Check className="h-4 w-4 text-ok" aria-hidden="true" /> : <X className="h-4 w-4 text-warn" aria-hidden="true" />}
                 <strong>{verdict.ok ? "Works" : "Clashes"}</strong> <span className="text-ink-3">{verdict.reason}</span>

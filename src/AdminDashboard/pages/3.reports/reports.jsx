@@ -101,7 +101,7 @@ export default function AdminReports() {
       </div>
 
       {/* Totals: sales, paid orders, the average and what was refunded, for the period */}
-      <section aria-label="Totals" className="mb-6 grid grid-cols-1 gap-px overflow-hidden rounded-r-lg border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="Totals" className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Sales" icon={Wallet} loading={isLoading} value={moneyBase(data?.summary.sales ?? 0)} note="Paid orders, delivery included" />
         <StatCard label="Paid orders" icon={ShoppingBag} loading={isLoading} value={data?.summary.orders ?? 0} note={data ? `${data.summary.unpaid} still awaiting payment` : undefined} />
         <StatCard label="Average order" icon={Receipt} loading={isLoading} value={moneyBase(data?.summary.average ?? 0)} />

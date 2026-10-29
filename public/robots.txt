@@ -3,5 +3,11 @@ Allow: /
 Disallow: /admin
 Disallow: /account
 Disallow: /cart
+Disallow: /checkout
+Disallow: /order/
+Disallow: /track-order
+Disallow: /newsletter/
+Disallow: /*?preview
+Disallow: /*?q=
 
 Sitemap: https://qvfits.com/sitemap.xml

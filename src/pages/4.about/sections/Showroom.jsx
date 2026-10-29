@@ -1,32 +1,57 @@
-/* Showroom */
+/* The Showroom: Book A Fitting */
 import Reveal from "@/components/motion/Reveal";
-import { useCurrency } from "@/store/context/CurrencyContext";
-import { usePageCopy, useSettings } from "@/store/tanstackStore/queries/site";
-import { fill, shopTokens } from "@/utils/fill";
+import Photo from "@/components/storefront/Photo";
+import { useHomeContent, useSettings } from "@/store/tanstackStore/queries/site";
+import { whatsappLink } from "@/utils/whatsapp";
 
-// Opening time and links come from the admin's settings, so they change without a deploy.
+/**
+ * An invitation, the way a house offers an appointment: the showroom photo
+ * on one side; on the other the address, the opening time, and a button that
+ * opens WhatsApp with a fitting request already written. Every fact comes
+ * from Settings. Used on the home page and the About page.
+ */
 export default function Showroom() {
   const { data: s } = useSettings();
-  const { data: copy } = usePageCopy("about");
-  const { money } = useCurrency();
-  // Render nothing rather than a block with empty links while settings load.
-  if (!s || !copy) return null;
-  const room = copy.showroom;
-  const tokens = shopTokens(s, money);
+  const { data: content } = useHomeContent();
+  if (!s) return null;
+  const request = "Hi QVFITS, I'd like to book a fitting at the showroom. I train in: ";
 
   return (
-    <section className="section section--tight">
-      <div className="wrap">
-        <Reveal className="news center">
-          <span className="kicker">{room.kicker}</span>
-          <h2>{fill(room.title, tokens)}</h2>
-          <p className="lede center">{fill(room.lede, tokens)}</p>
-          <div className="relative z-[1] mt-[22px] flex flex-wrap justify-center gap-3">
-            <a className="btn btn--primary" href={s.mapsUrl} target="_blank" rel="noopener noreferrer">{room.directions}</a>
-            <a className="btn btn--ghost" href={s.instagram} target="_blank" rel="noopener noreferrer">{room.follow}</a>
-          </div>
-        </Reveal>
+    <section className="grid bg-ink text-cream lg:grid-cols-2">
+      {/* Photo */}
+      <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[16/11] lg:aspect-auto lg:min-h-[86vh]">
+        <Photo photo={content?.aboutPhoto} label="Inside the QVFITS showroom" wide />
       </div>
+
+      {/* Invitation */}
+      <Reveal className="flex flex-col justify-center px-[clamp(20px,6vw,104px)] py-20 lg:py-28">
+        <p className="kicker kicker--light">The showroom</p>
+        <h2 className="max-w-md text-[clamp(2.4rem,4.4vw,4rem)] leading-[1.04] text-cream">Come and be fitted.</h2>
+        <p className="mt-6 max-w-md text-[1.05rem] leading-relaxed text-cream/75">
+          Tell us what you train in and we will have pieces waiting in your size. Move in them, take your time, and leave only with what is right.
+        </p>
+
+        {/* Where and when */}
+        <dl className="mt-12 grid max-w-md grid-cols-2 gap-8 border-t border-cream/15 pt-8 text-[0.92rem]">
+          <div>
+            <dt className="text-cream/50">Find us</dt>
+            <dd className="mt-2 leading-relaxed">
+              {s.address}
+              {s.addressNote && <span className="block text-cream/60">{s.addressNote}</span>}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-cream/50">Open</dt>
+            <dd className="mt-2">From {s.opensAt}</dd>
+          </div>
+        </dl>
+
+        {/* Actions */}
+        <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <a className="btn btn--light btn--lg" href={whatsappLink(s.whatsapp, request)} target="_blank" rel="noopener noreferrer">Book a fitting</a>
+          <a className="link-arrow text-[0.92rem] text-cream" href={s.mapsUrl} target="_blank" rel="noopener noreferrer">Get directions</a>
+        </div>
+      </Reveal>
     </section>
   );
 }

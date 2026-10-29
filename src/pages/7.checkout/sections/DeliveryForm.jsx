@@ -6,6 +6,7 @@ import { useCurrency } from "@/store/context/CurrencyContext";
 import { useNewsletterConsent } from "@/store/tanstackStore/queries/site";
 import { zoneEta, zoneFee } from "@/utils/delivery";
 import { deliverySchema } from "../schemas";
+import { t } from "@/i18n/translate";
 
 function Err({ error }) {
   return error ? <p role="alert" className="m-0 mt-1 text-xs font-semibold text-warn">{error.message}</p> : null;
@@ -30,12 +31,12 @@ export default function DeliveryForm({ defaults, settings, methods, subtotal, on
     <form id="deliveryForm" className="info-card" noValidate onSubmit={handleSubmit(onSubmit)}>
       <h2 className="sub-h">Where&apos;s it going?</h2>
       <div className="field">
-        <label htmlFor="oName">Your name</label>
+        <label htmlFor="oName">{t("Your name")}</label>
         <input id="oName" autoComplete="name" aria-invalid={Boolean(errors.name)} {...register("name")} />
         <Err error={errors.name} />
       </div>
       <div className="field">
-        <label htmlFor="oPhone">Phone number</label>
+        <label htmlFor="oPhone">{t("Phone number")}</label>
         <input id="oPhone" inputMode="tel" autoComplete="tel" placeholder="07XX XXX XXX" aria-invalid={Boolean(errors.phone)} {...register("phone")} />
         <Err error={errors.phone} />
       </div>
@@ -45,7 +46,7 @@ export default function DeliveryForm({ defaults, settings, methods, subtotal, on
         <Err error={errors.email} />
       </div>
       <div className="field">
-        <label htmlFor="oRegion">Delivery area</label>
+        <label htmlFor="oRegion">{t("Delivery area")}</label>
         <select id="oRegion" {...regionField} onChange={(e) => { regionField.onChange(e); onRegion(e.target.value); }}>
           {zones.map((z) => {
             const fee = zoneFee(z, subtotal, settings);
@@ -62,11 +63,11 @@ export default function DeliveryForm({ defaults, settings, methods, subtotal, on
           <Err error={errors.address} />
         </div>
       )}
-      <fieldset className="field m-0 border-0 p-0">
+      <fieldset className="field min-w-0 border-0 p-0">
         <legend className="mb-1.5 text-[.8rem] font-medium text-ink-3">How you&apos;d like to pay</legend>
         <div className="grid gap-2">
           {methods.map((p) => (
-            <label key={p.id} className="check-row rounded-r-md border border-line bg-white px-3">
+            <label key={p.id} className="check-row border border-line-2 bg-white px-4 py-2 transition-colors hover:border-ink-3">
               <input type="radio" value={p.id} {...register("payment")} />
               <span>{p.label}{p.instructions && <span className="block text-xs font-normal text-ink-3">{p.instructions}</span>}</span>
             </label>
@@ -89,8 +90,8 @@ export default function DeliveryForm({ defaults, settings, methods, subtotal, on
         </label>
       </div>
       <div className="mt-5 flex flex-wrap gap-2.5">
-        <button type="submit" className="btn btn--primary">Review order</button>
-        <button type="button" className="btn btn--ghost" onClick={onBack}>Back to bag</button>
+        <button type="submit" className="btn btn--primary">{t("Review order")}</button>
+        <button type="button" className="btn btn--ghost" onClick={onBack}>{t("Back to bag")}</button>
       </div>
     </form>
   );

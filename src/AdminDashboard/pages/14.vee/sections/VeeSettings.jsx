@@ -47,7 +47,7 @@ function Editor({ doc }) {
               const on = (draft.tone ?? "balanced") === t.id;
               return (
                 <button key={t.id} type="button" role="radio" aria-checked={on} onClick={() => set("tone", t.id)}
-                  className={cn("rounded-r-lg border p-4 text-left outline-none transition-[border-color,background-color] duration-200 focus-visible:ring-2 focus-visible:ring-brand-300", on ? "border-brand-500 bg-brand-50" : "border-line hover:border-brand-200")}>
+                  className={cn("rounded-[18px] border p-4 text-left outline-none transition-[border-color,background-color] duration-200 focus-visible:ring-2 focus-visible:ring-brand-300", on ? "border-brand-500 bg-brand-50" : "border-line hover:border-brand-200")}>
                   <strong className="block font-display">{t.label}</strong>
                   <span className="mt-1 block text-[.82rem] text-ink-3">{t.text}</span>
                 </button>
@@ -59,9 +59,9 @@ function Editor({ doc }) {
         <Panel title="Suggestion buttons" hint="Short prompts shown under her greeting, so a shopper can start with one tap instead of typing. Four to six work best.">
           <Field label="Buttons" hint="Type one and press Enter to add it. Tap the cross to remove.">{(id) => <TagInput id={id} value={draft.chips} onChange={(chips) => set("chips", chips)} placeholder="Type a suggestion, then press Enter" />}</Field>
           {/* How they look in the chat */}
-          <div className="mt-4 rounded-r-md bg-cream px-4 py-4">
+          <div className="mt-4 rounded-[14px] bg-cream px-4 py-4">
             <p className="m-0 mb-2 text-[.72rem] font-semibold uppercase tracking-[0.14em] text-ink-4">What shoppers see</p>
-            <p className="m-0 mb-3 max-w-[46ch] rounded-r-md bg-white px-4 py-3 text-[.92rem] text-ink-2">{draft.greeting}</p>
+            <p className="m-0 mb-3 max-w-[46ch] rounded-[14px] bg-white px-4 py-3 text-[.92rem] text-ink-2">{draft.greeting}</p>
             <div className="flex flex-wrap gap-2">
               {draft.chips.map((c) => <span key={c} className="rounded-full border border-line-2 bg-white px-4 py-2 text-[.85rem] font-medium">{c}</span>)}
               {!draft.chips.length && <span className="text-sm text-ink-4">No buttons yet. Shoppers will just see the greeting.</span>}

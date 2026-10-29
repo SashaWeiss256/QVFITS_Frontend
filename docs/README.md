@@ -67,6 +67,7 @@ Delivery is 15 working days (proposal QV-2026-001).
 | `05-backend-integration.md` | The `qvfits-api` contract and moving a service from mock to HTTP |
 | `06-deployment.md` | DigitalOcean, Nginx, PM2, Spaces, DNS on IONOS |
 | `07-data.md` | Every JSON seed in `src/data/`, products, discounts, roles; what is real and what is a placeholder |
+| `08-handoff.md` | What changed late in the frontend that the API must match: install steps, newsletter, language and currency, storage keys, what to remove before launch |
 
 New docs take the next free number (`NN-kebab.md`) and are listed here.
 

@@ -105,7 +105,7 @@ export default function Stock() {
         <span className="flex items-center gap-3">
           <button
             type="button"
-            className="block h-14 w-11 flex-none overflow-hidden rounded-r-sm bg-sand-100 outline-none ring-offset-2 transition-shadow duration-150 hover:shadow-sh-2 focus-visible:ring-2 focus-visible:ring-brand-400"
+            className="block h-14 w-11 flex-none overflow-hidden rounded-[10px] bg-sand-100 outline-none ring-offset-2 transition-shadow duration-150 hover:shadow-sh-2 focus-visible:ring-2 focus-visible:ring-brand-400"
             aria-label={`Look at ${r.product}, ${r.color}`}
             onClick={(e) => { e.stopPropagation(); setPeek(r); }}
           >
@@ -128,7 +128,7 @@ export default function Stock() {
         const tone = r.stock === 0 ? "text-warn font-semibold" : r.stock <= low ? "text-[var(--star)] font-semibold" : "";
         return canEdit ? (
           <input
-            className={`w-20 rounded-r-sm border border-line-2 px-2 py-1.5 text-right ${tone}`}
+            className={`w-20 rounded-[10px] border border-line-2 px-2 py-1.5 text-right ${tone}`}
             inputMode="numeric"
             aria-label={`${r.product} ${r.color} ${r.size} stock`}
             value={value}
@@ -199,7 +199,7 @@ export default function Stock() {
       <Modal isOpen={Boolean(peek)} onClose={() => setPeek(null)} title={peek ? peek.product : ""} size="sm">
         {peek && (
           <div className="grid gap-4">
-            <div className="mx-auto w-full max-w-xs overflow-hidden rounded-r-md bg-sand-100">
+            <div className="mx-auto w-full max-w-xs overflow-hidden rounded-[14px] bg-sand-100">
               <div className="relative aspect-[3/4]">{peek.photo ? <Photo photo={peek.photo} label={`${peek.product} in ${peek.color}`} className="absolute inset-0 h-full rounded-none" /> : <p className="m-0 grid h-full place-items-center text-sm text-ink-4">No photo yet</p>}</div>
             </div>
             <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">

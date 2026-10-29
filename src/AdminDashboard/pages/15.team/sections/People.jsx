@@ -99,7 +99,7 @@ export default function People({ roles, modules }) {
         {link && (
           <div className="grid gap-3">
             <p className="m-0">Send {inviting?.name.split(" ")[0]} this link. It lets them set a password and sign in.</p>
-            <code className="block rounded-r-sm bg-white p-3 text-xs break-all">{link}</code>
+            <code className="block rounded-[10px] bg-white p-3 text-xs break-all">{link}</code>
             <Button variant="soft" onClick={() => navigator.clipboard.writeText(link).then(() => notify("Link copied", { tone: "success" }))}><Copy className="h-4 w-4" /> Copy link</Button>
             <p className="m-0 text-xs text-ink-3">Once the server sends email, the invite goes out by itself.</p>
           </div>

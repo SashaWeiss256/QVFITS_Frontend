@@ -5,6 +5,7 @@ import Reveal from "@/components/motion/Reveal";
 import { useSizeChart } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
 import { formatRange } from "@/utils/sizing";
+import { t } from "@/i18n/translate";
 
 // The chart is stored in cm; inches are converted on display only.
 export default function Chart() {
@@ -29,7 +30,7 @@ export default function Chart() {
         <div className="table-wrap">
           <table className="size">
             <thead>
-              <tr><th scope="col">Size</th><th scope="col">UK</th><th scope="col">US</th><th scope="col">EU</th><th scope="col">Bust</th><th scope="col">Waist</th><th scope="col">Hip</th></tr>
+              <tr><th scope="col">{t("Size")}</th><th scope="col">UK</th><th scope="col">US</th><th scope="col">EU</th><th scope="col">Bust</th><th scope="col">Waist</th><th scope="col">Hip</th></tr>
             </thead>
             <tbody>
               {rows.map((r) => (

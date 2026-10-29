@@ -1,0 +1,171 @@
+{
+  "shop": {
+    "kicker": "The full range",
+    "lede": "Every piece we have in the shop right now. Sold-out sizes are marked honestly, so there are no surprises at checkout.",
+    "seo": "Every QVFITS piece in the shop right now: seamless and seam-fit activewear, swim and lounge wear.",
+    "titles": {
+      "all": "Shop everything",
+      "New": "New",
+      "Bestseller": "Best sellers",
+      "sale": "The sale",
+      "search": "Results for \u201c{query}\u201d"
+    },
+    "kits": {
+      "kicker": "Complete kits",
+      "title": "Shop the kit",
+      "lede": "Full kits, already put together. Take the lot, or just the piece you are missing."
+    },
+    "noMatches": {
+      "title": "Nothing matches that combination",
+      "text": "Try loosening a filter, or ask Vee and she'll find the closest thing on the rail.",
+      "saleTitle": "The sale isn't running right now",
+      "saleText": "Nothing is reduced at the moment. The full range is still here, and Vee can point you at it."
+    },
+    "dealsWhatsapp": "Hi QVFITS! What's on offer this week?",
+    "views": {
+      "new": {
+        "kicker": "Just landed",
+        "lede": "The newest pieces to reach the shop, freshest first."
+      },
+      "bestseller": {
+        "kicker": "Most loved",
+        "lede": "What shoppers keep coming back for, ranked by real sales."
+      },
+      "sale": {
+        "kicker": "For now",
+        "lede": "Pieces marked down while the sale runs. When it ends they go back to full price."
+      }
+    }
+  },
+  "product": {
+    "fitHelp": "Not sure? The size guide has the full measurement chart, or Vee will work it out from your measurements.",
+    "delivery": "{zones}. Free over {freeShipping}, or collect from the showroom.",
+    "exchanges": "Exchange within {exchangeDays} days, unworn with tags; swimwear with the liner intact."
+  },
+  "about": {
+    "story": {
+      "kicker": "Our story",
+      "title": "Built for the way you actually train",
+      "paragraphs": [
+        "QVFITS makes premium seamless and seam-fit activewear, swim and lounge wear, from a showroom at THE CUBE in Kisementi. Seamless where you want no seams to rub, seam-fit where you want structure: the construction is chosen per piece, not per season.",
+        "We keep the range tight on purpose. Every piece is worn and tested before it goes in, which is why we can tell you honestly when something runs small, and why we would rather move you to a different piece than sell you the wrong size."
+      ],
+      "primaryCta": {
+        "label": "Shop the range",
+        "href": "/shop"
+      },
+      "secondaryCta": {
+        "label": "Come visit us",
+        "href": "/contact"
+      }
+    },
+    "values": {
+      "kicker": "How we build",
+      "title": "How we do things",
+      "items": [
+        {
+          "icon": "heart",
+          "title": "Chosen, not bulk-ordered",
+          "text": "Small drops per colourway. If you see it in the studio, only a handful of people in Kampala will be training in it."
+        },
+        {
+          "icon": "check",
+          "title": "Honest about fit",
+          "text": "Every piece carries a real fit note: runs small, cut relaxed, true to size. We would rather you order once."
+        },
+        {
+          "icon": "clock",
+          "title": "Styled, not just sold",
+          "text": "Tell us what you train in and we'll have pieces waiting. Come and move in them before you buy."
+        },
+        {
+          "icon": "sparkles",
+          "title": "Delivered across Uganda",
+          "text": "Kampala and upcountry, or collect from the showroom. Free delivery over {freeShipping}."
+        }
+      ]
+    },
+    "reviews": {
+      "kicker": "In their words",
+      "title": "What people say"
+    },
+    "showroom": {
+      "kicker": "Come and try",
+      "title": "{address}",
+      "lede": "The shop opens at {opensAt}. Trying things on is half the fun, and it's the fastest way to find your size.",
+      "directions": "Get directions",
+      "follow": "Follow on Instagram"
+    }
+  },
+  "sizeGuide": {
+    "kicker": "Get it right first time",
+    "title": "Size guide",
+    "lede": "These are body measurements, not garment measurements. Measure yourself over your underwear, keep the tape snug but not tight, and breathe normally.",
+    "measures": [
+      {
+        "name": "Bust",
+        "text": "around the fullest part, tape level at the back."
+      },
+      {
+        "name": "Waist",
+        "text": "the narrowest point, usually just above the belly button."
+      },
+      {
+        "name": "Hips",
+        "text": "the fullest part, around 20 cm below your waist."
+      }
+    ]
+  },
+  "contact": {
+    "kicker": "Get in touch",
+    "title": "Come see us, or just ask",
+    "lede": "The fastest answer is a WhatsApp. For anything about fit, fabric or what is in stock, Vee in the corner knows every piece.",
+    "form": {
+      "title": "Send a message",
+      "text": "Fill this in and it opens a ready-to-send message. You pick where it goes. We also keep a copy, so the team sees it either way."
+    },
+    "topics": [
+      "A specific piece",
+      "Sizing help",
+      "Delivery",
+      "An exchange",
+      "Styling for an event",
+      "Something else"
+    ],
+    "faq": {
+      "kicker": "Common questions",
+      "title": "FAQ"
+    },
+    "vee": {
+      "kicker": "Still stuck?",
+      "title": "Ask Vee",
+      "text": "She knows every piece, every size and what's actually in stock right now.",
+      "cta": "Open the Style Assistant"
+    }
+  },
+  "checkout": {
+    "steps": [
+      "Your bag",
+      "Delivery",
+      "Confirm"
+    ]
+  },
+  "trackOrder": {
+    "kicker": "Orders",
+    "title": "Track an order",
+    "lede": "Enter your order reference and the phone number you ordered with."
+  },
+  "notFound": {
+    "kicker": "404",
+    "title": "We couldn't find that page",
+    "lede": "It may have moved, or the link may be old. The whole range is one tap away."
+  },
+  "footer": {
+    "blurbSuffix": "Made for the way you actually train.",
+    "copyright": "\u00a9 {year} {brand}. Kampala, Uganda.",
+    "tagline": "Seamless. Seam-fit. Swim. Lounge.",
+    "newsTitle": "First to know",
+    "newsText": "New drops, restocks and members-only offers, about twice a month.",
+    "newsCta": "Sign up"
+  }
+}

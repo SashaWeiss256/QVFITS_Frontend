@@ -83,8 +83,8 @@ export default function AdminCustomers() {
           footer={can("customers", "edit") && <Button loading={customers.isSaving} onClick={() => customers.update(open.id, draft)}>Save notes</Button>}
         >
           <div className="mb-5 grid grid-cols-2 gap-3">
-            <div className="rounded-r-md bg-white p-4 shadow-sh-1"><p className="eyebrow m-0">Orders</p><p className="m-0 mt-1 text-xl font-bold">{open.orders.length}</p></div>
-            <div className="rounded-r-md bg-white p-4 shadow-sh-1"><p className="eyebrow m-0">Spent</p><p className="m-0 mt-1 text-xl font-bold">{moneyBase(open.spent)}</p></div>
+            <div className="rounded-[14px] bg-white p-4 shadow-sh-1"><p className="eyebrow m-0">Orders</p><p className="m-0 mt-1 text-xl font-bold">{open.orders.length}</p></div>
+            <div className="rounded-[14px] bg-white p-4 shadow-sh-1"><p className="eyebrow m-0">Spent</p><p className="m-0 mt-1 text-xl font-bold">{moneyBase(open.spent)}</p></div>
           </div>
           <p className="text-sm">{open.email}<br />{open.phone || "No phone"}<br />Newsletter: {open.subscribed ? "subscribed" : "not subscribed"}</p>
           {open.addresses.length > 0 && (

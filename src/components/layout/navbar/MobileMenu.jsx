@@ -12,14 +12,14 @@ import Logo from "./Logo";
 import MobileMenuAccount from "./mobileMenu/MobileMenuAccount";
 import MobileMenuFooter from "./mobileMenu/MobileMenuFooter";
 import MobileMenuShop from "./mobileMenu/MobileMenuShop";
+import { t } from "@/i18n/translate";
 
 /**
  * Phones and tablets only (below 1024px; laptops get the mega menu): a
- * full-height sheet from the left, large links arriving in a stagger, Shop
- * expanding in place. The shop's own links come first; the shopper's account,
- * saved pieces and order tracking follow; currency and WhatsApp are at the foot.
- * Help pages (size guide, delivery, returns, contact) live in the site footer,
- * not here.
+ * full-height cream sheet from the left, large serif links arriving in a
+ * stagger, Shop expanding in place. The shop's own links come first; the
+ * shopper's account, saved pieces and order tracking follow; currency and
+ * WhatsApp are at the foot.
  */
 export default function MobileMenu({ open, onClose }) {
   const { pathname, search } = useLocation();
@@ -50,27 +50,47 @@ export default function MobileMenu({ open, onClose }) {
   return (
     <>
       <div className={cn("sheet-scrim", open && "is-on")} onClick={onClose} />
-      <aside className={cn("sheet mmenu", open && "is-open")} role="dialog" aria-modal="true" aria-label="Menu" inert={!open}>
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-90 flex w-[min(92vw,420px)] flex-col bg-cream text-ink transition-transform duration-500 ease-q",
+          open ? "translate-x-0" : "-translate-x-full",
+        )}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("Menu")}
+        inert={!open}
+      >
         {/* Header: the logo and a close button */}
-        <div className="mmenu__head">
+        <div className="flex h-[72px] shrink-0 items-center justify-between border-b border-line px-5">
           <Logo />
-          <button type="button" className="icon-btn" aria-label="Close menu" onClick={onClose}>
-            <X className="h-5 w-5" aria-hidden="true" />
+          <button type="button" className="icon-btn -mr-2.5" aria-label={t("Close menu")} onClick={onClose}>
+            <X className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
           </button>
         </div>
+
         {/* Menu Links: they arrive one after another as the menu opens */}
-        <m.nav className="mmenu__body" aria-label="Main" initial="hidden" animate={open ? "shown" : "hidden"} variants={{ hidden: {}, shown: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } } }}>
+        <m.nav
+          data-lenis-prevent
+          className="flex-1 overflow-y-auto px-5 py-4"
+          aria-label="Main"
+          initial="hidden"
+          animate={open ? "shown" : "hidden"}
+          variants={{ hidden: {}, shown: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } } }}
+        >
           {/* Shop: the categories and groups, folding open */}
           <m.div variants={revealItem}><MobileMenuShop /></m.div>
+
           {/* Top bar links, built from the catalogue (see Catalog, Categories, Menu) */}
           {nav?.header.map((item) => (
             <m.div key={item.href} variants={revealItem}>
-              <Link to={item.href} className="mmenu__link">{item.title}</Link>
+              <Link to={item.href} className="flex min-h-14 items-center border-b border-line font-display text-[1.6rem] leading-none">{item.title}</Link>
             </m.div>
           ))}
+
           {/* Account comes after the shop's own links: the way in or who is signed in, then saved pieces and tracking */}
           <m.div variants={revealItem}><MobileMenuAccount onNavigate={onClose} /></m.div>
         </m.nav>
+
         {/* Footer: currency and WhatsApp */}
         <MobileMenuFooter />
       </aside>

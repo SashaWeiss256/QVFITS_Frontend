@@ -9,6 +9,7 @@ import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
 import { usePaymentMethods, usePlaceOrder, useQuote, useSubscribe } from "@/store/tanstackStore/queries/site";
 import { useSeo } from "@/seo/useSeo";
 import { readStored, writeStored } from "@/utils/storage";
+import { glideTop } from "@/utils/smoothScroll";
 import BagEmpty from "./sections/BagEmpty";
 import DiscountCode from "./sections/DiscountCode";
 import Shell from "./CheckoutShell";
@@ -17,6 +18,7 @@ import ReviewStep from "./sections/ReviewStep";
 import OrderSummary from "./sections/OrderSummary";
 import SendOrder from "./sections/SendOrder";
 import { useCheckoutBag } from "./useCheckoutBag";
+import { t } from "@/i18n/translate";
 
 const KEY = "qvfits:checkout-details";
 
@@ -106,7 +108,7 @@ export default function CheckoutPage() {
     // Remembered on this device for next time; the note and the newsletter choice are not.
     writeStored(KEY, { ...values, note: undefined, news: undefined });
     setStep(3);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    glideTop();
   };
 
   const place = async () => {
@@ -116,7 +118,7 @@ export default function CheckoutPage() {
     if (details.news && details.email) subscribe.mutate({ email: details.email, source: "checkout", name: details.name, customerId: customer?.id });
     setPlaced(order);
     clear();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    glideTop();
   };
 
   return (
@@ -127,7 +129,7 @@ export default function CheckoutPage() {
             {/* Sign-in is optional; authenticated details only prefill the guest-friendly form. */}
             {!customer && (
               <p className="mb-4 text-sm text-ink-3">
-                Have an account? <Link to="/login?next=/checkout" className="text-brand-600 underline">Sign in</Link> to fill this in, or carry on as a guest.
+                Have an account? <Link to="/login?next=/checkout" className="text-brand-600 underline">{t("Sign in")}</Link> to fill this in, or carry on as a guest.
               </p>
             )}
             <DeliveryForm

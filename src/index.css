@@ -1,122 +1,696 @@
-/* QV fits: Global Styles */
+/* QVFITS: Global Styles */
 @import "tailwindcss";
 
-/* Quivogue's stylesheet: tokens on :root, reset, layout, chrome, sections.
-   In the components layer so Tailwind utilities can still override it. */
-@import "./styles/quivogue.css" layer(components);
-
-/* The premium layer: retuned tokens and restyled shared classes. Same layer,
-   later in the cascade, so it wins over quivogue.css at equal specificity. */
-@import "./styles/theme.css" layer(components);
-@import "./styles/chrome.css" layer(components);
-
 /*
-  Tailwind tokens point at the Quivogue variables (docs/04-design-system.md),
-  so `bg-brand-500`, `text-ink-3`, `rounded-r-lg` and `shadow-sh-2` all read
-  the one source of truth in styles/quivogue.css. Never add hex here.
+  The QVFITS palette and design tokens. This block is the one source of every
+  colour on the site: Tailwind turns each token into utilities (`bg-brand-500`,
+  `text-ink-3`, `border-line`, `rounded-r-lg`, `shadow-sh-2`) and into a CSS
+  variable on :root (`--color-brand-500` …). Change a colour here and every
+  page follows. Colours come from the QVFITS brand book; the magenta to purple
+  ramp is sampled from the logo.
 */
-@theme inline {
-  --color-brand-50: var(--brand-50);
-  --color-brand-100: var(--brand-100);
-  --color-brand-200: var(--brand-200);
-  --color-brand-300: var(--brand-300);
-  --color-brand-400: var(--brand-400);
-  --color-brand-500: var(--brand-500);
-  --color-brand-600: var(--brand-600);
+@theme {
+  /* Brand: magenta to purple, from the logo */
+  --color-brand-50: #fbf4f8;
+  --color-brand-100: #f5e6ef;
+  --color-brand-200: #e9c8dc;
+  --color-brand-300: #d69cbd;
+  --color-brand-400: #b85f8e;
+  --color-brand-500: #96306e;
+  --color-brand-600: #5d2766;
 
-  --color-teal-100: var(--teal-100);
-  --color-teal-500: var(--teal-500);
+  /* The logo's own colours (brand book): the wave runs plum to rose; pink is QVFITS */
+  --color-logo-plum: #682872;
+  --color-logo-rose: #c53364;
+  --color-logo-pink: #ed1e79;
+  --color-black: #000000;
 
-  --color-sand-50: var(--sand-50);
-  --color-sand-100: var(--sand-100);
-  --color-sand-200: var(--sand-200);
-  --color-sand-300: var(--sand-300);
-  --color-sand-400: var(--sand-400);
+  /* Secondary: the golf and tennis range */
+  --color-teal-100: #dcebe7;
+  --color-teal-500: #14625a;
 
-  --color-cream: var(--cream);
-  --color-cream-2: var(--cream-2);
-  --color-beige: var(--beige);
-  --color-white: var(--white);
+  /* Warm sand: the lounge and seamless ranges */
+  --color-sand-50: #faf6f0;
+  --color-sand-100: #f2ebe0;
+  --color-sand-200: #e6dac8;
+  --color-sand-300: #d4c2a6;
+  --color-sand-400: #b08968;
 
-  /* Contrast-checked on cream; ink-4 is the lightest text tone allowed. */
-  --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-ink-3: var(--ink-3);
-  --color-ink-4: var(--ink-4);
+  /* Neutrals: surfaces */
+  --color-cream: #fbf8f3;
+  --color-cream-2: #f5f0e8;
+  --color-beige: #ece4d8;
+  --color-white: #ffffff;
 
-  --color-line: var(--line);
-  --color-line-2: var(--line-2);
+  /* Ink: contrast-checked on cream (15.6, 9.3, 6.1, 4.6 : 1).
+     ink-4 is the lightest text tone allowed. Do not lighten these. */
+  --color-ink: #17211f;
+  --color-ink-2: #3a4643;
+  --color-ink-3: #57615e;
+  --color-ink-4: #68736f;
 
-  --color-gold: var(--gold);
-  --color-star: var(--star);
-  --color-success: var(--success);
-  --color-warn: var(--warn);
+  /* Lines: borders and rules */
+  --color-line: #e9e2d7;
+  --color-line-2: #ddd4c6;
+
+  /* Accents and states. gold is shapes only (1.5 : 1); use star for text. */
+  --color-gold: #efcb68;
+  --color-star: #8e6c0f;
+  --color-success: #2f7d5f;
+  --color-warn: #b4553f;
 
   /* Third-party brand colours, for payment and contact marks only. */
   --color-mtn: #ffcb05;
   --color-airtel: #e40000;
   --color-whatsapp: #128c4a;
 
-  --font-display: var(--display);
-  --font-body: var(--body);
+  /* Type */
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Anton: the logo's QVFITS name and campaign headlines, uppercase, +0.12em */
+  --font-logo: "Anton", "Impact", sans-serif;
 
-  --radius-r-sm: var(--r-sm);
-  --radius-r-md: var(--r-md);
-  --radius-r-lg: var(--r-lg);
-  --radius-r-xl: var(--r-xl);
-  --radius-r-pill: var(--r-pill);
+  /* Shape: near-square, the luxury register */
+  --radius-r-sm: 2px;
+  --radius-r-md: 3px;
+  --radius-r-lg: 4px;
+  --radius-r-xl: 6px;
+  --radius-r-pill: 999px;
 
-  --shadow-sh-1: var(--sh-1);
-  --shadow-sh-2: var(--sh-2);
-  --shadow-sh-3: var(--sh-3);
-  --shadow-sh-4: var(--sh-4);
+  /* Elevation: neutral, never pink */
+  --shadow-sh-1: 0 2px 8px rgba(23, 33, 31, 0.05);
+  --shadow-sh-2: 0 6px 20px rgba(23, 33, 31, 0.08);
+  --shadow-sh-3: 0 14px 40px rgba(23, 33, 31, 0.12);
+  --shadow-sh-4: 0 24px 70px rgba(23, 33, 31, 0.18);
 
-  --ease-q: var(--ease);
+  --ease-q: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/*
+  Short names for the same tokens, for the few places that need a raw CSS
+  variable (inline styles, gradients, the rules below). They point at the
+  @theme values above, so there is still only one place to change a colour.
+*/
+:root {
+  --brand-50: var(--color-brand-50);
+  --brand-100: var(--color-brand-100);
+  --brand-200: var(--color-brand-200);
+  --brand-300: var(--color-brand-300);
+  --brand-400: var(--color-brand-400);
+  --brand-500: var(--color-brand-500);
+  --brand-600: var(--color-brand-600);
+  /* The logo's gradient, for primary buttons and accents */
+  --brand-grad: linear-gradient(135deg, #c2185b, var(--color-brand-500) 55%, var(--color-brand-600));
+
+  --teal-100: var(--color-teal-100);
+  --teal-500: var(--color-teal-500);
+  --sand-50: var(--color-sand-50);
+  --sand-100: var(--color-sand-100);
+  --sand-200: var(--color-sand-200);
+  --sand-300: var(--color-sand-300);
+  --sand-400: var(--color-sand-400);
+  --cream: var(--color-cream);
+  --cream-2: var(--color-cream-2);
+  --beige: var(--color-beige);
+  --white: var(--color-white);
+  --ink: var(--color-ink);
+  --ink-2: var(--color-ink-2);
+  --ink-3: var(--color-ink-3);
+  --ink-4: var(--color-ink-4);
+  --line: var(--color-line);
+  --line-2: var(--color-line-2);
+  --gold: var(--color-gold);
+  --star: var(--color-star);
+  --success: var(--color-success);
+  --warn: var(--color-warn);
+
+  --display: var(--font-display);
+  --body: var(--font-body);
+  --r-sm: var(--radius-r-sm);
+  --r-md: var(--radius-r-md);
+  --r-lg: var(--radius-r-lg);
+  --r-xl: var(--radius-r-xl);
+  --r-pill: var(--radius-r-pill);
+  --sh-1: var(--shadow-sh-1);
+  --sh-2: var(--shadow-sh-2);
+  --sh-3: var(--shadow-sh-3);
+  --sh-4: var(--shadow-sh-4);
+  --ease: var(--ease-q);
+}
+
+/* Every page starts on the palette: cream ground, ink text, brand type. */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-ink);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  /* Brand book type scale: H1 38 to 70 px, H2 28 to 43 px, H3 18 to 23 px */
+  h1 { font-size: clamp(2.375rem, 5.2vw, 4.375rem); }
+  h2 { font-size: clamp(1.75rem, 3.2vw, 2.7rem); }
+  h3 { font-size: clamp(1.125rem, 1.6vw, 1.45rem); }
+  /* Archivo is set bold and tight wherever it appears (brand book) */
+  .font-display { font-weight: 700; letter-spacing: -0.03em; }
+  p { text-wrap: pretty; }
+  a { color: inherit; text-decoration: none; }
+  button { cursor: pointer; }
+  img { max-width: 100%; display: block; }
+  ::selection { background: var(--color-brand-600); color: var(--color-cream); }
+  :focus-visible {
+    outline: 1.5px solid var(--color-brand-500);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/*
+  Shared primitives. Every page uses these class names, so they carry the
+  look on any page that has not been restyled section by section. Section
+  layouts themselves are Tailwind utilities in the components.
+*/
 @layer components {
-  /* A form control in the Quivogue look, for the account and admin forms. */
+  /* Page column */
+  .wrap {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: clamp(20px, 4vw, 56px);
+  }
+  .section { padding-block: clamp(64px, 9vw, 128px); }
+  .section--tight { padding-block: clamp(40px, 5vw, 72px); }
+
+  /* Kicker (brand book): Inter 600, 11.5 px, uppercase, +0.2em, brand-500,
+     led by a 26 px rule. The one place small capitals appear. */
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-brand-500);
+    margin-bottom: 1.1rem;
+  }
+  .kicker--light { color: var(--color-brand-200); }
+  .lede {
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    line-height: 1.7;
+    color: var(--color-ink-2);
+    max-width: 58ch;
+  }
+
+  /* Buttons: square, sentence case, quiet until hovered */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em;
+    min-height: 48px;
+    padding: 0.9em 2.2em;
+    border-radius: var(--radius-r-sm);
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    transition: filter 0.35s var(--ease-q), background-color 0.35s var(--ease-q), color 0.35s var(--ease-q), border-color 0.35s var(--ease-q);
+  }
+  .btn[disabled] { opacity: 0.45; pointer-events: none; }
+  /* Primary: the interface gradient (brand book: buttons, add to bag, promo bar) */
+  .btn--primary { background: var(--brand-grad); color: var(--color-white); }
+  .btn--primary:hover { filter: brightness(1.1); }
+  .btn--ghost { background: transparent; color: var(--color-ink); border-color: var(--color-ink); }
+  .btn--ghost:hover { background: var(--color-ink); color: var(--color-cream); }
+  .btn--soft { background: var(--color-brand-50); color: var(--color-brand-600); border-color: var(--color-brand-100); }
+  .btn--soft:hover { background: var(--color-brand-100); }
+  .btn--light { background: var(--color-cream); color: var(--color-ink); }
+  .btn--light:hover { background: var(--color-white); }
+  .btn--outline-light { background: transparent; color: var(--color-cream); border-color: rgb(251 248 243 / 0.7); }
+  .btn--outline-light:hover { background: var(--color-cream); color: var(--color-ink); }
+  .btn--danger { background: var(--color-warn); color: #fff; }
+  .btn--lg {
+    min-height: 54px;
+    padding-inline: 2.8em;
+    /* useMagnetic() sets --mx and --my as the pointer nears */
+    translate: var(--mx, 0px) var(--my, 0px);
+    transition-property: filter, background-color, color, border-color, translate;
+  }
+  .btn--block { width: 100%; }
+
+  /* Text link with a drawn underline */
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
+    padding-bottom: 4px;
+    transition: background-size 0.4s var(--ease-q), color 0.3s;
+  }
+  .link-arrow:hover { background-size: 30% 1px; color: var(--color-brand-600); }
+
+  /* Icon buttons in the header and drawers */
+  .icon-btn {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    color: inherit;
+    transition: background-color 0.25s, color 0.25s;
+  }
+  .icon-btn:hover { background: rgb(23 33 31 / 0.06); }
+  .icon-btn__count {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--color-brand-600);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 17px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.25s, transform 0.3s var(--ease-q);
+  }
+  .icon-btn__count.is-on { opacity: 1; transform: none; }
+
+  /* Photo frame: holds its shape and shows the label until the picture loads */
+  .ph {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background: var(--color-sand-100);
+  }
+  .ph picture, .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .ph img { opacity: 0; transition: opacity 0.6s var(--ease-q); }
+  .ph.has-photo img { opacity: 1; }
+  .ph__label, .ph__note {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.78rem;
+    color: var(--color-ink-4);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .ph__label { top: calc(50% - 0.9em); }
+  .ph__note { top: calc(50% + 0.6em); font-size: 0.7rem; }
+  .ph.has-photo .ph__label, .ph.has-photo .ph__note { display: none; }
+
+  /* Drawer and overlay backdrop */
+  .sheet-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: rgb(23 33 31 / 0.42);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease-q);
+  }
+  .sheet-scrim.is-on { opacity: 1; pointer-events: auto; }
+
+  /* Filter and suggestion chips */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    min-height: 36px;
+    padding: 0.4em 1em;
+    border: 1px solid var(--color-line-2);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-ink-2);
+    font-size: 0.82rem;
+    transition: border-color 0.25s, background-color 0.25s, color 0.25s;
+  }
+  .chip:hover { border-color: var(--color-ink); color: var(--color-ink); }
+  .chip.is-on { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-cream); }
+
+  /* Product grids: two across on a phone, up to four on a laptop */
+  .grid-products {
+    display: grid;
+    gap: clamp(28px, 3vw, 44px) clamp(12px, 1.6vw, 24px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 900px) {
+    .grid-products { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1200px) {
+    .grid-products { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  /* A set number per row (the shop's View control and the admin's default) */
+  .grid-products.grid-products--cols { grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); }
+  .grid-products--cols[style*="--cols: 1"] { row-gap: 56px; }
+  .grid-products--cols[style*="--cols: 5"] { column-gap: 14px; }
+
+  /* Breadcrumbs: small, quiet, above a page title */
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    margin-bottom: 1.6rem;
+    font-size: 0.8rem;
+    color: var(--color-ink-3);
+  }
+  .crumbs a { transition: color 0.2s; }
+  .crumbs a:hover { color: var(--color-ink); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* A section's heading block; --row puts a link or button at its end */
+  .section-head { margin-bottom: clamp(28px, 4vw, 48px); max-width: 60ch; }
+  .section-head--row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; max-width: none; }
+  .section-head h2 { margin: 0; }
+  .center { text-align: center; margin-inline: auto; }
+  .lede.center { margin-inline: auto; }
+
+  /* An empty state: a short title, a line, what to do next */
+  .empty { padding: clamp(48px, 8vw, 96px) 16px; text-align: center; }
+  .empty h2, .empty h1 { font-size: clamp(1.5rem, 2.6vw, 2.2rem); }
+
+  /* Filter drawer: from the left on a laptop, a bottom sheet on a phone */
+  .sheet.fdrawer {
+    position: fixed;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-cream);
+    box-shadow: var(--shadow-sh-4);
+    transition: transform 0.55s var(--ease-q), visibility 0.55s;
+    visibility: hidden;
+    inset: auto 0 0 0;
+    max-height: 88dvh;
+    transform: translateY(100%);
+  }
+  .sheet.fdrawer.is-open { visibility: visible; transform: none; }
+  @media (min-width: 768px) {
+    .sheet.fdrawer { inset: 0 auto 0 0; width: min(440px, 92vw); max-height: none; transform: translateX(-100%); }
+    .sheet.fdrawer.fdrawer--right { inset: 0 0 0 auto; transform: translateX(100%); }
+    .sheet.fdrawer.is-open { transform: none; }
+  }
+  .fdrawer__head { display: flex; align-items: center; justify-content: space-between; padding: 20px 28px; border-bottom: 1px solid var(--color-line); }
+  .fdrawer__body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 4px 28px 24px; }
+  .fdrawer__foot { display: grid; grid-template-columns: auto 1fr; gap: 12px; padding: 16px 28px 20px; border-top: 1px solid var(--color-line); background: var(--color-cream); }
+  .fgroup { border-bottom: 1px solid var(--color-line); }
+  .fgroup__head {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    min-height: 60px; text-align: left;
+    font-family: var(--font-display); font-weight: 700; font-size: 1rem; letter-spacing: -0.01em;
+  }
+  .fgroup__head svg { margin-left: auto; transition: transform 0.3s var(--ease-q); }
+  .fgroup__head[aria-expanded="false"] svg { transform: rotate(-90deg); }
+  .fgroup__on { display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--color-brand-500); color: var(--color-white); font-size: 0.7rem; font-weight: 600; }
+  .fgroup__body { padding-bottom: 20px; }
+
+  /* Chips inside a filter group */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px; }
+  .chip[disabled] { opacity: 0.35; cursor: not-allowed; }
+  /* Admin choice chips: square and quiet, the chosen one filled with ink */
+  .chip--raised { background: var(--color-white); border-color: var(--color-line); box-shadow: 0 1px 2px rgb(23 33 31 / 0.06), 0 6px 16px rgb(23 33 31 / 0.09); }
+  .chip--raised:hover { box-shadow: 0 2px 4px rgb(23 33 31 / 0.08), 0 10px 22px rgb(23 33 31 / 0.13); }
+  .chip--raised.is-on { background: var(--color-ink); border-color: var(--color-ink); box-shadow: 0 6px 16px rgb(23 33 31 / 0.22); }
+  .chip--more { border-style: dashed; color: var(--color-ink-3); }
+  .chip__n { font-size: 0.72rem; color: var(--color-ink-4); }
+  .chip.is-on .chip__n { color: rgb(251 248 243 / 0.65); }
+  .chip--color { display: inline-flex; align-items: center; gap: 8px; }
+  .chip--color.is-on .sw { box-shadow: 0 0 0 2px var(--color-white); }
+  .sw { display: inline-block; width: 14px; height: 14px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgb(23 33 31 / 0.15); }
+
+  /* A checkbox with its words */
+  .check-row { display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 0.92rem; cursor: pointer; }
+  .check-row input { width: 18px; height: 18px; accent-color: var(--color-brand-500); }
+
+  /* Price range: two thumbs on one hairline */
+  .prange { position: relative; height: 32px; }
+  .prange__track, .prange__fill { position: absolute; top: 50%; height: 2px; transform: translateY(-50%); }
+  .prange__track { left: 0; right: 0; background: var(--color-line-2); }
+  .prange__fill { background: var(--color-ink); }
+  .prange input {
+    position: absolute; inset: 0; width: 100%; margin: 0;
+    appearance: none; -webkit-appearance: none; background: none; pointer-events: none;
+  }
+  .prange input::-webkit-slider-thumb {
+    -webkit-appearance: none; pointer-events: auto; width: 20px; height: 20px; border-radius: 999px;
+    background: var(--color-cream); border: 2px solid var(--color-ink); cursor: grab;
+  }
+  .prange input::-moz-range-thumb {
+    pointer-events: auto; width: 18px; height: 18px; border-radius: 999px;
+    background: var(--color-cream); border: 2px solid var(--color-ink); cursor: grab;
+  }
+  .prange__vals { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.85rem; color: var(--color-ink-2); }
+
+  /* Loading placeholder: a slow shimmer on sand */
+  .skel {
+    background: linear-gradient(100deg, var(--color-sand-100) 30%, var(--color-sand-50) 50%, var(--color-sand-100) 70%) 0 0 / 300% 100%;
+    animation: skel 1.6s linear infinite;
+  }
+
+  /* Skip link: first thing a keyboard reaches */
+  .skip-link {
+    position: absolute;
+    left: 16px;
+    top: -60px;
+    z-index: 100;
+    padding: 10px 16px;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    font-size: 0.8rem;
+  }
+  .skip-link:focus { top: 12px; }
+
+
+  /* Form control: a quiet field with an ink focus line */
   .input {
     width: 100%;
-    min-height: 46px;
-    padding: 0.7em 1em;
-    border-radius: var(--r-md);
-    background: var(--white);
-    border: 1.5px solid var(--line-2);
-    color: var(--ink);
+    min-height: 48px;
+    padding: 0.75em 1em;
+    border-radius: var(--radius-r-sm);
+    background: var(--color-white);
+    border: 1px solid var(--color-line-2);
+    color: var(--color-ink);
+    font-size: 16px;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
   .input:focus {
     outline: none;
-    border-color: var(--brand-400);
-    box-shadow: 0 0 0 3px var(--brand-100);
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 3px var(--color-brand-50);
   }
   .input[aria-invalid="true"] {
     border-color: var(--warn);
   }
 
-  /* A destructive action: delete, sign out of every device. */
-  .btn--danger {
-    background: var(--warn);
-    color: #fff;
+  /* Select: the same quiet field as .input, with its own chevron */
+  .select {
+    appearance: none;
+    min-height: 44px;
+    padding: 0.5em 2.4em 0.5em 1em;
+    border-radius: var(--radius-r-sm);
+    background-color: var(--color-white);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2317211f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1em center;
+    border: 1px solid var(--color-line-2);
+    color: var(--color-ink);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .select:hover { border-color: var(--color-ink-3); }
+  .select:focus { outline: none; border-color: var(--color-ink); box-shadow: 0 0 0 3px var(--color-brand-50); }
+
+  /* Eyebrow: a small label above or heading a column */
+  .eyebrow {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
   }
 
-  /* No rule before eyebrow labels, anywhere (client request). Covers the
-     base kicker and its campaign, phone and hero-slide variants. */
-  .kicker::before {
-    content: none;
-  }
-  .kicker {
-    gap: 0;
+  /* Bag and checkout: the page is a list on the left and a quiet summary on the right */
+  .cart-layout { display: grid; gap: 40px; margin-top: 8px; }
+  @media (min-width: 960px) {
+    .cart-layout { grid-template-columns: minmax(0, 1fr) minmax(340px, 410px); gap: clamp(40px, 6vw, 88px); align-items: start; }
+    .cart-layout > :last-child { position: sticky; top: 104px; }
   }
 
+  /* Steps: a row of numbers on one hairline, the current one in ink, finished ones in brand */
+  .steps { display: flex; align-items: center; gap: 0; margin: 0 0 clamp(28px, 4vw, 48px); font-size: 0.88rem; color: var(--color-ink-4); }
+  .step { display: flex; flex: 1; align-items: center; gap: 10px; white-space: nowrap; }
+  .step:last-child { flex: 0 0 auto; }
+  .step::after { content: ""; flex: 1; height: 1px; margin: 0 14px; background: var(--color-line-2); }
+  .step:last-child::after { display: none; }
+  .step b { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--color-line-2); border-radius: 999px; font-weight: 500; font-size: 0.8rem; background: var(--color-cream); }
+  .step.is-on { color: var(--color-ink); font-weight: 500; }
+  .step.is-on b { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-cream); }
+  .step.is-done { color: var(--color-ink-2); }
+  .step.is-done b { background: var(--color-brand-50); border-color: var(--color-brand-200); color: var(--color-brand-600); }
+  @media (max-width: 640px) {
+    .step { font-size: 0; gap: 0; }
+    .step b { font-size: 0.8rem; }
+    .step::after { margin: 0 8px; }
+  }
+
+  /* One line in the bag */
+  .cart-list { border-top: 1px solid var(--color-line); }
+  .cart-row { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--color-line); }
+  @media (min-width: 640px) { .cart-row { grid-template-columns: 124px minmax(0, 1fr) auto; gap: 28px; } }
+  .cart-row__media { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--color-beige); }
   /* The bag row's name link gets the 24px box Quivogue gives .card__name;
      the photo beside it is a second, larger link to the same piece. */
-  .cart-row__name {
-    display: inline-block;
-    padding: 4px 0;
-    min-height: 24px;
+  .cart-row__name { display: inline-block; padding: 4px 0; min-height: 24px; font-family: var(--font-display); font-size: 1.08rem; line-height: 1.3; transition: color 0.2s; }
+  .cart-row__name:hover { color: var(--color-brand-600); }
+  .cart-row__meta { margin-top: 2px; font-size: 0.86rem; color: var(--color-ink-3); }
+  .cart-row__right { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; font-size: 1rem; font-variant-numeric: tabular-nums; }
+  .cart-row__right strong { font-weight: 500; }
+  .remove { min-height: 36px; font-size: 0.84rem; color: var(--color-ink-3); text-decoration: underline; text-underline-offset: 4px; transition: color 0.2s; }
+  .remove:hover { color: var(--color-brand-600); }
+
+  /* Quantity: a small boxed stepper */
+  .qty { display: inline-flex; align-items: center; border: 1px solid var(--color-line-2); background: var(--color-white); }
+  .qty button { display: grid; place-items: center; width: 40px; height: 40px; color: var(--color-ink-2); transition: background-color 0.2s, color 0.2s; }
+  .qty button:hover { background: var(--color-sand-100); color: var(--color-ink); }
+  .qty span { min-width: 34px; text-align: center; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+
+  /* The summary: sand, no border, the total set larger */
+  .summary { padding: clamp(22px, 3vw, 34px); background: var(--color-sand-100); }
+  .sum-row { display: flex; justify-content: space-between; gap: 16px; padding: 7px 0; font-size: 0.94rem; color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
+  .sum-row > span:last-child { text-align: right; }
+  .sum-row--total { margin-top: 10px; padding-top: 16px; border-top: 1px solid var(--color-line-2); font-family: var(--font-display); font-size: 1.2rem; color: var(--color-ink); }
+
+  /* Free delivery bar: the brand gradient filling a hairline */
+  .ship-bar { height: 3px; margin: 4px 0 10px; background: var(--color-line-2); overflow: hidden; }
+  .ship-bar__fill { height: 100%; background: var(--brand-grad); transition: width 0.6s var(--ease-q); }
+
+  /* Forms on the delivery and review steps */
+  .info-card { padding: clamp(22px, 3.2vw, 40px); background: var(--color-white); border: 1px solid var(--color-line); }
+  .sub-h { margin: 0 0 1.1rem; font-family: var(--font-display); font-size: 1.3rem; line-height: 1.2; color: var(--color-ink); }
+  .field { margin-bottom: 18px; }
+  .field > label:not(.check-row), .field > legend { display: block; margin-bottom: 6px; font-size: 0.82rem; font-weight: 500; color: var(--color-ink-3); }
+  .field input:not([type="checkbox"]):not([type="radio"]), .field textarea, .field select {
+    display: block; width: 100%; min-height: 48px; padding: 0.75em 1em; border: 1px solid var(--color-line-2); border-radius: var(--radius-r-sm);
+    background-color: var(--color-white); color: var(--color-ink); font-size: 16px; transition: border-color 0.2s, box-shadow 0.2s;
   }
+  .field select {
+    appearance: none; padding-right: 2.6em; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2317211f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 1em center;
+  }
+  .field textarea { resize: vertical; }
+  .field input:not([type="checkbox"]):not([type="radio"]):focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--color-ink); box-shadow: 0 0 0 3px var(--color-brand-50); }
+  .field [aria-invalid="true"] { border-color: var(--color-warn); }
+  /* Dashboards: pill buttons and softly rounded fields (switched on by useRoundedUi) */
+  html.ui-round .btn { border-radius: 999px; }
+  html.ui-round .input,
+  html.ui-round .select,
+  html.ui-round .field input:not([type="checkbox"]):not([type="radio"]),
+  html.ui-round .field select { border-radius: 14px; }
+  html.ui-round textarea.input,
+  html.ui-round .field textarea { border-radius: 16px; }
+  .field .check-row input[type="radio"], .field .check-row input[type="checkbox"] { flex: none; }
+  .field .check-row:has(input:checked) { border-color: var(--color-ink); background: var(--color-sand-50); }
+
+  /* Shop the kit: each kit is a sand panel, the photo on one side and the pieces on the other, alternating down the page */
+  .grid-looks { display: grid; gap: clamp(28px, 4vw, 56px); }
+  .look { display: grid; background: var(--color-sand-100); }
+  .look__media { position: relative; aspect-ratio: 4 / 5; max-height: 620px; overflow: hidden; background: var(--color-beige); }
+  .look__body { display: flex; flex-direction: column; justify-content: center; padding: clamp(24px, 4vw, 56px); }
+  @media (min-width: 900px) {
+    .look { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+    .look__media { aspect-ratio: auto; max-height: none; min-height: 560px; height: 100%; }
+    .look:nth-child(even) .look__media { order: 2; }
+  }
+  .look__count { margin: 0 0 10px; font-size: 0.86rem; color: var(--color-ink-3); }
+  .look__title { margin: 0; font-size: clamp(1.6rem, 2.6vw, 2.3rem); line-height: 1.1; }
+  .look__note { margin: 12px 0 0; max-width: 46ch; font-size: 0.97rem; line-height: 1.6; color: var(--color-ink-2); }
+  .look__items { margin: 28px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--color-line-2); }
+  .look__items li { border-bottom: 1px solid var(--color-line-2); }
+  .look__items a { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 12px 0; transition: color 0.2s; }
+  .look__items a:hover .look__piece { color: var(--color-brand-600); }
+  .look__thumb { position: relative; display: block; width: 56px; aspect-ratio: 3 / 4; overflow: hidden; background: var(--color-beige); }
+  .look__thumb .ph__label, .look__thumb .ph__note { display: none; }
+  .look__piece { font-family: var(--font-display); font-size: 1rem; line-height: 1.3; transition: color 0.2s; }
+  .look__price { font-size: 0.92rem; font-variant-numeric: tabular-nums; color: var(--color-ink-2); }
+  .look__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 24px; margin-top: 28px; }
+  .look__total { margin: 0; font-family: var(--font-display); font-size: 1.5rem; font-variant-numeric: tabular-nums; color: var(--color-ink); }
+  .look__total span { font-family: var(--font-body); font-size: 0.86rem; color: var(--color-ink-3); }
+  .look__save { margin: 2px 0 0; font-size: 0.88rem; font-weight: 500; color: var(--color-success); }
+
+  /* A short confirmation tag, such as Order placed */
+  .pill-note { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 6px 14px; background: var(--color-brand-50); color: var(--color-brand-600); font-size: 0.84rem; font-weight: 500; }
+
+  /* Size guide: the finder beside the body map, then the chart and fit tables */
+  .about-grid { display: grid; gap: clamp(32px, 5vw, 72px); align-items: start; }
+  @media (min-width: 900px) { .about-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); } }
+  .measure-card { padding: clamp(22px, 3.2vw, 40px); background: var(--color-white); border: 1px solid var(--color-line); }
+  .field-row { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .field-row .field { margin-bottom: 0; }
+  .result { margin-top: 20px; padding: 18px 20px; background: var(--color-sand-100); font-size: 0.95rem; line-height: 1.6; color: var(--color-ink-2); }
+  .bodymap { display: flex; flex-direction: column; align-items: center; }
+  .bodymap__photo { position: relative; width: min(100%, 420px); aspect-ratio: 700 / 933; overflow: hidden; background: var(--color-sand-100); }
+  .bodymap__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  /* A tape line: a dashed hairline with a dot at each end and its name beside it */
+  .bodymap__line { position: absolute; height: 0; border-top: 1.5px dashed var(--color-white); filter: drop-shadow(0 0 1px rgb(23 33 31 / 0.55)); }
+  .bodymap__line::before, .bodymap__line::after { content: ""; position: absolute; top: -4.5px; width: 7px; height: 7px; border-radius: 999px; background: var(--color-white); }
+  .bodymap__line::before { left: -3px; }
+  .bodymap__line::after { right: -3px; }
+  .bodymap__tag { position: absolute; left: calc(100% + 12px); top: 50%; translate: 0 -50%; padding: 3px 9px; background: var(--color-cream); color: var(--color-ink); font-size: 0.74rem; font-weight: 500; white-space: nowrap; filter: none; }
+
+  /* Units switch: two quiet buttons, the chosen one filled with ink */
+  .unit-toggle { display: inline-flex; border: 1px solid var(--color-line-2); background: var(--color-white); }
+  .unit-toggle button { min-height: 40px; padding: 0 18px; font-size: 0.86rem; color: var(--color-ink-2); transition: background-color 0.25s, color 0.25s; }
+  .unit-toggle button:hover { background: var(--color-sand-100); }
+  .unit-toggle button.is-on { background: var(--color-ink); color: var(--color-cream); }
+
+  /* Tables: hairlines only, a sand header, scrolling sideways on a phone */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--color-line); background: var(--color-white); }
+  table.size { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.93rem; font-variant-numeric: tabular-nums; }
+  table.size th, table.size td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--color-line); }
+  table.size thead th { background: var(--color-sand-100); font-family: var(--font-display); font-size: 0.84rem; font-weight: 600; color: var(--color-ink); white-space: nowrap; }
+  table.size tbody th { font-family: var(--font-display); font-weight: 600; color: var(--color-ink); }
+  table.size tbody tr:last-child th, table.size tbody tr:last-child td { border-bottom: 0; }
+  table.size tbody tr:hover { background: var(--color-sand-50); }
 
   /* The filter sidebar is taller than most laptop windows (1,100px with the
      colour list). Sticky but taller than the viewport, it re-pinned to the
@@ -191,4 +765,72 @@
   html {
     zoom: 2;
   }
+}
+
+/* The loading shimmer */
+@keyframes skel {
+  to { background-position: -150% 0; }
+}
+
+/* The promo bar: its messages glide from left to right and loop without a seam */
+@keyframes promo-slide {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.promo-mask { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+.promo-track { animation: promo-slide var(--promo-time, 40s) linear infinite; will-change: transform; }
+@media (prefers-reduced-motion: reduce) { .promo-track { animation: none; transform: none; } }
+
+/* Each message slides in from the left once, then rests */
+@keyframes promo-from-left {
+  from { opacity: 0; transform: translateX(-28px); }
+  to { opacity: 1; transform: none; }
+}
+.promo-in { display: inline-block; opacity: 0; animation: promo-from-left 0.9s var(--ease-q, ease-out) forwards; }
+@media (prefers-reduced-motion: reduce) { .promo-in { opacity: 1; animation: none; } }
+
+/* The announcement line fading up into place */
+@keyframes promo-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Deal cards on the shop page: one card per live offer */
+@layer components {
+  .deals { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .deal {
+    position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 220px;
+    padding: clamp(22px, 2.4vw, 32px); border-radius: 22px; border: 1px solid transparent;
+    transition: transform 0.5s var(--ease-q), box-shadow 0.5s var(--ease-q);
+  }
+  .deal:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgb(23 33 31 / 0.14); }
+  .deal__tag { align-self: flex-start; padding: 0.3em 0.9em; border-radius: 999px; font-size: 0.74rem; font-weight: 500; }
+  .deal h3 { margin: 6px 0 0; color: inherit; font-size: clamp(1.55rem, 2.4vw, 2.1rem); line-height: 1.05; }
+  .deal p { margin: 0; flex: 1; max-width: 34ch; font-size: 0.95rem; }
+  .deal .link-arrow { align-self: flex-start; margin-top: 10px; }
+  .deal--brand { background: var(--color-sand-100); border-color: var(--color-line); color: var(--color-ink); }
+  .deal--brand .deal__tag { background: var(--brand-grad); color: var(--color-white); }
+  .deal--brand p { color: var(--color-ink-2); }
+  .deal--dark { background: var(--color-ink); color: var(--color-cream); }
+  .deal--dark .deal__tag { background: rgb(251 248 243 / 0.14); }
+  .deal--dark p { color: rgb(251 248 243 / 0.78); }
+  .deal--dark .link-arrow, .deal--teal .link-arrow { color: var(--color-cream); }
+  .deal--teal { background: var(--color-teal-500); color: var(--color-cream); }
+  .deal--teal .deal__tag { background: rgb(251 248 243 / 0.16); }
+  .deal--teal p { color: rgb(251 248 243 / 0.85); }
+}
+
+/* Arabic and Chinese: scripts the brand faces do not carry, so a matching family leads */
+html[lang="ar"] { --font-display: "Noto Sans Arabic", "Archivo", sans-serif; --font-body: "Noto Sans Arabic", "Inter", system-ui, sans-serif; --font-logo: "Anton", "Impact", sans-serif; }
+html[lang="zh"] { --font-display: "Archivo", "Noto Sans SC", "PingFang SC", sans-serif; --font-body: "Inter", "Noto Sans SC", "PingFang SC", system-ui, sans-serif; }
+html[lang="ar"] body { letter-spacing: 0; }
+html[dir="rtl"] .link-arrow svg, html[dir="rtl"] .btn svg[class*="arrow"] { transform: scaleX(-1); }
+
+/* The welcome photograph easing to rest */
+@keyframes welcome-settle { from { transform: scale(1.12); } to { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { [class*="welcome-settle"] { animation: none !important; transform: none !important; } }
+
+/* Touch: the quiet text links keep a full finger's height to tap */
+@media (pointer: coarse) {
+  .link-arrow { display: inline-flex; align-items: center; min-height: 44px; }
 }

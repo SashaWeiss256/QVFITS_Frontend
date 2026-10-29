@@ -19,7 +19,7 @@ export default function Field({ label, error, hint, as, options, input, classNam
 
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={id} className="text-sm font-semibold text-ink-2">
+      <label htmlFor={id} className="text-[.82rem] font-medium text-ink-3">
         {label}
       </label>
       {typeof children === "function" ? children(id) : (
@@ -28,7 +28,7 @@ export default function Field({ label, error, hint, as, options, input, classNam
             id={id}
             aria-invalid={Boolean(error) || undefined}
             aria-describedby={describedBy}
-            className={cn("input", as === "textarea" && "min-h-32 resize-y", secret && "pr-12")}
+            className={cn(options ? "select w-full" : "input", as === "textarea" && "min-h-32 resize-y", secret && "pr-12")}
             {...input}
             {...rest}
             type={secret && shown ? "text" : rest.type}

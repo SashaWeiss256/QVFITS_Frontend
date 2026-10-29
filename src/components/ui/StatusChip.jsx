@@ -22,7 +22,7 @@ const TONE = {
 
 export default function StatusChip({ status, label }) {
   return (
-    <span className={cn("inline-flex whitespace-nowrap rounded-r-pill px-2.5 py-1 text-xs font-semibold", TONE[status] ?? WAITING)}>
+    <span className={cn("inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium", TONE[status] ?? WAITING)}>
       {label ?? statusLabel(status)}
     </span>
   );

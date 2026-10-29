@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { useSettings } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
 import { inStock, productSizes } from "@/utils/stockLevel";
+import { t } from "@/i18n/translate";
 
-// Sold-out sizes stay visible but disabled, so the shop is honest about
-// what is gone. The note under the row says how many are left.
+// Sold-out sizes stay visible but struck through and disabled, so the shop
+// is honest about what is gone. The note under the row says how many are left.
 export default function SizePicker({ product, chosen, onChoose }) {
   // Units left in the chosen size; null until a size is picked so no note shows.
   const n = chosen ? product.stock[chosen] || 0 : null;
@@ -15,12 +16,17 @@ export default function SizePicker({ product, chosen, onChoose }) {
   const low = settings?.lowStockAt ?? 2;
 
   return (
-    <div className="opt">
-      <div className="opt__head">
-        <h2>Size</h2>
-        <Link to="/size-guide" className="text-[.84rem] text-brand-600 underline">Size guide</Link>
+    <div>
+      {/* Heading and the size guide */}
+      <div className="mb-3 flex items-baseline justify-between">
+        <p className="text-[0.88rem] text-ink-3">
+          Size {chosen && <span className="ml-1 font-display font-semibold text-ink">{chosen}</span>}
+        </p>
+        <Link to="/size-guide" className="inline-flex min-h-11 items-center text-[0.85rem] underline underline-offset-4 hover:text-brand-600">{t("Size guide")}</Link>
       </div>
-      <div className="size-row" role="radiogroup" aria-label="Size">
+
+      {/* Sizes */}
+      <div className="grid grid-cols-6 gap-2" role="radiogroup" aria-label={t("Size")}>
         {productSizes(product).map((s) => {
           const out = !inStock(product, s);
           return (
@@ -31,7 +37,11 @@ export default function SizePicker({ product, chosen, onChoose }) {
               aria-checked={s === chosen}
               disabled={out}
               aria-label={out ? `${s}, sold out` : s}
-              className={cn("size-btn", out && "is-out", s === chosen && "is-on")}
+              className={cn(
+                "relative min-h-12 border font-display text-[0.9rem] font-semibold transition-colors",
+                s === chosen ? "border-ink bg-ink text-cream" : "border-line-2 hover:border-ink",
+                out && "cursor-not-allowed text-ink-4 line-through decoration-1 hover:border-line-2",
+              )}
               onClick={() => onChoose(s)}
             >
               {s}
@@ -39,9 +49,10 @@ export default function SizePicker({ product, chosen, onChoose }) {
           );
         })}
       </div>
-      {/* Stock Note: announced as the size changes. */}
-      <p className={cn("stock-note", n !== null && (n <= low ? "low" : "ok"))} aria-live="polite">
-        {n === null ? "" : n === 0 ? `Sold out in ${chosen}` : n <= low ? `Only ${n} left in ${chosen}. This one moves fast.` : `In stock in ${chosen}`}
+
+      {/* Stock note: announced as the size changes */}
+      <p className={cn("mt-3 min-h-[1.4em] text-[0.85rem]", n !== null && n <= low ? "text-warn" : "text-success")} aria-live="polite">
+        {n === null ? "" : n === 0 ? `Sold out in ${chosen}` : n <= low ? `Only ${n} left in ${chosen}` : `In stock in ${chosen}`}
       </p>
     </div>
   );

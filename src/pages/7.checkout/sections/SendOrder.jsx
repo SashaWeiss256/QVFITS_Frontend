@@ -9,6 +9,7 @@ import { usePaymentMethods } from "@/store/tanstackStore/queries/site";
 import { zoneEta, zoneOf } from "@/utils/delivery";
 import { whatsappLink } from "@/utils/whatsapp";
 import { orderMessage } from "../orderMessage";
+import { t } from "@/i18n/translate";
 
 /**
  * After the order is placed: its reference, and the order sent to the team
@@ -40,7 +41,7 @@ export default function SendOrder({ order, settings }) {
       <p className="text-[.9rem] text-ink-3">Send it to the team and they&apos;ll confirm stock, total and payment with you. Quote your reference and they can find your order instantly.</p>
       {/* Send It: WhatsApp, Instagram or copy. Instagram can't take pre-filled text, so the order goes on the clipboard on the way out. */}
       <div className="mt-5 flex flex-wrap gap-2.5">
-        <a className="btn btn--primary" href={whatsappLink(settings.whatsapp, message)} target="_blank" rel="noopener noreferrer">Send on WhatsApp</a>
+        <a className="btn btn--primary" href={whatsappLink(settings.whatsapp, message)} target="_blank" rel="noopener noreferrer">{t("Send on WhatsApp")}</a>
         <a className="btn btn--ghost" href={settings.instagram} target="_blank" rel="noopener noreferrer" onClick={() => { copy(true); notify("Order copied to your clipboard too.", { tone: "success" }); }}>Send via Instagram DM</a>
         <button type="button" className="btn btn--soft" onClick={() => copy(false)}>Copy order</button>
       </div>
@@ -49,7 +50,7 @@ export default function SendOrder({ order, settings }) {
       {/* How to pay, and how long the pieces are held */}
       <PaymentDue order={order} />
       <p className="mt-5 text-sm text-ink-3">
-        Track it any time on <Link to="/track-order" className="text-brand-600 underline">Track an order</Link>.
+        Track it any time on <Link to="/track-order" className="text-brand-600 underline">{t("Track an order")}</Link>.
       </p>
     </div>
   );

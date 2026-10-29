@@ -7,7 +7,6 @@ import Field from "@/components/ui/Field";
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { withColor } from "@/AdminDashboard/lib/variants";
 import { categoriesResource, colorsResource, groupsResource, productsResource, sizesResource, termsResource, useCollection } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
 import ChipGroup from "@/AdminDashboard/components/ChipGroup";
@@ -102,7 +101,7 @@ function Editor({ existing, products }) {
       {/* The header says New or Edit product; an existing piece also names itself here. */}
       {existing && (
         <div className="mb-6 flex flex-wrap items-center gap-3">
-          <h2 className="m-0 mr-auto text-[1.4rem] font-bold tracking-tight">{existing.name}</h2>
+          <h2 className="m-0 mr-auto font-display text-[1.6rem] font-medium tracking-[-0.01em]">{existing.name}</h2>
           {existing.status === "active" && <a className="btn btn--ghost min-h-10 px-4 text-[.85rem]" href={isKit ? "/shop/kits" : `/product/${existing.slug}`} target="_blank" rel="noopener noreferrer">View in shop <ExternalLink className="h-4 w-4" /></a>}
           {existing.status !== "active" && !isKit && <a className="btn btn--ghost min-h-10 px-4 text-[.85rem]" href={`/product/${existing.slug}?preview`}>Preview <ExternalLink className="h-4 w-4" /></a>}
         </div>
@@ -110,8 +109,8 @@ function Editor({ existing, products }) {
 
       {/* What it is, chosen once: a piece keeps its stock, a kit borrows its pieces'. */}
       {!existing && (
-        <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <div className="inline-flex rounded-r-pill bg-cream-2 p-1" role="radiogroup" aria-label="What are you adding?">
+        <div className="mb-8 flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div className="inline-flex rounded-full border border-line-2 bg-white p-1" role="radiogroup" aria-label="What are you adding?">
             {TYPES.map((t) => (
               <button
                 key={t.id}
@@ -120,8 +119,8 @@ function Editor({ existing, products }) {
                 aria-checked={p.type === t.id}
                 onClick={() => patch({ type: t.id, isNew: t.id === "piece" })}
                 className={cn(
-                  "inline-flex min-h-10 items-center gap-2 rounded-r-pill px-5 text-sm font-semibold outline-none transition-[background-color,color,box-shadow] duration-200 focus-visible:ring-2 focus-visible:ring-brand-300",
-                  p.type === t.id ? "bg-white text-brand-600 shadow-sh-1" : "text-ink-3 hover:text-ink",
+                  "inline-flex min-h-11 items-center gap-2 rounded-full px-6 text-sm font-medium outline-none transition-[background-color,color] duration-200 focus-visible:ring-2 focus-visible:ring-brand-300",
+                  p.type === t.id ? "bg-ink text-cream" : "text-ink-3 hover:text-ink",
                 )}
               >
                 <t.icon className="h-4 w-4" aria-hidden="true" /> {t.label}
@@ -132,17 +131,17 @@ function Editor({ existing, products }) {
         </div>
       )}
 
-      <fieldset disabled={readOnly} className="m-0 grid min-w-0 gap-6 border-0 p-0 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="grid min-w-0 gap-6">
+      <fieldset disabled={readOnly} className="m-0 grid min-w-0 gap-8 border-0 p-0 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid min-w-0 gap-8">
           <Panel title="Basics">
-            <div className="grid gap-4">
+            <div className="grid gap-5">
               <Field label="Name" value={p.name} onChange={(e) => patch({ name: e.target.value })} error={errors.name} />
               <Field label="Short description" as="textarea" rows={3} value={p.blurb} onChange={(e) => patch({ blurb: e.target.value })} hint={isKit ? "The line under the kit's name, e.g. what it's built for." : "The paragraph under the name on the product page."} />
             </div>
           </Panel>
 
-          <Panel title="Photos" hint={isKit ? "The kit's own photo: all the pieces worn together." : "The first is the card photo and the second shows on hover. Tap a colour under a photo to say which colour it shows."}>
-            <ImageUploader value={p.photos} onChange={(photos) => patch({ photos })} colors={isKit ? undefined : colors.items} productColors={p.colorIds} onColorPick={(id) => patch((draft) => withColor(draft, sizes.items, id))} />
+          <Panel title="Photos" hint={isKit ? "The kit's own photo: all the pieces worn together." : "The first is the card photo and the second shows on hover. Once the colours are chosen below, tap one under a photo to say which colour it shows."}>
+            <ImageUploader value={p.photos} onChange={(photos) => patch({ photos })} colors={isKit ? undefined : colors.items} productColors={p.colorIds} onChooseColours={() => document.getElementById("product-colours")?.scrollIntoView({ behavior: "smooth", block: "start" })} />
             {errors.photos && <p role="alert" className="mt-2 text-xs font-semibold text-warn">{errors.photos}</p>}
           </Panel>
 
@@ -155,7 +154,7 @@ function Editor({ existing, products }) {
               )}
             </Panel>
           ) : (
-            <Panel title="Colours, sizes and stock" hint="A change here is logged as a count correction. Log restocks and showroom sales under Products, Stock.">
+            <Panel id="product-colours" title="Colours, sizes and stock" hint="A change here is logged as a count correction. Log restocks and showroom sales under Products, Stock.">
               <VariantMatrix product={p} colors={colors.items} sizes={sizes.items} onChange={patch} onCreateColor={can("categories", "edit") ? colors.create : undefined} onCreateSize={can("size-guide", "edit") ? sizes.create : undefined} />
               {errors.variants && <p role="alert" className="mt-2 text-xs font-semibold text-warn">{errors.variants}</p>}
             </Panel>
@@ -168,7 +167,7 @@ function Editor({ existing, products }) {
               action={<button type="button" className="btn btn--ghost min-h-9 px-3 text-xs" aria-expanded={moreOpen} onClick={() => setMoreOpen((o) => !o)}>{moreOpen ? "Hide" : "Add details"}</button>}
               className={moreOpen ? undefined : "[&>div]:mb-0"}
             >
-              {moreOpen && <div className="grid gap-4">
+              {moreOpen && <div className="grid gap-5">
                 <Field label="Details">{(fid) => <TagInput id={fid} value={p.details} onChange={(details) => patch({ details })} placeholder="e.g. Squat-tested opaque, then Enter" allowCommas />}</Field>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Fabric" value={p.fabric} onChange={(e) => patch({ fabric: e.target.value })} />
@@ -183,9 +182,9 @@ function Editor({ existing, products }) {
 
         {/* The sell-side decisions, in the order they are made: whether it is live and what it costs,
             where it sits in the shop, then the labels that promote it. */}
-        <div className="grid content-start gap-6">
+        <div className="grid content-start gap-8">
           <Panel title="Publish and price">
-            <div className="grid gap-4">
+            <div className="grid gap-5">
               <Field label="Visibility" options={[{ value: "draft", label: "Draft, hidden from the shop" }, { value: "active", label: "Active, on sale" }, { value: "archived", label: "Archived" }]} value={p.status} onChange={(e) => patch({ status: e.target.value })} />
               <div className={cn("grid gap-4", !isKit && "sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2")}>
                 <Field label={isKit ? "Kit price (UGX)" : "Price (UGX)"} inputMode="numeric" value={p.price || ""} placeholder={isKit && separate ? String(separate) : undefined} onChange={(e) => patch({ price: Number(e.target.value.replace(/\D/g, "")) || 0 })} error={errors.price} hint={isKit ? "What the whole kit costs. Lower than the pieces bought one by one to give a saving." : undefined} />
@@ -196,7 +195,7 @@ function Editor({ existing, products }) {
           </Panel>
 
           {!isKit && <Panel title="Organisation">
-            <div className="grid gap-4">
+            <div className="grid gap-5">
               {/* Category is one choice (a piece sits in one), the rest are several; all are chips, so the panel reads the same. */}
               <ChipGroup
                 legend="Category"
@@ -222,11 +221,11 @@ function Editor({ existing, products }) {
 
           {!isKit && (
             <Panel title="Labels" hint="Where else the piece shows.">
-              <div className="grid gap-4">
+              <div className="grid gap-5">
                 <Toggle checked={p.isNew} onChange={(isNew) => patch({ isNew })} label="New arrival" hint="On New in and the home page, until you turn it off." />
                 <Toggle checked={p.pinnedBestseller} onChange={(pinnedBestseller) => patch({ pinnedBestseller })} label="Pin to Best sellers" hint="Always on Best sellers." />
                 {existing && (
-                  <p className="m-0 rounded-r-md bg-cream px-3 py-2 text-[.8rem] text-ink-3">
+                  <p className="m-0 rounded-[22px] bg-sand-100 px-4 py-3 text-[.84rem] text-ink-3">
                     {existing.unitsSold} sold in the last 90 days{existing.isBestseller && !existing.pinnedBestseller ? ", so it's a best seller by sales." : "."}
                   </p>
                 )}

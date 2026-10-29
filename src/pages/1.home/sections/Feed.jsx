@@ -43,25 +43,33 @@ export default function Feed({ feed }) {
   const saving = lite();
 
   return (
-    <section className="section section--tight">
+    <section className="section">
       <div className="wrap">
-        <Reveal className="section-head center">
-          <span className="kicker">{feed.kicker}</span>
+        {/* Heading */}
+        <Reveal className="mb-10 max-w-xl">
+          <p className="kicker">{feed.kicker}</p>
           <h2>{feed.title}</h2>
         </Reveal>
+
         {/* Reels: each a link to the piece or part of the shop it shows */}
-        <div className="grid-feed" ref={grid}>
+        <div className="grid grid-cols-2 gap-[clamp(10px,1.4vw,20px)] lg:grid-cols-4" ref={grid}>
           {feed.items.map((it) => (
-            <Link key={it.id} className="feedtile" to={it.href} aria-label={`${it.label}: shop it`}>
-              {saving ? (
-                <img className="feedtile__media" src={`/photos/${it.id}.webp`} alt={it.label} loading="lazy" />
-              ) : (
-                <video className="feedtile__media" poster={`/photos/${it.id}.webp`} muted loop playsInline preload="none" aria-label={it.label}>
-                  <source src={`/photos/${it.id}.mp4`} type="video/mp4" />
-                </video>
-              )}
-              <span className="feedtile__shop" aria-hidden="true"><ShoppingBag className="h-5 w-5" /></span>
-              <span className="feedtile__label">{it.label}</span>
+            <Link key={it.id} className="group block" to={it.href} aria-label={`${it.label}: shop it`}>
+              {/* Reel */}
+              <div className="relative aspect-[9/16] overflow-hidden bg-sand-100">
+                {saving ? (
+                  <img className="h-full w-full object-cover" src={`/photos/${it.id}.webp`} alt={it.label} loading="lazy" />
+                ) : (
+                  <video className="h-full w-full object-cover" poster={`/photos/${it.id}.webp`} muted loop playsInline preload="none" aria-label={it.label}>
+                    <source src={`/photos/${it.id}.mp4`} type="video/mp4" />
+                  </video>
+                )}
+                <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-cream/90 text-ink opacity-0 transition-opacity duration-500 group-hover:opacity-100" aria-hidden="true">
+                  <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
+                </span>
+              </div>
+              {/* What it shows */}
+              <span className="mt-3 block text-[0.9rem] text-ink-2 transition-colors group-hover:text-brand-600">{it.label}</span>
             </Link>
           ))}
         </div>

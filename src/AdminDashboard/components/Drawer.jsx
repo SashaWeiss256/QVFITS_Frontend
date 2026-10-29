@@ -24,12 +24,12 @@ export default function Drawer({ open, onClose, title, subtitle, footer, wide = 
 
   return createPortal(
     <div className="fixed inset-0 z-[80]">
-      <div className="scrim is-on" onClick={dismissable ? onClose : undefined} />
+      <div className="sheet-scrim is-on" onClick={dismissable ? onClose : undefined} />
       <aside
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={cn("absolute inset-y-0 right-0 z-[81] flex w-full flex-col bg-cream shadow-sh-4", wide ? "max-w-3xl" : "max-w-xl")}
+        className={cn("absolute inset-y-0 right-0 z-[81] flex w-full flex-col overflow-hidden bg-cream shadow-sh-4 sm:rounded-l-[22px]", wide ? "max-w-3xl" : "max-w-xl")}
       >
         <div className="flex items-start justify-between gap-4 border-b border-line bg-white px-6 py-4">
           <div className="min-w-0">

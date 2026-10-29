@@ -30,7 +30,7 @@ export default function ItemDialog({ dialog, onChange, onClose, onSave, saving }
         <div className="grid gap-4">
           <Field label="Name" value={x.name} placeholder="New in" onChange={(e) => set({ name: e.target.value })} autoFocus />
           <LinkPicker label="Shows" value={x} onChange={set} />
-          <div className="grid gap-3 rounded-r-md bg-cream p-4">
+          <div className="grid gap-3 rounded-[14px] bg-cream p-4">
             <Toggle checked={x.active} onChange={(active) => set({ active })} label="In the Shop menu" />
             <Toggle checked={Boolean(x.inHeader)} onChange={(inHeader) => set({ inHeader })} label="In the top bar" hint="A link after Shop in the header." />
           </div>
@@ -45,7 +45,7 @@ export default function ItemDialog({ dialog, onChange, onClose, onSave, saving }
             <Field label="Name" value={x.name} placeholder={group.kind === "category" ? "Bras" : "High support"} onChange={(e) => set({ name: e.target.value })} autoFocus />
           </div>
           <Field className="sm:col-span-2" label="Description" as="textarea" rows={2} value={x.description} onChange={(e) => set({ description: e.target.value })} hint="Heads its shop page, under the title." />
-          <div className="grid gap-3 rounded-r-md bg-cream p-4 sm:col-span-2">
+          <div className="grid gap-3 rounded-[14px] bg-cream p-4 sm:col-span-2">
             <Toggle checked={x.active} onChange={(active) => set({ active })} label="Show in the shop" hint="Off hides its page, menu link and filter chip; products keep it." />
             {group.kind === "category" && <Toggle checked={Boolean(x.inHeader)} onChange={(inHeader) => set({ inHeader })} label="In the top bar" hint="A link after Shop in the header." />}
           </div>

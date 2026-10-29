@@ -1,19 +1,22 @@
 /* Page Intro */
 import { useSeo } from "@/seo/useSeo";
+import { cn } from "@/utils/cn";
 
 /**
- * A page's one h1, in Quivogue's kicker / heading / lede pattern, and its tab
- * title. Every page has exactly one (the audit floor).
+ * A page's one h1 and its tab title: a small kicker, the title large in the
+ * serif, and an optional lede, on generous space. Every page has exactly one
+ * (the audit floor). Children sit underneath, inside the same wrap.
  */
 export default function PageIntro({ kicker, title, lede, seoTitle, noindex, center = false, children }) {
   useSeo({ title: seoTitle ?? title, description: lede, noindex });
   return (
-    <section className={`wrap section--tight ${center ? "center" : ""}`}>
-      <div className="section-head">
+    <section className="wrap pb-20 pt-16 lg:pb-28 lg:pt-24">
+      {/* Heading */}
+      <header className={cn("mb-14 max-w-3xl lg:mb-20", center && "mx-auto text-center")}>
         {kicker && <p className="kicker">{kicker}</p>}
-        <h1>{title}</h1>
-        {lede && <p className="lede mt-4">{lede}</p>}
-      </div>
+        <h1 className="text-[clamp(2.375rem,5.2vw,4.375rem)]">{title}</h1>
+        {lede && <p className={cn("mt-6 max-w-xl text-[1.08rem] leading-relaxed text-ink-2", center && "mx-auto")}>{lede}</p>}
+      </header>
       {children}
     </section>
   );

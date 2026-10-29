@@ -51,7 +51,7 @@ export default function QuickAdd({ kind, existing, onCreate }) {
   return (
     <>
       {/* The plus and the label share one line, like every other chip in the row. */}
-      <button type="button" className="chip inline-flex items-center gap-1.5 whitespace-nowrap border-dashed border-brand-300 text-brand-600" onClick={show}>
+      <button type="button" className="chip chip--raised inline-flex items-center gap-1.5 whitespace-nowrap border-dashed border-brand-300 text-brand-600" onClick={show}>
         <Plus className="h-3.5 w-3.5" aria-hidden="true" /> New {kind}
       </button>
       {/* Quick Add Form: opens over the product, so nothing typed on the product is lost */}
@@ -70,7 +70,7 @@ export default function QuickAdd({ kind, existing, onCreate }) {
               <Field label="Swatch">
                 {(id) => (
                   <div className="flex items-center gap-3">
-                    <input id={id} type="color" className="h-11 w-14 cursor-pointer rounded-r-sm border border-line-2" value={values.hex} onChange={(e) => set({ hex: e.target.value })} />
+                    <input id={id} type="color" className="h-11 w-14 cursor-pointer rounded-[18px] border border-line-2" value={values.hex} onChange={(e) => set({ hex: e.target.value })} />
                     <input className="input flex-1" aria-label="Swatch as hex" value={values.hex} onChange={(e) => set({ hex: e.target.value })} placeholder="#14625a" />
                   </div>
                 )}

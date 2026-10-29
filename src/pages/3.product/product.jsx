@@ -9,10 +9,13 @@ import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useRecentlyViewed } from "@/store/context/recentlyViewed";
 import { useProductPreview } from "@/store/tanstackStore/queries/admin";
 import { useProduct } from "@/store/tanstackStore/queries/site";
+import { breadcrumbJsonLd, inStock, productCrumbs, productJsonLd, productMeta, shareImage } from "@/seo/shared";
+import { SITE_URL } from "@/seo/site";
 import { useSeo } from "@/seo/useSeo";
 import BuyPanel from "./sections/BuyPanel";
 import Gallery from "./sections/Gallery";
 import Related from "./sections/Related";
+import { t } from "@/i18n/translate";
 
 export default function ProductPage() {
   const { slug } = useParams();
@@ -23,9 +26,8 @@ export default function ProductPage() {
   const live = useProduct(previewing ? undefined : slug);
   const draft = useProductPreview(slug, previewing);
   const { data: p, isLoading, error } = previewing ? draft : live;
-  // The colour last picked, for the gallery to go to its photo. A new object
-  // each pick, so picking the same colour again goes back to it.
-  const [focus, setFocus] = useState(null);
+  // The colour picked in the buy panel; the gallery shows its photos.
+  const [colorId, setColorId] = useState(null);
   // Avoid indexing stale product URLs; the title and description follow the loaded piece.
   const { record } = useRecentlyViewed();
   // A draft seen in preview isn't a shopper's visit, so it stays off the list.
@@ -33,7 +35,18 @@ export default function ProductPage() {
   useEffect(() => {
     if (id) record(id);
   }, [id, record]);
-  useSeo({ title: p?.name ?? (error ? "Piece not found" : undefined), description: p ? `${p.name}, ${p.category} from QVFITS, Kampala. ${p.blurb}` : undefined, noindex: Boolean(error) });
+  // Title, share card (the piece's own photo) and structured data (price, stock, crumbs).
+  const meta = p ? productMeta(p) : null;
+  useSeo({
+    title: meta?.title ?? (error ? "Piece not found" : undefined),
+    description: meta?.description,
+    image: p ? shareImage(p.photos?.[0], SITE_URL) : undefined,
+    imageAlt: p ? `${p.name} by QVFITS` : undefined,
+    type: p ? "product" : "website",
+    product: p ? { price: p.price, currency: "UGX", inStock: inStock(p) } : undefined,
+    jsonLd: p ? [productJsonLd(p, SITE_URL), breadcrumbJsonLd(productCrumbs(p), SITE_URL)] : undefined,
+    noindex: Boolean(error) || (p ? p.status !== "active" : false),
+  });
 
   // Keep loading distinct from a missing product so transient fetches don't show a 404.
   if (isLoading) return <PageLoader variant="product" />;
@@ -42,8 +55,8 @@ export default function ProductPage() {
       <section className="section section--tight">
         <div className="wrap empty">
           <h1>We can&apos;t find that piece</h1>
-          <p className="lede center mt-2">It may have sold out and come off the rail.</p>
-          <Link className="btn btn--primary mt-4" to="/shop">Back to the shop</Link>
+          <p className="lede center mt-2">{t("It may have sold out and come off the rail.")}</p>
+          <Link className="btn btn--primary mt-4" to="/shop">{t("Back to the shop")}</Link>
         </div>
       </section>
     );
@@ -51,21 +64,21 @@ export default function ProductPage() {
 
   return (
     <>
-      <section className="section section--tight">
-        <div className="wrap">
-          {previewing && p.status !== "active" && (
-            <p role="status" className="mb-4 rounded-r-md border border-brand-100 bg-brand-50 px-4 py-2.5 text-sm text-ink-2">
-              <strong className="font-semibold">Preview.</strong> This piece is {p.status === "draft" ? "a draft" : "archived"}, so shoppers can&apos;t see it yet. <Link to={`/admin/products/${p.id}`} className="underline">Back to editing</Link>
-            </p>
-          )}
-          <p className="crumbs">
-            <Link to="/">Home</Link> / <Link to="/shop">Shop</Link> / <Link to={`/shop/${p.categorySlug}`}>{p.category}</Link> / {p.name}
+      <section className="wrap pb-20 pt-8 lg:pb-28 lg:pt-10">
+        {previewing && p.status !== "active" && (
+          <p role="status" className="mb-6 border-l-2 border-brand-500 bg-brand-50 px-4 py-3 text-sm text-ink-2">
+            <strong className="font-semibold">Preview.</strong> This piece is {p.status === "draft" ? "a draft" : "archived"}, so shoppers can&apos;t see it yet. <Link to={`/admin/products/${p.id}`} className="underline">Back to editing</Link>
           </p>
-          <div className="pdp">
-            <Gallery product={p} focus={focus} />
-            {/* Reset local size and colour selections when navigating between products. */}
-            <BuyPanel key={p.id} product={p} onColor={(colorId) => setFocus({ productId: p.id, colorId })} />
-          </div>
+        )}
+        {/* Breadcrumb */}
+        <p className="crumbs">
+          <Link to="/">{t("Home")}</Link> / <Link to="/shop">{t("Shop")}</Link> / <Link to={`/shop/${p.categorySlug}`}>{p.category}</Link> / <span className="text-ink">{p.name}</span>
+        </p>
+        {/* The views on the left, the buy panel on the right */}
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-16 xl:gap-24">
+          <Gallery product={p} colorId={colorId} />
+          {/* Reset local size and colour selections when navigating between products. */}
+          <BuyPanel key={p.id} product={p} onColor={setColorId} />
         </div>
       </section>
       {/* Outfits built around this piece, with the colours checked */}

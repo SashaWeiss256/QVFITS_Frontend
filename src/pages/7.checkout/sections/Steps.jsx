@@ -3,13 +3,14 @@ import { Check } from "lucide-react";
 
 import { usePageCopy } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
+import { t } from "@/i18n/translate";
 
 // Bag (/cart), then delivery and confirm (/checkout).
 export default function Steps({ at }) {
   const { data: copy } = usePageCopy("checkout");
   const steps = copy?.steps ?? [];
   return (
-    <ol className="steps m-0 list-none p-0" aria-label="Checkout progress">
+    <ol className="steps list-none p-0" aria-label={t("Checkout progress")}>
       {steps.map((label, i) => {
         const n = i + 1;
         return (

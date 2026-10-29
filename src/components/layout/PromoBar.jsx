@@ -1,37 +1,47 @@
 /* Announcement Bar */
-import { useEffect, useState } from "react";
-
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useOffers, useSettings } from "@/store/tanstackStore/queries/site";
 
 /**
- * One line at a time, cross-fading every 4.5s, so it never wraps on a phone.
- * Pauses on hover and focus; holds the first line for reduced motion. Lines
- * come from Offers in the admin, with {{freeShipping}} and {{phone}} filled in.
+ * The thin gradient strip above the header. Every message is on the strip at
+ * once, spread across its width, and the whole row drifts from left to right
+ * without stopping (it never pauses under the mouse). Two copies of the row,
+ * each at least as wide as the screen, slide one row to the right and start
+ * over unseen, so there is never a gap. With reduced motion switched on, the
+ * row simply sits still. Messages come from Offers in the admin, with
+ * {{freeShipping}} and {{phone}} filled in.
  */
 export default function PromoBar() {
   const { data: offers } = useOffers();
   const { data: settings } = useSettings();
   const { money } = useCurrency();
-  const [at, setAt] = useState(0);
-  const [paused, setPaused] = useState(false);
 
-  const lines = (offers?.promoBar ?? []).map((line) =>
-    line.replace("{{freeShipping}}", settings ? money(settings.freeShippingOver) : "").replace("{{phone}}", settings?.phone ?? ""),
-  );
-
-  useEffect(() => {
-    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (paused || still || lines.length < 2) return undefined;
-    const t = setInterval(() => setAt((i) => (i + 1) % lines.length), 4500);
-    return () => clearInterval(t);
-  }, [paused, lines.length]);
-
+  const lines = (offers?.promoBar ?? [])
+    .map((line) => line.replace("{{freeShipping}}", settings ? money(settings.freeShippingOver) : "").replace("{{phone}}", settings?.phone ?? ""))
+    .filter((line) => line.trim());
   if (!lines.length) return null;
 
+  const seconds = Math.max(26, lines.length * 9);
+  const row = (
+    <ul className="m-0 flex min-w-[100vw] shrink-0 list-none items-center justify-center gap-14 p-0 px-7">
+      {lines.map((line, i) => (
+        <li key={i} className="flex items-center gap-14 whitespace-nowrap">
+          <span>{line}</span>
+          <i className="block h-1 w-1 rotate-45 bg-cream/70" />
+        </li>
+      ))}
+    </ul>
+  );
+
   return (
-    <div className="promo" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
-      <span key={at} className="promo__line" aria-live="off">{lines[at % lines.length]}</span>
+    <div className="relative z-61 flex h-9 items-center overflow-hidden bg-[image:var(--brand-grad)] text-[0.78rem] tracking-[0.02em] text-cream" role="region" aria-label="Announcements">
+      <div className="promo-mask min-w-0 flex-1">
+        <div className="promo-track flex w-max items-center" style={{ "--promo-time": `${seconds}s` }} aria-hidden="true">
+          {row}
+          {row}
+        </div>
+      </div>
+      <p className="sr-only">{lines.join(". ")}</p>
     </div>
   );
 }

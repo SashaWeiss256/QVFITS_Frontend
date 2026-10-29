@@ -7,22 +7,30 @@
  */
 export function toCsv(rows) {
   if (!rows.length) return "";
-  const keys = Object.keys(rows[0]);
+  // Every column any row has, in the order first seen, so a row with an extra field never loses it.
+  const keys = [...new Set(rows.flatMap((r) => Object.keys(r)))];
   const cell = (v) => {
-    const s = v === null || v === undefined ? "" : Array.isArray(v) ? v.join("; ") : String(v);
-    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    let s = v === null || v === undefined ? "" : v instanceof Date ? v.toISOString() : Array.isArray(v) ? v.join("; ") : String(v);
+    // A cell that starts with = + - @ is read as a formula by Excel and Sheets, so a customer who
+    // types =HYPERLINK(...) as their name cannot run it on the admin's machine. A plain negative number is left alone.
+    if (/^[=+\-@\t\r]/.test(s) && !(typeof v === "number" && Number.isFinite(v))) s = `'${s}`;
+    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  return [keys.join(","), ...rows.map((r) => keys.map((k) => cell(r[k])).join(","))].join("\n");
+  return [keys.map(cell).join(","), ...rows.map((r) => keys.map((k) => cell(r[k])).join(","))].join("\r\n");
 }
 
 export function downloadCsv(name, rows) {
-  const blob = new Blob([toCsv(rows)], { type: "text/csv;charset=utf-8" });
+  // The byte order mark makes Excel read the file as UTF-8, so names and accents survive.
+  const blob = new Blob(["\uFEFF", toCsv(rows)], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = `${name}-${new Date().toISOString().slice(0, 10)}.csv`;
+  // Firefox only follows a link that is in the page; the address is freed after the download has started.
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 /** A CSV file the admin picked, as rows keyed by its header line. */

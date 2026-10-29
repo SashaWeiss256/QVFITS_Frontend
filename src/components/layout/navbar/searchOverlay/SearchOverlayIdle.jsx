@@ -9,21 +9,28 @@ export default function SearchOverlayIdle({ onPick, onNavigate }) {
   const { data: newIn = [] } = useProductsByIds(rails?.newReleases ?? []);
 
   return (
-    <>
-      <p className="search-ov__label">Popular</p>
-      <div className="search-ov__chips">
-        {nav?.popularSearches.map((t) => (
-          <button key={t} type="button" className="chip" onClick={() => onPick(t)}>{t}</button>
-        ))}
+    <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_3fr]">
+      {/* Popular searches */}
+      <div>
+        <p className="mb-4 text-[0.8rem] font-medium text-ink-3">Popular searches</p>
+        <ul className="space-y-2">
+          {nav?.popularSearches.map((t) => (
+            <li key={t}>
+              <button type="button" className="font-display text-[1.25rem] text-ink-2 transition-colors hover:text-brand-600" onClick={() => onPick(t)}>{t}</button>
+            </li>
+          ))}
+        </ul>
       </div>
+
+      {/* Just landed */}
       {newIn.length > 0 && (
-        <>
-          <p className="search-ov__label">Just landed</p>
-          <div className="search-ov__grid">
+        <div>
+          <p className="mb-4 text-[0.8rem] font-medium text-ink-3">Just landed</p>
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
             {newIn.slice(0, 4).map((p) => <SearchOverlayHit key={p.id} product={p} onNavigate={onNavigate} />)}
           </div>
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 }

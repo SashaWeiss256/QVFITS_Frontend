@@ -50,14 +50,14 @@ export default function MegaMenu() {
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
         {/* Top Bar: a preview, then a switch for each thing that can be in it */}
         <Panel title="Top bar" hint="Shop opens the menu below; these follow it">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-r-md border border-line bg-cream px-5 py-3 text-[.92rem] font-medium">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-[14px] border border-line bg-cream px-5 py-3 text-[.92rem] font-medium">
             <span>Shop</span>
             {bar.map((l) => <span key={l.title}>{l.title}</span>)}
             <span className="text-ink-4">About</span>
           </div>
           <ul className="m-0 mt-4 grid list-none gap-2 p-0 sm:grid-cols-2">
             {candidates.map((c) => (
-              <li key={c.key} className="flex items-center justify-between gap-3 rounded-r-md border border-line px-3 py-2">
+              <li key={c.key} className="flex items-center justify-between gap-3 rounded-[14px] border border-line px-3 py-2">
                 <span className="min-w-0"><strong className="block truncate text-sm">{c.name}</strong><span className="text-xs text-ink-4">{c.from}</span></span>
                 <Toggle checked={c.on} onChange={c.set} label="In the top bar" disabled={!canEdit} />
               </li>
@@ -68,7 +68,7 @@ export default function MegaMenu() {
         {/* Shop Menu: a preview, then a switch for each group's column */}
         <Panel title="Shop menu" hint="What opens under Shop">
           <div
-            className="grid gap-6 overflow-x-auto rounded-r-md border border-line bg-cream p-5 sm:p-6"
+            className="grid gap-6 overflow-x-auto rounded-[14px] border border-line bg-cream p-5 sm:p-6"
             style={{ gridTemplateColumns: `repeat(${Math.max(1, columns.length)}, minmax(130px, 1fr)) minmax(180px, 1.4fr)` }}
           >
             {columns.map((c) => (
@@ -84,7 +84,7 @@ export default function MegaMenu() {
           </div>
           <ul className="m-0 mt-4 grid list-none gap-2 p-0 sm:grid-cols-2 xl:grid-cols-3">
             {groups.items.map((g) => (
-              <li key={g.id} className="flex items-center justify-between gap-3 rounded-r-md border border-line px-3 py-2">
+              <li key={g.id} className="flex items-center justify-between gap-3 rounded-[14px] border border-line px-3 py-2">
                 <strong className="truncate text-sm">{g.name}</strong>
                 <Toggle checked={g.inMenu} onChange={(inMenu) => groups.update(g.id, { inMenu })} label="A column" disabled={!canEdit} />
               </li>
@@ -101,10 +101,10 @@ export default function MegaMenu() {
 /** How the picture tile looks at the end of the menu. */
 function TilePreview({ tile }) {
   if (!tile.live) {
-    return <div className="grid min-h-32 place-items-center rounded-r-md border border-dashed border-line-2 p-4 text-sm text-ink-3"><span className="flex items-center gap-2"><ImageIcon className="h-4 w-4" aria-hidden="true" /> Tile is off</span></div>;
+    return <div className="grid min-h-32 place-items-center rounded-[14px] border border-dashed border-line-2 p-4 text-sm text-ink-3"><span className="flex items-center gap-2"><ImageIcon className="h-4 w-4" aria-hidden="true" /> Tile is off</span></div>;
   }
   return (
-    <div className="relative min-h-40 overflow-hidden rounded-r-md bg-[image:var(--brand-grad)] text-white">
+    <div className="relative min-h-40 overflow-hidden rounded-[14px] bg-[image:var(--brand-grad)] text-white">
       {tile.photo && <div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover"><Photo photo={tile.photo} label={tile.title} wide /></div>}
       <span className="absolute inset-x-0 bottom-0 grid gap-0.5 bg-gradient-to-t from-black/60 to-transparent p-4">
         <span className="text-[.68rem] font-semibold uppercase tracking-[0.16em] opacity-85">{tile.kicker}</span>

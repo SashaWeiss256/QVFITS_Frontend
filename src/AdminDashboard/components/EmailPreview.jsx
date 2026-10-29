@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Monitor, Smartphone } from "lucide-react";
 
+import Photo from "@/components/storefront/Photo";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useSettings } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
@@ -21,7 +22,7 @@ function codeOffer(d, money) {
  * It is a drawing of the email, not the mail itself: the sent copy is plain
  * text until an email service is connected (see the Outbox).
  */
-export default function EmailPreview({ subject, heading, body, code, button = "Shop the new drop" }) {
+export default function EmailPreview({ subject, previewText, heading, body, code, pieces = [], button = "Shop the new drop" }) {
   const [phone, setPhone] = useState(false);
   const { data: s } = useSettings();
   const { moneyBase } = useCurrency();
@@ -39,12 +40,13 @@ export default function EmailPreview({ subject, heading, body, code, button = "S
         ))}
       </div>
 
-      <div className="rounded-r-lg bg-cream-2 p-4">
-        <div className={cn("mx-auto overflow-hidden rounded-r-md bg-white shadow-sh-1 transition-[max-width] duration-300", phone ? "max-w-[320px]" : "max-w-[560px]")}>
+      <div className="rounded-[18px] bg-cream-2 p-4">
+        <div className={cn("mx-auto overflow-hidden rounded-[14px] bg-white shadow-sh-1 transition-[max-width] duration-300", phone ? "max-w-[320px]" : "max-w-[560px]")}>
           {/* Inbox line: who it is from and the subject, as the recipient first sees it */}
           <div className="border-b border-line px-5 py-3.5">
             <p className="m-0 text-[.78rem] text-ink-4">From <strong className="font-semibold text-ink-2">QVFITS</strong></p>
             <p className="m-0 mt-0.5 truncate text-[.95rem] font-semibold">{subject || <span className="text-ink-4">No subject yet</span>}</p>
+            {previewText !== undefined && <p className="m-0 mt-0.5 truncate text-[.82rem] text-ink-3">{previewText || <span className="text-ink-4">Preview text</span>}</p>}
           </div>
 
           {/* The message */}
@@ -55,10 +57,23 @@ export default function EmailPreview({ subject, heading, body, code, button = "S
 
             {/* The code, when one is chosen */}
             {code && (
-              <div className="mx-auto mt-6 max-w-[320px] rounded-r-lg border-2 border-dashed border-brand-300 bg-brand-50 px-4 py-4">
+              <div className="mx-auto mt-6 max-w-[320px] rounded-[18px] border-2 border-dashed border-brand-300 bg-brand-50 px-4 py-4">
                 <p className="m-0 text-[.7rem] font-semibold uppercase tracking-[0.16em] text-brand-600">Your code</p>
                 <p className="m-0 mt-1 font-display text-[1.6rem] font-bold tracking-[0.08em] text-brand-600">{code.code}</p>
                 <p className="m-0 mt-1 text-[.82rem] text-ink-3">{offer}</p>
+              </div>
+            )}
+
+            {/* Pieces: a campaign can feature up to four */}
+            {pieces.length > 0 && (
+              <div className="mt-6 grid grid-cols-2 gap-3 text-left">
+                {pieces.map((p) => (
+                  <div key={p.id}>
+                    <div className="aspect-[3/4] overflow-hidden rounded-[10px] bg-cream-2">{p.photos?.[0] && <Photo photo={p.photos[0]} label={p.name} className="h-full w-full object-cover" />}</div>
+                    <p className="m-0 mt-1.5 text-[.8rem] font-semibold">{p.name}</p>
+                    <p className="m-0 text-[.78rem] text-ink-3">{moneyBase(p.price)}</p>
+                  </div>
+                ))}
               </div>
             )}
 

@@ -1,38 +1,45 @@
 /* Nav Actions */
 import { Heart, Search, ShoppingBag } from "lucide-react";
 
-import CurrencyPicker from "@/components/storefront/CurrencyPicker";
 import { useCart } from "@/store/context/CartContext";
 import { useWishlist } from "@/store/context/WishlistContext";
 import { cn } from "@/utils/cn";
 import AccountButton from "./AccountButton";
+import { t } from "@/i18n/translate";
 
 // The badge stays mounted at 0 and fades in through `is-on`, so it can animate.
 function Count({ n }) {
   return <span className={cn("icon-btn__count", n > 0 && "is-on")}>{n}</span>;
 }
 
-// Currency, search, account, saved pieces and the bag. Account and saved
+const ICON = "h-[19px] w-[19px]";
+
+// Search, account, saved pieces and the bag: four quiet icons and nothing
+// else. Currency lives in the footer and the phone menu; account and saved
 // pieces move into the menu on a phone.
 export default function NavActions({ onSearch }) {
   const { count, openDrawer } = useCart();
   const wishlist = useWishlist();
 
   return (
-    <div className="hdr__acts">
-      {/* The phone header is too narrow for it; the phone menu carries currency instead. */}
-      <div className="hdr__wide-only"><CurrencyPicker /></div>
-      <button type="button" className="icon-btn" aria-label="Search" onClick={onSearch}>
-        <Search className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+    <div className="-mr-2.5 flex items-center justify-end gap-0.5 sm:gap-1">
+      {/* Search */}
+      <button type="button" className="icon-btn hover:bg-current/10" aria-label={t("Search")} onClick={onSearch}>
+        <Search className={ICON} strokeWidth={1.5} aria-hidden="true" />
       </button>
-      {/* Account is hidden on a phone (hdr__wide-only), where the menu carries it. */}
+
+      {/* Account: laptops only, the phone menu carries it */}
       <AccountButton />
-      <button type="button" className="icon-btn hdr__wide-only" aria-label={`Saved pieces (${wishlist.count})`} onClick={() => openDrawer("wish")}>
-        <Heart className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+
+      {/* Saved pieces: laptops only */}
+      <button type="button" className="icon-btn hidden hover:bg-current/10 lg:inline-grid" aria-label={`Saved pieces (${wishlist.count})`} onClick={() => openDrawer("wish")}>
+        <Heart className={ICON} strokeWidth={1.5} aria-hidden="true" />
         <Count n={wishlist.count} />
       </button>
-      <button type="button" className="icon-btn" aria-label={`Shopping bag (${count})`} onClick={() => openDrawer("cart")}>
-        <ShoppingBag className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+
+      {/* Bag */}
+      <button type="button" className="icon-btn hover:bg-current/10" aria-label={`Shopping bag (${count})`} onClick={() => openDrawer("cart")}>
+        <ShoppingBag className={ICON} strokeWidth={1.5} aria-hidden="true" />
         <Count n={count} />
       </button>
     </div>

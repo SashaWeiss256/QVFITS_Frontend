@@ -1,18 +1,19 @@
-/* About Page (port of Quivogue about.html) */
+/* About Page */
+import { PAGES } from "@/seo/shared";
 import { useSeo } from "@/seo/useSeo";
-import Story from "./sections/Story";
 import Reviews from "./sections/Reviews";
 import Showroom from "./sections/Showroom";
-import Values from "./sections/Values";
+import Story from "./sections/Story";
 
 export default function AboutPage() {
-  useSeo({ title: "About", description: "QVFITS makes premium seamless and seam-fit activewear, swim and lounge wear, from a showroom at THE CUBE, Kisementi, Kampala." });
+  useSeo(PAGES.about);
   return (
     <>
-      {/* Keep the brand story ahead of proof points and the showroom visit details. */}
+      {/* The story: opening, the name, the chapters */}
       <Story />
-      <Values />
-      <Reviews />
+      {/* In their words */}
+      <Reviews title="In their words" />
+      {/* The showroom: book a fitting */}
       <Showroom />
     </>
   );

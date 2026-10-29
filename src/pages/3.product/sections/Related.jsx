@@ -2,6 +2,7 @@
 import ProductGrid from "@/components/storefront/ProductGrid";
 import { useProducts } from "@/store/tanstackStore/queries/site";
 import { anyInStock } from "@/utils/stockLevel";
+import { t } from "@/i18n/translate";
 
 // Shares an activity, prefers a different category so it reads as a kit
 // rather than a duplicate, and a shared colour breaks ties. In stock only.
@@ -24,12 +25,12 @@ export default function Related({ product }) {
   if (!picks.length) return null;
 
   return (
-    <section className="section section--tight">
+    <section className="section border-t border-line">
       <div className="wrap">
         <div className="section-head section-head--row">
           <div>
-            <span className="kicker">Completes the kit</span>
-            <h2>Wears well with</h2>
+            <p className="kicker">{t("Completes the kit")}</p>
+            <h2>{t("Wears well with")}</h2>
           </div>
         </div>
         <ProductGrid products={picks} />

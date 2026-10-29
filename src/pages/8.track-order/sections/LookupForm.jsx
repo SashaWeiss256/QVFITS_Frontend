@@ -8,6 +8,7 @@ import { useCurrency } from "@/store/context/CurrencyContext";
 import { useCancelGuestOrder, useTrackOrder } from "@/store/tanstackStore/queries/site";
 import GuestReturn from "./GuestReturn";
 import { formatDate } from "@/utils/format";
+import { t } from "@/i18n/translate";
 
 // A guest finds an order by its reference and the phone it was placed with;
 // both must match, so a reference alone reveals nothing.
@@ -56,7 +57,7 @@ export default function LookupForm() {
           {order.lines.map((l) => (
             <div key={`${l.productId}-${l.size}-${l.color}`} className="sum-row"><span>{l.name} · {l.color} · {l.size} ×{l.qty}</span><span>{moneyBase(l.price * l.qty)}</span></div>
           ))}
-          <div className="sum-row sum-row--total"><span>Total</span><span>{moneyBase(order.total)}</span></div>
+          <div className="sum-row sum-row--total"><span>{t("Total")}</span><span>{moneyBase(order.total)}</span></div>
           <PaymentDue order={order} onCancel={() => cancel.mutate({ ref, phone })} cancelling={cancel.isPending} />
           {cancel.error && <p role="alert" className="m-0 mt-2 text-sm font-semibold text-warn">{cancel.error.message}</p>}
           {["delivered", "exchanged"].includes(order.status) && <GuestReturn order={order} refCode={ref} phone={phone} />}

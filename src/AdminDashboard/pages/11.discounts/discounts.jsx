@@ -94,7 +94,7 @@ export default function AdminDiscounts() {
             <strong className="font-display tracking-wide">{d.code}</strong>
             {d.description && <span className="block text-xs text-ink-3">{d.description}</span>}
           </span>
-          <button type="button" className="icon-btn h-7 min-h-0 w-7" aria-label={`Copy ${d.code}`} onClick={(ev) => { ev.stopPropagation(); copy(d.code); }}><Copy className="h-3.5 w-3.5" /></button>
+          <button type="button" className="icon-btn h-9 min-h-0 w-9" aria-label={`Copy ${d.code}`} onClick={(ev) => { ev.stopPropagation(); copy(d.code); }}><Copy className="h-3.5 w-3.5" /></button>
         </span>
       ),
     },
@@ -151,7 +151,7 @@ export default function AdminDiscounts() {
         action={canEdit && <Button onClick={() => setEditing({ ...BLANK, code: randomCode() })}><Plus className="h-4 w-4" aria-hidden="true" /> New code</Button>}
       />
       {/* Summary Cards: what codes did, from orders */}
-      <section aria-label="What codes did" className="mb-6 grid gap-px overflow-hidden rounded-r-lg border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="What codes did" className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Redemptions" icon={Receipt} loading={discounts.isLoading} value={totals.orders} note={`Across ${items.filter((d) => stateOf(d).id === "active").length} live codes`} />
         <StatCard label="Shoppers" icon={UsersRound} loading={discounts.isLoading} value={customers} note="Who used a code" />
         <StatCard label="Revenue from codes" icon={Wallet} loading={discounts.isLoading} value={moneyBase(totals.revenue)} />
@@ -217,14 +217,14 @@ export default function AdminDiscounts() {
               <legend className="mb-2 text-sm font-semibold text-ink-2">Covers</legend>
               <div className="mb-3 flex flex-wrap gap-2">
                 {[["all", "Everything"], ["categories", "Some categories"], ["products", "Some pieces"]].map(([v, l]) => (
-                  <button key={v} type="button" aria-pressed={e.appliesTo.scope === v} className={cn("chip", e.appliesTo.scope === v && "is-on")} onClick={() => scope({ scope: v, ids: [] })}>{l}</button>
+                  <button key={v} type="button" aria-pressed={e.appliesTo.scope === v} className={cn("chip chip--raised", e.appliesTo.scope === v && "is-on")} onClick={() => scope({ scope: v, ids: [] })}>{l}</button>
                 ))}
               </div>
               {e.appliesTo.scope === "categories" && (
                 <div className="flex flex-wrap gap-1.5">
                   {categories.items.map((c) => {
                     const on = e.appliesTo.ids.includes(c.id);
-                    return <button key={c.id} type="button" aria-pressed={on} className={cn("chip", on && "is-on")} onClick={() => scope({ ids: on ? e.appliesTo.ids.filter((x) => x !== c.id) : [...e.appliesTo.ids, c.id] })}>{c.name}</button>;
+                    return <button key={c.id} type="button" aria-pressed={on} className={cn("chip chip--raised", on && "is-on")} onClick={() => scope({ ids: on ? e.appliesTo.ids.filter((x) => x !== c.id) : [...e.appliesTo.ids, c.id] })}>{c.name}</button>;
                   })}
                 </div>
               )}

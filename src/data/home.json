@@ -2,12 +2,13 @@
   "heroSlides": [
     {
       "id": "hero-1",
-      "kicker": "Gym \u00b7 Pilates \u00b7 Tennis \u00b7 Golf \u00b7 Swim \u00b7 Lifestyle",
+      "kicker": "Gym · Pilates · Tennis · Golf · Swim · Lifestyle",
       "title": "Fit that holds.",
       "text": "Premium seamless and seam-fit pieces curated for training, movement and everyday life.",
       "cta": "Shop now",
       "live": true,
-      "target": {}
+      "target": {},
+      "triptych": true
     },
     {
       "id": "hero-3",
@@ -20,7 +21,8 @@
         "terms": [
           "lounge"
         ]
-      }
+      },
+      "triptych": true
     },
     {
       "id": "hero-4",
@@ -34,7 +36,8 @@
           "swim",
           "lounge"
         ]
-      }
+      },
+      "triptych": true
     },
     {
       "id": "hero-2",
@@ -46,7 +49,8 @@
       "live": true,
       "target": {
         "label": "sale"
-      }
+      },
+      "triptych": true
     }
   ],
   "rails": {

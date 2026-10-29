@@ -18,7 +18,7 @@
   "freeShippingOver": 250000,
   "exchangeDays": 7,
   "lowStockAt": 2,
-  "ratesUpdated": "31 August 2026",
+  "ratesUpdated": "Updates automatically",
   "currencies": [
     {
       "code": "UGX",
@@ -76,6 +76,42 @@
       "label": "Japanese Yen",
       "perUGX": 0.042798,
       "decimals": 0
+    },
+    {
+      "code": "KES",
+      "label": "Kenyan Shilling",
+      "perUGX": 0.0344,
+      "decimals": 2
+    },
+    {
+      "code": "TZS",
+      "label": "Tanzanian Shilling",
+      "perUGX": 0.68,
+      "decimals": 0
+    },
+    {
+      "code": "RWF",
+      "label": "Rwandan Franc",
+      "perUGX": 0.387,
+      "decimals": 0
+    },
+    {
+      "code": "CNY",
+      "label": "Chinese Yuan",
+      "perUGX": 0.0019,
+      "decimals": 2
+    },
+    {
+      "code": "SAR",
+      "label": "Saudi Riyal",
+      "perUGX": 0.001,
+      "decimals": 2
+    },
+    {
+      "code": "ZAR",
+      "label": "South African Rand",
+      "perUGX": 0.0048,
+      "decimals": 2
     }
   ],
   "assistant": {
