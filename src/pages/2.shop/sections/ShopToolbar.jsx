@@ -42,26 +42,31 @@ export default function ShopToolbar({ count, total, active, onOpenFilters, sorts
           {count !== total && <> of {total}</>}
         </span>
 
-        {/* View: products per row */}
+        {/* View: products per row, as a small segmented control */}
         {grid.options.length > 1 && (
-          <div className="ml-auto flex items-center gap-1 sm:ml-0" role="group" aria-label="Products per row">
-            <span className="mr-1 hidden text-[0.85rem] text-ink-3 md:inline">{t("View")}</span>
-            {grid.options.map((n) => (
-              <button
-                key={n}
-                type="button"
-                aria-pressed={grid.cols === n}
-                aria-label={`${n} per row`}
-                title={`${n} per row`}
-                onClick={() => grid.setCols(n)}
-                className={cn(
-                  "grid h-9 w-9 place-items-center transition-colors",
-                  grid.cols === n ? "text-ink" : "text-ink-4 hover:text-ink",
-                )}
-              >
-                <ColsIcon n={n} on={grid.cols === n} />
-              </button>
-            ))}
+          <div className="ml-auto flex items-center gap-3 sm:ml-0" role="group" aria-label="Products per row">
+            <span className="hidden text-[0.85rem] text-ink-3 md:inline">{t("View")}</span>
+            <div className="flex items-center gap-1.5">
+              {grid.options.map((n) => {
+                const on = grid.cols === n;
+                return (
+                  <button
+                    key={n}
+                    type="button"
+                    aria-pressed={on}
+                    aria-label={`${n} per row`}
+                    title={`${n} per row`}
+                    onClick={() => grid.setCols(n)}
+                    className={cn(
+                      "grid h-10 min-w-11 place-items-center rounded-[6px] border bg-white px-2 transition-[border-color,color,box-shadow] duration-200",
+                      on ? "border-star text-ink ring-1 ring-star" : "border-line text-ink-4/50 hover:border-line-2 hover:text-ink-3",
+                    )}
+                  >
+                    <ColsIcon n={n} />
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -69,15 +74,14 @@ export default function ShopToolbar({ count, total, active, onOpenFilters, sorts
   );
 }
 
-// A small picture of the row: n bars side by side, filled when chosen.
-function ColsIcon({ n, on }) {
-  const gap = 2;
-  const w = (20 - gap * (n - 1)) / n;
+// A small picture of the row: n tall columns side by side, dark when chosen and faint when not.
+function ColsIcon({ n }) {
+  const gap = 1.5;
+  const w = n === 1 ? 12 : Math.min(n === 2 ? 8 : 5, (20 - gap * (n - 1)) / n);
+  const x0 = (20 - (n * w + (n - 1) * gap)) / 2;
   return (
-    <svg width="20" height="16" viewBox="0 0 20 16" aria-hidden="true">
-      {Array.from({ length: n }, (_, i) => (
-        <rect key={i} x={i * (w + gap)} y="0.5" width={w} height="15" rx="0.5" fill={on ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1" />
-      ))}
+    <svg width="20" height="16" viewBox="0 0 20 16" aria-hidden="true" fill="currentColor">
+      {Array.from({ length: n }, (_, i) => <rect key={i} x={x0 + i * (w + gap)} y="0" width={w} height="16" rx="1" />)}
     </svg>
   );
 }
