@@ -24,7 +24,7 @@ export default function Showroom() {
       </div>
 
       {/* Invitation */}
-      <Reveal className="flex flex-col justify-center px-[clamp(20px,6vw,104px)] py-20 lg:py-28">
+      <Reveal className="flex flex-col justify-center px-[clamp(20px,6vw,104px)] py-12 sm:py-20 lg:py-28">
         <p className="kicker kicker--light">The showroom</p>
         <h2 className="max-w-md text-[clamp(2.4rem,4.4vw,4rem)] leading-[1.04] text-cream">Come and be fitted.</h2>
         <p className="mt-6 max-w-md text-[1.05rem] leading-relaxed text-cream/75">
@@ -47,9 +47,9 @@ export default function Showroom() {
         </dl>
 
         {/* Actions */}
-        <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
-          <a className="btn btn--light btn--lg" href={whatsappLink(s.whatsapp, request)} target="_blank" rel="noopener noreferrer">Book a fitting</a>
-          <a className="link-arrow text-[0.92rem] text-cream" href={s.mapsUrl} target="_blank" rel="noopener noreferrer">Get directions</a>
+        <div className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-x-8">
+          <a className="btn btn--light btn--lg text-center" href={whatsappLink(s.whatsapp, request)} target="_blank" rel="noopener noreferrer">Book a fitting</a>
+          <a className="link-arrow text-[0.92rem] text-cream self-center sm:self-auto" href={s.mapsUrl} target="_blank" rel="noopener noreferrer">Get directions</a>
         </div>
       </Reveal>
     </section>
