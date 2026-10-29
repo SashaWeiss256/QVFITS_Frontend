@@ -19,7 +19,17 @@ export default function FitNotes() {
           <h2>How each piece fits</h2>
           <p className="lede">Pulled straight from the rail. If it runs small, we say so.</p>
         </Reveal>
-        <SizeTable>
+        {/* On a phone, one piece per row: its name, then category and fit, then the note */}
+        <ul className="m-0 list-none border-y border-line p-0 sm:hidden">
+          {products.map((p) => (
+            <li key={p.id} className="border-b border-line py-4 last:border-b-0">
+              <Link to={`/product/${p.slug}`} className="font-medium text-brand-600">{p.name}</Link>
+              <p className="m-0 mt-1 text-[0.88rem] text-ink-2">{p.category} · {FIT_LABELS[p.fit] ?? "True to size"}</p>
+              {p.fitNote && <p className="m-0 mt-1 text-[0.85rem] text-ink-3">{p.fitNote}</p>}
+            </li>
+          ))}
+        </ul>
+        <SizeTable className="max-sm:hidden">
           <thead><tr><th scope="col">Piece</th><th scope="col">{t("Category")}</th><th scope="col">Fit</th><th scope="col">Note</th></tr></thead>
           <tbody>
             {products.map((p) => (

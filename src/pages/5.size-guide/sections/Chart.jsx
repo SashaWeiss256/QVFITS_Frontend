@@ -36,7 +36,7 @@ export default function Chart() {
             ))}
           </div>
         </Reveal>
-        <SizeTable>
+        <SizeTable chart>
           <thead>
             <tr><th scope="col">{t("Size")}</th><th scope="col">UK</th><th scope="col">US</th><th scope="col">EU</th><th scope="col">Bust</th><th scope="col">Waist</th><th scope="col">Hip</th></tr>
           </thead>
