@@ -10,7 +10,7 @@ const WORDS = [
   { text: "Qui", note: "for quality" },
   { text: "vogue", note: "for fashionable" },
 ];
-const NOTE = "mt-4 font-body text-[11.5px] font-semibold normal-case tracking-[0.2em] text-ink-3 [text-transform:uppercase] lg:mt-6";
+const NOTE = "mt-2 font-body text-[10px] font-semibold normal-case tracking-[0.14em] text-ink-3 [text-transform:uppercase] sm:mt-4 sm:text-[11.5px] sm:tracking-[0.2em] lg:mt-6";
 
 /**
  * The name, large, with what it means. Each letter carries its own slice of the
@@ -80,12 +80,12 @@ export default function FooterWordmark() {
   );
 
   return (
-    // On a phone the name is sized to its column (25.5cqw of the wrapper), so it spans the width edge to edge.
-    <div className="@container">
+    // Sized to the container query so it scales smoothly edge-to-edge without overflowing on mobile.
+    <div className="w-full overflow-hidden @container">
       <div ref={root} className="relative flex items-start gap-[0.12em] font-logo uppercase leading-[0.85]">
         {WORDS.map((w) => (
           <span key={w.text} className="flex flex-col">
-            <span className="flex text-[clamp(4.5rem,19vw,19rem)] tracking-[0.04em] max-sm:text-[25.5cqw]">
+            <span className="flex text-[clamp(4.5rem,19vw,19rem)] tracking-[0.04em] max-sm:text-[21cqw]">
               {[...w.text].map((ch, i) => (
                 <span key={i} data-ch className="inline-block bg-brand-grad bg-clip-text text-transparent will-change-transform">{ch}</span>
               ))}
