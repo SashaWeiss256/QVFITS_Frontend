@@ -128,6 +128,8 @@
   --brand-600: var(--color-brand-600);
   /* The logo's gradient, for primary buttons and accents */
   --brand-grad: linear-gradient(135deg, #c2185b, var(--color-brand-500) 55%, var(--color-brand-600));
+  /* The dropdown chevron, in ink, for .select and .field select */
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2317211f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
 
   --teal-100: var(--color-teal-100);
   --teal-500: var(--color-teal-500);
@@ -165,6 +167,15 @@
   --ease: var(--ease-q);
 }
 
+/* Archivo is set bold and tight wherever it appears (brand book), so the
+   display face brings its weight and tracking with it. A weight or tracking
+   class beside it (font-normal, tracking-tight) still wins. */
+@utility font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
 /* Every page starts on the palette: cream ground, ink text, brand type. */
 @layer base {
   html {
@@ -195,8 +206,6 @@
   h1 { font-size: clamp(2.375rem, 5.2vw, 4.375rem); }
   h2 { font-size: clamp(1.75rem, 3.2vw, 2.7rem); }
   h3 { font-size: clamp(1.125rem, 1.6vw, 1.45rem); }
-  /* Archivo is set bold and tight wherever it appears (brand book) */
-  .font-display { font-weight: 700; letter-spacing: -0.03em; }
   p { text-wrap: pretty; }
   a { color: inherit; text-decoration: none; }
   button { cursor: pointer; }
@@ -295,7 +304,7 @@
   .btn--soft:hover { background: var(--color-brand-100); }
   .btn--light { background: var(--color-cream); color: var(--color-ink); }
   .btn--light:hover { background: var(--color-white); }
-  .btn--danger { background: var(--color-warn); color: #fff; }
+  .btn--danger { background: var(--color-warn); color: var(--color-white); }
   .btn--lg {
     min-height: 54px;
     padding-inline: 2.8em;
@@ -336,7 +345,7 @@
     color: inherit;
     transition: background-color 0.25s, color 0.25s;
   }
-  .icon-btn:hover { background: rgb(23 33 31 / 0.06); }
+  .icon-btn:hover { background: color-mix(in srgb, var(--color-ink) 6%, transparent); }
   .icon-btn__count {
     position: absolute;
     top: 6px;
@@ -346,7 +355,7 @@
     padding: 0 4px;
     border-radius: 999px;
     background: var(--color-brand-600);
-    color: #fff;
+    color: var(--color-white);
     font-size: 10px;
     font-weight: 600;
     line-height: 17px;
@@ -386,7 +395,7 @@
     position: fixed;
     inset: 0;
     z-index: 80;
-    background: rgb(23 33 31 / 0.42);
+    background: color-mix(in srgb, var(--color-ink) 42%, transparent);
     -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
     opacity: 0;
@@ -465,7 +474,7 @@
   .chip--raised.is-on { background: var(--color-ink); border-color: var(--color-ink); box-shadow: 0 6px 16px rgb(23 33 31 / 0.22); }
   .chip--more { border-style: dashed; color: var(--color-ink-3); }
   .chip__n { font-size: 0.72rem; color: var(--color-ink-4); }
-  .chip.is-on .chip__n { color: rgb(251 248 243 / 0.65); }
+  .chip.is-on .chip__n { color: color-mix(in srgb, var(--color-cream) 65%, transparent); }
   .chip--color { display: inline-flex; align-items: center; gap: 8px; }
   .chip--color.is-on .sw { box-shadow: 0 0 0 2px var(--color-white); }
   .sw { display: inline-block; width: 14px; height: 14px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgb(23 33 31 / 0.15); }
@@ -521,10 +530,7 @@
     min-height: 44px;
     padding: 0.5em 2.4em 0.5em 1em;
     border-radius: var(--radius-r-sm);
-    background-color: var(--color-white);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2317211f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1em center;
+    background: var(--color-white) var(--chevron) no-repeat right 1em center;
     border: 1px solid var(--color-line-2);
     color: var(--color-ink);
     font-size: 0.9rem;
@@ -553,8 +559,7 @@
   }
   .field select {
     appearance: none; padding-right: 2.6em; cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2317211f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 1em center;
+    background: var(--color-white) var(--chevron) no-repeat right 1em center;
   }
   .field textarea { resize: vertical; }
   .field input:not([type="checkbox"]):not([type="radio"]):focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--color-ink); box-shadow: 0 0 0 3px var(--color-brand-50); }
