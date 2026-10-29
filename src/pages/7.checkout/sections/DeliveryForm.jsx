@@ -2,6 +2,8 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import InfoCard from "@/components/storefront/InfoCard";
+import SubHeading from "@/components/storefront/SubHeading";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useNewsletterConsent } from "@/store/tanstackStore/queries/site";
 import { zoneEta, zoneFee } from "@/utils/delivery";
@@ -28,8 +30,8 @@ export default function DeliveryForm({ defaults, settings, methods, subtotal, on
   const regionField = register("region");
 
   return (
-    <form id="deliveryForm" className="info-card" noValidate onSubmit={handleSubmit(onSubmit)}>
-      <h2 className="sub-h">Where&apos;s it going?</h2>
+    <InfoCard as="form" id="deliveryForm" noValidate onSubmit={handleSubmit(onSubmit)}>
+      <SubHeading>Where&apos;s it going?</SubHeading>
       <div className="field">
         <label htmlFor="oName">{t("Your name")}</label>
         <input id="oName" autoComplete="name" aria-invalid={Boolean(errors.name)} {...register("name")} />
@@ -93,6 +95,6 @@ export default function DeliveryForm({ defaults, settings, methods, subtotal, on
         <button type="submit" className="btn btn--primary">{t("Review order")}</button>
         <button type="button" className="btn btn--ghost" onClick={onBack}>{t("Back to bag")}</button>
       </div>
-    </form>
+    </InfoCard>
   );
 }

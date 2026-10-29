@@ -2,7 +2,11 @@
 import { useState } from "react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
+import { cn } from "@/utils/cn";
 import { t } from "@/i18n/translate";
+
+// Both inputs fill the track; only their thumbs take the pointer.
+const INPUT = "pointer-events-none absolute inset-0 m-0 w-full appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-ink [&::-webkit-slider-thumb]:bg-cream [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-[18px] [&::-moz-range-thumb]:w-[18px] [&::-moz-range-thumb]:cursor-grab [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-ink [&::-moz-range-thumb]:bg-cream";
 
 /**
  * Two thumbs on one track, the span between them filled. It moves freely
@@ -22,26 +26,26 @@ export default function PriceRange({ min, max, step = 5000, value, onChange }) {
 
   return (
     <div>
-      <div className="prange">
-        <span className="prange__track" aria-hidden="true" />
-        <span className="prange__fill" style={{ left: `${pct(lo)}%`, right: `${100 - pct(hi)}%` }} aria-hidden="true" />
+      <div className="relative h-8">
+        <span className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-line-2" aria-hidden="true" />
+        <span className="absolute top-1/2 h-0.5 -translate-y-1/2 bg-ink" style={{ left: `${pct(lo)}%`, right: `${100 - pct(hi)}%` }} aria-hidden="true" />
         <input
           type="range" min={min} max={max} step={step} value={lo}
           aria-label={t("Lowest price")} aria-valuetext={money(lo)}
           // Raised once the thumbs meet at the top, so the low one can still be grabbed.
-          className={pct(lo) > 90 ? "z-[3]" : "z-[2]"}
+          className={cn(INPUT, pct(lo) > 90 ? "z-[3]" : "z-[2]")}
           onChange={(e) => setRange([Math.min(Number(e.target.value), hi - step), hi])}
           {...end}
         />
         <input
           type="range" min={min} max={max} step={step} value={hi}
           aria-label={t("Highest price")} aria-valuetext={money(hi)}
-          className="z-[2]"
+          className={cn(INPUT, "z-[2]")}
           onChange={(e) => setRange([lo, Math.max(Number(e.target.value), lo + step)])}
           {...end}
         />
       </div>
-      <div className="prange__vals">
+      <div className="mt-1.5 flex justify-between text-[0.85rem] text-ink-2">
         <span>{money(lo)}</span>
         <span>{money(hi)}</span>
       </div>

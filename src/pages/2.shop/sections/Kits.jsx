@@ -34,36 +34,41 @@ export default function Kits({ products }) {
           <h2>{copy?.kits.title}</h2>
           <p className="lede">{copy?.kits.lede}</p>
         </div>
-        <div className="grid-looks">
+        <div className="grid gap-[clamp(28px,4vw,56px)]">
           {looks.map((look) => {
             const items = look.items.map(byId).filter(Boolean);
             // The kit's own price; the saving shows when it beats buying the pieces one by one.
             const saving = look.separate - look.price;
             return (
-              <Reveal as="article" key={look.id} className="look">
+              // A sand panel, the photo on one side and the pieces on the other, alternating down the page
+              <Reveal as="article" key={look.id} className="group grid bg-sand-100 min-[900px]:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
                 {/* The kit worn together */}
-                <div className="look__media"><Photo photo={look.photo} label={look.title} /></div>
-                <div className="look__body">
-                  <p className="look__count">{items.length} {items.length === 1 ? "piece" : "pieces"}</p>
-                  <h3 className="look__title">{look.title}</h3>
-                  <p className="look__note">{look.note}</p>
+                <div className="relative aspect-[4/5] max-h-[620px] overflow-hidden bg-beige min-[900px]:aspect-auto min-[900px]:h-full min-[900px]:max-h-none min-[900px]:min-h-[560px] min-[900px]:group-even:order-2">
+                  <Photo photo={look.photo} label={look.title} />
+                </div>
+                <div className="flex flex-col justify-center p-[clamp(24px,4vw,56px)]">
+                  <p className="mb-2.5 mt-0 text-[0.86rem] text-ink-3">{items.length} {items.length === 1 ? "piece" : "pieces"}</p>
+                  <h3 className="m-0 text-[clamp(1.6rem,2.6vw,2.3rem)] leading-[1.1]">{look.title}</h3>
+                  <p className="mb-0 mt-3 max-w-[46ch] text-[0.97rem] leading-[1.6] text-ink-2">{look.note}</p>
                   {/* The pieces in it, each a link to its own page */}
-                  <ul className="look__items">
+                  <ul className="mb-0 mt-7 list-none border-t border-line-2 p-0">
                     {items.map((p) => (
-                      <li key={p.id}>
-                        <Link to={`/product/${p.slug}`}>
-                          <span className="look__thumb"><Photo photo={p.photos[0]} label={p.name} /></span>
-                          <span className="look__piece">{p.name}</span>
-                          <span className="look__price">{money(p.price)}</span>
+                      <li key={p.id} className="border-b border-line-2">
+                        <Link className="group/piece grid grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-4 py-3 transition-colors duration-200" to={`/product/${p.slug}`}>
+                          <span className="relative block aspect-[3/4] w-14 overflow-hidden bg-beige"><Photo photo={p.photos[0]} label={p.name} labels={false} /></span>
+                          <span className="font-display text-base font-normal leading-[1.3] tracking-normal transition-colors duration-200 group-hover/piece:text-brand-600">{p.name}</span>
+                          <span className="text-[0.92rem] tabular-nums text-ink-2">{money(p.price)}</span>
                         </Link>
                       </li>
                     ))}
                   </ul>
                   {/* The kit's price, the saving against buying one by one, and the one action */}
-                  <div className="look__foot">
+                  <div className="mt-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-[18px]">
                     <div>
-                      <p className="look__total">{money(look.price)}<span> for the lot</span></p>
-                      {saving > 0 && <p className="look__save">You save {money(saving)}</p>}
+                      <p className="m-0 font-display text-[1.5rem] font-normal tabular-nums tracking-normal text-ink">
+                        {money(look.price)}<span className="font-body text-[0.86rem] text-ink-3"> for the lot</span>
+                      </p>
+                      {saving > 0 && <p className="mb-0 mt-0.5 text-[0.88rem] font-medium text-success">You save {money(saving)}</p>}
                     </div>
                     <button type="button" className="btn btn--primary" onClick={() => addAll(look)}>Add all to bag</button>
                   </div>

@@ -2,7 +2,10 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import InfoCard from "@/components/storefront/InfoCard";
 import PaymentDue from "@/components/storefront/PaymentDue";
+import SubHeading from "@/components/storefront/SubHeading";
+import SummaryRow from "@/components/storefront/SummaryRow";
 import StatusChip from "@/components/ui/StatusChip";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useCancelGuestOrder, useTrackOrder } from "@/store/tanstackStore/queries/site";
@@ -25,8 +28,8 @@ export default function LookupForm() {
 
   return (
     <div className="grid max-w-2xl gap-6">
-      <form
-        className="info-card"
+      <InfoCard
+        as="form"
         noValidate
         onSubmit={(e) => {
           e.preventDefault();
@@ -44,24 +47,24 @@ export default function LookupForm() {
         </div>
         {track.error && <p role="alert" className="mt-3 text-sm font-semibold text-warn">{track.error.message}</p>}
         <button type="submit" className="btn btn--primary mt-5" disabled={track.isPending}>{track.isPending ? "Looking…" : "Find my order"}</button>
-      </form>
+      </InfoCard>
 
       {/* Result: amounts in UGX, as the order was quoted. */}
       {order && (
-        <div className="info-card" aria-live="polite">
+        <InfoCard aria-live="polite">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="sub-h m-0">Order {order.ref}</h2>
+            <SubHeading className="m-0">Order {order.ref}</SubHeading>
             <StatusChip status={order.status} />
           </div>
           <p className="text-sm text-ink-3">Placed {formatDate(order.createdAt)}</p>
           {order.lines.map((l) => (
-            <div key={`${l.productId}-${l.size}-${l.color}`} className="sum-row"><span>{l.name} · {l.color} · {l.size} ×{l.qty}</span><span>{moneyBase(l.price * l.qty)}</span></div>
+            <SummaryRow key={`${l.productId}-${l.size}-${l.color}`}><span>{l.name} · {l.color} · {l.size} ×{l.qty}</span><span>{moneyBase(l.price * l.qty)}</span></SummaryRow>
           ))}
-          <div className="sum-row sum-row--total"><span>{t("Total")}</span><span>{moneyBase(order.total)}</span></div>
+          <SummaryRow total><span>{t("Total")}</span><span>{moneyBase(order.total)}</span></SummaryRow>
           <PaymentDue order={order} onCancel={() => cancel.mutate({ ref, phone })} cancelling={cancel.isPending} />
           {cancel.error && <p role="alert" className="m-0 mt-2 text-sm font-semibold text-warn">{cancel.error.message}</p>}
           {["delivered", "exchanged"].includes(order.status) && <GuestReturn order={order} refCode={ref} phone={phone} />}
-        </div>
+        </InfoCard>
       )}
     </div>
   );

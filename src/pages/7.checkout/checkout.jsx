@@ -13,6 +13,7 @@ import { glideTop } from "@/utils/smoothScroll";
 import BagEmpty from "./sections/BagEmpty";
 import DiscountCode from "./sections/DiscountCode";
 import Shell from "./CheckoutShell";
+import CartLayout from "./CartLayout";
 import DeliveryForm from "./sections/DeliveryForm";
 import ReviewStep from "./sections/ReviewStep";
 import OrderSummary from "./sections/OrderSummary";
@@ -93,10 +94,10 @@ export default function CheckoutPage() {
   if (placed) {
     return (
       <Shell step={4}>
-        <div className="cart-layout">
+        <CartLayout>
           <SendOrder order={placed} settings={bag.settings} />
           <OrderSummary bag={{ ...placed, settings: bag.settings }} region={placed.region} />
-        </div>
+        </CartLayout>
       </Shell>
     );
   }
@@ -123,7 +124,7 @@ export default function CheckoutPage() {
 
   return (
     <Shell step={step}>
-      <div className="cart-layout">
+      <CartLayout>
         {step === 2 ? (
           <div>
             {/* Sign-in is optional; authenticated details only prefill the guest-friendly form. */}
@@ -161,7 +162,7 @@ export default function CheckoutPage() {
             <Link to="/returns" className="underline">exchanges policy</Link> and <Link to="/privacy" className="underline">privacy policy</Link>.
           </p>
         </OrderSummary>
-      </div>
+      </CartLayout>
     </Shell>
   );
 }

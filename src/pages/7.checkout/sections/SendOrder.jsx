@@ -2,7 +2,9 @@
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 
+import InfoCard from "@/components/storefront/InfoCard";
 import PaymentDue from "@/components/storefront/PaymentDue";
+import SubHeading from "@/components/storefront/SubHeading";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { notify } from "@/store/tanstackStore/notices";
 import { usePaymentMethods } from "@/store/tanstackStore/queries/site";
@@ -34,10 +36,10 @@ export default function SendOrder({ order, settings }) {
   };
 
   return (
-    <div className="info-card">
+    <InfoCard>
       {/* Order Placed */}
-      <p className="pill-note"><Check className="h-4 w-4" aria-hidden="true" /> Order placed</p>
-      <h2 className="sub-h mt-4 mb-1.5">Your reference is {order.ref}</h2>
+      <p className="m-0 inline-flex items-center gap-2 bg-brand-50 px-3.5 py-1.5 text-[0.84rem] font-medium text-brand-600"><Check className="h-4 w-4" aria-hidden="true" /> Order placed</p>
+      <SubHeading className="mb-1.5 mt-4">Your reference is {order.ref}</SubHeading>
       <p className="text-[.9rem] text-ink-3">Send it to the team and they&apos;ll confirm stock, total and payment with you. Quote your reference and they can find your order instantly.</p>
       {/* Send It: WhatsApp, Instagram or copy. Instagram can't take pre-filled text, so the order goes on the clipboard on the way out. */}
       <div className="mt-5 flex flex-wrap gap-2.5">
@@ -52,6 +54,6 @@ export default function SendOrder({ order, settings }) {
       <p className="mt-5 text-sm text-ink-3">
         Track it any time on <Link to="/track-order" className="text-brand-600 underline">{t("Track an order")}</Link>.
       </p>
-    </div>
+    </InfoCard>
   );
 }

@@ -387,6 +387,7 @@
     inset: 0;
     z-index: 80;
     background: rgb(23 33 31 / 0.42);
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
     opacity: 0;
     pointer-events: none;
@@ -455,40 +456,6 @@
   .empty { padding: clamp(48px, 8vw, 96px) 16px; text-align: center; }
   .empty h2, .empty h1 { font-size: clamp(1.5rem, 2.6vw, 2.2rem); }
 
-  /* Filter drawer: from the left on a laptop, a bottom sheet on a phone */
-  .sheet.fdrawer {
-    position: fixed;
-    z-index: 90;
-    display: flex;
-    flex-direction: column;
-    background: var(--color-cream);
-    box-shadow: var(--shadow-sh-4);
-    transition: transform 0.55s var(--ease-q), visibility 0.55s;
-    visibility: hidden;
-    inset: auto 0 0 0;
-    max-height: 88dvh;
-    transform: translateY(100%);
-  }
-  .sheet.fdrawer.is-open { visibility: visible; transform: none; }
-  @media (min-width: 768px) {
-    .sheet.fdrawer { inset: 0 auto 0 0; width: min(440px, 92vw); max-height: none; transform: translateX(-100%); }
-    .sheet.fdrawer.fdrawer--right { inset: 0 0 0 auto; transform: translateX(100%); }
-    .sheet.fdrawer.is-open { transform: none; }
-  }
-  .fdrawer__head { display: flex; align-items: center; justify-content: space-between; padding: 20px 28px; border-bottom: 1px solid var(--color-line); }
-  .fdrawer__body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 4px 28px 24px; }
-  .fdrawer__foot { display: grid; grid-template-columns: auto 1fr; gap: 12px; padding: 16px 28px 20px; border-top: 1px solid var(--color-line); background: var(--color-cream); }
-  .fgroup { border-bottom: 1px solid var(--color-line); }
-  .fgroup__head {
-    display: flex; align-items: center; gap: 10px; width: 100%;
-    min-height: 60px; text-align: left;
-    font-family: var(--font-display); font-weight: 700; font-size: 1rem; letter-spacing: -0.01em;
-  }
-  .fgroup__head svg { margin-left: auto; transition: transform 0.3s var(--ease-q); }
-  .fgroup__head[aria-expanded="false"] svg { transform: rotate(-90deg); }
-  .fgroup__on { display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--color-brand-500); color: var(--color-white); font-size: 0.7rem; font-weight: 600; }
-  .fgroup__body { padding-bottom: 20px; }
-
   /* Chips inside a filter group */
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip[disabled] { opacity: 0.35; cursor: not-allowed; }
@@ -506,25 +473,6 @@
   /* A checkbox with its words */
   .check-row { display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 0.92rem; cursor: pointer; }
   .check-row input { width: 18px; height: 18px; accent-color: var(--color-brand-500); }
-
-  /* Price range: two thumbs on one hairline */
-  .prange { position: relative; height: 32px; }
-  .prange__track, .prange__fill { position: absolute; top: 50%; height: 2px; transform: translateY(-50%); }
-  .prange__track { left: 0; right: 0; background: var(--color-line-2); }
-  .prange__fill { background: var(--color-ink); }
-  .prange input {
-    position: absolute; inset: 0; width: 100%; margin: 0;
-    appearance: none; -webkit-appearance: none; background: none; pointer-events: none;
-  }
-  .prange input::-webkit-slider-thumb {
-    -webkit-appearance: none; pointer-events: auto; width: 20px; height: 20px; border-radius: 999px;
-    background: var(--color-cream); border: 2px solid var(--color-ink); cursor: grab;
-  }
-  .prange input::-moz-range-thumb {
-    pointer-events: auto; width: 18px; height: 18px; border-radius: 999px;
-    background: var(--color-cream); border: 2px solid var(--color-ink); cursor: grab;
-  }
-  .prange__vals { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.85rem; color: var(--color-ink-2); }
 
   /* Loading placeholder: a slow shimmer on sand */
   .skel {
@@ -596,63 +544,7 @@
     color: var(--color-ink-3);
   }
 
-  /* Bag and checkout: the page is a list on the left and a quiet summary on the right */
-  .cart-layout { display: grid; gap: 40px; margin-top: 8px; }
-  @media (min-width: 960px) {
-    .cart-layout { grid-template-columns: minmax(0, 1fr) minmax(340px, 410px); gap: clamp(40px, 6vw, 88px); align-items: start; }
-    .cart-layout > :last-child { position: sticky; top: 104px; }
-  }
-
-  /* Steps: a row of numbers on one hairline, the current one in ink, finished ones in brand */
-  .steps { display: flex; align-items: center; gap: 0; margin: 0 0 clamp(28px, 4vw, 48px); font-size: 0.88rem; color: var(--color-ink-4); }
-  .step { display: flex; flex: 1; align-items: center; gap: 10px; white-space: nowrap; }
-  .step:last-child { flex: 0 0 auto; }
-  .step::after { content: ""; flex: 1; height: 1px; margin: 0 14px; background: var(--color-line-2); }
-  .step:last-child::after { display: none; }
-  .step b { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--color-line-2); border-radius: 999px; font-weight: 500; font-size: 0.8rem; background: var(--color-cream); }
-  .step.is-on { color: var(--color-ink); font-weight: 500; }
-  .step.is-on b { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-cream); }
-  .step.is-done { color: var(--color-ink-2); }
-  .step.is-done b { background: var(--color-brand-50); border-color: var(--color-brand-200); color: var(--color-brand-600); }
-  @media (max-width: 640px) {
-    .step { font-size: 0; gap: 0; }
-    .step b { font-size: 0.8rem; }
-    .step::after { margin: 0 8px; }
-  }
-
-  /* One line in the bag */
-  .cart-list { border-top: 1px solid var(--color-line); }
-  .cart-row { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--color-line); }
-  @media (min-width: 640px) { .cart-row { grid-template-columns: 124px minmax(0, 1fr) auto; gap: 28px; } }
-  .cart-row__media { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--color-beige); }
-  /* The name link gets a 24px tap box; the photo beside it links to the same piece. */
-  .cart-row__name { display: inline-block; padding: 4px 0; min-height: 24px; font-family: var(--font-display); font-size: 1.08rem; line-height: 1.3; transition: color 0.2s; }
-  .cart-row__name:hover { color: var(--color-brand-600); }
-  .cart-row__meta { margin-top: 2px; font-size: 0.86rem; color: var(--color-ink-3); }
-  .cart-row__right { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; font-size: 1rem; font-variant-numeric: tabular-nums; }
-  .cart-row__right strong { font-weight: 500; }
-  .remove { min-height: 36px; font-size: 0.84rem; color: var(--color-ink-3); text-decoration: underline; text-underline-offset: 4px; transition: color 0.2s; }
-  .remove:hover { color: var(--color-brand-600); }
-
-  /* Quantity: a small boxed stepper */
-  .qty { display: inline-flex; align-items: center; border: 1px solid var(--color-line-2); background: var(--color-white); }
-  .qty button { display: grid; place-items: center; width: 40px; height: 40px; color: var(--color-ink-2); transition: background-color 0.2s, color 0.2s; }
-  .qty button:hover { background: var(--color-sand-100); color: var(--color-ink); }
-  .qty span { min-width: 34px; text-align: center; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
-
-  /* The summary: sand, no border, the total set larger */
-  .summary { padding: clamp(22px, 3vw, 34px); background: var(--color-sand-100); }
-  .sum-row { display: flex; justify-content: space-between; gap: 16px; padding: 7px 0; font-size: 0.94rem; color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
-  .sum-row > span:last-child { text-align: right; }
-  .sum-row--total { margin-top: 10px; padding-top: 16px; border-top: 1px solid var(--color-line-2); font-family: var(--font-display); font-size: 1.2rem; color: var(--color-ink); }
-
-  /* Free delivery bar: the brand gradient filling a hairline */
-  .ship-bar { height: 3px; margin: 4px 0 10px; background: var(--color-line-2); overflow: hidden; }
-  .ship-bar__fill { height: 100%; background: var(--brand-grad); transition: width 0.6s var(--ease-q); }
-
-  /* Forms on the delivery and review steps */
-  .info-card { padding: clamp(22px, 3.2vw, 40px); background: var(--color-white); border: 1px solid var(--color-line); }
-  .sub-h { margin: 0 0 1.1rem; font-family: var(--font-display); font-size: 1.3rem; line-height: 1.2; color: var(--color-ink); }
+  /* Form fields: a small label above a quiet input */
   .field { margin-bottom: 18px; }
   .field > label:not(.check-row), .field > legend { display: block; margin-bottom: 6px; font-size: 0.82rem; font-weight: 500; color: var(--color-ink-3); }
   .field input:not([type="checkbox"]):not([type="radio"]), .field textarea, .field select {
@@ -677,101 +569,4 @@
   html.ui-round .field textarea { border-radius: 16px; }
   .field .check-row input[type="radio"], .field .check-row input[type="checkbox"] { flex: none; }
   .field .check-row:has(input:checked) { border-color: var(--color-ink); background: var(--color-sand-50); }
-
-  /* Shop the kit: each kit is a sand panel, the photo on one side and the pieces on the other, alternating down the page */
-  .grid-looks { display: grid; gap: clamp(28px, 4vw, 56px); }
-  .look { display: grid; background: var(--color-sand-100); }
-  .look__media { position: relative; aspect-ratio: 4 / 5; max-height: 620px; overflow: hidden; background: var(--color-beige); }
-  .look__body { display: flex; flex-direction: column; justify-content: center; padding: clamp(24px, 4vw, 56px); }
-  @media (min-width: 900px) {
-    .look { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
-    .look__media { aspect-ratio: auto; max-height: none; min-height: 560px; height: 100%; }
-    .look:nth-child(even) .look__media { order: 2; }
-  }
-  .look__count { margin: 0 0 10px; font-size: 0.86rem; color: var(--color-ink-3); }
-  .look__title { margin: 0; font-size: clamp(1.6rem, 2.6vw, 2.3rem); line-height: 1.1; }
-  .look__note { margin: 12px 0 0; max-width: 46ch; font-size: 0.97rem; line-height: 1.6; color: var(--color-ink-2); }
-  .look__items { margin: 28px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--color-line-2); }
-  .look__items li { border-bottom: 1px solid var(--color-line-2); }
-  .look__items a { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 12px 0; transition: color 0.2s; }
-  .look__items a:hover .look__piece { color: var(--color-brand-600); }
-  .look__thumb { position: relative; display: block; width: 56px; aspect-ratio: 3 / 4; overflow: hidden; background: var(--color-beige); }
-  .look__thumb .ph__label, .look__thumb .ph__note { display: none; }
-  .look__piece { font-family: var(--font-display); font-size: 1rem; line-height: 1.3; transition: color 0.2s; }
-  .look__price { font-size: 0.92rem; font-variant-numeric: tabular-nums; color: var(--color-ink-2); }
-  .look__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 24px; margin-top: 28px; }
-  .look__total { margin: 0; font-family: var(--font-display); font-size: 1.5rem; font-variant-numeric: tabular-nums; color: var(--color-ink); }
-  .look__total span { font-family: var(--font-body); font-size: 0.86rem; color: var(--color-ink-3); }
-  .look__save { margin: 2px 0 0; font-size: 0.88rem; font-weight: 500; color: var(--color-success); }
-
-  /* A short confirmation tag, such as Order placed */
-  .pill-note { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 6px 14px; background: var(--color-brand-50); color: var(--color-brand-600); font-size: 0.84rem; font-weight: 500; }
-
-  /* Size guide: the finder beside the body map, then the chart and fit tables */
-  .about-grid { display: grid; gap: clamp(32px, 5vw, 72px); align-items: start; }
-  @media (min-width: 900px) { .about-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); } }
-  .measure-card { padding: clamp(22px, 3.2vw, 40px); background: var(--color-white); border: 1px solid var(--color-line); }
-  .field-row { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .field-row .field { margin-bottom: 0; }
-  .result { margin-top: 20px; padding: 18px 20px; background: var(--color-sand-100); font-size: 0.95rem; line-height: 1.6; color: var(--color-ink-2); }
-  .bodymap { display: flex; flex-direction: column; align-items: center; }
-  .bodymap__photo { position: relative; width: min(100%, 420px); aspect-ratio: 700 / 933; overflow: hidden; background: var(--color-sand-100); }
-  .bodymap__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  /* A tape line: a dashed hairline with a dot at each end and its name beside it */
-  .bodymap__line { position: absolute; height: 0; border-top: 1.5px dashed var(--color-white); filter: drop-shadow(0 0 1px rgb(23 33 31 / 0.55)); }
-  .bodymap__line::before, .bodymap__line::after { content: ""; position: absolute; top: -4.5px; width: 7px; height: 7px; border-radius: 999px; background: var(--color-white); }
-  .bodymap__line::before { left: -3px; }
-  .bodymap__line::after { right: -3px; }
-  .bodymap__tag { position: absolute; left: calc(100% + 12px); top: 50%; translate: 0 -50%; padding: 3px 9px; background: var(--color-cream); color: var(--color-ink); font-size: 0.74rem; font-weight: 500; white-space: nowrap; filter: none; }
-
-  /* Units switch: two quiet buttons, the chosen one filled with ink */
-  .unit-toggle { display: inline-flex; border: 1px solid var(--color-line-2); background: var(--color-white); }
-  .unit-toggle button { min-height: 40px; padding: 0 18px; font-size: 0.86rem; color: var(--color-ink-2); transition: background-color 0.25s, color 0.25s; }
-  .unit-toggle button:hover { background: var(--color-sand-100); }
-  .unit-toggle button.is-on { background: var(--color-ink); color: var(--color-cream); }
-
-  /* Tables: hairlines only, a sand header, scrolling sideways on a phone */
-  .table-wrap { overflow-x: auto; border: 1px solid var(--color-line); background: var(--color-white); }
-  table.size { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.93rem; font-variant-numeric: tabular-nums; }
-  table.size th, table.size td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--color-line); }
-  table.size thead th { background: var(--color-sand-100); font-family: var(--font-display); font-size: 0.84rem; font-weight: 600; color: var(--color-ink); white-space: nowrap; }
-  table.size tbody th { font-family: var(--font-display); font-weight: 600; color: var(--color-ink); }
-  table.size tbody tr:last-child th, table.size tbody tr:last-child td { border-bottom: 0; }
-  table.size tbody tr:hover { background: var(--color-sand-50); }
-
-  /* Deal cards on the shop page: one card per live offer */
-  .deals { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-  .deal {
-    position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 220px;
-    padding: clamp(22px, 2.4vw, 32px); border-radius: 22px; border: 1px solid transparent;
-    transition: transform 0.5s var(--ease-q), box-shadow 0.5s var(--ease-q);
-  }
-  .deal:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgb(23 33 31 / 0.14); }
-  .deal__tag { align-self: flex-start; padding: 0.3em 0.9em; border-radius: 999px; font-size: 0.74rem; font-weight: 500; }
-  .deal h3 { margin: 6px 0 0; color: inherit; font-size: clamp(1.55rem, 2.4vw, 2.1rem); line-height: 1.05; }
-  .deal p { margin: 0; flex: 1; max-width: 34ch; font-size: 0.95rem; }
-  .deal .link-arrow { align-self: flex-start; margin-top: 10px; }
-  .deal--brand { background: var(--color-sand-100); border-color: var(--color-line); color: var(--color-ink); }
-  .deal--brand .deal__tag { background: var(--brand-grad); color: var(--color-white); }
-  .deal--brand p { color: var(--color-ink-2); }
-  .deal--dark { background: var(--color-ink); color: var(--color-cream); }
-  .deal--dark .deal__tag { background: rgb(251 248 243 / 0.14); }
-  .deal--dark p { color: rgb(251 248 243 / 0.78); }
-  .deal--dark .link-arrow, .deal--teal .link-arrow { color: var(--color-cream); }
-  .deal--teal { background: var(--color-teal-500); color: var(--color-cream); }
-  .deal--teal .deal__tag { background: rgb(251 248 243 / 0.16); }
-  .deal--teal p { color: rgb(251 248 243 / 0.85); }
-
-  /* The filter sidebar is taller than most laptop windows. Capped to the
-     window, it scrolls on its own instead of re-pinning mid-drag. Below
-     880px it is an inline panel again. */
-  @media (min-width: 881px) {
-    .filters {
-      max-height: calc(100dvh - 112px);
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      scrollbar-width: thin;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-  }
 }

@@ -6,6 +6,7 @@ import { useSeo } from "@/seo/useSeo";
 import BagEmpty from "./sections/BagEmpty";
 import BagRow from "./sections/BagRow";
 import Steps from "./sections/Steps";
+import CartLayout from "./CartLayout";
 import OrderSummary from "./sections/OrderSummary";
 import { useCheckoutBag } from "./useCheckoutBag";
 import { t } from "@/i18n/translate";
@@ -27,9 +28,9 @@ export default function CartPage() {
         ) : (
           <>
             <Steps at={1} />
-            <div className="cart-layout">
+            <CartLayout>
               <div>
-                <div className="cart-list">{bag.rows.map((r) => <BagRow key={`${r.line.productId}-${r.line.size}-${r.line.color}`} row={r} />)}</div>
+                <div className="border-t border-line">{bag.rows.map((r) => <BagRow key={`${r.line.productId}-${r.line.size}-${r.line.color}`} row={r} />)}</div>
                 <Link className="link-arrow mt-[18px] inline-flex min-h-11 items-center" to="/shop">← Keep shopping</Link>
               </div>
               {/* Region defaults to Kampala here; the delivery step picks the real one. */}
@@ -37,7 +38,7 @@ export default function CartPage() {
                 <Link className="btn btn--primary btn--block mt-3.5" to="/checkout">{t("Continue to delivery")}</Link>
                 <p className="mt-3 text-center text-[.78rem] text-ink-4">{t("Delivery and payment come next. Nothing is charged yet.")}</p>
               </OrderSummary>
-            </div>
+            </CartLayout>
           </>
         )}
       </div>

@@ -6,7 +6,12 @@ import Photo from "@/components/storefront/Photo";
 import { useCart } from "@/store/context/CartContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { notify } from "@/store/tanstackStore/notices";
+import { cn } from "@/utils/cn";
 import { t } from "@/i18n/translate";
+
+const META = "mt-0.5 text-[0.86rem] text-ink-3";
+// The quantity stepper's minus and plus.
+const STEP = "grid h-10 w-10 place-items-center text-ink-2 transition-colors duration-200 hover:bg-sand-100 hover:text-ink";
 
 // One line in the bag: photo, name, colour and size, stock, quantity
 // stepper (capped at what is in stock), price and Remove.
@@ -21,22 +26,23 @@ export default function BagRow({ row }) {
   const more = () => (line.qty + 1 > max ? notify(`That's all we have in ${line.size}`) : setQty(line, line.qty + 1));
 
   return (
-    <div className="cart-row">
-      <Link className="cart-row__media" to={`/product/${p.slug}`}><Photo photo={p.photos[0]} label={p.name} /></Link>
+    <div className="grid grid-cols-[96px_minmax(0,1fr)_auto] gap-5 border-b border-line py-6 sm:grid-cols-[124px_minmax(0,1fr)_auto] sm:gap-7">
+      <Link className="relative block aspect-[3/4] overflow-hidden bg-beige" to={`/product/${p.slug}`}><Photo photo={p.photos[0]} label={p.name} /></Link>
       <div>
-        <Link className="cart-row__name" to={`/product/${p.slug}`}>{p.name}</Link>
-        <div className="cart-row__meta">{line.color} · Size {line.size}</div>
-        <div className={max <= 2 ? "cart-row__meta text-warn" : "cart-row__meta text-ink-4"}>{max <= 2 ? `Only ${max} left in ${line.size}` : "In stock"}</div>
-        <div className="qty mt-2">
+        {/* The name gets a 24px tap box; the photo beside it links to the same piece. */}
+        <Link className="inline-block min-h-6 py-1 font-display text-[1.08rem] font-normal leading-[1.3] tracking-normal transition-colors duration-200 hover:text-brand-600" to={`/product/${p.slug}`}>{p.name}</Link>
+        <div className={META}>{line.color} · Size {line.size}</div>
+        <div className={cn(META, max <= 2 ? "text-warn" : "text-ink-4")}>{max <= 2 ? `Only ${max} left in ${line.size}` : "In stock"}</div>
+        <div className="mt-2 inline-flex items-center border border-line-2 bg-white">
           {/* Going below one removes the line (see CartContext.setQty). */}
-          <button type="button" aria-label={`One less ${p.name}`} onClick={() => setQty(line, line.qty - 1)}><Minus className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /></button>
-          <span aria-live="polite">{line.qty}</span>
-          <button type="button" aria-label={`One more ${p.name}`} onClick={more}><Plus className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /></button>
+          <button type="button" className={STEP} aria-label={`One less ${p.name}`} onClick={() => setQty(line, line.qty - 1)}><Minus className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /></button>
+          <span className="min-w-[34px] text-center text-[0.92rem] tabular-nums" aria-live="polite">{line.qty}</span>
+          <button type="button" className={STEP} aria-label={`One more ${p.name}`} onClick={more}><Plus className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /></button>
         </div>
       </div>
-      <div className="cart-row__right">
-        <strong>{money(total)}</strong>
-        <button type="button" className="remove" onClick={() => remove(line)}>{t("Remove")}</button>
+      <div className="flex flex-col items-end justify-between text-[1rem] tabular-nums">
+        <strong className="font-medium">{money(total)}</strong>
+        <button type="button" className="min-h-9 text-[0.84rem] text-ink-3 underline underline-offset-4 transition-colors duration-200 hover:text-brand-600" onClick={() => remove(line)}>{t("Remove")}</button>
       </div>
     </div>
   );
