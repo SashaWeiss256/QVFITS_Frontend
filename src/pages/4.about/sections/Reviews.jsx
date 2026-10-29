@@ -38,7 +38,7 @@ export default function Reviews({ title }) {
 
         {/* The quote */}
         <figure className="lg:col-span-8 lg:col-start-5">
-          <blockquote key={r.id} className="min-h-[4.8em] animate-[promo-in_0.9s_var(--ease-q)] font-display text-[clamp(1.8rem,3.6vw,3.2rem)] leading-[1.18] text-ink" aria-live="polite">
+          <blockquote key={r.id} className="min-h-[4.8em] animate-fade-up font-display text-[clamp(1.8rem,3.6vw,3.2rem)] leading-[1.18] text-ink" aria-live="polite">
             <span className="text-brand-600">“</span>{r.text}<span className="text-brand-600">”</span>
           </blockquote>
           {r.stars ? <p className="sr-only">{r.stars} out of 5 stars</p> : null}

@@ -35,8 +35,8 @@ export default function PromoBar() {
 
   return (
     <div className="relative z-61 flex h-9 items-center overflow-hidden bg-[image:var(--brand-grad)] text-[0.78rem] tracking-[0.02em] text-cream" role="region" aria-label="Announcements">
-      <div className="promo-mask min-w-0 flex-1">
-        <div className="promo-track flex w-max items-center" style={{ "--promo-time": `${seconds}s` }} aria-hidden="true">
+      <div className="min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_5%,#000_95%,transparent)]">
+        <div className="flex w-max animate-promo-slide items-center will-change-transform motion-reduce:transform-none motion-reduce:animate-none" style={{ "--promo-time": `${seconds}s` }} aria-hidden="true">
           {row}
           {row}
         </div>

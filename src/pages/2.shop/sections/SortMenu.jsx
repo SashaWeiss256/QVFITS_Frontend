@@ -66,7 +66,7 @@ export default function SortMenu({ sorts, value, onChange }) {
 
       {/* List */}
       {open && (
-        <ul className="absolute left-0 top-full z-40 mt-2 w-60 border border-line bg-cream py-2 shadow-sh-3 animate-[promo-in_0.35s_var(--ease-q)]" role="listbox" aria-label={t("Sort by")} onKeyDown={onListKey}>
+        <ul className="absolute left-0 top-full z-40 mt-2 w-60 border border-line bg-cream py-2 shadow-sh-3 animate-fade-up-quick" role="listbox" aria-label={t("Sort by")} onKeyDown={onListKey}>
           {sorts.map((s) => (
             <li key={s.id} role="presentation">
               <button

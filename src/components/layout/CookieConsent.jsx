@@ -36,7 +36,7 @@ function Banner({ consent, startChoosing }) {
   {/* Cookie Banner: a quiet card, not a modal, so the shop stays usable behind it */}
   return (
     <section
-      data-lenis-prevent className="fixed inset-x-3 bottom-3 z-[80] max-h-[85vh] overflow-y-auto bg-ink p-5 sm:p-7 text-cream shadow-sh-4 animate-[promo-in_0.7s_var(--ease-q)] sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[420px] sm:p-8"
+      data-lenis-prevent className="fixed inset-x-3 bottom-3 z-[80] max-h-[85vh] overflow-y-auto bg-ink p-5 sm:p-7 text-cream shadow-sh-4 animate-fade-up sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[420px] sm:p-8"
       role="dialog"
       aria-modal="false"
       aria-labelledby="consentTitle"

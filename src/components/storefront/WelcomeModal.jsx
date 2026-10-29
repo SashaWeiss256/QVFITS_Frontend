@@ -56,21 +56,21 @@ export default function WelcomeModal() {
   const photo = content?.heroSlides?.find((s) => s.photo)?.photo;
   const src = photo ? photoSources(photo, { wide: true }) : null;
   // Each block rises in turn, once.
-  const rise = (n) => ({ animation: `promo-in 0.9s var(--ease-q) ${0.25 + n * 0.09}s both` });
+  const rise = (n) => ({ animation: `fade-up 0.9s var(--ease-q) ${0.25 + n * 0.09}s both` });
 
   return createPortal(
     <div className="fixed inset-0 z-[95] flex items-end justify-center sm:items-center sm:p-8">
-      <div className="absolute inset-0 bg-ink/70 backdrop-blur-sm animate-[promo-in_0.8s_var(--ease-q)]" aria-hidden="true" />
+      <div className="absolute inset-0 bg-ink/70 backdrop-blur-sm animate-fade-up" aria-hidden="true" />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="welcomeTitle"
-        className="relative flex max-h-[96dvh] w-full max-w-[920px] flex-col overflow-hidden bg-cream text-ink shadow-sh-4 animate-[promo-in_0.9s_var(--ease-q)] md:min-h-[600px] md:flex-row"
+        className="relative flex max-h-[96dvh] w-full max-w-[920px] flex-col overflow-hidden bg-cream text-ink shadow-sh-4 animate-fade-up md:min-h-[600px] md:flex-row"
       >
         {/* Photograph: slowly settling, the name across its foot */}
         <div className="relative h-36 shrink-0 overflow-hidden bg-ink md:h-auto md:w-[42%]" aria-hidden="true">
           {src ? (
-            <img className="absolute inset-0 h-full w-full scale-110 object-cover object-[50%_22%] animate-[welcome-settle_9s_var(--ease-q)_forwards]" src={src.src} srcSet={src.srcSet} sizes="400px" alt="" />
+            <img className="absolute inset-0 h-full w-full scale-110 object-cover object-[50%_22%] animate-welcome-settle motion-reduce:animate-none" src={src.src} srcSet={src.srcSet} sizes="400px" alt="" />
           ) : (
             <div className="absolute inset-0 bg-[image:var(--brand-grad)]" />
           )}
