@@ -1,6 +1,6 @@
 /* Cart Panel */
 import { Link } from "react-router-dom";
-import { Minus, Plus, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Minus, Plus, ShoppingBag } from "lucide-react";
 
 import EmptyState from "@/components/ui/EmptyState";
 import { useCart } from "@/store/context/CartContext";
@@ -14,7 +14,7 @@ import { t } from "@/i18n/translate";
 // The bag in the drawer. Totals here are a preview; checkout prices the bag
 // again on the server side before anything is ordered.
 export default function CartPanel() {
-  const { lines, remove, setQty } = useCart();
+  const { lines, remove, setQty, closeDrawer } = useCart();
   const { money } = useCurrency();
   const { data: products = [] } = useProductsByIds(lines.map((l) => l.productId));
   const { data: settings } = useSettings();
@@ -114,6 +114,11 @@ export default function CartPanel() {
         <p className="mb-5 text-[0.8rem] text-ink-3">{t("Delivery and any discount are worked out at checkout.")}</p>
         {/* Checkout starts from the full bag page, where sizes and quantities can still change. */}
         <Link className="btn btn--primary btn--block btn--lg" to="/cart">{t("Checkout")}</Link>
+        {/* Back to the page they were browsing, with the bag kept */}
+        <button type="button" className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 text-[0.9rem] text-ink-2 underline-offset-4 transition-colors hover:text-ink hover:underline" onClick={closeDrawer}>
+          <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" strokeWidth={1.5} aria-hidden="true" />
+          {t("Continue shopping")}
+        </button>
       </div>
     </>
   );

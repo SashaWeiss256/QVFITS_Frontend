@@ -92,6 +92,7 @@ export const TABLE = [
   ["Discount code", "Msimbo wa punguzo", "Code promo", "رمز الخصم", "优惠码"],
   ["Choose size", "Chagua saizi", "Choisir la taille", "اختر المقاس", "选择尺码"],
   ["Keep shopping", "Endelea kununua", "Continuer vos achats", "واصل التسوق", "继续选购"],
+  ["Continue shopping", "Endelea kununua", "Continuer vos achats", "واصل التسوق", "继续购物"],
   ["Nothing saved yet. Tap the heart on anything you love.", "Bado hujahifadhi chochote. Gusa moyo kwenye unachopenda.", "Rien d'enregistré. Touchez le cœur sur ce que vous aimez.", "لا شيء محفوظ بعد. اضغط على القلب عند ما يعجبك.", "还没有收藏。点击心形图标收藏喜欢的单品。"],
   ["Start browsing", "Anza kuvinjari", "Commencer à parcourir", "ابدأ التصفح", "开始浏览"],
   ["Back to bag", "Rudi kwenye mfuko", "Retour au sac", "العودة إلى الحقيبة", "返回购物袋"],
