@@ -29,8 +29,10 @@ export default function Sticker() {
   const sessionClosed = (() => { try { return window.sessionStorage?.getItem(key) === "1"; } catch { return false; } })();
   const closed = closedNow === key || sessionClosed || now < Number(readStored(key, 0));
   const { pathname } = useLocation();
-  // Never over the bag or checkout, where it only gets in the way.
+  // Never over the bag or checkout, where it only gets in the way; on a phone,
+  // not on a product page either, where the add-to-bag bar holds the foot of the screen.
   const quiet = /^\/(cart|checkout|order|track-order)/.test(pathname);
+  const product = pathname.startsWith("/product/");
   const live = Boolean(s?.live) && !closed && !quiet && welcomed;
 
   useEffect(() => {
@@ -75,7 +77,10 @@ export default function Sticker() {
   return (
     <aside
       className={cn(
-        "fixed bottom-[calc(5.5rem+var(--addbar,0px))] left-5 z-[60] w-[min(calc(100vw-40px),320px)] sm:bottom-[calc(1.25rem+var(--addbar,0px))] lg:bottom-5 bg-cream p-7 pr-10 text-ink shadow-sh-4 transition-all duration-700 ease-q",
+        // A phone gets a slim card beside Vee's round button (48px plus its gutters), a tablet or laptop the full one.
+        "fixed bottom-[calc(1rem+env(safe-area-inset-bottom)+var(--addbar,0px))] left-4 z-[60] w-[calc(100vw-6rem)] max-w-[320px] bg-cream py-3.5 pl-4 pr-11 text-ink shadow-sh-4 transition-all duration-700 ease-q",
+        "sm:bottom-[calc(1.25rem+var(--addbar,0px))] sm:left-5 sm:w-[320px] sm:p-7 sm:pr-10 lg:bottom-5",
+        product && "max-sm:hidden",
         shown ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0",
       )}
       aria-label={s.title}
@@ -86,10 +91,10 @@ export default function Sticker() {
         <X className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
       </button>
       {/* Offer */}
-      <span className="text-[0.82rem] text-brand-600">{s.tag}</span>
-      <p className="mt-2 font-display text-[1.6rem] leading-tight">{s.title}</p>
-      <p className="mt-2 text-[0.9rem] leading-relaxed text-ink-2">{s.text}</p>
-      <button type="button" className="link-arrow mt-5 inline-flex items-center gap-2 text-[0.9rem] font-medium" onClick={go} tabIndex={shown ? 0 : -1}>
+      <span className="text-[0.82rem] text-brand-600 max-sm:hidden">{s.tag}</span>
+      <p className="font-display text-[1.05rem] leading-tight sm:mt-2 sm:text-[1.6rem]">{s.title}</p>
+      <p className="mt-2 text-[0.9rem] leading-relaxed text-ink-2 max-sm:hidden">{s.text}</p>
+      <button type="button" className="link-arrow inline-flex items-center gap-2 text-[0.85rem] font-medium sm:mt-5 sm:text-[0.9rem]" onClick={go} tabIndex={shown ? 0 : -1}>
         {s.cta} <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
       </button>
     </aside>

@@ -81,11 +81,12 @@ export default function FitAssistant() {
 
   return (
     <>
-      {/* Launcher: a small pill, bottom right */}
+      {/* Launcher: a round button on a phone, a square label with its name from a tablet up */}
       <button
         type="button"
         className={cn(
-          "fixed bottom-[calc(1.25rem+var(--addbar,0px))] right-5 z-[70] inline-flex lg:bottom-5 h-12 items-center gap-2.5 rounded-pill bg-ink pl-4 pr-5 text-[0.88rem] text-cream shadow-sh-3 transition-all duration-500 ease-q hover:bg-brand-600",
+          "fixed bottom-[calc(1rem+env(safe-area-inset-bottom)+var(--addbar,0px))] right-4 z-[70] inline-flex h-12 w-12 items-center justify-center gap-2.5 bg-ink max-sm:rounded-full text-[0.88rem] text-cream shadow-sh-3 transition-all duration-500 ease-q hover:bg-brand-600",
+          "sm:right-5 sm:w-auto sm:pl-4 sm:pr-5 lg:bottom-5",
           open && "pointer-events-none translate-y-4 opacity-0",
         )}
         aria-label="Open the Style Assistant"
@@ -93,7 +94,7 @@ export default function FitAssistant() {
         onClick={() => setOpen(true)}
       >
         <AssistantMark />
-        <span>Ask {name}</span>
+        <span className="max-sm:sr-only">Ask {name}</span>
       </button>
 
       {/* Panel: a full sheet on a phone, a tall card on a laptop */}

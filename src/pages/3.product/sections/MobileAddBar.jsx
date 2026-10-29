@@ -29,7 +29,7 @@ export default function MobileAddBar({ product, size, sold, onAdd, watch }) {
   return (
     <div
       className={cn(
-        "fixed inset-x-0 bottom-0 z-[60] flex items-center gap-4 border-t border-line bg-cream/95 px-5 py-3 backdrop-blur transition-transform duration-500 ease-q lg:hidden",
+        "fixed inset-x-0 bottom-0 z-[60] flex items-center gap-4 border-t border-line bg-cream/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-500 ease-q sm:px-5 lg:hidden",
         shown ? "translate-y-0" : "translate-y-full",
       )}
       aria-hidden={!shown}
@@ -37,7 +37,11 @@ export default function MobileAddBar({ product, size, sold, onAdd, watch }) {
     >
       <div className="min-w-0 flex-1">
         <p className="truncate font-display text-[0.95rem] font-semibold">{product.name}</p>
-        <p className="text-[0.85rem] tabular-nums text-ink-2 [&_b]:font-semibold [&_b]:text-brand-600 [&_s]:mr-1 [&_s]:text-ink-4"><PriceTag product={product} />{size ? `, ${size}` : ""}</p>
+        {/* The price to pay on one line (a sale's old price stays in the page above), then the size */}
+        <p className="truncate whitespace-nowrap text-[0.85rem] tabular-nums text-ink-2 [&_b]:font-semibold [&_b]:text-brand-600 [&_s]:hidden">
+          <PriceTag product={product} />
+          {size && <span className="text-ink-3"> · Size {size}</span>}
+        </p>
       </div>
       <button type="button" className="btn btn--primary" disabled={sold} onClick={onAdd}>
         {sold ? "Sold out" : size ? "Add to bag" : "Choose a size"}
