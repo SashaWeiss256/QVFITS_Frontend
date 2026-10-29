@@ -28,7 +28,8 @@ export default function SizeGuidePage() {
           </div>
         </div>
       </section>
-      <section className="section section--tight">
+      {/* On a phone the intro above already leaves the gap, so no second one */}
+      <section className="section section--tight max-sm:pt-0">
         <div className="wrap">
           <div className="grid items-start gap-[clamp(32px,5vw,72px)] min-[900px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
             {/* Product links can preselect a piece so its fit guidance is used. */}

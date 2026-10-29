@@ -138,7 +138,7 @@ function Slideshow({ slides }) {
   return (
     <div
       ref={root}
-      className="wrap grid min-h-[calc(100svh-72px)] items-center gap-10 py-10 lg:min-h-[calc(100svh-84px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-14"
+      className="wrap grid min-h-[calc(100svh-72px)] items-center gap-6 py-10 sm:gap-10 lg:min-h-[calc(100svh-84px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-14"
       aria-roledescription="carousel"
       aria-label="Quivogue campaigns"
       onKeyDown={onKeyDown}
