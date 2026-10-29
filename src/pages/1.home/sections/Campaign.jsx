@@ -42,12 +42,12 @@ export default function Campaign({ campaign: c }) {
       </div>
 
       {/* Words */}
-      <div className="flex flex-col justify-center px-[clamp(20px,5vw,80px)] py-16 lg:py-24">
+      <div className="flex flex-col justify-center px-[clamp(20px,5vw,80px)] py-12 sm:py-16 lg:py-24">
         <p className="kicker">{c.kicker}</p>
         <h2 className="mb-6 text-ink">{c.title}</h2>
         {c.text && <p className="mb-10 max-w-md text-[1.05rem] leading-relaxed text-ink-2">{c.text}</p>}
         <div>
-          <Link className="btn btn--primary btn--lg" to={c.href}>{c.cta}</Link>
+          <Link className="btn btn--primary btn--lg max-sm:w-full text-center" to={c.href}>{c.cta}</Link>
         </div>
       </div>
     </section>
