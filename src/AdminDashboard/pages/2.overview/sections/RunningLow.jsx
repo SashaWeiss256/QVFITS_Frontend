@@ -34,7 +34,7 @@ export default function RunningLow({ rows = [], loading, canOpen }) {
                 <span className="font-semibold">{v.name}</span>
                 <span className="text-ink-4"> {colorName(v.color)}, {v.size}</span>
               </span>
-              <span className={`shrink-0 rounded-r-pill px-2 py-0.5 text-[.75rem] font-bold tabular-nums ${v.stock ? "bg-[var(--star)]/15 text-ink-2" : "bg-warn/10 text-warn"}`}>
+              <span className={`shrink-0 rounded-r-pill px-2 py-0.5 text-[.75rem] font-bold tabular-nums ${v.stock ? "bg-star/15 text-ink-2" : "bg-warn/10 text-warn"}`}>
                 {v.stock ? `${v.stock} left` : "Sold out"}
               </span>
             </li>

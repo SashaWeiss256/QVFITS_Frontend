@@ -42,7 +42,7 @@ export default function Logo({ size = "md", to = "/", className, tone = "light" 
           className={cn(
             "font-logo leading-none tracking-[0.12em] mr-[-0.12em]",
             lg ? "text-[1.75rem]" : "text-[1.15rem] lg:text-[1.3rem]",
-            dark ? "text-cream" : "bg-[image:var(--brand-grad)] bg-clip-text text-transparent",
+            dark ? "text-cream" : "bg-brand-grad bg-clip-text text-transparent",
           )}
         >
           QVFITS

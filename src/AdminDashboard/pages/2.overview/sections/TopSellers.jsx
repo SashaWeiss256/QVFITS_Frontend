@@ -25,7 +25,7 @@ export default function TopSellers({ rows = [], loading, money }) {
               </Link>
               <span className="text-right text-sm font-semibold tabular-nums">{money(p.revenue)}</span>
               <span className="col-start-2 h-1.5 overflow-hidden rounded-r-pill bg-cream-2">
-                <span className="block h-full rounded-r-pill bg-[image:var(--brand-grad)]" style={{ width: `${Math.max(4, (p.revenue / max) * 100)}%` }} />
+                <span className="block h-full rounded-r-pill bg-brand-grad" style={{ width: `${Math.max(4, (p.revenue / max) * 100)}%` }} />
               </span>
               <span className="text-right text-[.75rem] tabular-nums text-ink-4">{p.units} sold</span>
             </li>

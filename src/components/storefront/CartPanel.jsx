@@ -56,7 +56,7 @@ export default function CartPanel() {
               {left > 0 ? <>You are {money(left)} away from free delivery.</> : <span className="font-medium text-success">{t("Free delivery is yours.")}</span>}
             </p>
             <div className="mt-3 h-px w-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)} aria-label={t("Progress to free delivery")}>
-              <div className="h-px origin-left bg-[image:var(--brand-grad)] transition-transform duration-700 ease-q" style={{ transform: `scaleX(${progress})` }} />
+              <div className="h-px origin-left bg-brand-grad transition-transform duration-700 ease-q" style={{ transform: `scaleX(${progress})` }} />
             </div>
           </div>
         )}

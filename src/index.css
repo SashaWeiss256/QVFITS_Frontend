@@ -114,57 +114,16 @@
 }
 
 /*
-  Short names for the same tokens, for the few places that need a raw CSS
-  variable (inline styles, gradients, the rules below). They point at the
-  @theme values above, so there is still only one place to change a colour.
+  Two values that are not a single token: the logo's gradient (primary
+  buttons, the promo bar, accents; `bg-brand-grad`) and the dropdown chevron.
 */
 :root {
-  --brand-50: var(--color-brand-50);
-  --brand-100: var(--color-brand-100);
-  --brand-200: var(--color-brand-200);
-  --brand-300: var(--color-brand-300);
-  --brand-400: var(--color-brand-400);
-  --brand-500: var(--color-brand-500);
-  --brand-600: var(--color-brand-600);
-  /* The logo's gradient, for primary buttons and accents */
   --brand-grad: linear-gradient(135deg, #c2185b, var(--color-brand-500) 55%, var(--color-brand-600));
-  /* The dropdown chevron, in ink, for .select and .field select */
   --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2317211f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+}
 
-  --teal-100: var(--color-teal-100);
-  --teal-500: var(--color-teal-500);
-  --sand-50: var(--color-sand-50);
-  --sand-100: var(--color-sand-100);
-  --sand-200: var(--color-sand-200);
-  --sand-300: var(--color-sand-300);
-  --sand-400: var(--color-sand-400);
-  --cream: var(--color-cream);
-  --cream-2: var(--color-cream-2);
-  --beige: var(--color-beige);
-  --white: var(--color-white);
-  --ink: var(--color-ink);
-  --ink-2: var(--color-ink-2);
-  --ink-3: var(--color-ink-3);
-  --ink-4: var(--color-ink-4);
-  --line: var(--color-line);
-  --line-2: var(--color-line-2);
-  --gold: var(--color-gold);
-  --star: var(--color-star);
-  --success: var(--color-success);
-  --warn: var(--color-warn);
-
-  --display: var(--font-display);
-  --body: var(--font-body);
-  --r-sm: var(--radius-r-sm);
-  --r-md: var(--radius-r-md);
-  --r-lg: var(--radius-r-lg);
-  --r-xl: var(--radius-r-xl);
-  --r-pill: var(--radius-r-pill);
-  --sh-1: var(--shadow-sh-1);
-  --sh-2: var(--shadow-sh-2);
-  --sh-3: var(--shadow-sh-3);
-  --sh-4: var(--shadow-sh-4);
-  --ease: var(--ease-q);
+@utility bg-brand-grad {
+  background-image: var(--brand-grad);
 }
 
 /* Archivo is set bold and tight wherever it appears (brand book), so the

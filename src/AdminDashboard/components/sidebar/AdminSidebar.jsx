@@ -67,7 +67,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
           <span className={cn(collapsed && "lg:hidden")}>
             <Logo to="/admin" />
           </span>
-          <span aria-hidden="true" className={cn("hidden h-9 w-9 place-items-center rounded-[14px] bg-[image:var(--brand-grad)] font-display text-[1.05rem] font-bold text-white", collapsed && "lg:grid")}>
+          <span aria-hidden="true" className={cn("hidden h-9 w-9 place-items-center rounded-[14px] bg-brand-grad font-display text-[1.05rem] font-bold text-white", collapsed && "lg:grid")}>
             Q
           </span>
           <button type="button" className="icon-btn lg:hidden" aria-label="Close menu" onClick={onClose}>
@@ -137,7 +137,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
                           "focus-visible:ring-2 focus-visible:ring-brand-300",
                           collapsed && "lg:justify-center lg:px-0",
                           isActive
-                            ? "bg-brand-50 font-semibold text-brand-600 shadow-[inset_0_0_0_1px_var(--brand-100)]"
+                            ? "bg-brand-50 font-semibold text-brand-600 shadow-[inset_0_0_0_1px_var(--color-brand-100)]"
                             : "font-medium text-ink-2 hover:bg-cream-2 hover:text-ink",
                         )}
                       >
@@ -145,7 +145,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
                         <span
                           aria-hidden="true"
                           className={cn(
-                            "absolute inset-y-2 -left-3 w-[3px] rounded-r-full bg-[image:var(--brand-grad)] transition-transform duration-300 ease-q",
+                            "absolute inset-y-2 -left-3 w-[3px] rounded-r-full bg-brand-grad transition-transform duration-300 ease-q",
                             isActive ? "scale-y-100" : "scale-y-0",
                           )}
                         />
@@ -154,7 +154,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
                           className={cn(
                             "relative grid h-6 w-6 shrink-0 place-items-center rounded-[10px] transition-[background-color,color,transform] duration-200 ease-q",
                             isActive
-                              ? "bg-[image:var(--brand-grad)] text-white shadow-[0_4px_10px_-4px_rgba(150,48,110,.55)]"
+                              ? "bg-brand-grad text-white shadow-[0_4px_10px_-4px_rgba(150,48,110,.55)]"
                               : "text-ink-3 group-hover:translate-x-0.5 group-hover:text-brand-500",
                           )}
                         >
@@ -190,7 +190,7 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
         <div className="shrink-0 border-t border-line p-2">
           <div className={cn("flex items-center gap-3 rounded-[14px] p-2", collapsed && "lg:flex-col lg:gap-2 lg:px-0")}>
             {/* Initials inside a thin brand gradient ring */}
-            <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[image:var(--brand-grad)] p-[2px]">
+            <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-grad p-[2px]">
               <span className="grid h-full w-full place-items-center rounded-full bg-white text-[.7rem] font-bold tracking-wider text-brand-600">
                 {initials}
               </span>

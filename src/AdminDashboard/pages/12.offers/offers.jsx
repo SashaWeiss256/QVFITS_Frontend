@@ -103,7 +103,7 @@ function PromoBar({ draft, set }) {
   return (
     <Panel title="Promo bar" hint="The thin strip at the top of every page. Your messages glide across it from left to right, one after another.">
       {/* Preview: the strip as shoppers see it */}
-      <div className="mb-6 overflow-hidden rounded-full bg-[image:var(--brand-grad)] px-5 py-2.5 text-center text-[.78rem] text-cream" aria-label="Preview of the promo bar">
+      <div className="mb-6 overflow-hidden rounded-full bg-brand-grad px-5 py-2.5 text-center text-[.78rem] text-cream" aria-label="Preview of the promo bar">
         {shown.length ? shown.join("    ◆    ") : "Add a message to see the bar"}
       </div>
 
@@ -269,7 +269,7 @@ function Sticker({ draft, set }) {
           {sticker.tag && <span className="self-start rounded-full bg-white/15 px-3 py-1 text-[.72rem]">{sticker.tag}</span>}
           <b className="font-display text-[1.25rem] leading-tight">{sticker.title || "Title"}</b>
           <p className="m-0 text-[.86rem] opacity-80">{sticker.text || "A line about it"}</p>
-          <span className="mt-2 inline-flex min-h-10 items-center justify-center self-start rounded-full bg-[image:var(--brand-grad)] px-5 text-[.82rem] font-semibold text-white">{sticker.cta || "Get my code"}</span>
+          <span className="mt-2 inline-flex min-h-10 items-center justify-center self-start rounded-full bg-brand-grad px-5 text-[.82rem] font-semibold text-white">{sticker.cta || "Get my code"}</span>
           {!sticker.live && <span className="text-[.74rem] opacity-80">Switched off, not shown</span>}
         </div>
       </div>

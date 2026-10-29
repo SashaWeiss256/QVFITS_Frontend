@@ -104,7 +104,7 @@ function TilePreview({ tile }) {
     return <div className="grid min-h-32 place-items-center rounded-[14px] border border-dashed border-line-2 p-4 text-sm text-ink-3"><span className="flex items-center gap-2"><ImageIcon className="h-4 w-4" aria-hidden="true" /> Tile is off</span></div>;
   }
   return (
-    <div className="relative min-h-40 overflow-hidden rounded-[14px] bg-[image:var(--brand-grad)] text-white">
+    <div className="relative min-h-40 overflow-hidden rounded-[14px] bg-brand-grad text-white">
       {tile.photo && <div className="absolute inset-0 [&_img]:h-full [&_img]:w-full [&_img]:object-cover"><Photo photo={tile.photo} label={tile.title} wide /></div>}
       <span className="absolute inset-x-0 bottom-0 grid gap-0.5 bg-gradient-to-t from-black/60 to-transparent p-4">
         <span className="text-[.68rem] font-semibold uppercase tracking-[0.16em] opacity-85">{tile.kicker}</span>

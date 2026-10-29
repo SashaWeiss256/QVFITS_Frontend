@@ -77,7 +77,7 @@ export default function EmailPreview({ subject, previewText, heading, body, code
               </div>
             )}
 
-            <span className="mt-6 inline-block rounded-full bg-[image:var(--brand-grad)] px-7 py-3 text-[.9rem] font-semibold text-white">{button}</span>
+            <span className="mt-6 inline-block rounded-full bg-brand-grad px-7 py-3 text-[.9rem] font-semibold text-white">{button}</span>
           </div>
 
           {/* Footer: where the shop is, and the unsubscribe link every email must carry */}

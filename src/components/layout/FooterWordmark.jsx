@@ -85,7 +85,7 @@ export default function FooterWordmark() {
         <span key={w.text} className="flex flex-col">
           <span className="flex text-[clamp(4.5rem,19vw,19rem)] tracking-[0.04em]">
             {[...w.text].map((ch, i) => (
-              <span key={i} data-ch className="inline-block bg-[image:var(--brand-grad)] bg-clip-text text-transparent will-change-transform">{ch}</span>
+              <span key={i} data-ch className="inline-block bg-brand-grad bg-clip-text text-transparent will-change-transform">{ch}</span>
             ))}
           </span>
           <span data-note className={NOTE}>{w.note}</span>

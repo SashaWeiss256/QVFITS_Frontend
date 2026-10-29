@@ -22,7 +22,7 @@ export default function OrderSummary({ bag, region = "kampala", children }) {
         {!zone?.collect && (
           <>
             <div className="mb-2.5 mt-1 h-[3px] overflow-hidden bg-line-2" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={t("Progress to free delivery")}>
-              <div className="h-full bg-[image:var(--brand-grad)] transition-[width] duration-[600ms] ease-q" style={{ width: `${pct}%` }} />
+              <div className="h-full bg-brand-grad transition-[width] duration-[600ms] ease-q" style={{ width: `${pct}%` }} />
             </div>
             <p className={left > 0 ? "text-[.82rem] text-ink-3" : "text-[.82rem] font-semibold text-success"}>
               {left > 0 ? `${money(left)} away from free delivery` : "Free delivery unlocked"}

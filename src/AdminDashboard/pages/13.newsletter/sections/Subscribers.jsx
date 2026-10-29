@@ -45,7 +45,7 @@ export default function Subscribers() {
       {subs.length > 0 && (
         <Panel title="List health" hint="Confirmed addresses are your real audience. A large awaiting group usually means the confirmation email is not reaching people." className="mb-6">
           <SplitBar parts={[
-            { label: "Subscribed", value: count("subscribed"), className: "bg-[image:var(--brand-grad)]" },
+            { label: "Subscribed", value: count("subscribed"), className: "bg-brand-grad" },
             { label: "Awaiting confirmation", value: count("pending"), className: "bg-brand-200" },
             { label: "Unsubscribed", value: count("unsubscribed"), className: "bg-line-2" },
           ]} />

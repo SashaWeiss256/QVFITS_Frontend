@@ -41,7 +41,7 @@ export default function BuyPanel({ product: p, onColor }) {
   }, [colorId]);
   const sold = !anyInStock(p);
   const wished = wishlist.has(p.id);
-  const swatch = (c) => facets?.colors.find((x) => x.name === c)?.swatch ?? "var(--line-2)";
+  const swatch = (c) => facets?.colors.find((x) => x.name === c)?.swatch ?? "var(--color-line-2)";
 
   const cta = useRef(null);
   const sizes = useRef(null);

@@ -125,7 +125,7 @@ export default function Stock() {
       sort: (r) => r.stock,
       render: (r) => {
         const value = drafts[r.id] ?? r.stock;
-        const tone = r.stock === 0 ? "text-warn font-semibold" : r.stock <= low ? "text-[var(--star)] font-semibold" : "";
+        const tone = r.stock === 0 ? "text-warn font-semibold" : r.stock <= low ? "text-star font-semibold" : "";
         return canEdit ? (
           <input
             className={`w-20 rounded-[10px] border border-line-2 px-2 py-1.5 text-right ${tone}`}

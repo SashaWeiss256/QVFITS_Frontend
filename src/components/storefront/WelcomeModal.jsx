@@ -72,7 +72,7 @@ export default function WelcomeModal() {
           {src ? (
             <img className="absolute inset-0 h-full w-full scale-110 object-cover object-[50%_22%] animate-welcome-settle motion-reduce:animate-none" src={src.src} srcSet={src.srcSet} sizes="400px" alt="" />
           ) : (
-            <div className="absolute inset-0 bg-[image:var(--brand-grad)]" />
+            <div className="absolute inset-0 bg-brand-grad" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
           <p className="absolute inset-x-6 bottom-5 font-logo text-[1.9rem] uppercase leading-none tracking-[0.12em] text-cream md:bottom-8 md:left-8 md:text-[2.6rem]">QVFITS</p>
@@ -81,7 +81,7 @@ export default function WelcomeModal() {
         {/* Choices */}
         <div className="flex min-h-0 flex-1 flex-col">
           <div data-lenis-prevent className="flex-1 overflow-y-auto px-7 pb-3 pt-7 md:px-12 md:pt-10">
-            <div className="h-[2px] w-12 bg-[image:var(--brand-grad)]" style={rise(0)} aria-hidden="true" />
+            <div className="h-[2px] w-12 bg-brand-grad" style={rise(0)} aria-hidden="true" />
             <h2 id="welcomeTitle" className="mt-5 font-display text-[clamp(2rem,4.2vw,2.6rem)] font-bold leading-[1.02] tracking-[-0.02em]" style={rise(1)}>{t("Welcome to Quivogue")}</h2>
             <p className="mt-4 max-w-sm text-[0.95rem] leading-relaxed text-ink-3" style={rise(2)}>{t("Choose how you would like to shop. You can change both at any time from the footer.")}</p>
 
@@ -100,7 +100,7 @@ export default function WelcomeModal() {
                     onClick={() => setLang(l.code)}
                   >
                     <span className={cn("transition-transform duration-500 ease-q", l.code !== lang && "group-hover:translate-x-1 rtl:group-hover:-translate-x-1")}>{l.native}</span>
-                    <span className={cn("grid h-5 w-5 place-items-center rounded-full bg-[image:var(--brand-grad)] text-cream transition-all duration-500 ease-q", l.code === lang ? "scale-100 opacity-100" : "scale-50 opacity-0")}>
+                    <span className={cn("grid h-5 w-5 place-items-center rounded-full bg-brand-grad text-cream transition-all duration-500 ease-q", l.code === lang ? "scale-100 opacity-100" : "scale-50 opacity-0")}>
                       <Check className="h-3 w-3" strokeWidth={2.5} aria-hidden="true" />
                     </span>
                   </button>

@@ -37,7 +37,7 @@ export default function CustomerLayout() {
         {/* Member card and menu: stays in view while the page on the right scrolls */}
         <aside className={cn('min-w-0', 'rounded-[22px]', 'border', 'border-line', 'bg-sand-100', 'p-4', 'md:sticky', 'md:top-28', 'md:p-5')}>
           <div className={cn('mb-4', 'flex', 'items-center', 'gap-3.5', 'border-b', 'border-line', 'pb-4')}>
-            <span className={cn('grid', 'h-12', 'w-12', 'shrink-0', 'place-items-center', 'rounded-full', 'bg-[image:var(--brand-grad)]', 'font-display', 'text-base', 'font-bold', 'tracking-wide', 'text-white')} aria-hidden="true">{initials}</span>
+            <span className={cn('grid', 'h-12', 'w-12', 'shrink-0', 'place-items-center', 'rounded-full', 'bg-brand-grad', 'font-display', 'text-base', 'font-bold', 'tracking-wide', 'text-white')} aria-hidden="true">{initials}</span>
             <div className="min-w-0">
               <p className={cn('m-0', 'truncate', 'font-display', 'text-[1.05rem]', 'font-bold', 'leading-tight')}>{customer.name}</p>
               <p className={cn('m-0', 'truncate', 'text-sm', 'text-ink-3')}>{customer.email}</p>

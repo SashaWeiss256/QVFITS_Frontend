@@ -51,7 +51,7 @@ export default function ShopReady() {
   return (
     <Panel title="Get the shop ready" hint={`${done} of ${steps.length} done`}>
       <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-cream-2" role="progressbar" aria-valuenow={done} aria-valuemin={0} aria-valuemax={steps.length} aria-label="Setup progress">
-        <div className="h-full rounded-full bg-[image:var(--brand-grad)] transition-[width] duration-500 ease-q" style={{ width: `${(done / steps.length) * 100}%` }} />
+        <div className="h-full rounded-full bg-brand-grad transition-[width] duration-500 ease-q" style={{ width: `${(done / steps.length) * 100}%` }} />
       </div>
       {/* Steps: a tick when done, a number when not */}
       <ol className="m-0 grid list-none gap-1 p-0 sm:grid-cols-2">

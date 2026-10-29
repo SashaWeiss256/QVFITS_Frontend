@@ -29,7 +29,7 @@ export default function SetupChecklist({ counts }) {
           return (
             <li key={s.key}>
               <Link to={s.to} className="group flex h-full gap-3 rounded-[14px] border border-line bg-white p-4 transition-[border-color,box-shadow] duration-200 hover:border-brand-200 hover:shadow-sh-1">
-                <span className={cn("grid h-7 w-7 shrink-0 place-items-center rounded-full text-[.78rem] font-bold", done ? "bg-success/15 text-success" : "bg-[image:var(--brand-grad)] text-white")}>
+                <span className={cn("grid h-7 w-7 shrink-0 place-items-center rounded-full text-[.78rem] font-bold", done ? "bg-success/15 text-success" : "bg-brand-grad text-white")}>
                   {done ? <Check className="h-4 w-4" aria-hidden="true" /> : i + 1}
                 </span>
                 <span className="min-w-0 flex-1">

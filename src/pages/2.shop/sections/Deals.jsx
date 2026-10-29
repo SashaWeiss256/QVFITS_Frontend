@@ -9,7 +9,7 @@ import { whatsappLink } from "@/utils/whatsapp";
 
 // Each tone as the card, its tag, its text and its link.
 const TONES = {
-  brand: { card: "border-line bg-sand-100 text-ink", tag: "bg-[image:var(--brand-grad)] text-white", text: "text-ink-2", link: "" },
+  brand: { card: "border-line bg-sand-100 text-ink", tag: "bg-brand-grad text-white", text: "text-ink-2", link: "" },
   dark: { card: "bg-ink text-cream", tag: "bg-cream/14", text: "text-cream/78", link: "text-cream" },
   teal: { card: "bg-teal-500 text-cream", tag: "bg-cream/16", text: "text-cream/85", link: "text-cream" },
 };

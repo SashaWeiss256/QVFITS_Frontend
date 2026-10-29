@@ -53,5 +53,5 @@ export default function SmoothScroll() {
     };
   }, []);
 
-  return <div ref={bar} className="pointer-events-none fixed inset-x-0 top-0 z-[90] h-[2px] origin-left scale-x-0 bg-[image:var(--brand-grad)]" aria-hidden="true" />;
+  return <div ref={bar} className="pointer-events-none fixed inset-x-0 top-0 z-[90] h-[2px] origin-left scale-x-0 bg-brand-grad" aria-hidden="true" />;
 }

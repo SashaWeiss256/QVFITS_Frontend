@@ -123,7 +123,7 @@ export default function AdminDiscounts() {
           <span className="block text-xs text-ink-3">{moneyBase(d.revenue)} taken, {moneyBase(d.given)} off</span>
           {d.usageLimit !== null && (
             <span className="mt-1 block h-1.5 overflow-hidden rounded-r-pill bg-cream-2" title={`${d.orders} of ${d.usageLimit}`}>
-              <span className="block h-full rounded-r-pill bg-[image:var(--brand-grad)]" style={{ width: `${Math.min(100, (d.orders / d.usageLimit) * 100)}%` }} />
+              <span className="block h-full rounded-r-pill bg-brand-grad" style={{ width: `${Math.min(100, (d.orders / d.usageLimit) * 100)}%` }} />
             </span>
           )}
         </span>

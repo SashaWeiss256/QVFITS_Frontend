@@ -171,7 +171,7 @@ function Slideshow({ slides }) {
               <button key={s.id} type="button" role="tab" aria-selected={i === at} aria-label={s.title} className="group flex min-h-11 flex-col justify-end gap-3 text-left" onClick={() => go(i)}>
                 <span className={cn("text-[0.85rem] tabular-nums transition-colors duration-500", i === at ? "text-ink" : "text-ink-4 group-hover:text-ink-2")}>{pad(i + 1)}</span>
                 <span className="relative block h-px w-full overflow-hidden bg-line-2">
-                  <span data-bar className="absolute inset-0 origin-left scale-x-0 bg-[image:var(--brand-grad)]" />
+                  <span data-bar className="absolute inset-0 origin-left scale-x-0 bg-brand-grad" />
                 </span>
               </button>
             ))}
@@ -193,7 +193,7 @@ function Slideshow({ slides }) {
         {slides.map((s, i) => (
           <button key={s.id} type="button" role="tab" aria-selected={i === at} aria-label={s.title} className="flex min-h-11 items-end" onClick={() => go(i)}>
             <span className="relative block h-px w-full overflow-hidden bg-line-2">
-              <span data-bar className="absolute inset-0 origin-left scale-x-0 bg-[image:var(--brand-grad)]" />
+              <span data-bar className="absolute inset-0 origin-left scale-x-0 bg-brand-grad" />
             </span>
           </button>
         ))}
