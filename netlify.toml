@@ -1,0 +1,15 @@
+# Netlify: a preview of the site on the sample data (dev/dummy), until the
+# API is live. Then change the command to "npm run build" and remove the
+# noindex header below.
+[build]
+  command = "npm run build:dummy"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# A preview on sample data: keep it out of search results.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

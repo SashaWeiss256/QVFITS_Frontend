@@ -13,7 +13,10 @@ import path from "node:path";
  * short fake delay, edits are kept in the browser's storage), plus the few
  * utils and data files that store expects.
  *
- * Nothing in src/ changes. `npm run dev` and every build use Joshua's live
+ * `npm run build:dummy` does the same for a production build, so the site can
+ * be previewed on a host (Netlify) before the API is live.
+ *
+ * Nothing in src/ changes. `npm run dev` and `npm run build` use Joshua's live
  * store exactly as before; delete dev/ to remove this mode entirely.
  */
 export default function dummyData() {
@@ -23,7 +26,6 @@ export default function dummyData() {
 
   return {
     name: "qvfits-dummy-data",
-    apply: "serve",
     enforce: "pre",
     configResolved(config) {
       if (process.env.VITE_DUMMY_DATA === "1") config.logger.info("\n  Dummy data mode: the site runs on src/data, no backend needed.\n");
