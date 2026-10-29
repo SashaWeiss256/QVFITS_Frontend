@@ -32,7 +32,8 @@ export default function CurrencyPicker({ tone = "light" }) {
         aria-label={`Change currency. Showing ${currency.code}`}
         onClick={() => setOpen((o) => !o)}
       >
-        <span>Prices in {currency.code}</span>
+        {/* The narrowest phones show just the code; the button's label still says what it is */}
+        <span className="whitespace-nowrap"><span className="max-[380px]:hidden">Prices in </span>{currency.code}</span>
         <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")} strokeWidth={1.5} aria-hidden="true" />
       </button>
 

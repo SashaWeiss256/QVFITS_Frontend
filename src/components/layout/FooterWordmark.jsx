@@ -80,17 +80,20 @@ export default function FooterWordmark() {
   );
 
   return (
-    <div ref={root} className="relative flex items-start gap-[0.12em] font-logo uppercase leading-[0.85]">
-      {WORDS.map((w) => (
-        <span key={w.text} className="flex flex-col">
-          <span className="flex text-[clamp(4.5rem,19vw,19rem)] tracking-[0.04em]">
-            {[...w.text].map((ch, i) => (
-              <span key={i} data-ch className="inline-block bg-brand-grad bg-clip-text text-transparent will-change-transform">{ch}</span>
-            ))}
+    // On a phone the name is sized to its column (25.5cqw of the wrapper), so it spans the width edge to edge.
+    <div className="@container">
+      <div ref={root} className="relative flex items-start gap-[0.12em] font-logo uppercase leading-[0.85]">
+        {WORDS.map((w) => (
+          <span key={w.text} className="flex flex-col">
+            <span className="flex text-[clamp(4.5rem,19vw,19rem)] tracking-[0.04em] max-sm:text-[25.5cqw]">
+              {[...w.text].map((ch, i) => (
+                <span key={i} data-ch className="inline-block bg-brand-grad bg-clip-text text-transparent will-change-transform">{ch}</span>
+              ))}
+            </span>
+            <span data-note className={NOTE}>{w.note}</span>
           </span>
-          <span data-note className={NOTE}>{w.note}</span>
-        </span>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 import { AirtelIcon, MastercardIcon, VisaIcon, WhatsAppIcon } from "@/components/ui/BrandIcons";
+import { cn } from "@/utils/cn";
 
 // One way to pay, shown as its logo on a small white tile. Airtel, Visa,
 // Mastercard and WhatsApp come from the bundled brand marks. MTN Mobile Money
@@ -28,10 +29,10 @@ function Mark({ id, name }) {
   return <span className="text-[0.78rem] font-medium text-ink-2">{name}</span>;
 }
 
-export default function PaymentMark({ method }) {
+export default function PaymentMark({ method, className }) {
   return (
     <span
-      className="inline-flex h-10 min-w-[64px] items-center justify-center rounded-[12px] border border-line bg-white px-3.5 shadow-[0_1px_2px_rgb(23_33_31/0.05),0_4px_10px_rgb(23_33_31/0.05)]"
+      className={cn("inline-flex h-10 min-w-[64px] items-center justify-center rounded-[12px] border border-line bg-white px-3.5 shadow-[0_1px_2px_rgb(23_33_31/0.05),0_4px_10px_rgb(23_33_31/0.05)]", className)}
       title={method.label}
       role="img"
       aria-label={method.label}
