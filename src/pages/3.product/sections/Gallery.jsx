@@ -26,6 +26,9 @@ const MORPH = {
  *
  * `colorId` is the colour picked (set by the buy panel).
  */
+// The gallery's id, so the buy panel can bring it into view on a phone when the colour changes.
+export const VIEWS_ID = "product-views";
+
 export default function Gallery({ product, colorId }) {
   // This colour's views, then the ones for every colour. Never empty: a
   // colour with no photos of its own shows all of them.
@@ -70,7 +73,7 @@ export default function Gallery({ product, colorId }) {
   if (!view) return <div className="aspect-[4/5] bg-beige" />;
 
   return (
-    <div className="grid gap-3 lg:sticky lg:top-28 lg:self-start lg:grid-cols-[84px_minmax(0,1fr)] lg:gap-5" role="region" aria-label={`${product.name}, views`} tabIndex={0} onKeyDown={onKey}>
+    <div id={VIEWS_ID} className="grid gap-3 lg:sticky lg:top-28 lg:self-start lg:grid-cols-[84px_minmax(0,1fr)] lg:gap-5" role="region" aria-label={`${product.name}, views`} tabIndex={0} onKeyDown={onKey}>
       {/* Large view */}
       <div
         className={cn("relative aspect-[4/5] touch-pan-y overflow-hidden bg-beige lg:order-2 lg:aspect-auto lg:h-[clamp(480px,calc(100svh-9rem),960px)]", !isVideo(view) && "lg:cursor-zoom-in")}

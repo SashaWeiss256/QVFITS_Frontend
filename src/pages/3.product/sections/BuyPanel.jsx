@@ -9,8 +9,10 @@ import { useWishlist } from "@/store/context/WishlistContext";
 import { notify } from "@/store/tanstackStore/notices";
 import { useFacets } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
+import { glideTo } from "@/utils/smoothScroll";
 import { anyInStock, forColor, inStock, productSizes } from "@/utils/stockLevel";
 import ColorPicker from "./ColorPicker";
+import { VIEWS_ID } from "./Gallery";
 import MobileAddBar from "./MobileAddBar";
 import Details from "./Details";
 import ShareProduct from "./ShareProduct";
@@ -33,6 +35,14 @@ export default function BuyPanel({ product: p, onColor }) {
     onColor?.(idOf(c));
     const next = forColor(p, idOf(c));
     if (!size || !inStock(next, size)) setSize(productSizes(next).find((s) => inStock(next, s)) ?? null);
+    showViews();
+  };
+  // Below a laptop the photos sit above the swatches, so a new colour would change out of sight:
+  // glide up to them when the large view has scrolled under the header. A laptop keeps them beside.
+  const showViews = () => {
+    const views = document.getElementById(VIEWS_ID);
+    if (!views || window.matchMedia("(min-width: 1024px)").matches) return;
+    if (views.getBoundingClientRect().top < 72) glideTo(views);
   };
   // The gallery follows the colour shown, from the first one onwards.
   const colorId = idOf(color);
