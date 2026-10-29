@@ -11,13 +11,21 @@ import { t } from "@/i18n/translate";
 
 gsap.registerPlugin(useGSAP, SplitText);
 
-// How long each slide holds, in seconds.
-const HOLD = 8;
+// How long each slide holds, in seconds (reduced by 2 seconds for faster rotation).
+const HOLD = 6;
 const prefersStill = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 const pad = (n) => String(n).padStart(2, "0");
 
 // The three panels of a triptych sit at different heights, like pieces on a wall.
+// DROP positions the panel window, while OFFSET counteracts the offset and restores full grid
+// height on the inner container so the photograph maintains identical scale, alignment, and
+// continuous lines across all panels without glitches on large screens.
 const DROP = ["", "pt-7 lg:pt-14", "pt-3 lg:pt-6"];
+const OFFSET = [
+  "top-0 h-full",
+  "-top-7 h-[calc(100%+1.75rem)] lg:-top-14 lg:h-[calc(100%+3.5rem)]",
+  "-top-3 h-[calc(100%+0.75rem)] lg:-top-6 lg:h-[calc(100%+1.5rem)]",
+];
 
 /**
  * The hero. The page's own cream fills the screen so the pictures stay clear
@@ -89,11 +97,13 @@ function Slideshow({ slides }) {
       entrance.current.tl?.kill();
       entrance.current.split?.revert();
       const split = SplitText.create(title, { type: "words,lines", mask: "lines" });
-      const tl = gsap.timeline({ onComplete: () => gsap.set(others, { autoAlpha: 0 }) });
+      const tl = gsap.timeline();
       tl.fromTo(panels, { clipPath: "inset(100% 0 0 0)" }, { clipPath: "inset(0% 0 0 0)", duration: 1.5, ease: "expo.inOut", stagger: first.current ? 0.16 : 0.12 }, 0)
-        .fromTo(zooms, { scale: 1.16 }, { scale: 1, duration: HOLD + 1.5, ease: "power1.out", stagger: 0.12 }, 0)
         .from(split.words, { yPercent: 110, duration: 1.1, ease: "expo.out", stagger: 0.06 }, 0.35)
-        .fromTo(flow, { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out", stagger: 0.1 }, 0.55);
+        .fromTo(flow, { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out", stagger: 0.1 }, 0.55)
+        .add(() => gsap.set(others, { autoAlpha: 0 }), first.current ? 1.8 : 1.7);
+
+      gsap.fromTo(zooms, { scale: 1.16 }, { scale: 1, duration: HOLD + 1.5, ease: "power1.out", stagger: 0.12 });
       first.current = false;
       entrance.current = { tl, split };
 
@@ -138,7 +148,7 @@ function Slideshow({ slides }) {
   return (
     <div
       ref={root}
-      className="wrap grid min-h-[calc(100svh-72px)] items-center gap-6 py-10 sm:gap-10 lg:min-h-[calc(100svh-84px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-14"
+      className="wrap grid min-h-[calc(100svh-72px)] items-center gap-6 py-6 sm:gap-10 sm:py-10 lg:min-h-[calc(100svh-84px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-14"
       aria-roledescription="carousel"
       aria-label="Quivogue campaigns"
       onKeyDown={onKeyDown}
@@ -148,17 +158,17 @@ function Slideshow({ slides }) {
         <div className="grid flex-1 [&>*]:col-start-1 [&>*]:row-start-1">
         {slides.map((s, i) => (
           <div key={s.id} data-copy={i} className={cn("flex flex-col justify-center", i !== at && "invisible")} aria-hidden={i !== at || undefined}>
-            <p data-flow className="kicker mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <p data-flow className="kicker mb-4 sm:mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
               <span>{s.kicker.replaceAll(" \u00b7 ", "\u00a0\u00b7 ")}</span>
               {s.sticker && <span className="border border-brand-500 px-2.5 py-1 text-[0.75rem] font-medium normal-case tracking-[0.02em] text-brand-500">{s.sticker}</span>}
             </p>
-            <h2 data-title className="font-logo text-[clamp(2.9rem,5.8vw,5.6rem)] font-normal uppercase leading-[0.98] tracking-[0.04em] text-ink">
+            <h2 data-title className="font-logo text-[clamp(2.3rem,6vw,5.6rem)] font-normal uppercase leading-[0.98] tracking-[0.04em] text-ink">
               {s.title}
             </h2>
-            <p data-flow className="mt-6 max-w-md text-[1.08rem] leading-relaxed text-ink-2">{s.text}</p>
-            <div data-flow className="mt-9 flex flex-wrap items-center gap-4">
-              <Link className="btn btn--primary btn--lg" to={s.href} tabIndex={i === at ? 0 : -1}>{s.cta}</Link>
-              <Link className="btn btn--ghost btn--lg" to="/about" tabIndex={i === at ? 0 : -1}>{t("Our story")}</Link>
+            <p data-flow className="mt-4 sm:mt-6 max-w-md text-[1rem] sm:text-[1.08rem] leading-relaxed text-ink-2">{s.text}</p>
+            <div data-flow className="mt-6 sm:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              <Link className="btn btn--primary btn--lg text-center" to={s.href} tabIndex={i === at ? 0 : -1}>{s.cta}</Link>
+              <Link className="btn btn--ghost btn--lg text-center" to="/about" tabIndex={i === at ? 0 : -1}>{t("Our story")}</Link>
             </div>
           </div>
         ))}
@@ -180,7 +190,7 @@ function Slideshow({ slides }) {
       </div>
 
       {/* Campaign: the pictures, stacked, the current one on top */}
-      <div className="relative order-1 h-[min(64svh,520px)] lg:order-none lg:h-[calc(100svh-84px-112px)] lg:max-h-[820px]">
+      <div className="relative order-1 h-[min(54svh,440px)] sm:h-[min(62svh,520px)] lg:order-none lg:h-[calc(100svh-84px-112px)] lg:max-h-[820px]">
         {slides.map((s, i) => (
           <div key={s.id} data-visual className={cn("absolute inset-0", i !== 0 && "invisible")} role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${count}`} aria-hidden={i !== at || undefined}>
             {mounted.has(i) && <Visual slide={s} eager={i === 0} />}
@@ -223,10 +233,10 @@ function Visual({ slide, eager }) {
       {[0, 1, 2].map((n) => (
         <div key={n} className={cn("h-full", DROP[n])}>
           <div data-panel className="relative h-full overflow-hidden bg-sand-100">
-            <div data-zoom className="absolute inset-0">
+            <div data-zoom className={cn("absolute inset-x-0", OFFSET[n])}>
               {/* The whole picture at panel height, slid so panel n's third is centred */}
               <img
-                className="absolute left-1/2 top-0 h-full w-auto max-w-none"
+                className="absolute left-1/2 top-0 h-full w-auto min-w-[300%] max-w-none object-cover"
                 style={{ transform: `translateX(-${((n + 0.5) / 3) * 100}%)` }}
                 src={src.src}
                 srcSet={src.srcSet}

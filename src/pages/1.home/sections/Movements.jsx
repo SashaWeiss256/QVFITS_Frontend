@@ -26,7 +26,7 @@ export default function Movements({ movements }) {
             <span className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" aria-hidden="true" />
 
             {/* Name */}
-            <span className="absolute inset-x-5 bottom-6 font-display text-[clamp(1.5rem,2.6vw,2.4rem)] leading-none text-cream lg:inset-x-8 lg:bottom-9">
+            <span className="absolute inset-x-4 bottom-5 font-display text-[clamp(1.25rem,2.6vw,2.4rem)] leading-tight text-cream sm:inset-x-5 sm:bottom-6 lg:inset-x-8 lg:bottom-9">
               <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-1 transition-[background-size] duration-700 ease-q group-hover:bg-[length:100%_1px]">{m.label}</span>
             </span>
           </Link>
