@@ -53,7 +53,7 @@ export default function Navbar() {
       <header
         className={cn(
           "sticky top-0 z-60 transition-[background-color,color,transform,box-shadow] duration-500 ease-q",
-          clear ? "bg-transparent text-ink" : "bg-cream/95 text-ink shadow-[0_1px_0_var(--color-line)] backdrop-blur-md",
+          clear ? "bg-transparent text-cream" : "bg-cream/95 text-ink shadow-[0_1px_0_var(--color-line)] backdrop-blur-md",
           hidden && !mega.open && "-translate-y-full",
         )}
       >
@@ -68,7 +68,7 @@ export default function Navbar() {
           </div>
 
           {/* Centre: the logo */}
-          <Logo />
+          <Logo tone={clear ? "dark" : "light"} />
 
           {/* End: search, account, saved, bag */}
           <NavActions onSearch={() => setSearchOpen(true)} />

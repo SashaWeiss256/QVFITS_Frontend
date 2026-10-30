@@ -11,40 +11,29 @@ import { t } from "@/i18n/translate";
 
 gsap.registerPlugin(useGSAP, SplitText);
 
-// How long each slide holds, in seconds (reduced by 2 seconds for faster rotation).
+// How long each slide holds, in seconds.
 const HOLD = 6;
 const prefersStill = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 const pad = (n) => String(n).padStart(2, "0");
-
-// The three panels of a triptych sit at different heights, like pieces on a wall.
-// DROP positions the panel window, while OFFSET counteracts the offset and restores full grid
-// height on the inner container so the photograph maintains identical scale, alignment, and
-// continuous lines across all panels without glitches on large screens.
-const DROP = ["", "pt-7 lg:pt-14", "pt-3 lg:pt-6"];
-const OFFSET = [
-  "top-0 h-full",
-  "-top-7 h-[calc(100%+1.75rem)] lg:-top-14 lg:h-[calc(100%+3.5rem)]",
-  "-top-3 h-[calc(100%+0.75rem)] lg:-top-6 lg:h-[calc(100%+1.5rem)]",
-];
+// The promo bar above the header is 36px tall; the hero fills the rest of the first screen.
+const FULL = "min-h-[calc(100svh-36px)]";
 
 /**
- * The hero. The page's own cream fills the screen so the pictures stay clear
- * and bright: nothing is laid over a photograph, and the brand gradient is
- * kept for the main button. Words sit on the left, the
- * campaign on the right (on a phone the pictures come first, then the words). Most campaign pictures are three portraits side by
- * side, so each portrait gets its own tall panel at its own height; a picture
- * that is not a triptych fills one tall panel instead. A new campaign rises
- * panel by panel while its words lift into place; the progress lines under
- * the words fill left to right and pick a slide. Keeps playing under the
- * mouse, holds only while the tab is hidden, steps with the arrow keys, and stays still for
- * reduced motion.
+ * The hero: the campaign photograph fills the whole first screen. A soft
+ * shade from the bottom and the left keeps the words readable, and the header
+ * turns white over it. Each campaign has a short line in script (calligraphy)
+ * with a flourish that draws itself, above the headline in Anton. A new
+ * campaign fades up while its picture settles from a slight zoom and its words
+ * lift into place; the lines along the bottom fill left to right and pick a
+ * slide. Keeps playing under the mouse, holds only while the tab is hidden,
+ * steps with the arrow keys, and stays still for reduced motion.
  */
 export default function Hero({ slides }) {
   return (
-    <section className="relative -mt-[72px] overflow-hidden bg-cream pt-[72px] text-ink lg:-mt-[84px] lg:pt-[84px]">
+    <section className={cn("relative -mt-[72px] overflow-hidden bg-ink text-cream lg:-mt-[84px]", FULL)}>
       {/* The slides' own titles rotate, so the page carries one h1 that does not. */}
       <h1 className="sr-only">Quivogue (QVFITS): premium seamless activewear, swim and lounge wear, Kampala</h1>
-      {slides?.length ? <Slideshow slides={slides} /> : <div className="min-h-[calc(100svh-72px)]" />}
+      {slides?.length ? <Slideshow slides={slides} /> : <div className={FULL} />}
     </section>
   );
 }
@@ -69,17 +58,19 @@ function Slideshow({ slides }) {
     [count],
   );
 
-  // The entrance: panels rise one after another, the words lift into place.
+  // The entrance: the picture fades up and settles, the script and its flourish are written, the words lift into place.
   useGSAP(
     () => {
       const visuals = gsap.utils.toArray("[data-visual]", root.current);
       const visual = visuals[at];
       const copy = root.current.querySelector(`[data-copy="${at}"]`);
       if (!visual || !copy) return undefined;
-      const panels = visual.querySelectorAll("[data-panel]");
-      const zooms = visual.querySelectorAll("[data-zoom]");
+      const panel = visual.querySelector("[data-panel]");
+      const zoom = visual.querySelector("[data-zoom]");
       const title = copy.querySelector("[data-title]");
       const flow = copy.querySelectorAll("[data-flow]");
+      const script = copy.querySelector("[data-script]");
+      const swash = copy.querySelector("[data-swash]");
       const others = visuals.filter((v) => v !== visual);
 
       gsap.set(visual, { autoAlpha: 1, zIndex: 2 });
@@ -87,8 +78,8 @@ function Slideshow({ slides }) {
 
       if (still) {
         gsap.set(others, { autoAlpha: 0 });
-        gsap.set(panels, { clipPath: "inset(0% 0 0 0)" });
         gsap.set(flow, { opacity: 1, y: 0 });
+        gsap.set(swash, { strokeDashoffset: 0 });
         return undefined;
       }
 
@@ -98,12 +89,15 @@ function Slideshow({ slides }) {
       entrance.current.split?.revert();
       const split = SplitText.create(title, { type: "words,lines", mask: "lines" });
       const tl = gsap.timeline();
-      tl.fromTo(panels, { clipPath: "inset(100% 0 0 0)" }, { clipPath: "inset(0% 0 0 0)", duration: 1.5, ease: "expo.inOut", stagger: first.current ? 0.16 : 0.12 }, 0)
-        .from(split.words, { yPercent: 110, duration: 1.1, ease: "expo.out", stagger: 0.06 }, 0.35)
-        .fromTo(flow, { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out", stagger: 0.1 }, 0.55)
-        .add(() => gsap.set(others, { autoAlpha: 0 }), first.current ? 1.8 : 1.7);
+      tl.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: first.current ? 1.1 : 1.4, ease: "power2.out" }, 0)
+        .from(split.words, { yPercent: 110, duration: 1.1, ease: "expo.out", stagger: 0.06 }, 0.45)
+        .fromTo(flow, { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out", stagger: 0.1 }, 0.3)
+        // The script is written in from left to right, then its flourish is drawn under it.
+        .fromTo(script, { clipPath: "inset(-10% 100% -30% 0)" }, { clipPath: "inset(-10% 0% -30% 0)", duration: 1.5, ease: "power2.inOut" }, 0.5)
+        .fromTo(swash, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut" }, 1.2)
+        .add(() => gsap.set(others, { autoAlpha: 0 }), first.current ? 1.4 : 1.5);
 
-      gsap.fromTo(zooms, { scale: 1.16 }, { scale: 1, duration: HOLD + 1.5, ease: "power1.out", stagger: 0.12 });
+      gsap.fromTo(zoom, { scale: 1.12 }, { scale: 1, duration: HOLD + 1.5, ease: "power1.out" });
       first.current = false;
       entrance.current = { tl, split };
 
@@ -146,112 +140,92 @@ function Slideshow({ slides }) {
   };
 
   return (
-    <div
-      ref={root}
-      className="wrap grid min-h-[calc(100svh-72px)] items-center gap-6 py-6 sm:gap-10 sm:py-10 lg:min-h-[calc(100svh-84px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-14"
-      aria-roledescription="carousel"
-      aria-label="Quivogue campaigns"
-      onKeyDown={onKeyDown}
-    >
-      {/* Words: every slide's words share one cell, so the page never jumps */}
-      <div className="order-3 flex flex-col lg:order-none lg:self-stretch lg:pr-4">
-        <div className="grid flex-1 [&>*]:col-start-1 [&>*]:row-start-1">
-        {slides.map((s, i) => (
-          <div key={s.id} data-copy={i} className={cn("flex flex-col justify-center", i !== at && "invisible")} aria-hidden={i !== at || undefined}>
-            <p data-flow className="kicker mb-4 sm:mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-              <span>{s.kicker.replaceAll(" \u00b7 ", "\u00a0\u00b7 ")}</span>
-              {s.sticker && <span className="border border-brand-500 px-2.5 py-1 text-[0.75rem] font-medium normal-case tracking-[0.02em] text-brand-500">{s.sticker}</span>}
-            </p>
-            <h2 data-title className="font-logo text-[clamp(2.3rem,6vw,5.6rem)] font-normal uppercase leading-[0.98] tracking-[0.04em] text-ink">
-              {s.title}
-            </h2>
-            <p data-flow className="mt-4 sm:mt-6 max-w-md text-[1rem] sm:text-[1.08rem] leading-relaxed text-ink-2">{s.text}</p>
-            <div data-flow className="mt-6 sm:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <Link className="btn btn--primary btn--lg text-center" to={s.href} tabIndex={i === at ? 0 : -1}>{s.cta}</Link>
-              <Link className="btn btn--ghost btn--lg text-center" to="/about" tabIndex={i === at ? 0 : -1}>{t("Our story")}</Link>
-            </div>
-          </div>
-        ))}
-        </div>
-
-        {/* Progress: one line per slide, filling left to right; each picks its slide */}
-        <div className="mt-10 hidden lg:block" role="tablist" aria-label="Choose a slide">
-          <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}>
-            {slides.map((s, i) => (
-              <button key={s.id} type="button" role="tab" aria-selected={i === at} aria-label={s.title} className="group flex min-h-11 flex-col justify-end gap-3 text-left" onClick={() => go(i)}>
-                <span className={cn("text-[0.85rem] tabular-nums transition-colors duration-500", i === at ? "text-ink" : "text-ink-4 group-hover:text-ink-2")}>{pad(i + 1)}</span>
-                <span className="relative block h-px w-full overflow-hidden bg-line-2">
-                  <span data-bar className="absolute inset-0 origin-left scale-x-0 bg-brand-grad" />
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Campaign: the pictures, stacked, the current one on top */}
-      <div className="relative order-1 h-[min(54svh,440px)] sm:h-[min(62svh,520px)] lg:order-none lg:h-[calc(100svh-84px-112px)] lg:max-h-[820px]">
+    <div ref={root} className={cn("relative", FULL)} aria-roledescription="carousel" aria-label="Quivogue campaigns" onKeyDown={onKeyDown}>
+      {/* Campaign: the pictures fill the screen, stacked, the current one on top */}
+      <div className="absolute inset-0">
         {slides.map((s, i) => (
           <div key={s.id} data-visual className={cn("absolute inset-0", i !== 0 && "invisible")} role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${count}`} aria-hidden={i !== at || undefined}>
             {mounted.has(i) && <Visual slide={s} eager={i === 0} />}
           </div>
         ))}
       </div>
+      {/* Shade: dark at the bottom and on the left so the words stay readable, clear at the top right */}
+      <div className="pointer-events-none absolute inset-0 z-[3] bg-[linear-gradient(to_top,rgb(10_14_13/0.82)_0%,rgb(10_14_13/0.38)_42%,rgb(10_14_13/0.12)_70%,rgb(10_14_13/0.34)_100%),linear-gradient(to_right,rgb(10_14_13/0.5)_0%,transparent_62%)]" aria-hidden="true" />
 
-      {/* Progress on phones: the same lines, under the pictures */}
-      <div className="order-2 grid gap-3 lg:hidden" style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }} role="tablist" aria-label="Choose a slide">
-        {slides.map((s, i) => (
-          <button key={s.id} type="button" role="tab" aria-selected={i === at} aria-label={s.title} className="flex min-h-11 items-end" onClick={() => go(i)}>
-            <span className="relative block h-px w-full overflow-hidden bg-line-2">
-              <span data-bar className="absolute inset-0 origin-left scale-x-0 bg-brand-grad" />
-            </span>
-          </button>
-        ))}
+      {/* Words: every slide's words share one cell, so the page never jumps */}
+      <div className={cn("wrap relative z-[4] flex flex-col justify-end pb-24 pt-32 sm:pb-28 lg:pb-32", FULL)}>
+        <div className="grid [&>*]:col-start-1 [&>*]:row-start-1">
+          {slides.map((s, i) => (
+            <div key={s.id} data-copy={i} className={cn("flex max-w-2xl flex-col", i !== at && "invisible")} aria-hidden={i !== at || undefined}>
+              <p data-flow className="kicker mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 !text-cream/80 sm:mb-4">
+                <span>{s.kicker.replaceAll(" · ", " · ")}</span>
+                {s.sticker && <span className="border border-cream/70 px-2.5 py-1 text-[0.75rem] font-medium normal-case tracking-[0.02em] text-cream">{s.sticker}</span>}
+              </p>
+              {s.script && (
+                <div className="relative mb-1 self-start sm:mb-2">
+                  {/* Calligraphy: written in, then underlined with a flourish */}
+                  <p data-script className="m-0 -rotate-2 pr-6 font-script text-[clamp(3rem,9vw,6.5rem)] leading-[1.1] text-[#f6c9dd]">{s.script}</p>
+                  <svg className="-mt-1 block h-5 w-full text-[#f6c9dd] sm:h-6" viewBox="0 0 300 24" preserveAspectRatio="none" fill="none" aria-hidden="true">
+                    <path data-swash pathLength="1" strokeDasharray="1" strokeDashoffset="1" d="M3 17 C 38 4, 86 22, 140 11 S 232 3, 297 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+                  </svg>
+                </div>
+              )}
+              <h2 data-title className="font-logo text-[clamp(2.3rem,6.4vw,5.6rem)] font-normal uppercase leading-[0.98] tracking-[0.04em] text-cream">
+                {s.title}
+              </h2>
+              <p data-flow className="mt-4 max-w-md text-[1rem] leading-relaxed text-cream/85 sm:mt-6 sm:text-[1.08rem]">{s.text}</p>
+              <div data-flow className="mt-6 flex flex-col items-stretch gap-3 sm:mt-9 sm:flex-row sm:items-center sm:gap-4">
+                <Link className="btn btn--primary btn--lg text-center" to={s.href} tabIndex={i === at ? 0 : -1}>{s.cta}</Link>
+                <Link className="btn btn--lg border-cream/70 text-center text-cream hover:bg-cream hover:text-ink" to="/about" tabIndex={i === at ? 0 : -1}>{t("Our story")}</Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Progress: one line per slide along the bottom, filling left to right; each picks its slide */}
+      <div className="absolute inset-x-0 bottom-0 z-[5]">
+        <div className="wrap pb-5 lg:pb-8" role="tablist" aria-label="Choose a slide">
+          <div className="grid gap-3 sm:gap-4 lg:max-w-xl" style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}>
+            {slides.map((s, i) => (
+              <button key={s.id} type="button" role="tab" aria-selected={i === at} aria-label={s.title} className="group flex min-h-11 flex-col justify-end gap-2.5 text-left" onClick={() => go(i)}>
+                <span className={cn("hidden text-[0.85rem] tabular-nums transition-colors duration-500 lg:block", i === at ? "text-cream" : "text-cream/50 group-hover:text-cream/80")}>{pad(i + 1)}</span>
+                <span className="relative block h-px w-full overflow-hidden bg-cream/30">
+                  <span data-bar className="absolute inset-0 origin-left scale-x-0 bg-cream" />
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-/** One campaign: a triptych as three panels, anything else as one tall panel. */
+/**
+ * One campaign picture, filling the screen. The shoot is three portraits side
+ * by side; on a wide screen all three show, and on a phone the frame settles
+ * on the middle one.
+ */
 function Visual({ slide, eager }) {
   const src = slide.photo ? photoSources(slide.photo, { wide: true }) : null;
   if (!src) return <div className="h-full w-full bg-sand-100" />;
-  const label = slide.title;
-
-  if (!slide.triptych) {
-    return (
-      <div data-panel className="relative h-full overflow-hidden bg-sand-100">
-        <div data-zoom className="absolute inset-0">
-          <img className="h-full w-full object-cover object-[50%_25%]" src={src.src} srcSet={src.srcSet} sizes="(min-width: 1024px) 700px, 100vw" alt={label} width={src.width} height={src.height} loading={eager ? "eager" : "lazy"} decoding="async" fetchPriority={eager ? "high" : undefined} />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="grid h-full grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
-      {[0, 1, 2].map((n) => (
-        <div key={n} className={cn("h-full", DROP[n])}>
-          <div data-panel className="relative h-full overflow-hidden bg-sand-100">
-            <div data-zoom className={cn("absolute inset-x-0", OFFSET[n])}>
-              {/* The whole picture at panel height, slid so panel n's third is centred */}
-              <img
-                className="absolute left-1/2 top-0 h-full w-auto min-w-[300%] max-w-none object-cover"
-                style={{ transform: `translateX(-${((n + 0.5) / 3) * 100}%)` }}
-                src={src.src}
-                srcSet={src.srcSet}
-                sizes="(min-width: 1024px) 1100px, 180vw"
-                alt={n === 1 ? label : ""}
-                width={src.width}
-                height={src.height}
-                loading={eager ? "eager" : "lazy"}
-                decoding="async"
-                fetchPriority={eager && n === 1 ? "high" : undefined}
-              />
-            </div>
-          </div>
-        </div>
-      ))}
+    <div data-panel className="absolute inset-0 overflow-hidden bg-ink">
+      <div data-zoom className="absolute inset-0">
+        <img
+          className="h-full w-full object-cover object-[50%_28%]"
+          src={src.src}
+          srcSet={src.srcSet}
+          sizes="100vw"
+          alt={slide.title}
+          width={src.width}
+          height={src.height}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={eager ? "high" : undefined}
+        />
+      </div>
     </div>
   );
 }

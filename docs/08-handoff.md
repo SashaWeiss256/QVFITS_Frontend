@@ -50,7 +50,7 @@ Sending itself is yours: the frontend only shows status. A campaign needs `draft
 - Smooth scrolling uses Lenis. Any scrolling box inside a drawer or overlay needs `data-lenis-prevent`, or the wheel is blocked.
 - Never call `t()` at module level and never name a local variable `t`.
 - On phones the buy bar sets `--addbar`; the Vee launcher and the offer card sit above it.
-- The hero has no pause control yet.
+- The hero fills the first screen with the campaign photo. Each slide in `src/data/home.json` has an optional `script` line, set in Pinyon Script (loaded from Google Fonts in `index.html`) with a drawn flourish. The header turns white over the hero until the page scrolls. The hero has no pause control yet.
 
 ## Sale
 

@@ -69,6 +69,7 @@
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   /* Anton: the logo's QVFITS name and campaign headlines, uppercase, +0.12em */
   --font-logo: "Anton", "Impact", sans-serif;
+  --font-script: "Pinyon Script", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
 
   /* Shape: near-square, the luxury register */
   --radius-r-sm: 2px;

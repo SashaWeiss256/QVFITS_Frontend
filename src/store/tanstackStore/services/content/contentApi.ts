@@ -28,6 +28,8 @@ export interface HeroSlide extends Linked {
   title: string;
   text: string;
   cta: string;
+  /** A few words written in script above the headline, as in a signature, e.g. "Quivogue". */
+  script?: string;
   /** The round tag on the picture, e.g. "Sale". */
   sticker?: string;
   image?: Picture;

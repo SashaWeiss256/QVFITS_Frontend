@@ -8,7 +8,8 @@
       "cta": "Shop now",
       "live": true,
       "target": {},
-      "triptych": true
+      "triptych": true,
+      "script": "Quivogue"
     },
     {
       "id": "hero-3",
@@ -22,7 +23,8 @@
           "lounge"
         ]
       },
-      "triptych": true
+      "triptych": true,
+      "script": "Fresh shades"
     },
     {
       "id": "hero-4",
@@ -37,12 +39,13 @@
           "lounge"
         ]
       },
-      "triptych": true
+      "triptych": true,
+      "script": "Day to night"
     },
     {
       "id": "hero-2",
       "sticker": "Sale",
-      "kicker": "Now's your moment",
+      "kicker": "The sale",
       "title": "Up to 50% off.",
       "text": "Selected QV favourites, now for less.",
       "cta": "Shop now",
@@ -50,7 +53,8 @@
       "target": {
         "label": "sale"
       },
-      "triptych": true
+      "triptych": true,
+      "script": "Now's your moment"
     }
   ],
   "rails": {
