@@ -46,7 +46,7 @@ export default function AccountButton() {
       </button>
 
       {/* Menu: who is signed in, the account pages, sign out */}
-      <div className="absolute right-0 top-[calc(100%+12px)] w-72 border border-line bg-cream p-2 text-ink shadow-sh-3" role="menu" hidden={!open}>
+      <div className="absolute right-0 top-[calc(100%+12px)] w-72 border border-line bg-sand-100 p-2 text-ink shadow-sh-3" role="menu" hidden={!open}>
         {/* Who is signed in */}
         <div className="flex items-center gap-3 border-b border-line px-3 pb-4 pt-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-600 text-[0.72rem] font-medium tracking-wider text-cream" aria-hidden="true">{initials}</span>

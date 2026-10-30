@@ -20,7 +20,7 @@ export default function MegaMenu({ id, open, onEnter, onLeave, onNavigate }) {
     <div
       id={id}
       className={cn(
-        "absolute inset-x-0 top-full hidden origin-top border-t border-line bg-cream text-ink shadow-[0_30px_60px_-30px_rgb(23_33_31/0.25)] transition-[opacity,transform] duration-400 ease-q lg:block",
+        "absolute inset-x-0 top-full hidden origin-top border-t border-line bg-sand-100 text-ink shadow-[0_30px_60px_-30px_rgb(23_33_31/0.25)] transition-[opacity,transform] duration-400 ease-q lg:block",
         open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0",
       )}
       onMouseEnter={onEnter}

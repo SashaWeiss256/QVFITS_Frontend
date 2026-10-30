@@ -8,8 +8,9 @@
       "cta": "Shop now",
       "live": true,
       "target": {},
-      "triptych": true,
-      "script": "Quivogue"
+      "triptych": false,
+      "script": "Quivogue",
+      "focus": 80
     },
     {
       "id": "hero-3",
@@ -23,8 +24,9 @@
           "lounge"
         ]
       },
-      "triptych": true,
-      "script": "Fresh shades"
+      "triptych": false,
+      "script": "Fresh shades",
+      "focus": 76
     },
     {
       "id": "hero-4",
@@ -39,8 +41,9 @@
           "lounge"
         ]
       },
-      "triptych": true,
-      "script": "Day to night"
+      "triptych": false,
+      "script": "Day to night",
+      "focus": 74
     },
     {
       "id": "hero-2",
@@ -49,7 +52,7 @@
       "title": "Up to 50% off.",
       "text": "Selected QV favourites, now for less.",
       "cta": "Shop now",
-      "live": true,
+      "live": false,
       "target": {
         "label": "sale"
       },

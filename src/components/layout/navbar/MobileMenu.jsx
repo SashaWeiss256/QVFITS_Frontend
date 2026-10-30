@@ -50,7 +50,7 @@ export default function MobileMenu({ open, onClose }) {
       <div className={cn("sheet-scrim", open && "is-on")} onClick={onClose} />
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-90 flex w-[min(92vw,420px)] flex-col bg-cream text-ink transition-transform duration-500 ease-q",
+          "fixed inset-y-0 left-0 z-90 flex w-[min(92vw,420px)] flex-col bg-sand-100 text-ink transition-transform duration-500 ease-q",
           open ? "translate-x-0" : "-translate-x-full",
         )}
         role="dialog"

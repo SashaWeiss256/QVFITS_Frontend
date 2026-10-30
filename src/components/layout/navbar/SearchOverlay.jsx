@@ -54,7 +54,7 @@ export default function SearchOverlay({ open, onClose }) {
       <div
         data-lenis-prevent
         className={cn(
-          "fixed inset-x-0 top-0 z-90 max-h-[88vh] overflow-y-auto bg-cream text-ink transition-[transform,visibility] duration-500 ease-q",
+          "fixed inset-x-0 top-0 z-90 max-h-[88vh] overflow-y-auto bg-sand-100 text-ink transition-[transform,visibility] duration-500 ease-q",
           // Hidden as well as moved up when closed, so no edge of it can show.
           open ? "visible translate-y-0" : "invisible -translate-y-[110%]",
         )}

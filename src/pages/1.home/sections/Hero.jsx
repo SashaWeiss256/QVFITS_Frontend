@@ -190,7 +190,7 @@ function Slideshow({ slides }) {
 }
 
 /**
- * One campaign picture with a single model. The shoot is three portraits side
+ * One campaign picture with a single model. A landscape shoot fills the screen as it is; the older triptychs are cut as below. The shoot is three portraits side
  * by side; only the middle one is shown, full height, its edges fading into the backdrop, standing right of centre
  * (centred on a phone). The same photograph, blurred and darkened, fills the
  * rest of the screen so the frame stays full without a second person in it.
@@ -198,6 +198,30 @@ function Slideshow({ slides }) {
 function Visual({ slide, eager }) {
   const src = slide.photo ? photoSources(slide.photo, { wide: true }) : null;
   if (!src) return <div className="h-full w-full bg-sand-100" />;
+  // A single landscape shoot (not a triptych): the picture fills the screen. The model stands on the right, so on a
+  // tall or narrow screen the crop is anchored to her (`focus`, % from the left) rather than the middle.
+  if (!slide.triptych) {
+    const at = slide.focus ?? 75;
+    return (
+      <div data-panel className="absolute inset-0 overflow-hidden bg-ink">
+        <div data-zoom className="absolute inset-0">
+          <img
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: `${Math.min(100, Math.max(0, (at - 6) / 0.8))}% 50%` }}
+            src={src.src}
+            srcSet={src.srcSet}
+            sizes="100vw"
+            alt={slide.title}
+            width={src.width}
+            height={src.height}
+            loading={eager ? "eager" : "lazy"}
+            decoding="async"
+            fetchPriority={eager ? "high" : undefined}
+          />
+        </div>
+      </div>
+    );
+  }
   const img = { src: src.src, srcSet: src.srcSet, alt: "", width: src.width, height: src.height, loading: eager ? "eager" : "lazy", decoding: "async" };
   return (
     <div data-panel className="absolute inset-0 overflow-hidden bg-ink">

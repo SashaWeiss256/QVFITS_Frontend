@@ -145,7 +145,7 @@
     scroll-behavior: smooth;
   }
   body {
-    background: var(--color-cream);
+    background: var(--color-sand-100);
     color: var(--color-ink);
     font-family: var(--font-body);
     font-size: 16px;

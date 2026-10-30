@@ -35,6 +35,8 @@ export interface HeroSlide extends Linked {
   image?: Picture;
   /** The picture is three portraits side by side (a triptych); the hero shows each as its own panel. */
   triptych?: boolean;
+  /** For a single landscape picture: where the model stands, as a percentage from the left, so a phone crop keeps her in view. */
+  focus?: number;
   live: boolean;
 }
 

@@ -11,6 +11,8 @@ export const TABLE = [
   ["Shop", "Duka", "Boutique", "المتجر", "商店"],
   ["New", "Mpya", "Nouveautés", "جديد", "新品"],
   ["Best sellers", "Zinazouzwa zaidi", "Meilleures ventes", "الأكثر مبيعاً", "畅销款"],
+  ["Sales", "Punguzo", "Soldes", "التخفيضات", "特卖"],
+  ["Reduced", "Imepunguzwa", "Prix réduits", "أسعار مخفضة", "优惠"],
   ["Sets", "Seti", "Ensembles", "أطقم", "套装"],
   ["Bras", "Sidiria", "Soutiens-gorge", "حمالات الصدر", "文胸"],
   ["Bottoms", "Suruali na chini", "Bas", "الأسفل", "下装"],

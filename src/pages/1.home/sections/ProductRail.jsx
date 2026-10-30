@@ -4,10 +4,14 @@ import { Link } from "react-router-dom";
 import Reveal from "@/components/motion/Reveal";
 import { SkeletonGrid } from "@/components/ui/Skeleton";
 import ProductCarousel from "@/components/storefront/ProductCarousel";
-import { useProducts, useRails } from "@/store/tanstackStore/queries/site";
+import { saleOf } from "@/utils/stockLevel";
+import { useOffers, useProducts, useRails } from "@/store/tanstackStore/queries/site";
 
 // New releases carry one tag and no discount; best sellers carry one tag.
 const TAGS = { newReleases: "New", bestSellers: "Best seller" };
+
+// The Sales row is not in the rails data: it is every piece with a live discount.
+const SALE_RAIL = { kicker: "Reduced", title: "Sales", href: "/shop?sale=1" };
 
 /**
  * A heading on the left, then the pieces in a sideways row with "View all"
@@ -15,9 +19,11 @@ const TAGS = { newReleases: "New", bestSellers: "Best seller" };
  * arrivals, or the pinned and best selling pieces (getRails). The words come
  * from the Home page editor.
  */
-export default function ProductRail({ rail, kind }) {
+export default function ProductRail({ rail: given, kind }) {
   const { data: products = [], isLoading: loadingProducts } = useProducts();
   const { data: rails, isLoading: loadingRails } = useRails();
+  const { data: offers } = useOffers();
+  const rail = kind === "sale" ? SALE_RAIL : given;
   if (!rail) return null;
 
   const heading = (
@@ -29,6 +35,7 @@ export default function ProductRail({ rail, kind }) {
 
   // While the pieces load, the section keeps its heading and a row of card-shaped placeholders, so the page below does not jump.
   if (loadingProducts || loadingRails) {
+    if (kind === "sale") return null; // might be empty: no placeholder to jump away
     return (
       <section className="section">
         <div className="wrap">
@@ -40,7 +47,9 @@ export default function ProductRail({ rail, kind }) {
   }
   if (!rails) return null;
 
-  const row = rails[kind].map((id) => products.find((p) => p.id === id)).filter(Boolean);
+  const row = kind === "sale"
+    ? products.filter((p) => saleOf(p, offers?.sale))
+    : rails[kind].map((id) => products.find((p) => p.id === id)).filter(Boolean);
   if (!row.length) return null;
 
   return (

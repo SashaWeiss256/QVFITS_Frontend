@@ -31,12 +31,12 @@ export default function Reviews({ title, lean = false }) {
   // Lean: the first three words side by side as quiet cards, nothing moving. Used on the home page.
   if (lean) {
     return (
-      <section className="section--tight bg-beige/60" aria-label={title ?? copy?.reviews.title}>
+      <section className="section--tight bg-sand-200/60" aria-label={title ?? copy?.reviews.title}>
         <div className="wrap">
           <h2 className="mb-8 text-[clamp(1.35rem,2vw,1.8rem)] sm:text-center">{title ?? copy?.reviews.title}</h2>
           <ul className="mx-auto grid max-w-5xl gap-4 sm:grid-cols-3 lg:gap-6">
             {list.slice(0, 3).map((q) => (
-              <li key={q.id} className="flex flex-col justify-between gap-6 border border-line bg-cream/70 p-6 lg:p-7">
+              <li key={q.id} className="flex flex-col justify-between gap-6 border border-line bg-cream p-6 lg:p-7">
                 <blockquote className="font-serif text-[1.05rem] italic leading-relaxed text-ink">
                   <span className="mb-1 block text-[1.6rem] leading-none text-ink-4" aria-hidden="true">&ldquo;</span>
                   {q.text}
