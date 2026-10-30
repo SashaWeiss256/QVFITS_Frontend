@@ -1,5 +1,6 @@
 /* Fit Assistant (from Quivogue js/assistant.js widget) */
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { ArrowRight, X } from "lucide-react";
 
 import { assistantGreeting, forgetAssistant, useAskAssistant, useSettings } from "@/store/tanstackStore/queries/site";
@@ -8,6 +9,31 @@ import AssistantMessage from "./AssistantMessage";
 import { AssistantMark } from "./AssistantMark";
 import { onAskVee } from "./askVee";
 import { t } from "@/i18n/translate";
+
+// True while the home page's full-screen hero fills the top of the window, so the launcher stays out of the picture.
+function useOnHero() {
+  const { pathname } = useLocation();
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    let io;
+    let tries = 0;
+    // The page may still be loading, so look for the hero a few times.
+    const find = setInterval(() => {
+      const el = document.querySelector("[data-hero]");
+      if (el && "IntersectionObserver" in window) {
+        clearInterval(find);
+        io = new IntersectionObserver(([en]) => setOn(en.isIntersecting), { rootMargin: "0px 0px -45% 0px" });
+        io.observe(el);
+      } else if (++tries > 20) clearInterval(find);
+    }, 150);
+    return () => {
+      clearInterval(find);
+      io?.disconnect();
+      setOn(false);
+    };
+  }, [pathname]);
+  return on;
+}
 
 const bot = (text) => ({ from: "bot", blocks: [{ type: "text", paras: [text] }] });
 
@@ -18,6 +44,7 @@ const bot = (text) => ({ from: "bot", blocks: [{ type: "text", paras: [text] }] 
  */
 export default function FitAssistant() {
   const [open, setOpen] = useState(false);
+  const onHero = useOnHero();
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
   const ask = useAskAssistant();
@@ -87,7 +114,7 @@ export default function FitAssistant() {
         className={cn(
           "fixed bottom-[calc(1rem+env(safe-area-inset-bottom)+var(--addbar,0px))] right-4 z-[70] inline-flex h-12 w-12 items-center justify-center gap-2.5 bg-ink max-sm:rounded-full text-[0.88rem] text-cream shadow-sh-3 transition-all duration-500 ease-q hover:bg-brand-600",
           "sm:right-5 sm:w-auto sm:pl-4 sm:pr-5 lg:bottom-5",
-          open && "pointer-events-none translate-y-4 opacity-0",
+          (open || onHero) && "pointer-events-none translate-y-4 opacity-0",
         )}
         aria-label="Open the Style Assistant"
         aria-expanded={open}

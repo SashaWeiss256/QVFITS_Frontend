@@ -57,7 +57,7 @@ export const ADMIN_NAV = [
     label: "Marketing",
     items: [
       { to: "/admin/discounts", label: "Discount codes", icon: BadgePercent, perm: "discounts" },
-      { to: "/admin/offers", label: "Offers and banners", icon: Tags, perm: "offers" },
+      { to: "/admin/offers", label: "Offers", icon: Tags, perm: "offers" },
       { to: "/admin/newsletter", label: "Newsletter", icon: Mail, perm: "newsletter" },
       { to: "/admin/vee", label: "Vee", icon: Sparkles, perm: "vee" },
     ],

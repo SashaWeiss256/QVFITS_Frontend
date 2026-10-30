@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { useLocale } from "@/i18n/LocaleProvider";
 import { closeCookieSettings, saveConsent, useConsent } from "@/store/consent/consent";
 import { t } from "@/i18n/translate";
 
@@ -22,8 +21,7 @@ const PURPOSES = [
 export default function CookieConsent() {
   const { consent, settingsOpen } = useConsent();
   // The banner shows on a first visit, and again when the footer's Cookie settings opens it.
-  const { welcomed } = useLocale();
-  const show = (!consent && welcomed) || settingsOpen;
+  const show = !consent || settingsOpen;
   // Remounted on each opening (the key below), so the choices start from what was saved.
   return show ? <Banner key={settingsOpen ? "open" : "first"} consent={consent} startChoosing={settingsOpen} /> : null;
 }

@@ -190,7 +190,7 @@ function Editor({ existing, products }) {
                 <Field label={isKit ? "Kit price (UGX)" : "Price (UGX)"} inputMode="numeric" value={p.price || ""} placeholder={isKit && separate ? String(separate) : undefined} onChange={(e) => patch({ price: Number(e.target.value.replace(/\D/g, "")) || 0 })} error={errors.price} hint={isKit ? "What the whole kit costs. Lower than the pieces bought one by one to give a saving." : undefined} />
                 {!isKit && <Field label="Sale (% off)" inputMode="numeric" value={p.salePercent ?? ""} onChange={(e) => patch({ salePercent: Math.min(90, Number(e.target.value.replace(/\D/g, ""))) || null })} />}
               </div>
-              {!isKit && <p className="m-0 -mt-1 text-xs text-ink-3">{"Shows only while the sale is on (Offers and banners)."}</p>}
+              {!isKit && <p className="m-0 -mt-1 text-xs text-ink-3">{"Shows only while the sale is on (Offers)."}</p>}
             </div>
           </Panel>
 
