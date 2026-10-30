@@ -171,7 +171,7 @@ function Slideshow({ slides }) {
       {/* Progress: one small ring per slide, bottom right; the current ring fills over the time until the next change */}
       {count > 1 && (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5]">
-          <div className="wrap flex justify-end pb-24 sm:pb-28 lg:pb-32">
+          <div className="wrap flex justify-end pb-5 lg:pb-32">
             <div className="pointer-events-auto flex items-center gap-1 rounded-full bg-ink/55 px-2 backdrop-blur-sm" role="tablist" aria-label="Choose a slide">
               {slides.map((s, i) => (
                 <button key={s.id} type="button" role="tab" aria-selected={i === at} aria-label={s.title} className="grid h-12 w-11 place-items-center" onClick={() => go(i)}>
@@ -210,7 +210,8 @@ function Visual({ slide, eager }) {
             style={{ objectPosition: `${Math.min(100, Math.max(0, (at - 6) / 0.8))}% 50%` }}
             src={src.src}
             srcSet={src.srcSet}
-            sizes="100vw"
+            // On a tall screen the picture is cropped sideways, so it is drawn about 1.8 times as wide as the screen is tall.
+            sizes="(orientation: portrait) 180vh, 100vw"
             alt={slide.title}
             width={src.width}
             height={src.height}
