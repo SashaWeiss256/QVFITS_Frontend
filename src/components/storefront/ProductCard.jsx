@@ -19,7 +19,7 @@ import { t } from "@/i18n/translate";
  * there. One label at most (sold out, then sale, then the product's own),
  * small in the photo's corner. The heart saves the piece.
  */
-export default function ProductCard({ product: p }) {
+export default function ProductCard({ product: p, tag, plain = false }) {
   const { add } = useCart();
   const wishlist = useWishlist();
   const { data: offers } = useOffers();
@@ -30,12 +30,13 @@ export default function ProductCard({ product: p }) {
   // Nearly gone across every size: worth saying, under the Settings threshold.
   const left = Object.values(p.stock).reduce((n, x) => n + x, 0);
   const low = !sold && left <= (settings?.lowStockAt ?? 2);
-  const sale = saleOf(p, offers?.sale);
+  const sale = plain ? null : saleOf(p, offers?.sale);
   const wished = wishlist.has(p.id);
   // Colour names map to swatches in the facets; grey until they load.
   const swatch = (c) => facets?.colors.find((x) => x.name === c)?.swatch ?? "var(--color-line-2)";
   const href = `/product/${p.slug}`;
-  const label = sold ? "Sold out" : sale ? `${sale.pct}% off` : p.badge;
+  // A rail names its own tag (New, Best seller) and shows only that; elsewhere: sold out, then sale, then the piece's own.
+  const label = sold ? "Sold out" : tag ?? (sale ? `${sale.pct}% off` : p.badge);
 
   // Adds the first colour and size in stock, then says which: the shopper
   // can change both in the bag.
@@ -101,7 +102,7 @@ export default function ProductCard({ product: p }) {
       <div className="pt-4">
         <Link className="block py-1.5 font-display text-[1.1rem] leading-snug text-ink transition-colors hover:text-brand-600" to={href}>{p.name}</Link>
         <p className="mt-1 text-[0.88rem] text-ink-2 [&_s]:mr-1.5 [&_s]:text-ink-4 [&_b]:font-medium [&_b]:text-brand-600">
-          <PriceTag product={p} />
+          <PriceTag product={p} plain={plain} />
         </p>
         <div className="mt-2.5 flex items-center gap-1.5">
           {p.colors.map((c) => <i key={c} className="block h-2.5 w-2.5 rounded-full ring-1 ring-ink/15" style={{ background: swatch(c) }} title={c} />)}

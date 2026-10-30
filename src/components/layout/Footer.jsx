@@ -1,12 +1,11 @@
 /* Footer */
 import { useState } from "react";
-import PaymentMark from "@/components/ui/PaymentMark";
 import { Link } from "react-router-dom";
-import { ChevronDown, Lock } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { cn } from "@/utils/cn";
-import { useFacets, usePageCopy, usePaymentMethods, useProducts, useSettings } from "@/store/tanstackStore/queries/site";
+import { usePageCopy, useSettings } from "@/store/tanstackStore/queries/site";
 import { fill, shopTokens } from "@/utils/fill";
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/ui/BrandIcons";
 import { openCookieSettings } from "@/store/consent/consent";
@@ -14,153 +13,68 @@ import { whatsappLink } from "@/utils/whatsapp";
 import CurrencyPicker from "@/components/storefront/CurrencyPicker";
 import LanguagePicker from "@/components/storefront/LanguagePicker";
 import NewsletterForm from "@/components/storefront/NewsletterForm";
-import Photo from "@/components/storefront/Photo";
-import FooterWordmark from "./FooterWordmark";
 import Logo from "./navbar/Logo";
 import { t } from "@/i18n/translate";
-
-// What joining the list brings; the same three things the newsletter copy promises.
-const PERKS = ["New drops, first", "Restocks, as they land", "Members-only offers"];
 
 const LINK = "inline-flex min-h-11 items-center text-[0.95rem] text-ink-3 transition-colors duration-300 hover:text-brand-600";
 const TITLE = "mb-6 font-display text-[1.15rem] text-ink";
 
 /**
- * The close of every page, on warm sand, with the brand gradient kept for the name. From the top:
- * the house's promises in one quiet row; the newsletter; four columns
- * (client services, the house, shop, policies); then the name itself, set
- * across the full width and annotated with what it means, Qui for quality
- * and Vogue for fashionable, as the client tells it. A thin bar ends it.
- * Every fact (fees, days, phone, address) comes from Settings.
+ * The close of every page, on warm sand and kept quiet: four short columns
+ * (the client's lobby, about, styles and products, and a small newsletter
+ * sign-up) and a thin bar with the logo, copyright, social links and the
+ * language and currency. Delivery, exchange and payment terms live in the
+ * policies, not here. Every fact (phone, address) comes from Settings.
  */
 export default function Footer() {
   const { data: s } = useSettings();
-  const { data: facets } = useFacets();
   const { data: copy } = usePageCopy("footer");
-  const { data: methods = [] } = usePaymentMethods();
   const { money } = useCurrency();
   const tokens = shopTokens(s, money);
-
-  // The promises, each only when Settings has the fact behind it.
-  const promises = s
-    ? [
-        s.freeShippingOver && { title: "Complimentary delivery", text: `On orders over ${money(s.freeShippingOver)}`, to: "/delivery" },
-        s.exchangeDays && { title: `${s.exchangeDays}-day exchanges`, text: "On unworn pieces, tags on", to: "/returns" },
-        s.whatsapp && { title: "Personal styling", text: "On WhatsApp, every day", href: whatsappLink(s.whatsapp) },
-        s.address && { title: "The showroom", text: `Kisementi, from ${s.opensAt}`, href: s.mapsUrl },
-      ].filter(Boolean)
-    : [];
 
   return (
     <footer className="overflow-hidden border-t border-line bg-sand-100 text-ink">
       <div className="wrap">
-        {/* Promises: one quiet row */}
-        {promises.length > 0 && (
-          <ul className="grid grid-cols-2 border-b border-line-2 lg:grid-cols-4" aria-label={t("Our promises")}>
-            {promises.map((p, i) => {
-              const inner = (
-                <>
-                  <span className="block font-display text-[1rem] text-ink max-sm:leading-snug transition-colors group-hover:text-brand-600 sm:text-[1.1rem]">{p.title}</span>
-                  <span className="mt-1 block text-[0.8rem] text-ink-3 max-sm:leading-snug sm:text-[0.85rem]">{p.text}</span>
-                </>
-              );
-              const cls = "group block py-6 sm:py-8 lg:py-10";
-              return (
-                <li key={p.title} className={cn(i % 2 ? "pl-4 sm:pl-6 lg:pl-8" : i ? "lg:pl-8" : "", i < 2 && "max-lg:border-b max-lg:border-line-2")}>
-                  {p.to ? <Link to={p.to} className={cls}>{inner}</Link> : <a href={p.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-
-        {/* Newsletter: the one dark moment in the footer. A panel in ink under a gradient rule, the
-            invitation and what joining brings, the form, and a fan of pieces from the current range. */}
-        <section className="relative my-10 overflow-hidden bg-ink text-cream sm:my-14 lg:my-20" aria-labelledby="ftr-news-title">
-          <span className="absolute inset-x-0 top-0 h-[3px] bg-brand-grad" aria-hidden="true" />
-          <div className="grid gap-10 px-5 pb-8 pt-10 sm:p-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-center lg:gap-16 lg:p-16">
-            <div>
-              <p className="kicker kicker--light">{t("The QVFITS list")}</p>
-              <h2 id="ftr-news-title" className="max-w-xl text-[clamp(2.4rem,5vw,4.2rem)] leading-[1.02] text-cream">{copy?.newsTitle}</h2>
-              <p className="mt-4 max-w-md text-[1rem] leading-relaxed text-cream/75">{copy?.newsText}</p>
-              {/* What joining brings, numbered */}
-              <ol className="mt-8 grid list-none gap-x-6 gap-y-3 border-t border-cream/15 p-0 pt-6 sm:grid-cols-3">
-                {PERKS.map((p, i) => (
-                  <li key={p} className="flex items-baseline gap-3 text-[0.92rem] text-cream/90 sm:flex-col sm:gap-1.5">
-                    <span className="font-display text-[0.8rem] tabular-nums text-brand-200">{String(i + 1).padStart(2, "0")}</span>
-                    {t(p)}
-                  </li>
-                ))}
-              </ol>
-              <NewsletterForm className="mt-8" source="footer" cta={copy?.newsCta} tone="dark" variant="boxed" formId="newsForm" />
-            </div>
-            <PhotoFan className="max-lg:order-first" />
-          </div>
-        </section>
-
         {/* Columns: four side by side on a laptop; on a phone, four rows that fold open */}
-        <div className="py-8 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-12 md:py-16 lg:grid-cols-4 lg:gap-10 lg:py-20">
-          {/* Client services: real ways to reach a person */}
-          {s && (
-            <FooterGroup title={t("Client services")}>
-              <li><a className={LINK} href={whatsappLink(s.whatsapp)} target="_blank" rel="noopener noreferrer">WhatsApp {s.phone}</a></li>
-              <li><a className={LINK} href={`tel:${s.phone.replace(/\s/g, "")}`}>{t("Call us")}</a></li>
-              <li><a className={LINK} href={`mailto:${s.email}`}>{s.email}</a></li>
-              <li><Link className={LINK} to="/contact">{t("Contact and questions")}</Link></li>
-              <li><Link className={LINK} to="/track-order">{t("Track an order")}</Link></li>
-            </FooterGroup>
-          )}
+        <div className="py-8 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-10 md:py-14 lg:grid-cols-4 lg:gap-10">
+          {/* Client's lobby: the ways to settle up and reach a person */}
+          <FooterGroup title={t("Client's lobby")} nav>
+            <li><Link className={LINK} to="/terms#payment">{t("Payment")}</Link></li>
+            <li><Link className={LINK} to="/about#showroom">{t("Showroom")}</Link></li>
+            <li><Link className={LINK} to="/contact">{t("Contact us")}</Link></li>
+            <li><Link className={LINK} to="/contact#faq">{t("FAQs")}</Link></li>
+            <li><Link className={LINK} to="/track-order">{t("Track an order")}</Link></li>
+          </FooterGroup>
 
-          {/* The house */}
-          <FooterGroup title={t("The house")} nav>
+          {/* About: the house and its policies */}
+          <FooterGroup title={t("About")} nav>
             <li><Link className={LINK} to="/about">{t("Our story")}</Link></li>
-            <li><Link className={LINK} to="/size-guide">{t("Size guide")}</Link></li>
-            {s && <li><a className={LINK} href={s.mapsUrl} target="_blank" rel="noopener noreferrer">{s.address}</a></li>}
-          </FooterGroup>
-
-          {/* Shop */}
-          <FooterGroup title={t("Shop")} nav>
-            {facets?.categoryList.map((c) => (
-              <li key={c.id}><Link className={LINK} to={`/shop/${c.slug}`}>{c.name}</Link></li>
-            ))}
-            <li><Link className={LINK} to="/shop/kits">{t("Shop the kit")}</Link></li>
-          </FooterGroup>
-
-          {/* Policies */}
-          <FooterGroup title={t("Policies")} nav>
             <li><Link className={LINK} to="/delivery">{t("Delivery")}</Link></li>
             <li><Link className={LINK} to="/returns">{t("Returns and exchanges")}</Link></li>
             <li><Link className={LINK} to="/terms">{t("Terms of sale")}</Link></li>
             <li><Link className={LINK} to="/privacy">{t("Privacy policy")}</Link></li>
             <li><button type="button" className={LINK} onClick={openCookieSettings}>{t("Cookie settings")}</button></li>
           </FooterGroup>
-        </div>
-      </div>
 
-      {/* The name, and what it means: the one large gesture */}
-      <div className="wrap border-t border-line-2 pt-10 sm:pt-12 lg:pt-16" aria-label="Quivogue: Qui for quality, Vogue for fashionable" role="img">
-        <div aria-hidden="true"><FooterWordmark /></div>
-      </div>
+          {/* Styles and products */}
+          <FooterGroup title={t("Styles and products")} nav>
+            <li><Link className={LINK} to="/size-guide">{t("Style and size guide")}</Link></li>
+            <li><Link className={LINK} to="/shop">{t("Product portfolio")}</Link></li>
+            <li><Link className={LINK} to="/seen-on-you">{t("Seen on you")}</Link></li>
+          </FooterGroup>
 
-      {/* Payment: the ways to pay, as quiet marks (an even 2 by 2 on a phone), and a note on security */}
-      {methods.length > 0 && (
-        <div className="wrap mt-10 flex flex-col gap-4 border-t border-line-2 pt-7 sm:mt-12 sm:flex-row sm:items-center sm:justify-between lg:mt-16">
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-2" aria-label={t("Ways to pay")}>
-            <span className="col-span-2 text-[0.82rem] text-ink-3 sm:mr-2">{t("Pay with")}</span>
-            {methods.map((m) => (
-              <PaymentMark key={m.id} method={m} className="max-sm:h-12 max-sm:w-full" />
-            ))}
+          {/* Newsletter: small and simple */}
+          <div className="max-md:border-b max-md:border-line-2 max-md:py-6 md:max-lg:col-span-2">
+            <h2 className={cn(TITLE, "max-md:mb-3")}>{t("Newsletter")}</h2>
+            {copy?.newsText && <p className="mb-4 max-w-xs text-[0.9rem] leading-relaxed text-ink-3">{copy.newsText}</p>}
+            <NewsletterForm source="footer" cta={copy?.newsCta} formId="newsForm" />
           </div>
-          <p className="flex items-start gap-2 text-[0.82rem] text-ink-3 sm:items-center">
-            <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 sm:mt-0" strokeWidth={1.75} aria-hidden="true" />
-            {t("Secure checkout. Mobile money and card payments are processed by Pesapal.")}
-          </p>
         </div>
-      )}
+      </div>
 
       {/* Bottom bar: copyright, social, currency. On a phone the social and settings row comes first, the
           copyright under it, and room is left at the foot for the floating Ask Vee button. */}
-      <div className="wrap mt-7 flex flex-col gap-3 border-t border-line-2 pb-24 pt-5 text-[0.82rem] text-ink-3 sm:flex-row sm:items-center sm:justify-between sm:gap-5 sm:py-7">
+      <div className="wrap mt-7 flex flex-col gap-3 border-t border-line-2 pb-24 pt-5 text-[0.82rem] text-ink-3 sm:flex-row sm:items-center sm:justify-between sm:gap-5 sm:py-7 sm:pr-36 lg:pr-40">
         <div className="order-2 flex flex-col gap-4 sm:order-none sm:flex-row sm:items-center sm:gap-8">
           {/* The full colour logo, as the brand book shows it on a light ground; the header already carries it on a phone */}
           <Logo className="max-sm:hidden" />
@@ -201,35 +115,5 @@ function FooterGroup({ title, nav = false, children }) {
       </h2>
       <ul className={cn("space-y-0.5 max-md:pb-4", !open && "max-md:hidden")}>{children}</ul>
     </Tag>
-  );
-}
-
-/**
- * Three pieces from the range, fanned like cards held in a hand; they spread a
- * little further under a mouse. Purely a picture: hidden from screen readers.
- */
-function PhotoFan({ className }) {
-  const { data: products = [] } = useProducts();
-  const picks = products.filter((p) => p.photos?.length).slice(0, 3);
-  if (picks.length < 3) return null;
-  const FAN = [
-    "-translate-x-[62%] -rotate-[9deg] group-hover:-translate-x-[78%] group-hover:-rotate-[13deg]",
-    "-translate-x-1/2 -translate-y-[4%] z-[1] group-hover:-translate-y-[8%]",
-    "-translate-x-[38%] rotate-[9deg] group-hover:-translate-x-[22%] group-hover:rotate-[13deg]",
-  ];
-  return (
-    <div className={cn("group relative mx-auto h-[220px] w-full max-w-[420px] sm:h-[300px] lg:h-[400px]", className)} aria-hidden="true">
-      {picks.map((p, i) => (
-        <div
-          key={p.id}
-          className={cn(
-            "absolute left-1/2 top-[6%] aspect-[3/4] h-[88%] origin-bottom overflow-hidden bg-sand-100 shadow-[0_18px_40px_rgb(0_0_0/0.35)] ring-1 ring-cream/10 transition-[translate,rotate] duration-700 ease-q",
-            FAN[i],
-          )}
-        >
-          <Photo photo={p.photos[0]} label={p.name} labels={false} />
-        </div>
-      ))}
-    </div>
   );
 }

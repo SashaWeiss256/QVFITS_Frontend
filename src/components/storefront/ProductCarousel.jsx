@@ -8,14 +8,12 @@ import ProductCard from "./ProductCard";
  * A row of product cards that slides sideways: four in view on a laptop, two
  * and a bit on a tablet, one and a bit on a phone so the next card peeks
  * out. It scrolls by swipe, trackpad or keyboard (the row is focusable,
- * arrow keys page it), and the two quiet arrows page through it. A thin line
- * under the row shows how far along you are. `head` sits on the left of the
+ * arrow keys page it), and the two quiet arrows page through it. `head` sits on the left of the
  * control row (a section heading), `children` beside the arrows ("View all").
  */
-export default function ProductCarousel({ products, label, head, children }) {
+export default function ProductCarousel({ products, label, head, tag, plain, children }) {
   const track = useRef(null);
   const [edge, setEdge] = useState({ start: true, end: false });
-  const [progress, setProgress] = useState({ at: 0, size: 1 });
 
   // Which ends are reached, and how much of the row is in view.
   const measure = useCallback(() => {
@@ -23,7 +21,6 @@ export default function ProductCarousel({ products, label, head, children }) {
     if (!el) return;
     const max = el.scrollWidth - el.clientWidth;
     setEdge({ start: el.scrollLeft <= 4, end: el.scrollLeft >= max - 4 });
-    setProgress({ at: max > 0 ? el.scrollLeft / max : 0, size: el.scrollWidth ? el.clientWidth / el.scrollWidth : 1 });
   }, []);
 
   useEffect(() => {
@@ -75,17 +72,10 @@ export default function ProductCarousel({ products, label, head, children }) {
       >
         {products.map((p) => (
           <div key={p.id} className="w-[72%] shrink-0 snap-start sm:w-[42%] lg:w-[calc((100%-3*clamp(12px,1.6vw,24px))/4)]">
-            <ProductCard product={p} />
+            <ProductCard product={p} tag={tag} plain={plain} />
           </div>
         ))}
       </div>
-
-      {/* How far along the row is */}
-      {many && progress.size < 1 && (
-        <div className="relative mt-8 h-px bg-line-2" aria-hidden="true">
-          <span className="absolute inset-y-0 bg-ink transition-[left] duration-300" style={{ width: `${progress.size * 100}%`, left: `${progress.at * (1 - progress.size) * 100}%` }} />
-        </div>
-      )}
     </div>
   );
 }

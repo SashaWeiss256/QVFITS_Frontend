@@ -12,6 +12,7 @@ import { useProduct } from "@/store/tanstackStore/queries/site";
 import { breadcrumbJsonLd, inStock, productCrumbs, productJsonLd, productMeta, shareImage } from "@/seo/shared";
 import { SITE_URL } from "@/seo/site";
 import { useSeo } from "@/seo/useSeo";
+import Craft from "@/pages/1.home/sections/Craft";
 import BuyPanel from "./sections/BuyPanel";
 import Gallery from "./sections/Gallery";
 import Related from "./sections/Related";
@@ -84,6 +85,8 @@ export default function ProductPage() {
       {/* Outfits built around this piece, with the colours checked */}
       {!previewing && <StyleWith product={p} />}
       <Related product={p} />
+      {/* How the pieces are made, once, under the piece */}
+      <Craft />
       <RecentlyViewed except={p.id} />
     </>
   );

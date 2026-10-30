@@ -6,6 +6,7 @@ import SiteLayout from "./SiteLayout";
 import accountRoutes from "./AccountRoutes";
 import {
   HomePage,
+  SeenOnYouPage,
   ShopPage,
   ProductPage,
   AboutPage,
@@ -29,6 +30,7 @@ export default function siteRoutes() {
       {/* /shop/bras, /shop/for/pilates, /shop/bras/running, /shop/new (utils/shopTargets) */}
       <Route path="shop/*" element={<ShopPage />} />
       <Route path="product/:slug" element={<ProductPage />} />
+      <Route path="seen-on-you" element={<SeenOnYouPage />} />
       <Route path="about" element={<AboutPage />} />
       <Route path="size-guide" element={<SizeGuidePage />} />
       <Route path="contact" element={<ContactPage />} />

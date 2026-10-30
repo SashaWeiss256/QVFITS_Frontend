@@ -8,7 +8,7 @@ import MessageForm from "./sections/MessageForm";
 import { t } from "@/i18n/translate";
 
 /**
- * Client services: how to reach a person, the showroom, a message composer,
+ * Client's lobby: how to reach a person, the showroom, a message composer,
  * and the common questions. Every number and address comes from Settings.
  */
 export default function ContactPage() {
@@ -22,7 +22,7 @@ export default function ContactPage() {
       <section className="wrap pb-24 pt-16 lg:pb-36 lg:pt-24">
         <header className="mb-14 grid gap-6 lg:mb-20 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <p className="kicker">{t("Client services")}</p>
+            <p className="kicker">{t("Client's lobby")}</p>
             <h1 className="text-[clamp(2.375rem,5.2vw,4.375rem)]">How may we help?</h1>
           </div>
           <p className="max-w-sm text-[1.05rem] leading-relaxed text-ink-2 lg:col-span-4 lg:col-start-9 lg:self-end">{copy?.lede}</p>

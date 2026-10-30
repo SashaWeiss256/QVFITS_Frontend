@@ -6,6 +6,9 @@ import { SkeletonGrid } from "@/components/ui/Skeleton";
 import ProductCarousel from "@/components/storefront/ProductCarousel";
 import { useProducts, useRails } from "@/store/tanstackStore/queries/site";
 
+// New releases carry one tag and no discount; best sellers carry one tag.
+const TAGS = { newReleases: "New", bestSellers: "Best seller" };
+
 /**
  * A heading on the left, then the pieces in a sideways row with "View all"
  * and the arrows on the right. The pieces pick themselves: the newest New
@@ -20,7 +23,7 @@ export default function ProductRail({ rail, kind }) {
   const heading = (
     <div className="max-w-xl">
       <p className="kicker">{rail.kicker}</p>
-      <h2>{rail.title}</h2>
+      <h2 className="text-[clamp(1.35rem,2vw,1.8rem)]">{rail.title}</h2>
     </div>
   );
 
@@ -44,7 +47,7 @@ export default function ProductRail({ rail, kind }) {
     <section className="section">
       <div className="wrap">
         {/* Heading, then the pieces with View all and the arrows */}
-        <ProductCarousel products={row} label={rail.title} head={<Reveal>{heading}</Reveal>}>
+        <ProductCarousel products={row} label={rail.title} head={<Reveal>{heading}</Reveal>} tag={TAGS[kind]} plain={kind === "newReleases"}>
           <Link className="link-arrow" to={rail.href}>View all</Link>
         </ProductCarousel>
       </div>

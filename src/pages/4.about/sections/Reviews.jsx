@@ -11,7 +11,7 @@ import { cn } from "@/utils/cn";
  * prefers reduced motion. No placeholder quotes: the section disappears until
  * there are real ones. Used on the About page and the home page.
  */
-export default function Reviews({ title }) {
+export default function Reviews({ title, lean = false }) {
   const { data: reviews = [] } = useReviews();
   const { data: copy } = usePageCopy("about");
   const [at, setAt] = useState(0);
@@ -29,22 +29,22 @@ export default function Reviews({ title }) {
   const r = list[at];
 
   return (
-    <section className="section bg-beige/60" aria-roledescription="carousel" aria-label={title ?? copy?.reviews.title}>
-      <div className="wrap grid gap-12 lg:grid-cols-12">
+    <section className={cn(lean ? "section--tight" : "section", "bg-beige/60")} aria-roledescription="carousel" aria-label={title ?? copy?.reviews.title}>
+      <div className={cn("wrap grid lg:grid-cols-12", lean ? "gap-6" : "gap-12")}>
         {/* Heading */}
         <div className="lg:col-span-3">
-          <h2 className="text-[clamp(1.6rem,2.4vw,2.2rem)]">{title ?? copy?.reviews.title}</h2>
+          <h2 className={lean ? "text-[1.15rem]" : "text-[clamp(1.6rem,2.4vw,2.2rem)]"}>{title ?? copy?.reviews.title}</h2>
         </div>
 
         {/* The quote */}
         <figure className="lg:col-span-8 lg:col-start-5">
-          <blockquote key={r.id} className="min-h-[4.8em] animate-fade-up font-display text-[clamp(1.8rem,3.6vw,3.2rem)] leading-[1.18] text-ink" aria-live="polite">
+          <blockquote key={r.id} className={cn("animate-fade-up font-serif leading-[1.25] text-ink", lean ? "min-h-[3.8em] text-[clamp(1.15rem,1.9vw,1.6rem)]" : "min-h-[4.8em] text-[clamp(1.8rem,3.6vw,3.2rem)]")} aria-live="polite">
             <span className="text-brand-600">“</span>{r.text}<span className="text-brand-600">”</span>
           </blockquote>
           {r.stars ? <p className="sr-only">{r.stars} out of 5 stars</p> : null}
 
           {/* Names: choose a voice */}
-          <figcaption className="mt-10 flex flex-wrap gap-x-8 gap-y-3 border-t border-line pt-6">
+          <figcaption className={cn("flex flex-wrap gap-x-8 gap-y-3 border-t border-line", lean ? "mt-5 pt-4" : "mt-10 pt-6")}>
             {list.map((q, i) => (
               <button
                 key={q.id}
@@ -56,7 +56,7 @@ export default function Reviews({ title }) {
                 }}
                 className={cn(
                   "relative py-1 text-[0.95rem] transition-colors",
-                  i === at ? "text-ink after:absolute after:inset-x-0 after:-top-[25px] after:h-px after:bg-ink" : "text-ink-4 hover:text-ink",
+                  i === at ? cn("text-ink after:absolute after:inset-x-0 after:h-px after:bg-ink", lean ? "after:-top-[17px]" : "after:-top-[25px]") : "text-ink-4 hover:text-ink",
                 )}
               >
                 {q.name}

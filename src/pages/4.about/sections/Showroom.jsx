@@ -8,7 +8,7 @@ import { whatsappLink } from "@/utils/whatsapp";
  * An invitation, the way a house offers an appointment: the showroom photo
  * on one side; on the other the address, the opening time, and a button that
  * opens WhatsApp with a fitting request already written. Every fact comes
- * from Settings. Used on the home page and the About page.
+ * from Settings. Lives on the About page.
  */
 export default function Showroom() {
   const { data: s } = useSettings();
@@ -17,7 +17,7 @@ export default function Showroom() {
   const request = "Hi QVFITS, I'd like to book a fitting at the showroom. I train in: ";
 
   return (
-    <section className="grid bg-ink text-cream lg:grid-cols-2">
+    <section id="showroom" className="grid bg-ink text-cream lg:grid-cols-2">
       {/* Photo */}
       <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[16/11] lg:aspect-auto lg:min-h-[86vh]">
         <Photo photo={content?.aboutPhoto} label="Inside the QVFITS showroom" wide />

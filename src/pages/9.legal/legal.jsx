@@ -46,7 +46,7 @@ export default function LegalPage() {
     <div className="wrap pb-24 pt-16 lg:pb-32 lg:pt-24">
       {/* Title */}
       <header className="mb-14 max-w-3xl border-b border-line pb-12 lg:mb-20 lg:pb-16">
-        <p className="kicker">{t("Client services")}</p>
+        <p className="kicker">{t("Client's lobby")}</p>
         <h1 className="text-[clamp(2.375rem,5.2vw,4.375rem)]">{doc.title}</h1>
         <p className="mt-6 max-w-xl text-[1.08rem] leading-relaxed text-ink-2">{doc.lede}</p>
         <p className="mt-6 text-[0.85rem] text-ink-3">Last updated {doc.updated}</p>

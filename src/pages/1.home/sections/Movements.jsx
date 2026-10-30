@@ -4,33 +4,32 @@ import { Link } from "react-router-dom";
 import Reveal from "@/components/motion/Reveal";
 import Photo from "@/components/storefront/Photo";
 
-// The movements as one edge-to-edge band of tall photographs, no gaps, each
-// opening the movement it was given in the admin. The name sits large on the
-// picture; hovering slowly brings the photo closer and underlines the name.
+// The movements as one sideways row of tall photographs set edge to edge,
+// each opening the movement it was given in the admin. The name sits under
+// its picture, centred and in regular weight, never on the photograph.
+// Hovering slowly brings the photo closer.
 export default function Movements({ movements }) {
   if (!movements?.items?.length) return null;
 
   return (
-    <section className="pb-[clamp(64px,9vw,128px)]">
-      {/* Heading */}
-      <div className="wrap mb-10">
-        <Reveal as="div"><h2>{movements.title}</h2></Reveal>
-      </div>
+    <section className="section">
+      <div className="wrap">
+        {/* Heading */}
+        <Reveal className="mb-8 sm:mb-10">
+          <h2 className="text-[clamp(1.35rem,2vw,1.8rem)]">{movements.title}</h2>
+        </Reveal>
 
-      {/* Band of tiles */}
-      <div className="grid grid-cols-2 lg:grid-cols-4">
-        {movements.items.map((m) => (
-          <Link key={m.id} className="group relative block aspect-[3/4] overflow-hidden bg-sand-100 lg:aspect-[2/3]" to={m.href}>
-            {/* Picture */}
-            <Photo photo={m.photo} label={m.label} className="transition-transform duration-[1.6s] ease-q group-hover:scale-[1.05]" />
-            <span className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" aria-hidden="true" />
-
-            {/* Name */}
-            <span className="absolute inset-x-4 bottom-5 font-display text-[clamp(1.25rem,2.6vw,2.4rem)] leading-tight text-cream sm:inset-x-5 sm:bottom-6 lg:inset-x-8 lg:bottom-9">
-              <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-1 transition-[background-size] duration-700 ease-q group-hover:bg-[length:100%_1px]">{m.label}</span>
-            </span>
-          </Link>
-        ))}
+        {/* Row of tiles, swiped or scrolled sideways, with no gaps between the pictures */}
+        <div className="-mx-[clamp(20px,4vw,56px)] flex snap-x snap-mandatory overflow-x-auto scroll-px-[clamp(20px,4vw,56px)] px-[clamp(20px,4vw,56px)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label={movements.title} tabIndex={0}>
+          {movements.items.map((m) => (
+            <Link key={m.id} className="group block w-[46%] shrink-0 snap-start sm:w-[30%] lg:w-[calc(100%/5.5)] lg:grow" to={m.href}>
+              <span className="relative block aspect-[3/4] overflow-hidden bg-sand-100">
+                <Photo photo={m.photo} label={m.label} className="transition-transform duration-[1.6s] ease-q group-hover:scale-[1.05]" />
+              </span>
+              <span className="mt-4 block py-1 text-center text-[0.95rem] font-normal text-ink transition-colors group-hover:text-brand-600">{m.label}</span>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );
