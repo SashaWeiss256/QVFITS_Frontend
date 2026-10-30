@@ -550,6 +550,29 @@
   .field .check-row:has(input:checked) { border-color: var(--color-ink); background: var(--color-sand-50); }
 }
 
+/* Film grain: a fine, slowly shifting noise laid over the hero pictures (blended, so it grains the photo, not the words) */
+@layer utilities {
+  .grain {
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240px 240px;
+    mix-blend-mode: overlay;
+    opacity: 0.32;
+    animation: grain-shift 1s steps(6) infinite;
+  }
+  @keyframes grain-shift {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-3%, 2%); }
+    40% { transform: translate(2%, -3%); }
+    60% { transform: translate(-2%, -1%); }
+    80% { transform: translate(3%, 3%); }
+    100% { transform: translate(0, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .grain { animation: none; } }
+}
+
 /* Content guard (src/utils/contentGuard.js): pictures cannot be picked up, selected or printed, and blur while the window is not in front */
 @layer base {
   img, video { -webkit-user-drag: none; -webkit-touch-callout: none; user-select: none; }
