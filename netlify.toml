@@ -7,6 +7,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # Where the site lives, for the share image, canonical links and the sitemap. Change to https://qvfits.com at launch.
+  VITE_SITE_URL = "https://qvfits.netlify.app"
 
 # A preview on sample data: keep it out of search results.
 [[headers]]

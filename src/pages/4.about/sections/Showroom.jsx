@@ -25,10 +25,9 @@ export default function Showroom() {
 
       {/* Invitation */}
       <Reveal className="flex flex-col justify-center px-[clamp(20px,6vw,104px)] py-12 sm:py-20 lg:py-28">
-        <p className="kicker kicker--light">The showroom</p>
         <h2 className="max-w-md text-[clamp(2.4rem,4.4vw,4rem)] leading-[1.04] text-cream">Come and be fitted.</h2>
         <p className="mt-6 max-w-md text-[1.05rem] leading-relaxed text-cream/75">
-          Tell us what you train in and we will have pieces waiting in your size. Move in them, take your time, and leave only with what is right.
+          Tell us what you train in and we will have pieces waiting in your size.
         </p>
 
         {/* Where and when */}

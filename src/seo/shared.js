@@ -7,7 +7,7 @@ export const BRAND = "QVFITS";
 export const DEFAULT_TITLE = "QVFITS | Activewear, Swim & Lounge, Kampala";
 export const DEFAULT_DESCRIPTION =
   "Premium seamless and seam-fit activewear, swim and lounge wear. Showroom at THE CUBE, Kisementi, Kampala. Delivery across Uganda.";
-export const DEFAULT_IMAGE_PATH = "/og-image.png";
+export const DEFAULT_IMAGE_PATH = "/og-image.jpg";
 export const DEFAULT_IMAGE_ALT = "QVFITS: seamless activewear, swim and lounge wear, Kampala";
 
 /** Fixed pages: what each says in a tab, in search and in a shared link. */
