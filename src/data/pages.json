@@ -38,7 +38,7 @@
       "kicker": "Our story",
       "title": "Activewear that fits, and looks good doing it",
       "paragraphs": [
-        "QVFITS, by Quivogue, is a Kampala label of activewear, swim and lounge wear for women, sold from our showroom at THE CUBE in Kisementi and delivered across Uganda. The name joins quality and vogue: well made, and worn with style.",
+        "QVFITS, by Quivogue, is a Kampala label of activewear, swim and lounge wear for women, sold from our showroom at THE CUBE in Kisementi and delivered within Kampala. The name joins quality and vogue: well made, and worn with style.",
         "Every piece is worn and tested before it joins the range, and carries an honest fit note, so you can choose the right size the first time."
       ],
       "primaryCta": {
@@ -71,8 +71,8 @@
         },
         {
           "icon": "sparkles",
-          "title": "Delivered across Uganda",
-          "text": "Kampala and upcountry, or collect from the showroom. Free delivery over {freeShipping}."
+          "title": "Delivered within Kampala",
+          "text": "Delivery within Kampala, or collect from the showroom. Free delivery over {freeShipping}."
         }
       ]
     },

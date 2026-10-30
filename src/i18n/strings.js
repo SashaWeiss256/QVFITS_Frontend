@@ -160,7 +160,7 @@ export const TABLE = [
   ["Delivery and exchanges", "Uwasilishaji na kubadilisha", "Livraison et échanges", "التوصيل والاستبدال", "配送与换货"],
   ["Open the size guide", "Fungua mwongozo wa saizi", "Ouvrir le guide des tailles", "افتح دليل المقاسات", "打开尺码指南"],
   ["Not sure of your size? Ask Vee", "Huna uhakika wa saizi yako? Muulize Vee", "Pas sûre de votre taille ? Demandez à Vee", "لست متأكدة من مقاسك؟ اسألي Vee", "不确定尺码？问问Vee"],
-  ["Delivered across Uganda, or collect from the showroom", "Tunawasilisha kote Uganda, au chukua kwenye showroom", "Livraison dans toute l'Ouganda, ou retrait en showroom", "التوصيل في أنحاء أوغندا، أو الاستلام من صالة العرض", "乌干达全境配送，或到展厅自提"],
+  ["Delivered within Kampala, or collect from the showroom", "Tunawasilisha ndani ya Kampala, au chukua kwenye showroom", "Livraison dans Kampala, ou retrait en showroom", "التوصيل داخل كمبالا، أو الاستلام من صالة العرض", "坎帕拉市内配送，或到展厅自提"],
   ["Completes the kit", "Hukamilisha seti", "Complète le kit", "يُكمل الطقم", "搭配整套"],
   ["Wears well with", "Huvaliwa vizuri na", "Se marie bien avec", "ينسجم مع", "搭配推荐"],
   ["Back to the shop", "Rudi dukani", "Retour à la boutique", "العودة إلى المتجر", "返回商店"],

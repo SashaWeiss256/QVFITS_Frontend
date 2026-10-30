@@ -6,7 +6,7 @@
 export const BRAND = "QVFITS";
 export const DEFAULT_TITLE = "QVFITS | Activewear, Swim & Lounge, Kampala";
 export const DEFAULT_DESCRIPTION =
-  "Premium seamless and seam-fit activewear, swim and lounge wear. Showroom at THE CUBE, Kisementi, Kampala. Delivery across Uganda.";
+  "Premium seamless and seam-fit activewear, swim and lounge wear. Showroom at THE CUBE, Kisementi, Kampala. Delivery within Kampala.";
 export const DEFAULT_IMAGE_PATH = "/og-image.jpg";
 export const DEFAULT_IMAGE_ALT = "QVFITS: seamless activewear, swim and lounge wear, Kampala";
 
@@ -16,7 +16,7 @@ export const PAGES = {
   shop: {
     path: "/shop",
     title: "Shop everything",
-    description: "Seamless sets, sports bras, leggings, skorts, swim and lounge wear from QVFITS. Delivered across Uganda or collected from the Kisementi showroom.",
+    description: "Seamless sets, sports bras, leggings, skorts, swim and lounge wear from QVFITS. Delivered in Kampala or collected from the Kisementi showroom.",
     priority: "0.9",
     changefreq: "daily",
   },

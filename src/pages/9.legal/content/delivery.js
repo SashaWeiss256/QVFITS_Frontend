@@ -8,7 +8,7 @@ import { STATUTORY, UPDATED, contactLine, ugx } from "./shop";
 //   customer is told and refunded within 30 days.
 // - Sale of Goods and Supply of Services Act, 2018, s.40(6): where goods are
 //   handed to a carrier without the seller promising delivery to the door,
-//   risk passes on handover (used for upcountry bus parcels); s.45: a buyer
+//   risk passes on handover (for any courier parcel, if delivery widens beyond Kampala); s.45: a buyer
 //   who delays taking delivery bears the resulting costs.
 // The waiting and holding times below are proposals for the client to confirm.
 export const delivery = (s) => ({
@@ -27,31 +27,23 @@ export const delivery = (s) => ({
             [`Orders over ${ugx(s.freeShippingOver)}`, "Free delivery"],
           ],
         } },
-        "The full delivery fee is shown at checkout before you pay. We deliver within Uganda only for now. If you are abroad, message us and we will see what we can arrange, at your cost and risk.",
+        "The full delivery fee is shown at checkout before you pay. For now we deliver within Kampala only. If you are outside Kampala, you are welcome to collect from the showroom, or message us and we will see what we can arrange, at your cost and risk.",
       ],
     },
     {
       id: "dispatch",
       heading: "When your order leaves us",
       blocks: [
-        "We dispatch once your payment has been received and confirmed. Orders confirmed before 2 PM on a working day usually leave the same day in Kampala, and the next working day for upcountry.",
+        "We dispatch once your payment has been received and confirmed. Orders confirmed before 2 PM on a working day usually leave the same day.",
         "We will always deliver within 30 days of your order, as the Electronic Transactions Act, 2011 requires. If a piece is unexpectedly unavailable, we tell you straight away and refund you in full within 30 days, or offer an alternative if you prefer.",
       ],
     },
     {
       id: "kampala",
-      heading: "Kampala and nearby",
+      heading: "Delivery in Kampala",
       blocks: [
         "Our rider calls you before arriving. Please be reachable on the phone number you gave us. The rider will wait up to 15 minutes and call twice; after that the parcel returns to the showroom.",
         "We will arrange a second attempt with you. Because each trip has a cost, a second or later attempt, or a change of address after dispatch, is charged at the normal delivery fee.",
-      ],
-    },
-    {
-      id: "upcountry",
-      heading: "Upcountry",
-      blocks: [
-        "Upcountry orders travel by courier or bus parcel service. We send you the service's receipt and tracking details, and you collect the parcel from their office with the name on the order.",
-        "Once we hand your parcel to the service and send you its receipt, it travels at your risk. If anything goes wrong in transit, we will help you trace and claim it from the service.",
       ],
     },
     {

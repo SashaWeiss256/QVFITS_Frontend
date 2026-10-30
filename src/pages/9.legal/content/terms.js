@@ -90,7 +90,7 @@ export const terms = (s) => ({
       id: "delivery",
       heading: "Delivery",
       blocks: [
-        `We deliver across Uganda, free on orders over ${ugx(s.freeShippingOver)}, or you can collect from the showroom at no charge. Every order is delivered within 30 days, or we refund you. Times, costs, missed deliveries and when a parcel becomes your responsibility are set out in our delivery policy.`,
+        `For now we deliver within Kampala, free on orders over ${ugx(s.freeShippingOver)}, or you can collect from the showroom at no charge. Every order is delivered within 30 days, or we refund you. Times, costs, missed deliveries and when a parcel becomes your responsibility are set out in our delivery policy.`,
       ],
     },
     {

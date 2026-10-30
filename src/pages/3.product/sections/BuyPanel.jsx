@@ -107,7 +107,7 @@ export default function BuyPanel({ product: p, onColor }) {
         <button type="button" className="inline-flex min-h-11 items-center gap-2.5 hover:text-brand-600" onClick={() => askVee(`What size am I in the ${p.name}?`)}>
           <MessageCircle className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Not sure of your size? Ask Vee
         </button>
-        <p className="flex items-center gap-2.5"><Truck className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Delivered across Uganda, or collect from the showroom</p>
+        <p className="flex items-center gap-2.5"><Truck className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Delivered within Kampala, or collect from the showroom</p>
       </div>
 
       {/* Share: copy the link, WhatsApp, or any app */}
