@@ -1,4 +1,5 @@
 /* Shop Header */
+import BackLink from "@/components/ui/BackLink";
 import { Link } from "react-router-dom";
 
 import { PAGES, breadcrumbJsonLd } from "@/seo/shared";
@@ -57,6 +58,7 @@ export default function ShopHeader({ state, lookup }) {
           <span key={c.to}> / <Link to={c.to}>{c.label}</Link></span>
         ))}
         {(scoped || alone) && title && <> / {title}</>}
+        <BackLink fallback="/" />
       </p>
       {/* Title on the left, its line on the right */}
       <div className="grid gap-5 lg:grid-cols-12 lg:items-end">

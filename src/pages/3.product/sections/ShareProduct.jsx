@@ -5,8 +5,10 @@ import { Check, Link2, Share2 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/BrandIcons";
 import { t } from "@/i18n/translate";
 import { notify } from "@/store/tanstackStore/notices";
+import { useClickOutside } from "@/utils/useClickOutside";
+import { cn } from "@/utils/cn";
 
-const BUTTON = "inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-white px-3.5 text-[0.88rem] text-ink-2 transition-colors duration-200 hover:border-line-2 hover:text-ink";
+const ITEM = "flex min-h-11 w-full items-center gap-3 px-4 text-left text-[0.9rem] text-ink-2 transition-colors hover:bg-sand-50 hover:text-ink";
 
 // Copies the text, with the older way for browsers that block the clipboard on plain http.
 async function copyText(text) {
@@ -32,15 +34,17 @@ async function copyText(text) {
 }
 
 /**
- * Copy the piece's link, send it on WhatsApp, or hand it to any other app
- * through the phone's own share sheet (only shown where the browser has one).
- * The link is the piece's own page, without any colour or size picked.
+ * One quiet share icon beside "save". Where the phone has its own share
+ * sheet, a tap opens it; elsewhere a small menu offers Copy link and
+ * WhatsApp. The link is the piece's own page, with no colour or size picked.
  */
 export default function ShareProduct({ product: p }) {
+  const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const ref = useRef(null);
   const timer = useRef(0);
   useEffect(() => () => clearTimeout(timer.current), []);
-  const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
+  useClickOutside(ref, () => setOpen(false), open);
 
   const url = `${window.location.origin}/product/${p.slug}`;
   const message = `${p.name} by QVFITS`;
@@ -51,26 +55,32 @@ export default function ShareProduct({ product: p }) {
     setCopied(true);
     notify("Link copied");
     clearTimeout(timer.current);
-    timer.current = setTimeout(() => setCopied(false), 2200);
+    timer.current = setTimeout(() => { setCopied(false); setOpen(false); }, 1400);
   };
-  // Closing the share sheet without choosing an app is not an error.
-  const share = () => navigator.share({ title: message, text: message, url }).catch(() => {});
+
+  // A phone's own sheet when there is one (closing it without choosing is not an error); otherwise the menu.
+  const onButton = () => {
+    if (typeof navigator !== "undefined" && typeof navigator.share === "function" && window.matchMedia("(pointer: coarse)").matches) {
+      navigator.share({ title: message, text: message, url }).catch(() => {});
+      return;
+    }
+    setOpen((o) => !o);
+  };
 
   return (
-    <div className="mt-6 flex flex-wrap items-center gap-2" role="group" aria-label={t("Share this piece")}>
-      <span className="mr-1 hidden text-[0.88rem] text-ink-3 sm:inline">{t("Share")}</span>
-      <button type="button" className={BUTTON} onClick={copy}>
-        {copied ? <Check className="h-4 w-4 text-brand-600" strokeWidth={1.75} aria-hidden="true" /> : <Link2 className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />}
-        <span aria-live="polite">{copied ? t("Copied") : t("Copy link")}</span>
+    <div className="relative" ref={ref}>
+      <button type="button" className="btn btn--ghost btn--lg w-[56px] px-0" aria-label={t("Share this piece")} aria-haspopup="menu" aria-expanded={open} onClick={onButton}>
+        <Share2 className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
       </button>
-      <a className={BUTTON} href={`https://wa.me/?text=${encodeURIComponent(`${message} ${url}`)}`} target="_blank" rel="noopener noreferrer">
-        <WhatsAppIcon className="h-4 w-4 text-whatsapp" /> WhatsApp
-      </a>
-      {canShare && (
-        <button type="button" className={BUTTON} onClick={share}>
-          <Share2 className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> {t("More")}
+      <div className={cn("absolute right-0 top-[calc(100%+8px)] z-20 w-48 border border-line bg-cream py-1.5 shadow-sh-3", !open && "hidden")} role="menu">
+        <button type="button" role="menuitem" className={ITEM} onClick={copy}>
+          {copied ? <Check className="h-4 w-4 text-brand-600" strokeWidth={1.75} aria-hidden="true" /> : <Link2 className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />}
+          <span aria-live="polite">{copied ? t("Copied") : t("Copy link")}</span>
         </button>
-      )}
+        <a role="menuitem" className={ITEM} href={`https://wa.me/?text=${encodeURIComponent(`${message} ${url}`)}`} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}>
+          <WhatsAppIcon className="h-4 w-4 text-whatsapp" /> WhatsApp
+        </a>
+      </div>
     </div>
   );
 }

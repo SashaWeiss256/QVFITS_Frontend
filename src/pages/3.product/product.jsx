@@ -4,6 +4,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 
 import RecentlyViewed from "@/components/storefront/RecentlyViewed";
 import StyleWith from "@/components/storefront/StyleWith";
+import BackLink from "@/components/ui/BackLink";
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useRecentlyViewed } from "@/store/context/recentlyViewed";
@@ -74,9 +75,10 @@ export default function ProductPage() {
         {/* Breadcrumb */}
         <p className="crumbs">
           <Link to="/">{t("Home")}</Link> / <Link to="/shop">{t("Shop")}</Link> / <Link to={`/shop/${p.categorySlug}`}>{p.category}</Link> / <span className="text-ink">{p.name}</span>
+          <BackLink fallback={`/shop/${p.categorySlug}`} />
         </p>
-        {/* The views on the left, the buy panel on the right */}
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-16 xl:gap-24">
+        {/* The views on the left, the buy panel on the right: two equal halves */}
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-24">
           <Gallery product={p} colorId={colorId} />
           {/* Reset local size and colour selections when navigating between products. */}
           <BuyPanel key={p.id} product={p} onColor={setColorId} />

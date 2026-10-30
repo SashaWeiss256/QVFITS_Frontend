@@ -1,8 +1,7 @@
 /* Buy Panel (from Quivogue product.html) */
 import { useEffect, useRef, useState } from "react";
-import { Heart, MessageCircle, Truck } from "lucide-react";
+import { Heart } from "lucide-react";
 
-import { askVee } from "@/components/assistant/askVee";
 import PriceTag from "@/components/storefront/PriceTag";
 import { useCart } from "@/store/context/CartContext";
 import { useWishlist } from "@/store/context/WishlistContext";
@@ -70,16 +69,15 @@ export default function BuyPanel({ product: p, onColor }) {
   return (
     <div>
       {/* Name and price */}
-      <p className="kicker">{p.category}</p>
-      <h1 className="text-[clamp(1.9rem,3.2vw,2.8rem)]">{p.name}</h1>
-      <p className="mt-4 font-display text-[1.35rem] font-semibold tabular-nums [&_b]:text-brand-600 [&_s]:mr-2 [&_s]:font-normal [&_s]:text-ink-4">
+      <h1 className="text-[clamp(1.8rem,2.8vw,2.5rem)] font-normal leading-[1.1]">{p.name}</h1>
+      <p className="mt-4 text-[1.15rem] tabular-nums text-ink-2 [&_b]:font-normal [&_b]:text-brand-600 [&_s]:mr-2 [&_s]:text-ink-4">
         <PriceTag product={p} />
       </p>
-      <p className="mt-5 max-w-md text-[1rem] leading-relaxed text-ink-2">{p.blurb}</p>
+      <p className="mt-5 max-w-md text-[0.98rem] leading-relaxed text-ink-3">{p.blurb}</p>
       {sold && <p className="mt-5 border-l-2 border-brand-500 pl-4 text-[0.92rem] text-ink-2">Fully sold out right now. Ask us on WhatsApp whether it&apos;s coming back.</p>}
 
       {/* Choices */}
-      <div className="mt-9 space-y-8 border-t border-line pt-8">
+      <div className="mt-8 space-y-7 border-t border-line pt-7">
         <ColorPicker colors={p.colors} chosen={color} onChoose={chooseColor} swatch={swatch} />
         <div ref={sizes}>
           <SizePicker product={shown} chosen={size} onChoose={setSize} />
@@ -87,7 +85,7 @@ export default function BuyPanel({ product: p, onColor }) {
       </div>
 
       {/* Add to bag and save */}
-      <div className="mt-6 flex gap-3" ref={cta}>
+      <div className="mt-7 flex gap-3" ref={cta}>
         <button type="button" className="btn btn--primary btn--lg flex-1" disabled={sold} onClick={addToBag}>
           {sold ? "Sold out" : "Add to bag"}
         </button>
@@ -100,21 +98,12 @@ export default function BuyPanel({ product: p, onColor }) {
         >
           <Heart className="h-5 w-5" strokeWidth={1.5} fill={wished ? "currentColor" : "none"} aria-hidden="true" />
         </button>
+        {/* Share: one quiet icon beside save */}
+        <ShareProduct product={p} />
       </div>
-
-      {/* Help and promises */}
-      <div className="mt-5 space-y-2.5 text-[0.88rem] text-ink-2">
-        <button type="button" className="inline-flex min-h-11 items-center gap-2.5 hover:text-brand-600" onClick={() => askVee(`What size am I in the ${p.name}?`)}>
-          <MessageCircle className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Not sure of your size? Ask Vee
-        </button>
-        <p className="flex items-center gap-2.5"><Truck className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> Delivered within Kampala, or collect from the showroom</p>
-      </div>
-
-      {/* Share: copy the link, WhatsApp, or any app */}
-      <ShareProduct product={p} />
 
       {/* Details */}
-      <div className="mt-10">
+      <div className="mt-9">
         <Details product={p} />
       </div>
       <MobileAddBar product={p} size={size} sold={sold} onAdd={addToBag} watch={cta} />

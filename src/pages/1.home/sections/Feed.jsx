@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 
 import Reveal from "@/components/motion/Reveal";
+import { useSettings } from "@/store/tanstackStore/queries/site";
 
 // On a data-saver or 2G connection only the poster loads, never the video.
 const lite = () => {
@@ -18,6 +19,7 @@ const lite = () => {
  */
 export default function Feed({ feed }) {
   const grid = useRef(null);
+  const { data: settings } = useSettings();
   // Shown only while the feed is switched on and has reels.
   const ok = Boolean(feed?.live && feed.items?.length);
 
@@ -45,18 +47,24 @@ export default function Feed({ feed }) {
   return (
     <section className="section">
       <div className="wrap">
-        {/* Heading */}
-        <Reveal className="mb-10 max-w-xl">
-          <p className="kicker">{feed.kicker}</p>
-          <h2>{feed.title}</h2>
+        {/* Heading: centred, with the two places to follow */}
+        <Reveal className="mx-auto mb-10 max-w-xl text-center lg:mb-12">
+          <h2 className="text-[clamp(1.5rem,2.6vw,2.2rem)]">{feed.title}</h2>
+          <p className="mt-3 text-[0.95rem] text-ink-3">{feed.kicker}</p>
+          {settings && (
+            <p className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[0.75rem] uppercase tracking-[0.18em]">
+              <a className="border-b border-ink pb-1 text-ink transition-colors hover:text-brand-600" href={settings.instagram} target="_blank" rel="noopener noreferrer">Instagram {settings.instagramHandle}</a>
+              <a className="border-b border-ink pb-1 text-ink transition-colors hover:text-brand-600" href={settings.tiktok} target="_blank" rel="noopener noreferrer">TikTok {settings.tiktokHandle}</a>
+            </p>
+          )}
         </Reveal>
 
         {/* Reels: each a link to the piece or part of the shop it shows */}
-        <div className="grid grid-cols-2 gap-[clamp(10px,1.4vw,20px)] lg:grid-cols-4" ref={grid}>
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4" ref={grid}>
           {feed.items.map((it) => (
             <Link key={it.id} className="group block" to={it.href} aria-label={`${it.label}: shop it`}>
               {/* Reel */}
-              <div className="relative aspect-[9/16] overflow-hidden bg-sand-100">
+              <div className="relative aspect-[3/4] overflow-hidden bg-sand-200">
                 {saving ? (
                   <img className="h-full w-full object-cover" src={`/photos/${it.id}.webp`} alt={it.label} loading="lazy" />
                 ) : (
@@ -68,8 +76,6 @@ export default function Feed({ feed }) {
                   <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
                 </span>
               </div>
-              {/* What it shows */}
-              <span className="mt-3 block text-[0.9rem] text-ink-2 transition-colors group-hover:text-brand-600">{it.label}</span>
             </Link>
           ))}
         </div>

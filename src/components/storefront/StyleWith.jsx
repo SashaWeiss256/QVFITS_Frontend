@@ -1,5 +1,5 @@
 /* Complete The Look */
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 
 import { askVee } from "@/components/assistant/askVee";
@@ -17,6 +17,19 @@ import OutfitCard from "./OutfitCard";
 export default function StyleWith({ product }) {
   const { data: outfits = [] } = useStyleWith(product.type === "kit" ? undefined : product.id);
   const row = useRef(null);
+  // Which ends of the row are reached: the arrows show only when there is more to scroll to.
+  const [edge, setEdge] = useState({ start: true, end: true });
+  const measure = useCallback(() => {
+    const el = row.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setEdge({ start: el.scrollLeft <= 4, end: el.scrollLeft >= max - 4 });
+  }, []);
+  useEffect(() => {
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [measure, outfits.length]);
   if (!outfits.length) return null;
 
   // One card at a time: the width of the first card plus the gap.
@@ -39,12 +52,12 @@ export default function StyleWith({ product }) {
             <button type="button" className="btn btn--ghost" onClick={() => askVee(`What goes with the ${product.name}?`)}>
               <MessageCircle className="h-4 w-4" aria-hidden="true" /> Ask Vee
             </button>
-            {outfits.length > 1 && (
+            {!(edge.start && edge.end) && (
               <div className="hidden gap-2 sm:flex">
-                <button type="button" className="grid h-11 w-11 place-items-center border border-line transition-colors hover:border-ink" aria-label="Previous looks" onClick={() => step(-1)}>
+                <button type="button" className="grid h-11 w-11 place-items-center border border-line transition-colors hover:border-ink disabled:pointer-events-none disabled:opacity-30" aria-label="Previous looks" disabled={edge.start} onClick={() => step(-1)}>
                   <ChevronLeft className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
                 </button>
-                <button type="button" className="grid h-11 w-11 place-items-center border border-line transition-colors hover:border-ink" aria-label="Next looks" onClick={() => step(1)}>
+                <button type="button" className="grid h-11 w-11 place-items-center border border-line transition-colors hover:border-ink disabled:pointer-events-none disabled:opacity-30" aria-label="Next looks" disabled={edge.end} onClick={() => step(1)}>
                   <ChevronRight className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
                 </button>
               </div>
@@ -58,6 +71,7 @@ export default function StyleWith({ product }) {
         ref={row}
         className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-[max(20px,calc((100vw-1440px)/2+56px))] pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{ scrollPaddingInline: "max(20px, calc((100vw - 1440px) / 2 + 56px))" }}
+        onScroll={measure}
         tabIndex={0}
         role="region"
         aria-label="Outfits that go with this piece"

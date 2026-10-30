@@ -37,7 +37,8 @@ export default function ProductCarousel({ products, label, head, tag, plain, chi
     el.scrollBy({ left: dir * el.clientWidth, behavior: still ? "auto" : "smooth" });
   };
 
-  const many = products.length > 1;
+  // Arrows only when the row is wider than the screen: with nothing to scroll to, they stay away.
+  const many = products.length > 1 && !(edge.start && edge.end);
   const ARROW = "grid h-11 w-11 place-items-center rounded-full border border-line-2 text-ink transition-colors duration-300 hover:border-ink hover:bg-ink hover:text-cream disabled:pointer-events-none disabled:opacity-30";
 
   return (

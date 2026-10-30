@@ -28,7 +28,7 @@ export default function OutfitCard({ outfit: o, onLeave, skip = [] }) {
     <article className="flex h-full flex-col border border-line bg-white/60 p-5" aria-label={o.title}>
       {/* Title and why */}
       <header className="flex items-baseline justify-between gap-3">
-        <p className="font-display text-[1.15rem] leading-snug">{o.title}</p>
+        <p className="font-serif text-[1.25rem] leading-snug">{o.title}</p>
         {o.kind === "kit" && <span className="text-[0.78rem] text-brand-600">Kit</span>}
       </header>
       <p className="mt-1.5 text-[0.85rem] leading-relaxed text-ink-3">{o.reason}</p>
@@ -51,10 +51,10 @@ export default function OutfitCard({ outfit: o, onLeave, skip = [] }) {
       {/* Total and add */}
       <footer className="mt-auto flex items-center justify-between gap-3 pt-4">
         <span>
-          <span className="block font-display text-[1.1rem]">{money(o.total)}</span>
+          <span className="block text-[1.05rem] tabular-nums">{money(o.total)}</span>
           {o.saves > 0 && <span className="block text-[0.78rem] text-brand-600">Saves {money(o.saves)}</span>}
         </span>
-        <button type="button" className="btn btn--primary" onClick={addAll} disabled={!toAdd.length}><ShoppingBag className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> {skip.length ? "Add the rest" : "Add all"}</button>
+        <button type="button" className="btn btn--primary min-h-11 shrink-0 px-5" onClick={addAll} disabled={!toAdd.length}><ShoppingBag className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /> {skip.length ? "Add the rest" : "Add all"}</button>
       </footer>
     </article>
   );

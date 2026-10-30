@@ -27,14 +27,15 @@ export default function AssistantMessage({ message, onLeave, onAsk, isLast }) {
           {b.products.map((p) => (
             <Link key={p.id} className="group w-[150px] shrink-0 snap-start" to={`/product/${p.slug}`} onClick={onLeave}>
               <div className="relative aspect-[3/4] overflow-hidden bg-beige"><Photo photo={p.photos[0]} label={p.name} /></div>
-              <p className="mt-2 font-display text-[0.98rem] leading-snug group-hover:text-brand-600">{p.name}</p>
+              <p className="mt-2 text-[0.92rem] leading-snug group-hover:text-brand-600">{p.name}</p>
               <p className="mt-0.5 text-[0.8rem] text-ink-3">{money(p.price)}{anyInStock(p) ? "" : ", sold out"}</p>
             </Link>
           ))}
         </div>
       );
     }
-    if (b.type === "outfit") return <OutfitCard key={i} outfit={b.outfit} onLeave={onLeave} />;
+    // In the chat the card takes its own height (the wrapper has none to fill), so its price and button stay inside it.
+    if (b.type === "outfit") return <div key={i} className="shrink-0"><OutfitCard outfit={b.outfit} onLeave={onLeave} /></div>;
     if (b.type === "chips") {
       // Quick replies: tapping one sends it as the shopper's next message. Only the newest set is live.
       if (!isLast) return null;

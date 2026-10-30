@@ -137,7 +137,7 @@ export default function FitAssistant() {
         <header className="flex items-center gap-3 border-b border-line px-6 py-5">
           <span className="grid h-10 w-10 place-items-center rounded-full bg-brand-600 text-cream"><AssistantMark /></span>
           <div className="min-w-0 flex-1">
-            <p className="font-display text-[1.25rem] leading-none">{name}</p>
+            <p className="font-serif text-[1.4rem] leading-none">{name}</p>
             <p className="mt-1 text-[0.8rem] text-ink-3">Your QVFITS stylist</p>
           </div>
           <button type="button" className="grid h-10 w-10 place-items-center text-ink-3 hover:text-ink" aria-label={t("Close")} onClick={() => setOpen(false)}>
@@ -163,7 +163,7 @@ export default function FitAssistant() {
         )}
 
         {/* Composer */}
-        <div className="border-t border-line px-6 pb-5 pt-4">
+        <div className="border-t border-line px-6 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4">
           <form
             className="flex items-center border-b border-ink/30 focus-within:border-ink"
             onSubmit={(e) => {
@@ -176,7 +176,7 @@ export default function FitAssistant() {
             <button className="grid h-10 w-10 place-items-center text-ink hover:text-brand-600" type="submit" aria-label="Send"><ArrowRight className="h-[18px] w-[18px]" strokeWidth={1.5} aria-hidden="true" /></button>
           </form>
           <p className="mt-3 text-[0.75rem] leading-relaxed text-ink-3">
-            Answers come from live QVFITS stock. For orders, our team replies on WhatsApp.{" "}
+            Answers come from live stock. Orders are handled by our team on WhatsApp.{" "}
             <button type="button" className="underline underline-offset-2 hover:text-ink" onClick={() => { forgetAssistant(); setMessages((m) => [...m, bot("Done. I have forgotten your name, size and budget.")]); }}>Forget me</button>
           </p>
         </div>

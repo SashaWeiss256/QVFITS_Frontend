@@ -1,4 +1,5 @@
 /* Cart Page, Step 1 (port of Quivogue cart.html) */
+import BackLink from "@/components/ui/BackLink";
 import { Link } from "react-router-dom";
 
 import PageLoader from "@/components/ui/PageLoader";
@@ -18,7 +19,7 @@ export default function CartPage() {
   return (
     <section className="section section--tight">
       <div className="wrap">
-        <p className="crumbs"><Link to="/">{t("Home")}</Link> / Your bag</p>
+        <p className="crumbs"><Link to="/">{t("Home")}</Link> / Your bag<BackLink fallback="/shop" /></p>
         <h1 className="mb-8 text-[clamp(2rem,4vw,3rem)] leading-[1.05]">{t("Your bag")}</h1>
         {/* Empty state takes precedence; show the checkout skeleton only for a non-empty bag still resolving. */}
         {bag.empty ? (

@@ -10,7 +10,7 @@ export default function ColorPicker({ colors, chosen, onChoose, swatch }) {
     <div>
       {/* Heading: the colour's name */}
       <p className="mb-3 text-[0.88rem] text-ink-3">
-        Colour <span className="ml-1 font-display font-semibold text-ink">{chosen}</span>
+        Colour <span className="ml-1 text-ink">{chosen}</span>
       </p>
       {/* Radio semantics expose the selected colour to assistive technology. */}
       <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={t("Colour")}>

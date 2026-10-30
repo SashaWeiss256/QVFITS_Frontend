@@ -36,9 +36,9 @@ export default function MobileAddBar({ product, size, sold, onAdd, watch }) {
       inert={!shown}
     >
       <div className="min-w-0 flex-1">
-        <p className="truncate font-display text-[0.95rem] font-semibold">{product.name}</p>
+        <p className="truncate font-display text-[0.95rem]">{product.name}</p>
         {/* The price to pay on one line (a sale's old price stays in the page above), then the size */}
-        <p className="truncate whitespace-nowrap text-[0.85rem] tabular-nums text-ink-2 [&_b]:font-semibold [&_b]:text-brand-600 [&_s]:hidden">
+        <p className="truncate whitespace-nowrap text-[0.85rem] tabular-nums text-ink-2 [&_b]:font-normal [&_b]:text-brand-600 [&_s]:hidden">
           <PriceTag product={product} />
           {size && <span className="text-ink-3"> · Size {size}</span>}
         </p>

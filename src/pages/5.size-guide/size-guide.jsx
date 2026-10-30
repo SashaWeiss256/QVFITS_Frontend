@@ -1,4 +1,5 @@
 /* Size Guide Page (port of Quivogue size-guide.html) */
+import BackLink from "@/components/ui/BackLink";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { PAGES } from "@/seo/shared";
@@ -20,7 +21,7 @@ export default function SizeGuidePage() {
       {/* Intro */}
       <section className="section section--tight">
         <div className="wrap">
-          <p className="crumbs"><Link to="/">{t("Home")}</Link> / Size guide</p>
+          <p className="crumbs"><Link to="/">{t("Home")}</Link> / Size guide<BackLink fallback="/shop" /></p>
           <div className="section-head center">
             <span className="kicker">{copy?.kicker}</span>
             <h1>{copy?.title}</h1>
