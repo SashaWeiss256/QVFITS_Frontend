@@ -69,6 +69,8 @@
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   /* Anton: the logo's QVFITS name and campaign headlines, uppercase, +0.12em */
   --font-logo: "Anton", "Impact", sans-serif;
+  --font-serif: "Playfair Display", "Bodoni Moda", Georgia, serif;
+  --font-didone: "Bodoni Moda", "Playfair Display", Didot, Georgia, serif;
   --font-script: "Pinyon Script", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
 
   /* Shape: near-square, the luxury register */
@@ -86,10 +88,9 @@
 
   --ease-q: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Motion: `animate-fade-up`, `animate-promo-slide` … */
+  /* Motion: `animate-fade-up` … */
   --animate-fade-up: fade-up 0.9s var(--ease-q);
   --animate-fade-up-quick: fade-up 0.35s var(--ease-q);
-  --animate-promo-slide: promo-slide var(--promo-time, 40s) linear infinite;
   --animate-welcome-settle: welcome-settle 9s var(--ease-q) forwards;
   --animate-skel: skel 1.6s linear infinite;
 
@@ -97,11 +98,6 @@
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: none; }
-  }
-  /* The promo bar's messages glide left to right and loop without a seam */
-  @keyframes promo-slide {
-    from { transform: translateX(-50%); }
-    to { transform: translateX(0); }
   }
   /* The welcome photograph easing to rest */
   @keyframes welcome-settle {
@@ -130,6 +126,12 @@
 /* Archivo is set bold and tight wherever it appears (brand book), so the
    display face brings its weight and tracking with it. A weight or tracking
    class beside it (font-normal, tracking-tight) still wins. */
+@utility font-serif {
+  font-family: var(--font-serif);
+}
+@utility font-didone {
+  font-family: var(--font-didone);
+}
 @utility font-display {
   font-family: var(--font-display);
   font-weight: 700;
@@ -158,17 +160,19 @@
   h2,
   h3,
   h4 {
-    font-family: var(--font-display);
-    font-weight: 700;
+    font-family: var(--font-serif);
+    font-weight: 500;
     color: var(--color-ink);
-    line-height: 1.08;
-    letter-spacing: -0.03em;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
+  /* The admin keeps the plain sans headings; the serif is the shop's voice */
+  .admin-root :is(h1, h2, h3, h4) { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.03em; }
   /* Brand book type scale: H1 38 to 70 px, H2 28 to 43 px, H3 18 to 23 px */
-  h1 { font-size: clamp(2.375rem, 5.2vw, 4.375rem); }
-  h2 { font-size: clamp(1.75rem, 3.2vw, 2.7rem); }
-  h3 { font-size: clamp(1.125rem, 1.6vw, 1.45rem); }
+  h1 { font-size: clamp(2rem, 4.2vw, 3.5rem); }
+  h2 { font-size: clamp(1.5rem, 2.5vw, 2.1rem); }
+  h3 { font-size: clamp(1.05rem, 1.4vw, 1.25rem); }
   p { text-wrap: pretty; }
   a { color: inherit; text-decoration: none; }
   button { cursor: pointer; }
@@ -197,8 +201,8 @@
   }
 
   /* Arabic and Chinese: scripts the brand faces do not carry, so a matching family leads */
-  html[lang="ar"] { --font-display: "Noto Sans Arabic", "Archivo", sans-serif; --font-body: "Noto Sans Arabic", "Inter", system-ui, sans-serif; }
-  html[lang="zh"] { --font-display: "Archivo", "Noto Sans SC", "PingFang SC", sans-serif; --font-body: "Inter", "Noto Sans SC", "PingFang SC", system-ui, sans-serif; }
+  html[lang="ar"] { --font-serif: "Noto Sans Arabic", "Archivo", sans-serif; --font-didone: "Noto Sans Arabic", "Archivo", sans-serif; --font-display: "Noto Sans Arabic", "Archivo", sans-serif; --font-body: "Noto Sans Arabic", "Inter", system-ui, sans-serif; }
+  html[lang="zh"] { --font-serif: "Noto Sans SC", "PingFang SC", sans-serif; --font-didone: "Noto Sans SC", "PingFang SC", sans-serif; --font-display: "Archivo", "Noto Sans SC", "PingFang SC", sans-serif; --font-body: "Inter", "Noto Sans SC", "PingFang SC", system-ui, sans-serif; }
   html[lang="ar"] body { letter-spacing: 0; }
 }
 
@@ -544,4 +548,13 @@
   html.ui-round .field textarea { border-radius: 16px; }
   .field .check-row input[type="radio"], .field .check-row input[type="checkbox"] { flex: none; }
   .field .check-row:has(input:checked) { border-color: var(--color-ink); background: var(--color-sand-50); }
+}
+
+/* Content guard (src/utils/contentGuard.js): pictures cannot be picked up, selected or printed, and blur while the window is not in front */
+@layer base {
+  img, video { -webkit-user-drag: none; -webkit-touch-callout: none; user-select: none; }
+  html[data-covered] main img, html[data-covered] main video { filter: blur(26px); }
+}
+@media print {
+  body { display: none !important; }
 }
