@@ -187,7 +187,7 @@ function Slideshow({ slides }) {
 
 /**
  * One campaign picture with a single model. The shoot is three portraits side
- * by side; only the middle one is shown, full height, standing right of centre
+ * by side; only the middle one is shown, full height, its edges fading into the backdrop, standing right of centre
  * (centred on a phone). The same photograph, blurred and darkened, fills the
  * rest of the screen so the frame stays full without a second person in it.
  */
@@ -201,7 +201,7 @@ function Visual({ slide, eager }) {
         {/* Backdrop: the whole shoot, softened */}
         <img className="absolute inset-0 h-full w-full scale-125 object-cover opacity-70 blur-3xl brightness-50" sizes="40vw" aria-hidden="true" {...img} />
         {/* The model: the middle third of the shoot, full height */}
-        <div className="absolute inset-y-0 left-1/2 aspect-[800/1533] -translate-x-1/2 overflow-hidden lg:left-auto lg:right-[10%] lg:translate-x-0">
+        <div className="absolute inset-y-0 left-1/2 aspect-[800/1533] -translate-x-1/2 overflow-hidden lg:left-auto lg:right-[10%] lg:translate-x-0 [mask-image:linear-gradient(to_right,transparent,black_16%,black_84%,transparent)]">
           <img
             className="absolute inset-y-0 left-0 h-full w-[300%] max-w-none -translate-x-1/3 object-cover contrast-[1.06] saturate-[1.05]"
             sizes="(min-width: 1024px) 160vh, 300vw"

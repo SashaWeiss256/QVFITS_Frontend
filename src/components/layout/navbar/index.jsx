@@ -20,12 +20,12 @@ const MEGA_ID = "mega-shop";
  * The luxury header: links on the left, the logo centred, four icons on the
  * right, nothing else. On the home page it sits transparent over the hero in
  * ink type and turns solid the moment the page scrolls or the Shop panel
- * opens. Tucks away while scrolling down, back as soon as you scroll up.
+ * opens. Always sticks to the top of the window.
  * Phones and tablets: menu button, centred logo, search and bag.
  */
 export default function Navbar() {
   const { pathname } = useLocation();
-  const { stuck, hidden } = useNavbarChrome();
+  const { stuck } = useNavbarChrome();
   const mega = useMegaMenuHover();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -54,7 +54,6 @@ export default function Navbar() {
         className={cn(
           "sticky top-0 z-60 transition-[background-color,color,transform,box-shadow] duration-500 ease-q",
           clear ? "bg-transparent text-cream" : "bg-cream/95 text-ink shadow-[0_1px_0_var(--color-line)] backdrop-blur-md",
-          hidden && !mega.open && "-translate-y-full",
         )}
       >
         {/* Bar: links | logo | actions */}

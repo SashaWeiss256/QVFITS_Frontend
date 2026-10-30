@@ -1,5 +1,5 @@
 /* Smooth Scroll */
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -15,11 +15,8 @@ gsap.registerPlugin(ScrollTrigger);
  * or trackpad glides to a stop; touch keeps the device's own scroll. It steps
  * aside whenever a drawer, menu or dialog locks the page (they set
  * body overflow hidden), and is off for anyone who asks for less motion.
- * A thin brand line at the top shows how far down the page you are.
  */
 export default function SmoothScroll() {
-  const bar = useRef(null);
-
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
 
@@ -30,10 +27,8 @@ export default function SmoothScroll() {
     });
     setLenis(lenis);
 
-    const setProgress = gsap.quickSetter(bar.current, "scaleX");
-    lenis.on("scroll", (e) => {
+    lenis.on("scroll", () => {
       ScrollTrigger.update();
-      setProgress(e.limit > 0 ? e.scroll / e.limit : 0);
     });
     const tick = (time) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
@@ -53,5 +48,5 @@ export default function SmoothScroll() {
     };
   }, []);
 
-  return <div ref={bar} className="pointer-events-none fixed inset-x-0 top-0 z-[90] h-[2px] origin-left scale-x-0 bg-brand-grad" aria-hidden="true" />;
+  return null;
 }
