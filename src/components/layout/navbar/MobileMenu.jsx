@@ -9,17 +9,15 @@ import { useNavigation } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
 import { useFocusReturn, useOverlayFlag } from "../useOverlayFlag";
 import Logo from "./Logo";
-import MobileMenuAccount from "./mobileMenu/MobileMenuAccount";
-import MobileMenuFooter from "./mobileMenu/MobileMenuFooter";
 import MobileMenuShop from "./mobileMenu/MobileMenuShop";
 import { t } from "@/i18n/translate";
 
 /**
  * Phones and tablets only (below 1024px; laptops get the mega menu): a
  * full-height cream sheet from the left, large serif links arriving in a
- * stagger, Shop expanding in place. The shop's own links come first; the
- * shopper's account, saved pieces and order tracking follow; currency and
- * WhatsApp are at the foot.
+ * stagger, Shop expanding in place. Links only: Shop, then the top bar links.
+ * Account and saved pieces are header icons; tracking, WhatsApp, language
+ * and currency live in the footer.
  */
 export default function MobileMenu({ open, onClose }) {
   const { pathname, search } = useLocation();
@@ -87,12 +85,8 @@ export default function MobileMenu({ open, onClose }) {
             </m.div>
           ))}
 
-          {/* Account comes after the shop's own links: the way in or who is signed in, then saved pieces and tracking */}
-          <m.div variants={revealItem}><MobileMenuAccount onNavigate={onClose} /></m.div>
         </m.nav>
 
-        {/* Footer: currency and WhatsApp */}
-        <MobileMenuFooter />
       </aside>
     </>
   );

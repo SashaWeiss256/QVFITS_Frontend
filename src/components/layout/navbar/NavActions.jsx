@@ -28,11 +28,11 @@ export default function NavActions({ onSearch }) {
         <Search className={ICON} strokeWidth={1.5} aria-hidden="true" />
       </button>
 
-      {/* Account: laptops only, the phone menu carries it */}
+      {/* Account */}
       <AccountButton />
 
-      {/* Saved pieces: laptops only */}
-      <button type="button" className="icon-btn hidden hover:bg-current/10 lg:inline-grid" aria-label={`Saved pieces (${wishlist.count})`} onClick={() => openDrawer("wish")}>
+      {/* Saved pieces: tablets and up */}
+      <button type="button" className="icon-btn hidden hover:bg-current/10 sm:inline-grid" aria-label={`Saved pieces (${wishlist.count})`} onClick={() => openDrawer("wish")}>
         <Heart className={ICON} strokeWidth={1.5} aria-hidden="true" />
         <Count n={wishlist.count} />
       </button>

@@ -25,7 +25,7 @@ export default function AccountButton() {
 
   if (!customer) {
     return (
-      <Link to="/login" className="icon-btn hidden hover:bg-current/10 lg:inline-grid" aria-label={t("Sign in")}>
+      <Link to="/login" className="icon-btn hover:bg-current/10" aria-label={t("Sign in")}>
         <UserRound className={ICON} strokeWidth={1.5} aria-hidden="true" />
       </Link>
     );
@@ -40,7 +40,7 @@ export default function AccountButton() {
 
   return (
     // Escape closes the menu and keeps focus on the icon.
-    <div className="relative hidden lg:block" ref={ref} onKeyDown={(e) => e.key === "Escape" && setOpen(false)}>
+    <div className="relative" ref={ref} onKeyDown={(e) => e.key === "Escape" && setOpen(false)}>
       <button type="button" className={cn("icon-btn hover:bg-current/10", open && "bg-current/10")} aria-haspopup="menu" aria-expanded={open} aria-label={t("Your account")} onClick={() => setOpen((o) => !o)}>
         <UserRound className={ICON} strokeWidth={1.5} aria-hidden="true" />
       </button>

@@ -53,7 +53,7 @@ export default function FilterSheet({ open, onClose, id = "filters", title = "Fi
           </button>
         </div>
         {/* Sections scroll; the header and footer stay put */}
-        <div className="flex-1 overflow-y-auto overscroll-contain px-7 pb-6 pt-1">{children}</div>
+        <div data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-7 pb-6 pt-1">{children}</div>
         {/* Footer: Clear, and a button that shows how many results the filters leave */}
         <div className="grid grid-cols-[auto_1fr] gap-3 border-t border-line bg-cream px-7 pb-5 pt-4">
           <Button variant="ghost" onClick={onClear}>{t("Clear")}</Button>

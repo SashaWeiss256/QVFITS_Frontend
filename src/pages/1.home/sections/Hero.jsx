@@ -15,6 +15,10 @@ const HOLD = 5;
 const prefersStill = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 // The hero fills the first screen.
 const FULL = "min-h-svh";
+// A ring of radius 9.5 is this long. The ring is drawn with its real length (not the pathLength shortcut,
+// which Safari ignores on circles), so it fills the same on every browser and phone.
+const RING_R = 9.5;
+const RING = 2 * Math.PI * RING_R;
 
 /**
  * The hero: the campaign photograph fills the whole first screen. A soft
@@ -102,7 +106,7 @@ function Slideshow({ slides }) {
   useGSAP(
     () => {
       const bars = gsap.utils.toArray("[data-bar]", root.current);
-      bars.forEach((b) => gsap.set(b, { strokeDashoffset: 100 }));
+      bars.forEach((b) => gsap.set(b, { strokeDashoffset: RING }));
       // Only one slide's line may be counting: a click mid-slide must not leave the old line running,
       // or it would finish later and push the show on a second time.
       timer.current?.kill();
@@ -172,8 +176,8 @@ function Slideshow({ slides }) {
               {slides.map((s, i) => (
                 <button key={s.id} type="button" role="tab" aria-selected={i === at} aria-label={s.title} className="grid h-12 w-11 place-items-center" onClick={() => go(i)}>
                   <svg className="h-[22px] w-[22px] -rotate-90" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="2" className={cn("transition-colors duration-500", i === at ? "text-cream/35" : "text-cream/25")} />
-                    <circle data-bar cx="12" cy="12" r="9.5" pathLength="100" strokeDasharray="100" strokeDashoffset="100" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-cream" />
+                    <circle cx="12" cy="12" r={RING_R} stroke="currentColor" strokeWidth="2" className={cn("transition-colors duration-500", i === at ? "text-cream/35" : "text-cream/25")} />
+                    <circle data-bar cx="12" cy="12" r={RING_R} strokeDasharray={RING} strokeDashoffset={RING} stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-cream" />
                   </svg>
                 </button>
               ))}
