@@ -1,68 +1,153 @@
 /* Our Story */
+import { useRef } from "react";
 import { Link } from "react-router-dom";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
 import Reveal from "@/components/motion/Reveal";
-import Photo from "@/components/storefront/Photo";
-import { useHomeContent } from "@/store/tanstackStore/queries/site";
+import { cn } from "@/utils/cn";
 import { STORY } from "../story";
 
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
+/** One About picture: local WebP and JPEG, the QV icon already on the clothes, and the same film grain as the home hero. `drift` lets GSAP slide the photograph inside its frame. */
+function Pic({ id, alt, className, eager = false, drift = false }) {
+  const img = (
+    <picture>
+      <source type="image/webp" srcSet={`/photos/${id}-640.webp 640w, /photos/${id}.webp 1024w`} sizes="(max-width: 700px) 80vw, 560px" />
+      <img className="absolute inset-0 h-full w-full object-cover" src={`/photos/${id}.jpg`} width="1024" height="1024" alt={alt} loading={eager ? "eager" : "lazy"} decoding="async" fetchPriority={eager ? "high" : undefined} />
+    </picture>
+  );
+  return (
+    <div className={cn("relative overflow-hidden bg-beige", className)}>
+      {drift ? <div data-drift className="absolute inset-x-0 -inset-y-[7%]">{img}</div> : img}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true"><div className="grain" /></div>
+    </div>
+  );
+}
+
+// The story as a mosaic: four short paragraphs and three photographs.
+const PICS = {
+  home: { id: "about-3", alt: "A QVFITs seamless set worn at home with a cream cardigan" },
+  court: { id: "about-2", alt: "A QVFITs tennis set on a Kampala court at sunset" },
+  pool: { id: "about-4", alt: "A QVFITs swimsuit by an infinity pool at sunrise" },
+};
+// Each tile's place on a laptop; on a phone they simply follow one another.
+const TILES = [
+  { text: STORY.paragraphs[1], tone: "bg-sand-200/60", at: "lg:col-span-4 lg:col-start-1 lg:row-start-1" },
+  { pic: "home", at: "lg:col-span-4 lg:col-start-5 lg:row-span-2 lg:row-start-1" },
+  { text: STORY.paragraphs[2], tone: "bg-cream", at: "lg:col-span-4 lg:col-start-9 lg:row-start-1" },
+  { pic: "court", at: "lg:col-span-4 lg:col-start-1 lg:row-start-2" },
+  { text: STORY.paragraphs[3], tone: "bg-sand-200/60", at: "md:col-span-2 lg:col-span-4 lg:col-start-9 lg:row-start-2" },
+  { pic: "pool", wide: true, at: "md:col-span-2 lg:col-span-8 lg:col-start-1 lg:row-start-3" },
+  { text: STORY.paragraphs[4], tone: "bg-cream", at: "md:col-span-2 lg:col-span-4 lg:col-start-9 lg:row-start-3" },
+];
+
 /**
- * The client's own words, set quietly: a title beside one photograph, the
- * story in a single readable column, the vision set large, the meaning of the
- * name, and one closing line with one way on.
+ * The client's own words, told like a feature in a fashion journal. An arched
+ * portrait (the window in the photograph) opens the page; the story then
+ * unfolds beside one picture that changes as each paragraph is read; the
+ * vision is set in the brand's plum; the name is taken apart into Qui and Vogue.
  */
 export default function Story() {
-  const { data: content } = useHomeContent();
-  const photos = content?.movements?.items?.map((m) => m.photo) ?? [];
   const { vision, name } = STORY;
+  const root = useRef(null);
+
+  // The tiles rise in one after another as the mosaic comes into view, and each photograph
+  // drifts a little inside its frame as you scroll. Nothing moves for anyone who asks for less motion.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const tiles = gsap.utils.toArray("[data-tile]");
+        gsap.set(tiles, { opacity: 0, y: 56 });
+        ScrollTrigger.batch(tiles, {
+          start: "top 90%",
+          once: true,
+          onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 1.1, ease: "power3.out", stagger: 0.14 }),
+        });
+        gsap.utils.toArray("[data-drift]").forEach((d) => {
+          gsap.fromTo(d, { yPercent: -5 }, { yPercent: 5, ease: "none", scrollTrigger: { trigger: d.parentElement, start: "top bottom", end: "bottom top", scrub: true } });
+        });
+      });
+      return () => mm.revert();
+    },
+    { scope: root },
+  );
 
   return (
     <>
-      {/* Opening: the page's h1 beside one photograph */}
-      <section className="wrap grid items-end gap-10 pb-14 pt-12 sm:pt-16 lg:grid-cols-12 lg:gap-8 lg:pb-24 lg:pt-24">
-        <div className="lg:col-span-6 lg:pb-6">
-          <p className="kicker">{STORY.kicker}</p>
-          <h1 className="mt-4 text-[clamp(1.9rem,4.6vw,3.9rem)] leading-[1.1]">{STORY.title}</h1>
+      {/* Opening: the title and first paragraph beside an arched portrait */}
+      <section className="wrap grid items-center gap-12 pb-20 pt-10 sm:pt-14 lg:min-h-[calc(100svh-72px)] lg:grid-cols-12 lg:gap-8 lg:pb-28 lg:pt-12">
+        <div className="relative z-[2] lg:col-span-7">
+          <h1 className="font-serif text-[clamp(1.85rem,3.1vw,2.8rem)] font-normal leading-[1.18]">
+            <span className="block">Inspired by Movement.</span>
+            <span className="block italic text-brand-500 lg:pl-[10%]">Driven by Vision.</span>
+          </h1>
+          <p className="mt-8 max-w-sm font-serif text-[1.05rem] leading-[1.7] text-ink-2 lg:mt-10 lg:text-[1.12rem]">{STORY.paragraphs[0]}</p>
         </div>
-        <div className="relative order-first mx-auto aspect-[4/5] w-full max-w-[26rem] overflow-hidden bg-beige lg:order-none lg:col-span-4 lg:col-start-9 lg:max-w-none">
-          <Photo photo={photos[1]} label="Quivogue (QVFITS)" eager />
+        <div className="lg:col-span-5 lg:col-start-8">
+          <Pic id="about-1" alt="A QVFITs pink zip top and leggings in a sunlit Kampala studio" eager className="mx-auto aspect-[3/4] w-full max-w-[24rem] rounded-t-[999px] lg:max-w-none" />
         </div>
       </section>
 
-      {/* The story, one readable column */}
-      <section className="wrap pb-16 lg:pb-28">
-        <Reveal className="mx-auto max-w-[38rem] space-y-6 text-[1.02rem] leading-[1.8] text-ink-2 sm:text-[1.08rem]">
-          {STORY.paragraphs.map((p) => <p key={p}>{p}</p>)}
+      {/* The story: a mosaic of words and photographs */}
+      <section ref={root} className="wrap pb-16 lg:pb-28">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-12 lg:gap-5">
+          {TILES.map((t, i) =>
+            t.pic ? (
+              <div key={i} data-tile className={cn("min-w-0", t.at)}>
+                <Pic id={PICS[t.pic].id} alt={PICS[t.pic].alt} drift className={cn("w-full rounded-[1.5rem]", t.wide ? "aspect-[4/5] md:aspect-[16/10] lg:h-full lg:min-h-[22rem] lg:aspect-auto" : "aspect-[4/5] lg:aspect-auto lg:h-full lg:min-h-[28rem]")} />
+              </div>
+            ) : (
+              <div key={i} data-tile className={cn("flex items-end rounded-[1.5rem] p-7 sm:p-9 lg:p-10", t.tone, t.at)}>
+                <p className="text-[1rem] leading-[1.9] text-ink-2 lg:text-[1.04rem]">{t.text}</p>
+              </div>
+            ),
+          )}
+        </div>
+      </section>
+
+      {/* The vision, in a soft shade of the page */}
+      <section className="bg-sand-200/60">
+        <Reveal className="wrap relative py-20 lg:py-32">
+          <p className="text-[1rem] text-ink-3">{vision.title}</p>
+          <p className="mt-8 max-w-3xl font-serif text-[clamp(1.3rem,2.2vw,1.85rem)] font-normal leading-[1.5] text-ink lg:mt-12">{vision.statement}</p>
+          <p className="mt-10 max-w-md text-[1.02rem] leading-relaxed text-ink-2 lg:mt-12">{vision.text}</p>
         </Reveal>
       </section>
 
-      {/* The vision, set large */}
-      <section className="bg-sand-200/60 py-16 lg:py-28">
-        <Reveal className="wrap">
-          <h2 className="text-center text-[1.05rem] font-normal uppercase tracking-[0.2em] text-ink-3">{vision.title}</h2>
-          <p className="mx-auto mt-8 max-w-4xl text-center font-serif text-[clamp(1.35rem,3vw,2.4rem)] font-normal leading-[1.3]">{vision.statement}</p>
-          <p className="mx-auto mt-8 max-w-xl text-center text-[1rem] leading-relaxed text-ink-2">{vision.text}</p>
-        </Reveal>
-      </section>
-
-      {/* The meaning behind the name */}
-      <section className="wrap py-16 lg:py-28">
-        <Reveal className="mx-auto max-w-[38rem]">
-          <h2 className="font-serif text-[clamp(1.5rem,2.6vw,2rem)]">{name.title}</h2>
-          <p className="mt-6 font-serif text-[1.2rem] italic text-ink">{name.line}</p>
-          <div className="mt-6 space-y-6 text-[1.02rem] leading-[1.8] text-ink-2 sm:text-[1.08rem]">
-            {name.paragraphs.map((p) => <p key={p}>{p}</p>)}
+      {/* The name, taken apart */}
+      <section className="wrap py-20 lg:py-32">
+        <Reveal>
+          <h2 className="text-center font-serif text-[clamp(1.25rem,2vw,1.6rem)] font-normal text-ink-2">{name.title}</h2>
+          <div className="mx-auto mt-10 grid max-w-md grid-cols-2 items-end gap-4 text-center sm:gap-8 lg:mt-12">
+            <div className="lg:text-right">
+              <p className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-ink">Qui</p>
+              <p className="mt-2 text-[0.9rem] text-ink-3 lg:pr-3">representing quality</p>
+            </div>
+            <div className="lg:text-left">
+              <p className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-brand-500">Vogue</p>
+              <p className="mt-2 text-[0.9rem] text-ink-3 lg:pl-3">representing fashion</p>
+            </div>
           </div>
+          <p className="mt-8 text-center font-serif text-[clamp(1.05rem,1.6vw,1.3rem)] italic text-ink lg:mt-10">{name.line}</p>
+        </Reveal>
+        <Reveal className="mx-auto mt-14 grid max-w-5xl gap-x-14 gap-y-6 text-[1rem] leading-[1.9] text-ink-2 lg:mt-16 lg:text-[1.04rem] lg:grid-cols-2">
+          {name.paragraphs.map((p) => <p key={p}>{p}</p>)}
         </Reveal>
       </section>
 
       {/* Closing line and one way on */}
-      <section className="wrap pb-20 text-center lg:pb-32">
-        <p className="font-serif text-[clamp(1.4rem,2.8vw,2.1rem)]">{STORY.closing}</p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-          <Link className="btn btn--primary btn--lg" to="/shop">Shop the collection</Link>
-          <Link className="link-arrow text-[0.92rem]" to="/contact">Contact us</Link>
-        </div>
+      <section className="bg-sand-200/60 py-20 text-center lg:py-32">
+        <Reveal className="wrap">
+          <p className="mx-auto max-w-2xl font-serif text-[clamp(1.4rem,2.5vw,2.1rem)] leading-[1.3]">{STORY.closing}</p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+            <Link className="btn btn--primary btn--lg" to="/shop">Shop the collection</Link>
+            <Link className="link-arrow text-[0.92rem]" to="/contact">Contact us</Link>
+          </div>
+        </Reveal>
       </section>
     </>
   );
