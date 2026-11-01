@@ -156,6 +156,10 @@
        without making the body a scroll container, so sticky headers and bars keep working. */
     overflow-x: clip;
   }
+  /* The same net on the root, so a closed off-screen drawer can never widen the page on a phone. */
+  html {
+    overflow-x: clip;
+  }
   h1,
   h2,
   h3,
