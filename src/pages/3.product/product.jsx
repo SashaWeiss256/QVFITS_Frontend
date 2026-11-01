@@ -78,7 +78,7 @@ export default function ProductPage() {
           <BackLink fallback={`/shop/${p.categorySlug}`} />
         </p>
         {/* The views on the left, the buy panel on the right: two equal halves */}
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-24">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-24">
           <Gallery product={p} colorId={colorId} />
           {/* Reset local size and colour selections when navigating between products. */}
           <BuyPanel key={p.id} product={p} onColor={setColorId} />

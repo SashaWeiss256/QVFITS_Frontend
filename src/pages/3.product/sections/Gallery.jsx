@@ -74,7 +74,7 @@ export default function Gallery({ product, colorId }) {
   if (!view) return <div className="aspect-[4/5] bg-beige" />;
 
   return (
-    <div id={VIEWS_ID} className="flex flex-col gap-4" role="region" aria-label={`${product.name}, views`} tabIndex={0} onKeyDown={onKey}>
+    <div id={VIEWS_ID} className="flex min-w-0 flex-col gap-4" role="region" aria-label={`${product.name}, views`} tabIndex={0} onKeyDown={onKey}>
       {/* Large view */}
       <div
         className={cn("relative aspect-[4/5] touch-pan-y overflow-hidden bg-beige", !isVideo(view) && "cursor-pointer")}
@@ -112,7 +112,7 @@ export default function Gallery({ product, colorId }) {
 
       {/* Small views: one quiet row, centred under the large view */}
       {views.length > 1 && (
-        <div className="mx-auto flex w-max max-w-full gap-2.5 overflow-x-auto p-0.5 [scrollbar-width:none] sm:gap-3" aria-label="Choose a view">
+        <div className="mx-auto flex w-fit max-w-full gap-2.5 overflow-x-auto p-0.5 [scrollbar-width:none] sm:gap-3" aria-label="Choose a view">
           {views.map((v, i) => (
             <button
               key={`${colorId}-${v.id}`}
