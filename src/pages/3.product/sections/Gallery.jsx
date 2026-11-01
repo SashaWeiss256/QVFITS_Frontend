@@ -138,7 +138,7 @@ export default function Gallery({ product, colorId }) {
         </div>
       )}
 
-      {boxOpen && <Lightbox views={views} at={Math.min(at, views.length - 1)} name={product.name} onStep={step} onClose={() => setBoxOpen(false)} />}
+      {boxOpen && <Lightbox views={views} at={Math.min(at, views.length - 1)} name={product.name} onStep={step} onJump={setAt} onClose={() => setBoxOpen(false)} />}
     </div>
   );
 }
