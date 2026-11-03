@@ -107,7 +107,7 @@ export default function Story() {
             ) : (
               // On a phone the words read like a journal: numbered, on a hairline, no box; from a tablet up, the tinted tile.
               <div key={i} data-tile className={cn("flex flex-col justify-between gap-6 border-t border-line-2 pt-5 md:rounded-[1.5rem] md:border-0 md:p-9 lg:p-10", t.tone, "max-md:bg-transparent", t.at)}>
-                <span className="font-serif text-[0.95rem] italic text-brand-500">{String(TEXTS.indexOf(t) + 1).padStart(2, "0")}</span>
+                <span className="font-serif text-[0.95rem] text-brand-500">{String(TEXTS.indexOf(t) + 1).padStart(2, "0")}</span>
                 <p className="text-[1rem] leading-[1.8] text-ink-2 lg:text-[1.04rem] lg:leading-[1.9]">{t.text}</p>
               </div>
             ),
@@ -138,7 +138,7 @@ export default function Story() {
               <p className="mt-2 text-[0.9rem] text-ink-3 lg:pl-3">representing fashion</p>
             </div>
           </div>
-          <p className="mt-8 text-center font-serif text-[clamp(1.05rem,1.6vw,1.3rem)] italic text-ink lg:mt-10">{name.line}</p>
+          <p className="mt-8 text-center font-serif text-[clamp(1.05rem,1.6vw,1.3rem)] text-ink lg:mt-10">{name.line}</p>
         </Reveal>
         <Reveal className="mx-auto mt-14 grid max-w-5xl gap-x-14 gap-y-6 text-[1rem] leading-[1.9] text-ink-2 lg:mt-16 lg:text-[1.04rem] lg:grid-cols-2">
           {name.paragraphs.map((p) => <p key={p}>{p}</p>)}

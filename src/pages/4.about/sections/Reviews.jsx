@@ -37,7 +37,7 @@ export default function Reviews({ title, lean = false }) {
           <ul className="mx-auto grid max-w-5xl gap-4 sm:grid-cols-3 lg:gap-6">
             {list.slice(0, 3).map((q) => (
               <li key={q.id} className="flex flex-col justify-between gap-6 border border-line bg-cream p-6 lg:p-7">
-                <blockquote className="font-serif text-[1.05rem] italic leading-relaxed text-ink">
+                <blockquote className="font-serif text-[1.05rem] leading-relaxed text-ink">
                   <span className="mb-1 block text-[1.6rem] leading-none text-ink-4" aria-hidden="true">&ldquo;</span>
                   {q.text}
                 </blockquote>
