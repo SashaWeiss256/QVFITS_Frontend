@@ -12,10 +12,10 @@ import { STORY } from "../story";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /** One About picture: local WebP and JPEG, the QV icon already on the clothes, and the same film grain as the home hero. `drift` lets GSAP slide the photograph inside its frame. */
-function Pic({ id, alt, className, eager = false, drift = false }) {
+function Pic({ id, alt, className, eager = false, drift = false, sizes = "(max-width: 700px) 80vw, 560px" }) {
   const img = (
     <picture>
-      <source type="image/webp" srcSet={`/photos/${id}-640.webp 640w, /photos/${id}.webp 1024w`} sizes="(max-width: 700px) 80vw, 560px" />
+      <source type="image/webp" srcSet={`/photos/${id}-640.webp 640w, /photos/${id}.webp 1024w`} sizes={sizes} />
       <img className="absolute inset-0 h-full w-full object-cover" src={`/photos/${id}.jpg`} width="1024" height="1024" alt={alt} loading={eager ? "eager" : "lazy"} decoding="async" fetchPriority={eager ? "high" : undefined} />
     </picture>
   );
@@ -43,10 +43,12 @@ const TILES = [
   { pic: "pool", wide: true, at: "md:col-span-2 lg:col-span-8 lg:col-start-1 lg:row-start-3" },
   { text: STORY.paragraphs[4], tone: "bg-cream", at: "md:col-span-2 lg:col-span-4 lg:col-start-9 lg:row-start-3" },
 ];
+// The text tiles, in reading order, for their numbers.
+const TEXTS = TILES.filter((t) => t.text);
 
 /**
- * The client's own words, told like a feature in a fashion journal. An arched
- * portrait (the window in the photograph) opens the page; the story then
+ * The client's own words, told like a feature in a fashion journal. A short
+ * hero with the studio portrait opens the page; the story then
  * unfolds beside one picture that changes as each paragraph is read; the
  * vision is set in the brand's plum; the name is taken apart into Qui and Vogue.
  */
@@ -78,31 +80,40 @@ export default function Story() {
 
   return (
     <>
-      {/* Opening: the title and first paragraph beside an arched portrait */}
-      <section className="wrap grid items-center gap-12 pb-20 pt-10 sm:pt-14 lg:min-h-[calc(100svh-72px)] lg:grid-cols-12 lg:gap-8 lg:pb-28 lg:pt-12">
-        <div className="relative z-[2] lg:col-span-7">
-          <h1 className="font-serif text-[clamp(1.85rem,3.1vw,2.8rem)] font-normal leading-[1.18]">
-            <span className="block">Inspired by Movement.</span>
-            <span className="block italic text-brand-500 lg:pl-[10%]">Driven by Vision.</span>
-          </h1>
-          <p className="mt-8 max-w-sm font-serif text-[1.05rem] leading-[1.7] text-ink-2 lg:mt-10 lg:text-[1.12rem]">{STORY.paragraphs[0]}</p>
-        </div>
-        <div className="lg:col-span-5 lg:col-start-8">
-          <Pic id="about-1" alt="A QVFITs pink zip top and leggings in a sunlit Kampala studio" eager className="mx-auto aspect-[3/4] w-full max-w-[24rem] rounded-t-[999px] lg:max-w-none" />
+      {/* Hero: short. On a laptop the words sit on cream with the portrait filling the right half; on a
+          phone the portrait fills it and the words rest on a dark fade at its foot. */}
+      <section className="relative isolate flex min-h-[min(66svh,560px)] items-end overflow-hidden bg-ink lg:min-h-[min(78svh,720px)] lg:items-center lg:bg-transparent">
+        <Pic id="about-1" alt="A QVFITs pink zip top and leggings in a sunlit Kampala studio" eager sizes="(min-width: 1024px) 52vw, 100vw" className="!absolute inset-0 -z-10 [&_img]:object-[50%_30%] lg:left-auto lg:w-[52%] lg:rounded-bl-[10rem]" />
+        <div className="absolute inset-0 -z-10 bg-linear-to-t from-ink/90 via-ink/35 to-transparent lg:hidden" aria-hidden="true" />
+        <div className="wrap w-full pb-10 pt-40 lg:py-20">
+          <div className="max-w-xl lg:max-w-[42%]">
+            <p className="kicker kicker--light lg:text-brand-500">{STORY.kicker} · Est. 2023</p>
+            <h1 className="font-serif text-[clamp(2.3rem,4.8vw,4.4rem)] font-normal leading-[1.08] text-cream lg:text-ink">
+              <span className="block">Inspired by Movement.</span>
+              <span className="block italic text-brand-200 lg:text-brand-500">Driven by Vision.</span>
+            </h1>
+            <p className="mt-5 max-w-md text-[1rem] leading-relaxed text-cream/85 lg:mt-7 lg:font-serif lg:text-[1.15rem] lg:leading-[1.7] lg:text-ink-2">{STORY.paragraphs[0]}</p>
+            <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 lg:mt-10">
+              <Link className="btn btn--primary" to="/shop">Shop the collection</Link>
+              <a className="link-arrow text-[0.92rem] text-cream lg:text-ink" href="#story">Read our story</a>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* The story: a mosaic of words and photographs */}
-      <section ref={root} className="wrap pb-16 lg:pb-28">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-12 lg:gap-5">
+      <section ref={root} id="story" className="wrap scroll-mt-24 pb-16 pt-12 sm:pt-16 lg:pb-28 lg:pt-24">
+        <div className="grid gap-8 md:grid-cols-2 md:gap-4 lg:grid-cols-12 lg:gap-5">
           {TILES.map((t, i) =>
             t.pic ? (
               <div key={i} data-tile className={cn("min-w-0", t.at)}>
-                <Pic id={PICS[t.pic].id} alt={PICS[t.pic].alt} drift className={cn("w-full rounded-[1.5rem]", t.wide ? "aspect-[4/5] md:aspect-[16/10] lg:h-full lg:min-h-[22rem] lg:aspect-auto" : "aspect-[4/5] lg:aspect-auto lg:h-full lg:min-h-[28rem]")} />
+                <Pic id={PICS[t.pic].id} alt={PICS[t.pic].alt} drift className={cn("w-full rounded-[1rem] md:rounded-[1.5rem]", t.wide ? "aspect-[4/3] md:aspect-[16/10] lg:h-full lg:min-h-[22rem] lg:aspect-auto" : "aspect-[4/3] md:aspect-[4/5] lg:aspect-auto lg:h-full lg:min-h-[28rem]")} />
               </div>
             ) : (
-              <div key={i} data-tile className={cn("flex items-end rounded-[1.5rem] p-7 sm:p-9 lg:p-10", t.tone, t.at)}>
-                <p className="text-[1rem] leading-[1.9] text-ink-2 lg:text-[1.04rem]">{t.text}</p>
+              // On a phone the words read like a journal: numbered, on a hairline, no box; from a tablet up, the tinted tile.
+              <div key={i} data-tile className={cn("flex flex-col justify-between gap-6 border-t border-line-2 pt-5 md:rounded-[1.5rem] md:border-0 md:p-9 lg:p-10", t.tone, "max-md:bg-transparent", t.at)}>
+                <span className="font-serif text-[0.95rem] italic text-brand-500">{String(TEXTS.indexOf(t) + 1).padStart(2, "0")}</span>
+                <p className="text-[1rem] leading-[1.8] text-ink-2 lg:text-[1.04rem] lg:leading-[1.9]">{t.text}</p>
               </div>
             ),
           )}
@@ -111,24 +122,24 @@ export default function Story() {
 
       {/* The vision, in a soft shade of the page */}
       <section className="bg-sand-200/60">
-        <Reveal className="wrap relative py-20 lg:py-32">
+        <Reveal className="wrap relative py-16 lg:py-32">
           <p className="text-[1rem] text-ink-3">{vision.title}</p>
-          <p className="mt-8 max-w-3xl font-serif text-[clamp(1.3rem,2.2vw,1.85rem)] font-normal leading-[1.5] text-ink lg:mt-12">{vision.statement}</p>
+          <p className="mt-8 max-w-3xl border-l-2 border-brand-500 pl-5 font-serif text-[clamp(1.3rem,2.2vw,1.85rem)] font-normal leading-[1.5] text-ink lg:mt-12 lg:pl-8">{vision.statement}</p>
           <p className="mt-10 max-w-md text-[1.02rem] leading-relaxed text-ink-2 lg:mt-12">{vision.text}</p>
         </Reveal>
       </section>
 
       {/* The name, taken apart */}
-      <section className="wrap py-20 lg:py-32">
+      <section className="wrap py-16 lg:py-32">
         <Reveal>
           <h2 className="text-center font-serif text-[clamp(1.25rem,2vw,1.6rem)] font-normal text-ink-2">{name.title}</h2>
           <div className="mx-auto mt-10 grid max-w-md grid-cols-2 items-end gap-4 text-center sm:gap-8 lg:mt-12">
             <div className="lg:text-right">
-              <p className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-ink">Qui</p>
+              <p className="font-serif text-[clamp(2.6rem,5vw,3.4rem)] leading-[1.1] text-ink">Qui</p>
               <p className="mt-2 text-[0.9rem] text-ink-3 lg:pr-3">representing quality</p>
             </div>
             <div className="lg:text-left">
-              <p className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-brand-500">Vogue</p>
+              <p className="font-serif text-[clamp(2.6rem,5vw,3.4rem)] leading-[1.1] text-brand-500">Vogue</p>
               <p className="mt-2 text-[0.9rem] text-ink-3 lg:pl-3">representing fashion</p>
             </div>
           </div>
@@ -140,7 +151,7 @@ export default function Story() {
       </section>
 
       {/* Closing line and one way on */}
-      <section className="bg-sand-200/60 py-20 text-center lg:py-32">
+      <section className="bg-sand-200/60 py-16 text-center lg:py-32">
         <Reveal className="wrap">
           <p className="mx-auto max-w-2xl font-serif text-[clamp(1.4rem,2.5vw,2.1rem)] leading-[1.3]">{STORY.closing}</p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
