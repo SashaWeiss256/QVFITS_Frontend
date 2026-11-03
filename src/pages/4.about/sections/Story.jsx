@@ -80,23 +80,18 @@ export default function Story() {
 
   return (
     <>
-      {/* Hero: short. On a laptop the words sit on cream with the portrait filling the right half; on a
-          phone the portrait fills it and the words rest on a dark fade at its foot. */}
-      <section className="relative isolate flex min-h-[min(66svh,560px)] items-end overflow-hidden bg-ink lg:min-h-[min(78svh,720px)] lg:items-center lg:bg-transparent">
-        <Pic id="about-1" alt="A QVFITs pink zip top and leggings in a sunlit Kampala studio" eager sizes="(min-width: 1024px) 52vw, 100vw" className="!absolute inset-0 -z-10 [&_img]:object-[50%_30%] lg:left-auto lg:w-[52%] lg:rounded-bl-[10rem]" />
-        <div className="absolute inset-0 -z-10 bg-linear-to-t from-ink/90 via-ink/35 to-transparent lg:hidden" aria-hidden="true" />
-        <div className="wrap w-full pb-10 pt-40 lg:py-20">
-          <div className="max-w-xl lg:max-w-[42%]">
-            <p className="kicker kicker--light lg:text-brand-500">{STORY.kicker} · Est. 2023</p>
-            <h1 className="font-serif text-[clamp(2.3rem,4.8vw,4.4rem)] font-normal leading-[1.08] text-cream lg:text-ink">
-              <span className="block">Inspired by Movement.</span>
-              <span className="block italic text-brand-200 lg:text-brand-500">Driven by Vision.</span>
+      {/* Hero: short and quiet, in the home page's manner. The studio portrait full bleed under a dark
+          grade, one line of headline, one sentence, one way on. */}
+      <section className="relative isolate flex min-h-[min(68svh,560px)] items-end overflow-hidden bg-ink lg:min-h-[min(72svh,640px)]">
+        <Pic id="about-1" alt="A QVFITs pink zip top and leggings in a sunlit Kampala studio" eager sizes="100vw" className="!absolute inset-0 -z-10 [&_img]:object-[60%_28%] lg:[&_img]:object-[60%_8%]" />
+        <div className="absolute inset-0 -z-10 bg-linear-to-t from-ink/80 via-ink/25 to-transparent lg:bg-linear-to-r lg:from-ink/70 lg:via-ink/20" aria-hidden="true" />
+        <div className="wrap w-full pb-12 pt-40 lg:pb-16">
+          <div className="max-w-2xl">
+            <h1 className="font-display text-[clamp(1.9rem,3.6vw,3rem)] font-normal leading-[1.08] tracking-[-0.02em] text-cream">
+              Inspired by Movement. <span className="text-cream/70">Driven by Vision.</span>
             </h1>
-            <p className="mt-5 max-w-md text-[1rem] leading-relaxed text-cream/85 lg:mt-7 lg:font-serif lg:text-[1.15rem] lg:leading-[1.7] lg:text-ink-2">{STORY.paragraphs[0]}</p>
-            <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 lg:mt-10">
-              <Link className="btn btn--primary" to="/shop">Shop the collection</Link>
-              <a className="link-arrow text-[0.92rem] text-cream lg:text-ink" href="#story">Read our story</a>
-            </div>
+            <p className="mt-3 max-w-xl text-[1rem] leading-snug text-cream/85 sm:mt-4 sm:text-[1.1rem]">{STORY.paragraphs[0]}</p>
+            <a className="mt-6 inline-flex min-h-12 items-center rounded-full bg-cream px-6 text-[0.92rem] font-medium text-ink transition-colors duration-300 hover:bg-white sm:mt-8" href="#story">Read our story</a>
           </div>
         </div>
       </section>
