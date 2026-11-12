@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from "react
 import { useSettings } from "@/store/tanstackStore/queries/site";
 import { readStored, writeStored } from "@/utils/storage";
 import { formatIn } from "@/utils/formatCurrency";
+import { useLiveRates } from "@/utils/liveRates";
 
 const CurrencyContext = createContext(null);
 const KEY = "qvfits:currency";
@@ -17,7 +18,9 @@ export function CurrencyProvider({ children }) {
   const { data: settings } = useSettings();
   const [code, setCode] = useState(() => readStored(KEY, "UGX"));
 
-  const currencies = useMemo(() => settings?.currencies ?? [UGX], [settings]);
+  // Rates refresh by themselves (utils/liveRates); the ones in Settings are the fallback.
+  const live = useLiveRates(settings?.currencies);
+  const currencies = useMemo(() => live.currencies ?? [UGX], [live.currencies]);
   const active = currencies.find((c) => c.code === code) ?? currencies[0] ?? UGX;
 
   const choose = useCallback((next) => {
@@ -29,14 +32,15 @@ export function CurrencyProvider({ children }) {
     () => ({
       currency: active,
       currencies,
-      ratesUpdated: settings?.ratesUpdated,
+      ratesUpdated: live.updated ?? settings?.ratesUpdated,
+      ratesAreLive: live.live,
       setCurrency: choose,
       /** A UGX amount in the visitor's chosen currency. */
       money: (ugx) => formatIn(active, ugx),
       /** Always UGX, for anything that is a promise of a price (orders, WhatsApp). */
       moneyBase: (ugx) => formatIn(UGX, ugx),
     }),
-    [active, currencies, settings, choose],
+    [active, currencies, live.updated, live.live, settings, choose],
   );
 
   return <CurrencyContext.Provider value={value}>{children}</CurrencyContext.Provider>;

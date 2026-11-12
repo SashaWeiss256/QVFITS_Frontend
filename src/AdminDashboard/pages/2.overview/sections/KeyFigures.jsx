@@ -12,7 +12,7 @@ export default function KeyFigures({ data, loading, days, money }) {
   const isNew = (now, before) => (!before && now ? "New this period" : versus);
 
   return (
-    <section aria-label="Key figures" className="grid grid-cols-1 gap-px overflow-hidden rounded-r-lg border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
+    <section aria-label="Key figures" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <StatCard label="Revenue" icon={Wallet} loading={loading} value={money(data?.revenue ?? 0)} change={data && change(data.revenue, data.previous.revenue)} note={data && isNew(data.revenue, data.previous.revenue)} />
       <StatCard label="Paid orders" icon={ShoppingBag} loading={loading} value={data?.orders ?? 0} change={data && change(data.orders, data.previous.orders)} note={data && isNew(data.orders, data.previous.orders)} />
       <StatCard label="Average order" icon={Receipt} loading={loading} value={money(data?.averageOrder ?? 0)} note="Revenue over paid orders" />

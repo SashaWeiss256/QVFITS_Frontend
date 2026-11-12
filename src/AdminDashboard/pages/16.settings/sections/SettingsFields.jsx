@@ -25,25 +25,27 @@ export default function SettingsFields({ groups, draft, set }) {
   ));
 }
 
-/** Display currencies and their rates. UGX is what the shop settles in. */
+/**
+ * Display currencies. Rates are not typed in: the shop fetches the day's rates
+ * by itself and shows them to shoppers, falling back to the last ones it had.
+ * What is set here is which currencies are offered and how many decimals each
+ * shows. UGX is what the shop settles in.
+ */
 export function Currencies({ draft, set }) {
   return (
-    <Panel title="Currencies">
-      <p className="mt-0 text-sm text-ink-3">Shoppers abroad can view prices in these. Rates go stale; the date shows on the shop so an old rate looks old.</p>
-      <Field label="Rates last checked" className="mb-4 max-w-xs" value={draft.ratesUpdated} onChange={(e) => set("ratesUpdated", e.target.value)} />
+    <Panel title="Currencies" hint="Shoppers abroad can view prices in these. Rates update by themselves every few hours, so there is nothing to type. Orders are always charged in UGX.">
       <ListEditor
         // Currencies need an id for the list editor, so the code stands in for it and is dropped again on save.
         items={draft.currencies.map((c) => ({ ...c, id: c.code }))}
         onChange={(items) => set("currencies", items.map(({ id: _id, ...c }) => c))}
         newItem={() => ({ id: `new-${Date.now()}`, code: "", label: "", perUGX: 0, decimals: 2 })}
         addLabel="Add a currency"
-        itemLabel={(c) => c.code || "New currency"}
+        itemLabel={(c) => (c.code ? `${c.code}  ${c.label}` : "New currency")}
         render={(c, update) => (
-          <div className="grid gap-3 sm:grid-cols-4">
-            <Field label="Code" value={c.code} disabled={c.code === "UGX" && c.perUGX === 1} onChange={(e) => update({ code: e.target.value.toUpperCase().slice(0, 3) })} />
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Field label="Code" hint="Three letters, such as KES" value={c.code} disabled={c.code === "UGX" && c.perUGX === 1} onChange={(e) => update({ code: e.target.value.toUpperCase().slice(0, 3) })} />
             <Field label="Name" value={c.label} onChange={(e) => update({ label: e.target.value })} />
-            <Field label="Per 1 UGX" value={c.perUGX} disabled={c.code === "UGX"} onChange={(e) => update({ perUGX: Number(e.target.value) || 0 })} />
-            <Field label="Decimals" inputMode="numeric" value={c.decimals} onChange={(e) => update({ decimals: Number(e.target.value) || 0 })} />
+            <Field label="Decimals shown" hint="0 for whole amounts" inputMode="numeric" value={c.decimals} onChange={(e) => update({ decimals: Number(e.target.value) || 0 })} />
           </div>
         )}
       />

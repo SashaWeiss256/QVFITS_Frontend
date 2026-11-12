@@ -6,6 +6,7 @@ import { LazyMotion, MotionConfig } from "motion/react";
 import NetworkStatus from "@/components/ui/NetworkStatus";
 import { AdminAuthProvider } from "@/store/context/AdminAuthContext";
 import { CartProvider } from "@/store/context/CartContext";
+import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { CurrencyProvider } from "@/store/context/CurrencyContext";
 import { CustomerAuthProvider } from "@/store/context/CustomerAuthContext";
 import { WishlistProvider } from "@/store/context/WishlistContext";
@@ -28,11 +29,13 @@ export default function AppProviders({ children }) {
         <MotionConfig reducedMotion="user">
           <AdminAuthProvider>
             <CustomerAuthProvider>
+              <LocaleProvider>
               <CurrencyProvider>
                 <WishlistProvider>
                   <CartProvider>{children}</CartProvider>
                 </WishlistProvider>
               </CurrencyProvider>
+              </LocaleProvider>
             </CustomerAuthProvider>
           </AdminAuthProvider>
         </MotionConfig>

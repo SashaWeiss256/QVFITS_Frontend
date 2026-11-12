@@ -1,18 +1,20 @@
 /* Buy Panel (from Quivogue product.html) */
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Heart } from "lucide-react";
 
-import { askVee } from "@/components/assistant/askVee";
 import PriceTag from "@/components/storefront/PriceTag";
 import { useCart } from "@/store/context/CartContext";
 import { useWishlist } from "@/store/context/WishlistContext";
 import { notify } from "@/store/tanstackStore/notices";
 import { useFacets } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
+import { glideTo } from "@/utils/smoothScroll";
 import { anyInStock, forColor, inStock, productSizes } from "@/utils/stockLevel";
 import ColorPicker from "./ColorPicker";
+import { VIEWS_ID } from "./Gallery";
 import MobileAddBar from "./MobileAddBar";
 import Details from "./Details";
+import ShareProduct from "./ShareProduct";
 import SizePicker from "./SizePicker";
 
 // The first colour and the first size in stock are chosen to start, so one
@@ -32,10 +34,24 @@ export default function BuyPanel({ product: p, onColor }) {
     onColor?.(idOf(c));
     const next = forColor(p, idOf(c));
     if (!size || !inStock(next, size)) setSize(productSizes(next).find((s) => inStock(next, s)) ?? null);
+    showViews();
   };
+  // Below a laptop the photos sit above the swatches, so a new colour would change out of sight:
+  // glide up to them when the large view has scrolled under the header. A laptop keeps them beside.
+  const showViews = () => {
+    const views = document.getElementById(VIEWS_ID);
+    if (!views || window.matchMedia("(min-width: 1024px)").matches) return;
+    if (views.getBoundingClientRect().top < 72) glideTo(views);
+  };
+  // The gallery follows the colour shown, from the first one onwards.
+  const colorId = idOf(color);
+  useEffect(() => {
+    if (colorId) onColor?.(colorId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [colorId]);
   const sold = !anyInStock(p);
   const wished = wishlist.has(p.id);
-  const swatch = (c) => facets?.colors.find((x) => x.name === c)?.swatch ?? "var(--line-2)";
+  const swatch = (c) => facets?.colors.find((x) => x.name === c)?.swatch ?? "var(--color-line-2)";
 
   const cta = useRef(null);
   const sizes = useRef(null);
@@ -51,38 +67,45 @@ export default function BuyPanel({ product: p, onColor }) {
   };
 
   return (
-    <div className="pdp__info">
-      <span className="card__cat">{p.category}</span>
-      <h1 className="mt-1 mb-0 text-[clamp(1.6rem,3.2vw,2.2rem)]">{p.name}</h1>
-      <div className="pdp__price"><PriceTag product={p} /></div>
-      <p className="lede text-base">{p.blurb}</p>
-      {sold && <div className="pill-note bg-brand-100 text-brand-600">Fully sold out right now. Ask us on WhatsApp whether it&apos;s coming back.</div>}
+    <div>
+      {/* Name and price */}
+      <h1 className="text-[clamp(1.8rem,2.8vw,2.5rem)] font-normal leading-[1.1]">{p.name}</h1>
+      <p className="mt-4 text-[1.15rem] tabular-nums text-ink-2 [&_b]:font-normal [&_b]:text-brand-600 [&_s]:mr-2 [&_s]:text-ink-4">
+        <PriceTag product={p} />
+      </p>
+      <p className="mt-5 max-w-md text-[0.98rem] leading-relaxed text-ink-3">{p.blurb}</p>
+      {sold && <p className="mt-5 border-l-2 border-brand-500 pl-4 text-[0.92rem] text-ink-2">Fully sold out right now. Ask us on WhatsApp whether it&apos;s coming back.</p>}
 
-      <ColorPicker colors={p.colors} chosen={color} onChoose={chooseColor} swatch={swatch} />
-      <div ref={sizes}>
-        <SizePicker product={shown} chosen={size} onChoose={setSize} />
+      {/* Choices */}
+      <div className="mt-8 space-y-7 border-t border-line pt-7">
+        <ColorPicker colors={p.colors} chosen={color} onChoose={chooseColor} swatch={swatch} />
+        <div ref={sizes}>
+          <SizePicker product={shown} chosen={size} onChoose={setSize} />
+        </div>
       </div>
 
       {/* Add to bag and save */}
-      <div className="pdp__cta" ref={cta}>
-        <button type="button" className="btn btn--primary btn--lg" disabled={sold} onClick={addToBag}>
+      <div className="mt-7 flex gap-3" ref={cta}>
+        <button type="button" className="btn btn--primary btn--lg flex-1" disabled={sold} onClick={addToBag}>
           {sold ? "Sold out" : "Add to bag"}
         </button>
         <button
           type="button"
-          className={cn("btn btn--ghost btn--lg heart-inline", wished && "is-on")}
+          className={cn("btn btn--ghost btn--lg w-[56px] px-0", wished && "border-brand-500 text-brand-500")}
           aria-label={wished ? "Remove from wishlist" : "Save to wishlist"}
           aria-pressed={wished}
           onClick={() => wishlist.toggle(p.id)}
         >
-          <Heart className="h-4.75 w-4.75" aria-hidden="true" />
+          <Heart className="h-5 w-5" strokeWidth={1.5} fill={wished ? "currentColor" : "none"} aria-hidden="true" />
         </button>
+        {/* Share: one quiet icon beside save */}
+        <ShareProduct product={p} />
       </div>
-      <button type="button" className="btn btn--soft btn--block mt-2.5" onClick={() => askVee(`What size am I in the ${p.name}?`)}>
-        Not sure on size? Ask Vee
-      </button>
 
-      <Details product={p} />
+      {/* Details */}
+      <div className="mt-9">
+        <Details product={p} />
+      </div>
       <MobileAddBar product={p} size={size} sold={sold} onAdd={addToBag} watch={cta} />
     </div>
   );

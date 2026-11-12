@@ -28,9 +28,15 @@ export interface HeroSlide extends Linked {
   title: string;
   text: string;
   cta: string;
+  /** A few words written in script above the headline, as in a signature, e.g. "Quivogue". */
+  script?: string;
   /** The round tag on the picture, e.g. "Sale". */
   sticker?: string;
   image?: Picture;
+  /** The picture is three portraits side by side (a triptych); the hero shows each as its own panel. */
+  triptych?: boolean;
+  /** For a single landscape picture: where the model stands, as a percentage from the left, so a phone crop keeps her in view. */
+  focus?: number;
   live: boolean;
 }
 

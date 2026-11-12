@@ -91,7 +91,7 @@ export default function Returns() {
           <Link className="link-arrow text-sm" to={`/admin/orders?order=${open.orderId}`}>Open order {open.orderRef}</Link>
           {/* Decision: only the next steps allowed from this state are offered; Refund needs the refund permission and never more than is due */}
           {can("orders", "edit") && NEXT_RETURN_STATUS[open.status].length > 0 && (
-            <div className="mt-4 grid gap-3 rounded-r-md bg-white p-4 shadow-sh-1">
+            <div className="mt-4 grid gap-3 rounded-[14px] bg-white p-4 shadow-sh-1">
               {NEXT_RETURN_STATUS[open.status].includes("refunded") && (
                 <div className="grid gap-1">
                   <Field

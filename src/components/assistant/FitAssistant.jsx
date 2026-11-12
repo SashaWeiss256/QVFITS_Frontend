@@ -1,11 +1,39 @@
 /* Fit Assistant (from Quivogue js/assistant.js widget) */
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { ArrowRight, X } from "lucide-react";
 
 import { assistantGreeting, forgetAssistant, useAskAssistant, useSettings } from "@/store/tanstackStore/queries/site";
+import { cn } from "@/utils/cn";
 import AssistantMessage from "./AssistantMessage";
 import { AssistantMark } from "./AssistantMark";
 import { onAskVee } from "./askVee";
+import { t } from "@/i18n/translate";
+
+// True while the home page's full-screen hero fills the top of the window, so the launcher stays out of the picture.
+function useOnHero() {
+  const { pathname } = useLocation();
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    let io;
+    let tries = 0;
+    // The page may still be loading, so look for the hero a few times.
+    const find = setInterval(() => {
+      const el = document.querySelector("[data-hero]");
+      if (el && "IntersectionObserver" in window) {
+        clearInterval(find);
+        io = new IntersectionObserver(([en]) => setOn(en.isIntersecting), { rootMargin: "0px 0px -45% 0px" });
+        io.observe(el);
+      } else if (++tries > 20) clearInterval(find);
+    }, 150);
+    return () => {
+      clearInterval(find);
+      io?.disconnect();
+      setOn(false);
+    };
+  }, [pathname]);
+  return on;
+}
 
 const bot = (text) => ({ from: "bot", blocks: [{ type: "text", paras: [text] }] });
 
@@ -16,6 +44,7 @@ const bot = (text) => ({ from: "bot", blocks: [{ type: "text", paras: [text] }] 
  */
 export default function FitAssistant() {
   const [open, setOpen] = useState(false);
+  const onHero = useOnHero();
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
   const ask = useAskAssistant();
@@ -74,52 +103,81 @@ export default function FitAssistant() {
   const last = thread[thread.length - 1];
   const ownChips = last.blocks?.some((b) => b.type === "chips");
 
+  const name = vee?.name || "Vee";
+  const CHIP = "min-h-9 border border-ink/20 px-3.5 text-[0.82rem] text-ink-2 transition-colors hover:border-ink hover:text-ink";
+
   return (
     <>
-      <button type="button" className={`asst-btn ${open ? "is-open" : ""}`} aria-label="Open the Style Assistant" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+      {/* Launcher: a round button on every screen */}
+      <button
+        type="button"
+        className={cn(
+          "fixed bottom-[calc(1rem+env(safe-area-inset-bottom)+var(--addbar,0px))] right-4 z-[70] inline-flex h-12 w-12 items-center justify-center rounded-full bg-ink text-[0.88rem] text-cream shadow-sh-3 transition-all duration-500 ease-q hover:bg-brand-600",
+          "sm:right-5 lg:bottom-5 lg:h-[3.25rem] lg:w-[3.25rem]",
+          (open || onHero) && "pointer-events-none translate-y-4 opacity-0",
+        )}
+        aria-label="Open the Style Assistant"
+        aria-expanded={open}
+        onClick={() => setOpen(true)}
+      >
         <AssistantMark />
+        <span className="sr-only">Ask {name}</span>
       </button>
 
-      <section className={`asst ${open ? "is-open" : ""}`} aria-live="polite" aria-label="Style Assistant">
-        <header className="asst__head">
-          <div className="asst__av"><AssistantMark /></div>
-          <div>
-            <strong>{vee?.name || "Vee"}</strong>
-            <span>Your QV fit guide</span>
+      {/* Panel: a full sheet on a phone, a tall card on a laptop */}
+      <section
+        className={cn(
+          "fixed inset-0 z-[90] flex flex-col bg-cream text-ink transition-all duration-500 ease-q sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(700px,calc(100svh-40px))] sm:w-[420px] sm:shadow-sh-4",
+          open ? "translate-y-0 opacity-100" : "pointer-events-none invisible translate-y-6 opacity-0",
+        )}
+        aria-live="polite"
+        aria-label="Style Assistant"
+      >
+        {/* Header */}
+        <header className="flex items-center gap-3 border-b border-line px-6 py-5">
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-brand-600 text-cream"><AssistantMark /></span>
+          <div className="min-w-0 flex-1">
+            <p className="font-serif text-[1.4rem] leading-none">{name}</p>
+            <p className="mt-1 text-[0.8rem] text-ink-3">Your QVFITS stylist</p>
           </div>
-          <button type="button" className="asst__close" aria-label="Close" onClick={() => setOpen(false)}>
-            <X className="h-[19px] w-[19px]" aria-hidden="true" />
+          <button type="button" className="grid h-10 w-10 place-items-center text-ink-3 hover:text-ink" aria-label={t("Close")} onClick={() => setOpen(false)}>
+            <X className="h-[19px] w-[19px]" strokeWidth={1.5} aria-hidden="true" />
           </button>
         </header>
 
-        <div className="asst__body" ref={bodyRef}>
+        {/* Thread */}
+        <div data-lenis-prevent className="flex flex-1 flex-col gap-3 overflow-y-auto px-6 py-6 [&>*]:shrink-0" ref={bodyRef}>
           {thread.map((m, i) => <AssistantMessage key={i} message={m} onLeave={() => setOpen(false)} onAsk={send} isLast={i === thread.length - 1 && !ask.isPending} />)}
           {ask.isPending && (
-            <div className="msg msg--bot msg--typing"><span className="typing"><i /><i /><i /></span></div>
+            <div className="flex gap-1 self-start py-2" aria-label="Typing">
+              {[0, 1, 2].map((d) => <i key={d} className="h-1.5 w-1.5 animate-pulse rounded-full bg-ink-3" style={{ animationDelay: `${d * 160}ms` }} />)}
+            </div>
           )}
         </div>
 
-        {!ask.isPending && !ownChips && (
-          <div className="asst__chips">
-            {chips.map((c) => <button key={c} type="button" onClick={() => send(c)}>{c}</button>)}
+        {/* Starter questions */}
+        {!ask.isPending && !ownChips && chips.length > 0 && (
+          <div className="flex flex-wrap gap-2 px-6 pb-4">
+            {chips.map((c) => <button key={c} type="button" className={CHIP} onClick={() => send(c)}>{c}</button>)}
           </div>
         )}
 
-        <div className="asst__foot">
+        {/* Composer */}
+        <div className="border-t border-line px-6 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4">
           <form
-            className="asst__form"
+            className="flex items-center border-b border-ink/30 focus-within:border-ink"
             onSubmit={(e) => {
               e.preventDefault();
               send(draft);
               setDraft("");
             }}
           >
-            <input ref={inputRef} value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Ask me anything…" autoComplete="off" aria-label="Message the Style Assistant" />
-            <button className="asst__send" type="submit" aria-label="Send"><ArrowRight className="h-[15px] w-[15px]" aria-hidden="true" /></button>
+            <input ref={inputRef} value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Ask about fit, fabric or a look" autoComplete="off" aria-label="Message the Style Assistant" className="min-h-12 min-w-0 flex-1 bg-transparent text-[0.95rem] outline-none placeholder:text-ink-4" />
+            <button className="grid h-10 w-10 place-items-center text-ink hover:text-brand-600" type="submit" aria-label="Send"><ArrowRight className="h-[18px] w-[18px]" strokeWidth={1.5} aria-hidden="true" /></button>
           </form>
-          <p className="asst__note">
-            Answers come from live QV stock. For orders, our team replies on WhatsApp.{" "}
-            <button type="button" className="asst__forget" onClick={() => { forgetAssistant(); setMessages((m) => [...m, bot("Done. I have forgotten your name, size and budget.")]); }}>Forget me</button>
+          <p className="mt-3 text-[0.75rem] leading-relaxed text-ink-3">
+            Answers come from live stock. Orders are handled by our team on WhatsApp.{" "}
+            <button type="button" className="underline underline-offset-2 hover:text-ink" onClick={() => { forgetAssistant(); setMessages((m) => [...m, bot("Done. I have forgotten your name, size and budget.")]); }}>Forget me</button>
           </p>
         </div>
       </section>

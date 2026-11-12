@@ -16,13 +16,13 @@ export default function TagInput({ id, value = [], onChange, placeholder = "Type
   };
 
   return (
-    <div className="rounded-r-sm border border-line-2 bg-white p-2">
+    <div className="rounded-[10px] border border-line-2 bg-white p-2">
       {value.length > 0 && (
         <ul className="m-0 mb-2 flex list-none flex-wrap gap-1.5 p-0">
           {value.map((v) => (
             <li key={v} className="inline-flex items-center gap-1 rounded-r-pill bg-brand-50 py-1 pr-1 pl-3 text-sm text-brand-600">
               {v}
-              <button type="button" className="grid h-6 w-6 place-items-center rounded-full hover:bg-brand-100" aria-label={`Remove ${v}`} onClick={() => onChange(value.filter((x) => x !== v))}>
+              <button type="button" className="relative grid h-6 w-6 place-items-center rounded-full after:absolute after:-inset-2 after:content-[''] hover:bg-brand-100" aria-label={`Remove ${v}`} onClick={() => onChange(value.filter((x) => x !== v))}>
                 <X className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
             </li>

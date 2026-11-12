@@ -1,6 +1,6 @@
 /* Newsletter Campaigns */
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { CalendarClock, FilePenLine, Plus, Send, Users } from "lucide-react";
 
 import Button from "@/components/ui/Button";
 import StatusChip from "@/components/ui/StatusChip";
@@ -10,6 +10,8 @@ import { formatDateTime } from "@/utils/format";
 import DataTable from "@/AdminDashboard/components/DataTable";
 import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
+import StatCard from "@/AdminDashboard/components/StatCard";
+import { Notice, StatRow } from "../parts";
 import CampaignEditor from "./CampaignEditor";
 
 const BLANK = { subject: "", previewText: "", heading: "", body: "", productIds: [], cta: { label: "Shop now", target: {} } };
@@ -27,13 +29,23 @@ export default function Campaigns() {
   const [editing, setEditing] = useState(null);
   const confirmed = subs.filter((s) => s.status === "subscribed").length;
 
+  const by = (st) => campaigns.filter((x) => x.status === st);
+  const next = by("scheduled").sort((a, b) => Date.parse(a.sendAt) - Date.parse(b.sendAt))[0];
+
   return (
     <>
       <PageHeader
-        lede={`Emails to the ${confirmed} confirmed ${confirmed === 1 ? "subscriber" : "subscribers"}. Until an email service is connected, they land in the Outbox.`}
+        lede="Write an email, preview it, then send it now or schedule it. Only confirmed subscribers receive it, each with their own unsubscribe link."
         action={can("newsletter", "edit") && <Button onClick={() => setEditing(BLANK)}><Plus className="h-4 w-4" aria-hidden="true" /> New campaign</Button>}
       />
-      <Panel>
+      <StatRow label="Campaigns">
+        <StatCard label="Audience" icon={Users} value={confirmed} note="Confirmed subscribers" />
+        <StatCard label="Drafts" icon={FilePenLine} loading={isLoading} value={by("draft").length} note="Not sent yet" />
+        <StatCard label="Scheduled" icon={CalendarClock} loading={isLoading} value={by("scheduled").length} note="Waiting for their time" />
+        <StatCard label="Sent" icon={Send} loading={isLoading} value={by("sent").length} note="Kept, with who they reached" />
+      </StatRow>
+      {next && <Notice icon={CalendarClock} title={`Next send: ${next.subject || "Untitled"}`}>Goes out {formatDateTime(next.sendAt)} to {confirmed} {confirmed === 1 ? "subscriber" : "subscribers"}.</Notice>}
+      <Panel title="All campaigns" hint="Open one to edit it. A sent campaign opens read only.">
         <DataTable
           rows={campaigns}
           loading={isLoading}
@@ -44,7 +56,7 @@ export default function Campaigns() {
             { key: "recipients", label: "Reached", align: "right", render: (c) => (c.status === "sent" ? c.recipients : <span className="text-ink-4">-</span>) },
           ]}
           onRowClick={(c) => setEditing(c)}
-          empty="No campaigns yet. Write the first: a new drop, a restock, an offer."
+          empty="No campaigns yet. Write the first one: a new drop, a restock or an offer."
         />
       </Panel>
       {editing && <CampaignEditor key={editing.id ?? "new"} initial={editing} confirmed={confirmed} onClose={() => setEditing(null)} />}

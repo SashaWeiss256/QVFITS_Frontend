@@ -64,9 +64,9 @@ function Editor({ doc }) {
         {tab === "payments" && <PaymentMethods canEdit={canEdit} />}
         {tab === "currencies" && <Currencies draft={draft} set={set} />}
         {tab === "display" && (
-          <Panel title="Products per row" hint="How the shop grid starts on each screen. Shoppers can switch between the two sizes their screen offers.">
+          <Panel title="Products per row" hint="How the shop grid starts on each screen. Shoppers can switch between the sizes their screen offers with View on the shop page. Five per row shows on wide screens (1440px and up); smaller laptops show four.">
             <div className="grid gap-4 sm:grid-cols-3">
-              {[["phone", "Phones", [1, 2]], ["tablet", "Tablets", [2, 3]], ["desktop", "Laptops and desktops", [3, 4]]].map(([key, label, choices]) => (
+              {[["phone", "Phones", [1, 2]], ["tablet", "Tablets", [2, 3]], ["desktop", "Laptops and desktops", [3, 4, 5]]].map(([key, label, choices]) => (
                 <Field
                   key={key}
                   label={label}

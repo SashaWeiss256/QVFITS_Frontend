@@ -29,13 +29,13 @@ function Editor({ doc }) {
   // A measurement typed as text becomes a number; anything else counts as 0.
   const num = (v) => Number(String(v).replace(/[^\d.]/g, "")) || 0;
   // One look for every cell, so the grid lines up.
-  const cell = "w-16 rounded-r-sm border border-line-2 px-2 py-1.5 text-center";
+  const cell = "w-16 rounded-[10px] border border-line-2 px-2 py-1.5 text-center";
 
   return (
     <>
       <Panel>
         {/* Chart: readable without the edit permission, editable with it */}
-        <fieldset disabled={!canEdit} className="m-0 overflow-x-auto border-0 p-0">
+        <fieldset disabled={!canEdit} className="m-0 min-w-0 overflow-x-auto border-0 p-0">
           <table className="w-full border-collapse text-sm">
             {/* Column Headings */}
             <thead>

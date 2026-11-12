@@ -36,7 +36,7 @@ export default function GroupDialog({ value, onChange, onClose, onSave, saving }
             <fieldset className="m-0 grid gap-2 border-0 p-0">
               <legend className="mb-1 text-sm font-semibold text-ink-2">Kind</legend>
               {KINDS.map((k) => (
-                <label key={k.id} className={cn("flex cursor-pointer gap-3 rounded-r-md border p-3 transition-colors duration-150", g.kind === k.id ? "border-brand-300 bg-brand-50" : "border-line hover:bg-cream")}>
+                <label key={k.id} className={cn("flex cursor-pointer gap-3 rounded-[14px] border p-3 transition-colors duration-150", g.kind === k.id ? "border-brand-300 bg-brand-50" : "border-line hover:bg-cream")}>
                   <input type="radio" name="group-kind" className="mt-1" checked={g.kind === k.id} onChange={() => set({ kind: k.id })} />
                   <span>
                     <strong className="block text-sm">{k.label}</strong>
@@ -48,7 +48,7 @@ export default function GroupDialog({ value, onChange, onClose, onSave, saving }
           )}
 
           {/* Where It Shows: the Shop menu, the filter drawer, and the shop at all */}
-          <div className="grid gap-3 rounded-r-md bg-cream p-4">
+          <div className="grid gap-3 rounded-[14px] bg-cream p-4">
             <Toggle checked={g.inMenu} onChange={(inMenu) => set({ inMenu })} label="Show in the Shop menu" hint="A column of its items, in this group's place." />
             <Toggle checked={g.inFilters} onChange={(inFilters) => set({ inFilters })} label="Show as a shop filter" hint={g.kind === "edits" ? "Its New in, Best sellers, Sale and Kits items become choices in the Filter drawer. Order it under Filter and sort." : "A section of the Filter drawer. Order it under Filter and sort."} />
             {g.kind !== "category" && <Toggle checked={g.active} onChange={(active) => set({ active })} label="In the shop" hint="Off hides the whole group, its pages and links; products keep their tags." />}

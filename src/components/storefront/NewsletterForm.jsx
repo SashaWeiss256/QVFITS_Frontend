@@ -1,22 +1,27 @@
 /* Newsletter Form */
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 import { demoEmailLink, useNewsletterConsent, useSubscribe } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
+import { t } from "@/i18n/translate";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Join the newsletter, from the footer, the home page or anywhere else. The
- * words agreed to sit under the button, and are stored with the address.
- * Double opt-in: the address is only on the list once the emailed link is
- * opened. Honest seam: until an email service is connected the email waits
- * in the admin's outbox; a dev build shows its link here to try the flow.
+ * Join the newsletter, from the footer or anywhere else: one field on a
+ * single hairline with an arrow button at its end, the agreed words under
+ * it (stored with the address). Double opt-in: the address is only on the
+ * list once the emailed link is opened. Until an email service is connected
+ * the email waits in the admin's outbox; a dev build shows its link here.
+ * tone="brand" (or "dark") is for dark grounds: cream line and type.
+ * variant="boxed" swaps the hairline for a solid field with the gradient
+ * button attached (stacked full width on a phone).
  */
-export default function NewsletterForm({ source, placeholder = "Your email", cta = "Sign up", className, formId, tone = "light" }) {
-  // On the brand gradient the form is one white pill (field and button together) and the words turn white.
-  const onBrand = tone === "brand";
+export default function NewsletterForm({ source, placeholder = "Your email address", cta = "Sign up", className, formId, tone = "light", variant = "line" }) {
+  const boxed = variant === "boxed";
+  const dark = tone === "brand" || tone === "dark";
   const [email, setEmail] = useState("");
   const [result, setResult] = useState(null);
   const subscribe = useSubscribe();
@@ -41,17 +46,52 @@ export default function NewsletterForm({ source, placeholder = "Your email", cta
 
   return (
     <div className={className}>
-      <form className={cn("news__form", onBrand && "news__form--pill")} id={formId} noValidate onSubmit={onSubmit}>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={placeholder} aria-label="Email address" autoComplete="email" required />
-        <button className="btn btn--primary" type="submit" disabled={subscribe.isPending}>{cta}</button>
+      {/* Field and button: on one hairline, or boxed */}
+      <form
+        className={cn(
+          boxed ? "flex flex-col gap-2 sm:flex-row sm:gap-0" : "flex items-center border-b transition-colors focus-within:border-current",
+          !boxed && (dark ? "border-cream/40" : "border-ink/30"),
+        )}
+        id={formId}
+        noValidate
+        onSubmit={onSubmit}
+      >
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={placeholder}
+          aria-label={t("Email address")}
+          autoComplete="email"
+          required
+          className={cn(
+            "min-h-14 min-w-0 flex-1 bg-transparent text-[1rem] outline-none",
+            dark ? "placeholder:text-cream/45" : "placeholder:text-ink-4",
+            boxed && "border px-5 transition-colors focus:border-cream/80",
+            boxed && (dark ? "border-cream/25 bg-cream/[0.06] text-cream" : "border-line-2 bg-white focus:border-ink"),
+          )}
+        />
+        <button
+          className={cn(
+            boxed ? "btn btn--primary min-h-14 sm:px-9" : "inline-flex min-h-14 items-center gap-2 pl-4 text-[0.9rem] font-medium transition-opacity hover:opacity-70 disabled:opacity-40",
+          )}
+          type="submit"
+          disabled={subscribe.isPending}
+        >
+          {cta} <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+        </button>
       </form>
-      <p className={cn("news__msg", onBrand && "news__msg--brand", result?.tone === "warn" && !onBrand && "text-warn")} role="status">
+
+      {/* What happened */}
+      <p className={cn("mt-3 min-h-[1.4em] text-[0.88rem]", result?.tone === "warn" ? (dark ? "text-[#f2b8a8]" : "text-warn") : dark ? "text-cream/85" : "text-ink-2")} role="status">
         {result?.text}
         {result?.demo && <> <Link to={result.demo} className="underline">Open the link (demo)</Link></>}
       </p>
+
+      {/* What the shopper agrees to */}
       {consent && (
-        <p className={cn("m-0 mt-1 text-[.78rem]", onBrand ? "nl__fine" : "text-ink-3")}>
-          {consent} See our <Link to="/privacy" className="underline">privacy policy</Link>.
+        <p className={cn("mt-1 text-[0.78rem] leading-relaxed", dark ? "text-cream/55" : "text-ink-3")}>
+          {consent} See our <Link to="/privacy" className="underline underline-offset-2">privacy policy</Link>.
         </p>
       )}
     </div>

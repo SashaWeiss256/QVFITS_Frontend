@@ -7,9 +7,10 @@ import { photoSources } from "@/utils/media";
 /**
  * A product or campaign photo in Quivogue's `.ph` frame. Until the image
  * loads (or if it is missing) the frame shows the label and "photo coming",
- * so a card always holds its shape.
+ * so a card always holds its shape. `labels={false}` keeps a tiny frame
+ * (a thumbnail) to plain sand.
  */
-export default function Photo({ photo, label, eager = false, wide = false, className }) {
+export default function Photo({ photo, label, eager = false, wide = false, labels = true, className }) {
   const [state, setState] = useState("loading");
   const src = photo ? photoSources(photo, { wide }) : null;
 
@@ -33,8 +34,8 @@ export default function Photo({ photo, label, eager = false, wide = false, class
           />
         </picture>
       )}
-      <div className="ph__label">{label}</div>
-      <div className="ph__note">photo coming</div>
+      <div className={cn("ph__label", !labels && "hidden")}>{label}</div>
+      <div className={cn("ph__note", !labels && "hidden")}>photo coming</div>
     </div>
   );
 }

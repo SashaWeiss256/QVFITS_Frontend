@@ -19,7 +19,7 @@
     "id": "card",
     "label": "Visa or Mastercard",
     "short": "Card",
-    "instructions": "Paid securely through our payment partner.",
+    "instructions": "Paid securely through Pesapal.",
     "active": true,
     "position": 2
   },

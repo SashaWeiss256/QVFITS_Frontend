@@ -85,7 +85,7 @@ export default function AdminReports() {
               onClick={() => setPreset(p.id)}
               className={cn(
                 "min-h-9 rounded-r-pill px-3.5 text-[.8rem] font-semibold outline-none transition-[background-color,color] duration-200 ease-q focus-visible:ring-2 focus-visible:ring-brand-300",
-                preset === p.id ? "bg-[image:var(--brand-grad)] text-white" : "text-ink-3 hover:text-ink",
+                preset === p.id ? "bg-brand-grad text-white" : "text-ink-3 hover:text-ink",
               )}
             >
               {p.label}
@@ -101,7 +101,7 @@ export default function AdminReports() {
       </div>
 
       {/* Totals: sales, paid orders, the average and what was refunded, for the period */}
-      <section aria-label="Totals" className="mb-6 grid grid-cols-1 gap-px overflow-hidden rounded-r-lg border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="Totals" className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Sales" icon={Wallet} loading={isLoading} value={moneyBase(data?.summary.sales ?? 0)} note="Paid orders, delivery included" />
         <StatCard label="Paid orders" icon={ShoppingBag} loading={isLoading} value={data?.summary.orders ?? 0} note={data ? `${data.summary.unpaid} still awaiting payment` : undefined} />
         <StatCard label="Average order" icon={Receipt} loading={isLoading} value={moneyBase(data?.summary.average ?? 0)} />

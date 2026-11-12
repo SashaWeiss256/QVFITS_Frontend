@@ -4,6 +4,7 @@ import FilterSheet, { FilterSection } from "@/components/ui/FilterSheet";
 import { LABELS } from "@/utils/shopTargets";
 import { optionCount } from "../filterProducts";
 import PriceRange from "./PriceRange";
+import { t } from "@/i18n/translate";
 
 // The sections shown when the admin's layout doesn't name them yet.
 const DEFAULT_ORDER = ["category", "group:*", "size", "color", "price"];
@@ -82,7 +83,7 @@ export default function FilterDrawer({ open, onClose, filters, products, kits, f
     .filter((f) => f.visible && sections[f.id] && (sections[f.id].custom || sections[f.id].options.length));
 
   return (
-    <FilterSheet open={open} onClose={onClose} id="shop-filters" title="Filter" count={count} onClear={clear}>
+    <FilterSheet open={open} onClose={onClose} id="shop-filters" title={t("Filter")} count={count} onClear={clear}>
       {order.map((f) => {
         const s = sections[f.id];
         const title = s.title ?? f.label;
@@ -106,7 +107,7 @@ export default function FilterDrawer({ open, onClose, filters, products, kits, f
       <div className="pt-4">
         <label className="check-row">
           <input type="checkbox" checked={state.inStock} onChange={(e) => update({ inStock: e.target.checked })} />
-          In stock only
+          {t("In stock only")}
         </label>
       </div>
     </FilterSheet>

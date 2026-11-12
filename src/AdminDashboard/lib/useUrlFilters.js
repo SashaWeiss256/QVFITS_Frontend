@@ -2,6 +2,16 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 
+// A value with a comma in it would split into two, so values are encoded in the address.
+const encode = (v) => encodeURIComponent(v).replace(/%20/g, "+");
+const decode = (v) => {
+  try {
+    return decodeURIComponent(v.replace(/\+/g, " "));
+  } catch {
+    return v;
+  }
+};
+
 /**
  * A list's filters kept in the address (?type=kit&status=active,draft), so a
  * filtered view can be shared, survives a reload, and a link can open it
@@ -13,7 +23,7 @@ export function useUrlFilters(ids) {
   const key = ids.join("|");
 
   const values = useMemo(
-    () => Object.fromEntries(key.split("|").map((id) => [id, (params.get(id) ?? "").split(",").filter(Boolean)])),
+    () => Object.fromEntries(key.split("|").map((id) => [id, (params.get(id) ?? "").split(",").filter(Boolean).map(decode)])),
     [params, key],
   );
 
@@ -22,7 +32,7 @@ export function useUrlFilters(ids) {
       setParams(
         (prev) => {
           const out = new URLSearchParams(prev);
-          if (next.length) out.set(id, next.join(","));
+          if (next.length) out.set(id, next.map(encode).join(","));
           else out.delete(id);
           return out;
         },

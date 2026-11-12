@@ -85,7 +85,7 @@ export default function ProductList() {
       sort: (p) => p.name,
       render: (p) => (
         <div className="flex items-center gap-3">
-          <span className="block h-14 w-11 flex-none overflow-hidden rounded-r-sm bg-sand-100">{p.photos[0] && <Photo photo={p.photos[0]} label={p.name} className="h-full rounded-none" />}</span>
+          <span className="block h-14 w-11 flex-none overflow-hidden rounded-[10px] bg-sand-100">{p.photos[0] && <Photo photo={p.photos[0]} label={p.name} className="h-full rounded-none" />}</span>
           <span className="min-w-0">
             <strong className="block font-display">{p.name}</strong>
             <span className="text-xs text-ink-3">{p.type === "kit" ? `Kit of ${p.kitItems.length} pieces` : p.colors.join(", ")}</span>

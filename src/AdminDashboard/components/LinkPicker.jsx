@@ -53,7 +53,7 @@ export default function LinkPicker({ value, onChange, label = "Goes to", whatsap
   const kinds = whatsapp ? [...KINDS, { value: "whatsapp", label: "WhatsApp chat" }] : KINDS;
 
   return (
-    <fieldset className="m-0 grid gap-3 rounded-r-md border border-line bg-cream/60 p-3 sm:p-4">
+    <fieldset className="m-0 grid gap-3 rounded-[14px] border border-line bg-cream/60 p-3 sm:p-4">
       <legend className="sr-only">{label}</legend>
       <Field label={label} options={kinds} value={kind} onChange={(e) => setKind(e.target.value)} />
 
@@ -83,7 +83,7 @@ export default function LinkPicker({ value, onChange, label = "Goes to", whatsap
                       key={x.id}
                       type="button"
                       aria-pressed={on}
-                      className={cn("chip", on && "is-on")}
+                      className={cn("chip chip--raised", on && "is-on")}
                       onClick={() => shop({ terms: on ? t.terms.filter((v) => v !== x.id) : [...(t.terms ?? []), x.id] })}
                     >
                       {x.name}
@@ -108,7 +108,7 @@ export default function LinkPicker({ value, onChange, label = "Goes to", whatsap
       {value.target && (
         <p className="m-0 flex flex-wrap items-center gap-x-2 text-[.8rem] text-ink-3">
           <span className="font-semibold text-ink-2">{targetLabel(value.target, lookup)}</span>
-          <code className="rounded-r-sm bg-white px-1.5 py-0.5 text-[.75rem] text-brand-600">{targetHref(value.target, lookup)}</code>
+          <code className="rounded-[10px] bg-white px-1.5 py-0.5 text-[.75rem] text-brand-600">{targetHref(value.target, lookup)}</code>
         </p>
       )}
     </fieldset>

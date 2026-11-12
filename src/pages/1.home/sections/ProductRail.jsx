@@ -4,46 +4,60 @@ import { Link } from "react-router-dom";
 import Reveal from "@/components/motion/Reveal";
 import { SkeletonGrid } from "@/components/ui/Skeleton";
 import ProductCarousel from "@/components/storefront/ProductCarousel";
-import { useProducts, useRails } from "@/store/tanstackStore/queries/site";
+import { saleOf } from "@/utils/stockLevel";
+import { useOffers, useProducts, useRails } from "@/store/tanstackStore/queries/site";
+
+// New releases carry one tag and no discount; best sellers carry one tag.
+const TAGS = { newReleases: "New", bestSellers: "Best seller" };
+
+// The Sales row is not in the rails data: it is every piece with a live discount.
+const SALE_RAIL = { kicker: "Reduced", title: "Sales", href: "/shop?sale=1" };
 
 /**
- * A centred heading, then the pieces in a carousel with the "See more" link
- * between its arrows. The pieces pick themselves: the newest New arrivals, or the pinned and best
- * selling pieces (getRails). The words come from the Home page editor.
+ * A heading on the left, then the pieces in a sideways row with "View all"
+ * and the arrows on the right. The pieces pick themselves: the newest New
+ * arrivals, or the pinned and best selling pieces (getRails). The words come
+ * from the Home page editor.
  */
-export default function ProductRail({ rail, kind, tight = false }) {
+export default function ProductRail({ rail: given, kind }) {
   const { data: products = [], isLoading: loadingProducts } = useProducts();
   const { data: rails, isLoading: loadingRails } = useRails();
+  const { data: offers } = useOffers();
+  const rail = kind === "sale" ? SALE_RAIL : given;
   if (!rail) return null;
+
+  const heading = (
+    <div className="max-w-xl">
+      <p className="kicker">{rail.kicker}</p>
+      <h2 className="text-[clamp(1.35rem,2vw,1.8rem)]">{rail.title}</h2>
+    </div>
+  );
+
   // While the pieces load, the section keeps its heading and a row of card-shaped placeholders, so the page below does not jump.
   if (loadingProducts || loadingRails) {
+    if (kind === "sale") return null; // might be empty: no placeholder to jump away
     return (
-      <section className={tight ? "section section--tight" : "section"}>
+      <section className="section">
         <div className="wrap">
-          <div className="section-head center">
-            <span className="kicker">{rail.kicker}</span>
-            <h2>{rail.title}</h2>
-          </div>
-          <SkeletonGrid count={4} className="grid-products--four" />
+          <div className="mb-12">{heading}</div>
+          <SkeletonGrid count={4} />
         </div>
       </section>
     );
   }
   if (!rails) return null;
 
-  const row = rails[kind].map((id) => products.find((p) => p.id === id)).filter(Boolean);
+  const row = kind === "sale"
+    ? products.filter((p) => saleOf(p, offers?.sale))
+    : rails[kind].map((id) => products.find((p) => p.id === id)).filter(Boolean);
   if (!row.length) return null;
 
   return (
-    <section className={tight ? "section section--tight" : "section"}>
+    <section className="section">
       <div className="wrap">
-        <Reveal className="section-head center">
-          <span className="kicker">{rail.kicker}</span>
-          <h2>{rail.title}</h2>
-        </Reveal>
-        {/* The rail's pieces slide sideways; See more goes to the whole list */}
-        <ProductCarousel products={row} label={rail.title}>
-          <Link className="btn btn--ghost" to={rail.href}>{rail.cta}</Link>
+        {/* Heading, then the pieces with View all and the arrows */}
+        <ProductCarousel products={row} label={rail.title} head={<Reveal>{heading}</Reveal>} tag={TAGS[kind]} plain={kind === "newReleases"}>
+          <Link className="link-arrow" to={rail.href}>View all</Link>
         </ProductCarousel>
       </div>
     </section>

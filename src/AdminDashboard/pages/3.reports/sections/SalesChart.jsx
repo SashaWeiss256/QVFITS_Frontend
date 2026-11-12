@@ -39,10 +39,10 @@ export default function SalesChart({ rows, money }) {
             yAxis={[{ width: 48, disableLine: true, disableTicks: true, valueFormatter: (v) => compact.format(v) }]}
             series={[{ dataKey: "total", label: "Sales", color: brand, valueFormatter: (v) => money(v ?? 0) }]}
             sx={{
-              "& .MuiChartsAxis-tickLabel": { fill: "var(--ink-4)", fontSize: "11px !important" },
-              "& .MuiChartsAxis-line": { stroke: "var(--line-2)" },
-              "& .MuiChartsGrid-line": { stroke: "var(--line)", strokeDasharray: "3 4" },
-              "& .MuiChartsAxisHighlight-root": { fill: "var(--brand-50)" },
+              "& .MuiChartsAxis-tickLabel": { fill: "var(--color-ink-4)", fontSize: "11px !important" },
+              "& .MuiChartsAxis-line": { stroke: "var(--color-line-2)" },
+              "& .MuiChartsGrid-line": { stroke: "var(--color-line)", strokeDasharray: "3 4" },
+              "& .MuiChartsAxisHighlight-root": { fill: "var(--color-brand-50)" },
             }}
           />
         </ThemeProvider>

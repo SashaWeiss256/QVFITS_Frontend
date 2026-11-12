@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { LABELS } from "@/utils/shopTargets";
+import { t } from "@/i18n/translate";
 
 /**
  * What is narrowing the grid right now, as removable chips above it, with
@@ -35,14 +36,20 @@ export default function AppliedFilters({ filters, facets }) {
   ].filter(Boolean);
 
   return (
-    <div className="applied" aria-label="Applied filters">
+    <div className="-mt-3 mb-8 flex flex-wrap items-center gap-2" aria-label={t("Applied filters")}>
       {chips.map((c) => (
-        <button key={c.key} type="button" className="applied__chip" onClick={c.off} aria-label={`Remove ${c.label}`}>
+        <button
+          key={c.key}
+          type="button"
+          className="chip chip--raised min-h-9 gap-2"
+          onClick={c.off}
+          aria-label={`Remove ${c.label}`}
+        >
           {c.label}
-          <X className="h-3.5 w-3.5" aria-hidden="true" />
+          <X className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" />
         </button>
       ))}
-      <button type="button" className="link-arrow min-h-9 text-sm" onClick={clear}>Clear all</button>
+      <button type="button" className="ml-2 min-h-9 text-[0.82rem] text-ink-3 underline underline-offset-4 hover:text-ink" onClick={clear}>{t("Clear all")}</button>
     </div>
   );
 }

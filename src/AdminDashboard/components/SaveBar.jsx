@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button";
 export default function SaveBar({ dirty, saving, onSave, onReset, label = "Save changes", disabled = false }) {
   if (!dirty) return null;
   return (
-    <div className="sticky bottom-0 z-30 -mx-4 mt-6 flex flex-wrap items-center justify-end gap-2.5 border-t border-line bg-white/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+    <div className="sticky bottom-0 z-30 -mx-4 mt-6 flex flex-wrap items-center justify-end gap-2.5 border-t border-line bg-white/95 px-4 py-4 shadow-[0_-8px_24px_rgb(23_33_31/0.05)] backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
       <span className="mr-auto text-sm text-ink-3">You have unsaved changes</span>
       <Button variant="ghost" onClick={onReset} disabled={saving}>Discard</Button>
       <Button onClick={onSave} loading={saving} disabled={disabled}>{label}</Button>

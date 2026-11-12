@@ -3,10 +3,12 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 import process from 'node:process'
+import dummyData from './dev/dummyDataPlugin.js'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  // dummyData only acts in `npm run dev:dummy` (see dev/dummyDataPlugin.js).
+  plugins: [dummyData(), react(), tailwindcss()],
   // Busts the persisted query cache on every deploy, so a changed data shape
   // is never read back from a visitor's storage. The deploy workflow sets
   // GIT_SHA (docs/06-deployment.md).

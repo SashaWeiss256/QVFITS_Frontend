@@ -47,11 +47,11 @@ export default function VariantMatrix({ product, colors, sizes, onChange, onCrea
   return (
     <div className="grid gap-5">
       <fieldset className="m-0 border-0 p-0">
-        <legend className="mb-2 text-sm font-semibold text-ink-2">Colours</legend>
+        <legend className="mb-3 text-[.82rem] font-medium text-ink-3">Colours</legend>
         <div className="flex flex-wrap gap-2">
           {colors.map((c) => (
             <button key={c.id} type="button" aria-pressed={product.colorIds.includes(c.id)} onClick={() => toggleColor(c.id)}
-              className={cn("chip chip--color", product.colorIds.includes(c.id) && "is-on")}>
+              className={cn("chip chip--raised chip--color", product.colorIds.includes(c.id) && "is-on")}>
               <i className="sw" style={{ background: c.hex }} aria-hidden="true" /> {c.name}
             </button>
           ))}
@@ -59,10 +59,10 @@ export default function VariantMatrix({ product, colors, sizes, onChange, onCrea
         </div>
       </fieldset>
       <fieldset className="m-0 border-0 p-0">
-        <legend className="mb-2 text-sm font-semibold text-ink-2">Sizes</legend>
+        <legend className="mb-3 text-[.82rem] font-medium text-ink-3">Sizes</legend>
         <div className="flex flex-wrap gap-2">
           {sizes.map((s) => (
-            <button key={s.id} type="button" aria-pressed={usedSizes.includes(s.label)} onClick={() => toggleSize(s.label)} className={cn("chip", usedSizes.includes(s.label) && "is-on")}>{s.label}</button>
+            <button key={s.id} type="button" aria-pressed={usedSizes.includes(s.label)} onClick={() => toggleSize(s.label)} className={cn("chip chip--raised", usedSizes.includes(s.label) && "is-on")}>{s.label}</button>
           ))}
           {onCreateSize && <QuickAdd kind="size" existing={sizes.map((s) => s.label)} onCreate={addSize} />}
         </div>
@@ -76,7 +76,7 @@ export default function VariantMatrix({ product, colors, sizes, onChange, onCrea
             <input className="input w-24 min-h-9 py-1" inputMode="numeric" placeholder="Qty" value={fill} onChange={(e) => setFill(e.target.value)} aria-label="Quantity for every cell" />
             <button type="button" className="btn btn--soft min-h-9 px-3 text-xs" disabled={fill === ""} onClick={() => onChange({ variants: product.variants.map((v) => ({ ...v, stock: Math.max(0, Number(fill) || 0) })) })}>Set all</button>
           </div>
-          <div className="overflow-x-auto rounded-r-md border border-line bg-white">
+          <div className="overflow-x-auto rounded-[18px] border border-line bg-white">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-line">
@@ -93,7 +93,7 @@ export default function VariantMatrix({ product, colors, sizes, onChange, onCrea
                       return (
                         <td key={s} className="px-1 py-1.5 text-center">
                           {v && (
-                            <input className={cn("w-16 rounded-r-sm border border-line px-2 py-1.5 text-center", v.stock === 0 && "bg-sand-50 text-warn")} inputMode="numeric"
+                            <input className={cn("w-16 rounded-[18px] border border-line px-2 py-1.5 text-center", v.stock === 0 && "bg-sand-50 text-warn")} inputMode="numeric"
                               aria-label={`${colorName(cid)} ${s} stock`} title={v.sku} value={v.stock} onChange={(e) => setStock(v.id, e.target.value)} />
                           )}
                         </td>

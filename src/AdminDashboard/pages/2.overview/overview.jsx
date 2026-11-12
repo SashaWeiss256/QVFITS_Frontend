@@ -40,7 +40,7 @@ export default function AdminOverview() {
                 onClick={() => setDays(d)}
                 className={cn(
                   "min-h-9 rounded-r-pill px-3 text-[.8rem] font-semibold tabular-nums outline-none transition-[background-color,color] duration-200 ease-q focus-visible:ring-2 focus-visible:ring-brand-300 sm:px-3.5",
-                  days === d ? "bg-[image:var(--brand-grad)] text-white" : "text-ink-3 hover:text-ink",
+                  days === d ? "bg-brand-grad text-white" : "text-ink-3 hover:text-ink",
                 )}
               >
                 {d}d

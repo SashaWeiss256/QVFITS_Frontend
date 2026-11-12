@@ -36,13 +36,13 @@ export default function Finder({ presetId }) {
   };
 
   return (
-    <Reveal as="form" className="measure-card" noValidate onSubmit={go}>
+    <Reveal as="form" className="border border-line bg-white p-[clamp(22px,3.2vw,40px)]" noValidate onSubmit={go}>
       <span className="kicker">No guessing</span>
       <h2 className="mb-1.5 text-[1.5rem]">Find your size</h2>
       <p className="text-[.92rem] text-ink-3">Pop your measurements in. If you pick a piece, we&apos;ll adjust for how that one actually fits.</p>
-      <div className="field-row mt-[18px]">
+      <div className="mt-[18px] grid grid-cols-3 gap-3.5">
         {FIELDS.map((f) => (
-          <div key={f.key} className="field">
+          <div key={f.key} className="field mb-0">
             <label htmlFor={`m-${f.key}`}>{f.label}</label>
             <input id={`m-${f.key}`} type="number" inputMode="decimal" min="40" max="170" placeholder={f.placeholder} value={m[f.key]} onChange={(e) => setM({ ...m, [f.key]: e.target.value })} />
           </div>
@@ -59,7 +59,7 @@ export default function Finder({ presetId }) {
 
       {/* Result: the size, the piece's fit note, then stock for that size. */}
       {result && (
-        <div className="result" role="status">
+        <div className="mt-5 bg-sand-100 px-5 py-[18px] text-[0.95rem] leading-[1.6] text-ink-2" role="status">
           {result.empty ? (
             "Pop in at least one measurement and we'll take it from there."
           ) : (

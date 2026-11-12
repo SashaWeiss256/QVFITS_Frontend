@@ -19,9 +19,9 @@ export default function NeedsAttention({ data, loading, can }) {
   return (
     <Panel title="Needs attention" hint={open.length ? `${open.length} of ${items.length} queues have work` : undefined}>
       {loading ? (
-        <div className="grid gap-2">{[0, 1, 2].map((i) => <span key={i} className="skel block h-12 rounded-r-md" aria-hidden="true" />)}</div>
+        <div className="grid gap-2">{[0, 1, 2].map((i) => <span key={i} className="skel block h-12 rounded-[14px]" aria-hidden="true" />)}</div>
       ) : open.length === 0 ? (
-        <p className="m-0 flex items-center gap-2.5 rounded-r-md bg-success/10 px-4 py-3 text-sm text-ink-2">
+        <p className="m-0 flex items-center gap-2.5 rounded-[14px] bg-success/10 px-4 py-3 text-sm text-ink-2">
           <CircleCheck className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
           Nothing is waiting on you.
         </p>
@@ -31,7 +31,7 @@ export default function NeedsAttention({ data, loading, can }) {
             <li key={t.label}>
               <Link
                 to={t.to}
-                className="group flex min-h-12 items-center gap-3 rounded-r-md px-3 outline-none transition-[background-color] duration-200 ease-q hover:bg-cream-2 focus-visible:ring-2 focus-visible:ring-brand-300"
+                className="group flex min-h-12 items-center gap-3 rounded-[14px] px-3 outline-none transition-[background-color] duration-200 ease-q hover:bg-cream-2 focus-visible:ring-2 focus-visible:ring-brand-300"
               >
                 <span className={`w-9 font-display text-[1.35rem] font-bold tabular-nums ${t.n ? "text-brand-600" : "text-ink-4"}`}>{t.n}</span>
                 <span className={`flex-1 text-sm ${t.n ? "text-ink-2" : "text-ink-4"}`}>{t.label}</span>

@@ -40,7 +40,7 @@ export default function Roles({ roles, modules, staff }) {
       {/* Role Cards: the owner role can't be edited and a system role can't be deleted */}
       <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 xl:grid-cols-3">
         {roles.map((r) => (
-          <li key={r.id} className="rounded-r-md border border-line bg-white p-4">
+          <li key={r.id} className="rounded-[14px] border border-line bg-white p-4">
             <strong className="font-display">{r.name}</strong>
             <p className="m-0 mt-1 text-sm text-ink-3">{r.description}</p>
             <p className="m-0 mt-2 text-xs text-ink-3">{people(r.id)} {people(r.id) === 1 ? "person" : "people"} · {Object.values(r.permissions).filter((a) => a.length).length} of {modules.length} modules</p>

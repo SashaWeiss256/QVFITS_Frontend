@@ -30,7 +30,7 @@ export default function OpenReturn({ order, onDone }) {
     open.mutateAsync({ orderId: order.id, lines, reason, resolution }).then(onDone).catch(() => {});
 
   return (
-    <div className="mt-3 grid gap-4 rounded-r-md bg-white p-4 shadow-sh-1">
+    <div className="mt-3 grid gap-4 rounded-[14px] bg-white p-4 shadow-sh-1">
       {/* Pieces Coming Back: a quantity up to what was ordered */}
       <fieldset className="m-0 border-0 p-0">
         <legend className="mb-2 text-sm font-semibold">Pieces coming back</legend>

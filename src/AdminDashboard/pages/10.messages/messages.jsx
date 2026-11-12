@@ -71,7 +71,7 @@ export default function AdminMessages() {
           )}
         >
           <div className="mb-4"><StatusChip status={open.status} /></div>
-          <p className="whitespace-pre-line rounded-r-md bg-white p-4 shadow-sh-1">{open.message}</p>
+          <p className="whitespace-pre-line rounded-[14px] bg-white p-4 shadow-sh-1">{open.message}</p>
           {/* Reply: WhatsApp or email, whichever they left; with neither, they chose where to send it from the form */}
           <div className="mt-4 flex flex-wrap gap-2">
             {open.phone && <a className="btn btn--soft" href={whatsappLink(open.phone.replace(/\D/g, "").replace(/^0/, "256"), `Hi ${open.name.split(" ")[0]}, thanks for your message to QVFITS.`)} target="_blank" rel="noopener noreferrer"><MessageCircle className="h-4 w-4" /> WhatsApp</a>}

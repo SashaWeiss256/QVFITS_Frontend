@@ -20,7 +20,7 @@ export default function PermissionMatrix({ modules, value, onChange, base, disab
   };
 
   return (
-    <div className="overflow-x-auto rounded-r-md border border-line bg-white">
+    <div className="overflow-x-auto rounded-[14px] border border-line bg-white">
       <table className="w-full border-collapse text-sm">
         {/* Column Headings */}
         <thead>

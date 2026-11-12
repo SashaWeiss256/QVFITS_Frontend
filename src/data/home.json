@@ -2,12 +2,15 @@
   "heroSlides": [
     {
       "id": "hero-1",
-      "kicker": "Gym \u00b7 Pilates \u00b7 Tennis \u00b7 Golf \u00b7 Swim \u00b7 Lifestyle",
+      "kicker": "Gym · Pilates · Tennis · Golf · Swim · Lifestyle",
       "title": "Fit that holds.",
       "text": "Premium seamless and seam-fit pieces curated for training, movement and everyday life.",
       "cta": "Shop now",
       "live": true,
-      "target": {}
+      "target": {},
+      "triptych": false,
+      "script": "Quivogue",
+      "focus": 80
     },
     {
       "id": "hero-3",
@@ -20,7 +23,10 @@
         "terms": [
           "lounge"
         ]
-      }
+      },
+      "triptych": false,
+      "script": "Fresh shades",
+      "focus": 76
     },
     {
       "id": "hero-4",
@@ -34,19 +40,24 @@
           "swim",
           "lounge"
         ]
-      }
+      },
+      "triptych": false,
+      "script": "Day to night",
+      "focus": 74
     },
     {
       "id": "hero-2",
       "sticker": "Sale",
-      "kicker": "Now's your moment",
+      "kicker": "The sale",
       "title": "Up to 50% off.",
       "text": "Selected QV favourites, now for less.",
       "cta": "Shop now",
-      "live": true,
+      "live": false,
       "target": {
         "label": "sale"
-      }
+      },
+      "triptych": true,
+      "script": "Now's your moment"
     }
   ],
   "rails": {

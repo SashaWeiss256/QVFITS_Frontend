@@ -5,10 +5,10 @@ import { saleOf } from "@/utils/stockLevel";
 
 // The price in the visitor's currency; struck through with the sale price
 // beside it only when the sale is live and this piece is reduced.
-export default function PriceTag({ product, qty = 1 }) {
+export default function PriceTag({ product, qty = 1, plain = false }) {
   const { money } = useCurrency();
   const { data: offers } = useOffers();
-  const sale = saleOf(product, offers?.sale);
+  const sale = plain ? null : saleOf(product, offers?.sale);
 
   if (!sale) return <>{money(product.price * qty)}</>;
   return (

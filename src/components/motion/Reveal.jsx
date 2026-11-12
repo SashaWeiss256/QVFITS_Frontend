@@ -1,7 +1,7 @@
 /* Reveal */
 import { m } from "motion/react";
 
-import { revealItem, SPRING } from "./revealVariants";
+import { revealItem } from "./revealVariants";
 
 // The tags the site reveals, made into motion components once, up front.
 const TAGS = {
@@ -16,14 +16,14 @@ const TAGS = {
 };
 
 /**
- * Fades its content up as it scrolls into view, once. MotionConfig's
+ * Fades its content in as it scrolls into view, once, with a slight lift. MotionConfig's
  * reducedMotion="user" turns the movement off for those who ask; the content
  * is never hidden for good.
  */
 export default function Reveal({ as = "div", delay = 0, children, ...rest }) {
   const M = TAGS[as] ?? m.div;
   return (
-    <M initial="hidden" whileInView="shown" viewport={{ once: true, margin: "0px 0px -10% 0px" }} variants={revealItem} transition={{ ...SPRING, delay }} {...rest}>
+    <M initial="hidden" whileInView="shown" viewport={{ once: true, margin: "0px 0px -10% 0px" }} variants={revealItem} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay }} {...rest}>
       {children}
     </M>
   );

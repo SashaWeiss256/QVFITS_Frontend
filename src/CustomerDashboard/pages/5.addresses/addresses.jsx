@@ -9,13 +9,13 @@ export default function AccountAddresses() {
   const { data: profile = customer } = useProfile(customer.id);
 
   return (
-    <div className="rounded-r-lg bg-white p-6 shadow-sh-1">
+    <div className="rounded-[22px] border border-line bg-white p-6 shadow-sh-1 sm:p-8">
       <h2 className="text-[1.3rem]">Delivery addresses</h2>
       {/* Address List */}
       {profile.addresses.length ? (
         <ul className="mt-4 grid list-none gap-3 p-0 sm:grid-cols-2">
           {profile.addresses.map((a) => (
-            <li key={a.id} className="rounded-r-md border border-line p-4">
+            <li key={a.id} className="rounded-[16px] border border-line-2 p-4">
               <strong className="font-display">{a.label}</strong>
               <p className="m-0 mt-1 text-sm text-ink-2">{a.address}</p>
               <p className="m-0 text-sm text-ink-3">{a.phone}</p>

@@ -72,7 +72,7 @@ export default function OrderDrawer({ order, settings, methods, onClose }) {
 
       {/* Move it on */}
       {canEdit && next.length > 0 && (
-        <section className="mb-6 rounded-r-md bg-white p-4 shadow-sh-1">
+        <section className="mb-6 rounded-[14px] bg-white p-4 shadow-sh-1">
           <p className="mt-0 mb-3 text-sm font-semibold">Next step</p>
           <div className="flex flex-wrap gap-2">
             {next.map((s) => (
@@ -133,7 +133,7 @@ export default function OrderDrawer({ order, settings, methods, onClose }) {
         {txns.length > 0 && (
           <ul className="m-0 mt-3 grid list-none gap-1.5 p-0">
             {txns.map((t) => (
-              <li key={t.id} className="flex justify-between gap-3 rounded-r-md bg-white px-3 py-2 text-sm shadow-sh-1">
+              <li key={t.id} className="flex justify-between gap-3 rounded-[14px] bg-white px-3 py-2 text-sm shadow-sh-1">
                 <span>{t.type === "refund" ? "Refund" : "Payment"} · {methods.find((m) => m.id === t.method)?.label ?? t.method}{t.reference && <span className="text-ink-3"> · {t.reference}</span>}<span className="block text-xs text-ink-3">{formatDateTime(t.createdAt)}</span></span>
                 <strong className={t.type === "refund" ? "text-warn" : ""}>{t.type === "refund" ? "-" : ""}{moneyBase(t.amount)}</strong>
               </li>
@@ -142,7 +142,7 @@ export default function OrderDrawer({ order, settings, methods, onClose }) {
           </ul>
         )}
         {canPay && due > 0 && order.status !== "cancelled" && (
-          <div className="mt-3 grid gap-3 rounded-r-md bg-white p-4 shadow-sh-1 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
+          <div className="mt-3 grid gap-3 rounded-[14px] bg-white p-4 shadow-sh-1 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
             <Field label="Paid by" options={[{ value: "cash", label: "Cash" }, ...methods.map((m) => ({ value: m.id, label: m.label }))]} value={payment.method} onChange={(e) => setPayment({ ...payment, method: e.target.value })} />
             <Field label="Amount (UGX)" inputMode="numeric" value={payment.amount} placeholder={String(due)} onChange={(e) => setPayment({ ...payment, amount: e.target.value.replace(/\D/g, "") })} hint="Leave empty for the full balance." />
             <Field label="Reference" value={payment.reference} onChange={(e) => setPayment({ ...payment, reference: e.target.value })} placeholder="Mobile money ID" />
@@ -171,7 +171,7 @@ export default function OrderDrawer({ order, settings, methods, onClose }) {
           <h3 className="mb-2 text-base">Messages sent</h3>
           <ul className="m-0 grid list-none gap-1.5 p-0">
             {emails.map((m) => (
-              <li key={m.id} className="flex items-start justify-between gap-3 rounded-r-md bg-white px-3 py-2 text-sm shadow-sh-1">
+              <li key={m.id} className="flex items-start justify-between gap-3 rounded-[14px] bg-white px-3 py-2 text-sm shadow-sh-1">
                 <span>
                   <strong className="font-semibold">{m.subject}</strong>
                   <span className="block text-ink-3">{m.body}</span>
@@ -207,7 +207,7 @@ export default function OrderDrawer({ order, settings, methods, onClose }) {
         <h3 className="mb-2 text-base">Staff notes</h3>
         {order.notes.length > 0 && (
           <ul className="m-0 mb-3 grid list-none gap-2 p-0">
-            {order.notes.map((n) => <li key={n.id} className="rounded-r-md bg-white p-3 text-sm shadow-sh-1">{n.text}<p className="m-0 mt-1 text-xs text-ink-3">{n.by} · {formatDateTime(n.at)}</p></li>)}
+            {order.notes.map((n) => <li key={n.id} className="rounded-[14px] bg-white p-3 text-sm shadow-sh-1">{n.text}<p className="m-0 mt-1 text-xs text-ink-3">{n.by} · {formatDateTime(n.at)}</p></li>)}
           </ul>
         )}
         {canEdit && (

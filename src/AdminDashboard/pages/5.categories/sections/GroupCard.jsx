@@ -26,7 +26,7 @@ export default function GroupCard({
   const kind = KINDS[group.kind];
 
   return (
-    <section className="rounded-r-lg border border-line bg-white">
+    <section className="rounded-[18px] border border-line bg-white">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-4 sm:px-6">
         <button
           type="button"
@@ -78,12 +78,12 @@ export default function GroupCard({
                 <li key={x.id} className="flex flex-wrap items-center gap-3 px-4 py-3 transition-colors duration-150 hover:bg-cream/60 sm:gap-4 sm:px-6">
                   {canEdit && (
                     <span className="flex flex-col">
-                      <button type="button" className="icon-btn h-7 min-h-0" aria-label={`Move ${x.name} up`} disabled={i === 0} onClick={() => onMoveItem(i, -1)}><ArrowUp className="h-4 w-4" /></button>
-                      <button type="button" className="icon-btn h-7 min-h-0" aria-label={`Move ${x.name} down`} disabled={i === items.length - 1} onClick={() => onMoveItem(i, 1)}><ArrowDown className="h-4 w-4" /></button>
+                      <button type="button" className="icon-btn h-9 min-h-0 w-9" aria-label={`Move ${x.name} up`} disabled={i === 0} onClick={() => onMoveItem(i, -1)}><ArrowUp className="h-4 w-4" /></button>
+                      <button type="button" className="icon-btn h-9 min-h-0 w-9" aria-label={`Move ${x.name} down`} disabled={i === items.length - 1} onClick={() => onMoveItem(i, 1)}><ArrowDown className="h-4 w-4" /></button>
                     </span>
                   )}
                   {group.kind !== "edits" && (
-                    <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-r-md bg-cream-2 text-ink-4">
+                    <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-[14px] bg-cream-2 text-ink-4">
                       {x.photo ? <Photo photo={x.photo} label="" className="h-full w-full object-cover" /> : <Tag className="h-4 w-4" aria-hidden="true" />}
                     </span>
                   )}

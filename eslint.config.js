@@ -73,7 +73,7 @@ export default defineConfig([
   // destructuring of query results.
   pluginQuery.configs['flat/recommended'],
 
-  { files: ['vite.config.js'], languageOptions: { globals: globals.node } },
+  { files: ['vite.config.js', 'dev/**/*.js'], languageOptions: { globals: globals.node } },
 
   // Storefront pages and shared components: neither dashboard.
   {

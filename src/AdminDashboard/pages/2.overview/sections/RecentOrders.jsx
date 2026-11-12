@@ -14,13 +14,13 @@ export default function RecentOrders({ orders = [], loading, money, canOpen }) {
       flush
       title="Latest orders"
       action={canOpen && (
-        <Link to="/admin/orders" className="group inline-flex items-center gap-1 text-[.82rem] font-semibold text-brand-600 transition-colors duration-200 hover:text-brand-500">
+        <Link to="/admin/orders" className="group -my-2 inline-flex min-h-10 items-center gap-1 text-[.82rem] font-semibold text-brand-600 transition-colors duration-200 hover:text-brand-500">
           All orders <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 ease-q group-hover:translate-x-0.5" aria-hidden="true" />
         </Link>
       )}
     >
       {loading ? (
-        <div className="grid gap-2 p-5">{[0, 1, 2].map((i) => <span key={i} className="skel block h-10 rounded-r-md" aria-hidden="true" />)}</div>
+        <div className="grid gap-2 p-5">{[0, 1, 2].map((i) => <span key={i} className="skel block h-10 rounded-[14px]" aria-hidden="true" />)}</div>
       ) : orders.length === 0 ? (
         <p className="m-0 p-6 text-sm text-ink-3">No orders yet. Orders from the shop and WhatsApp land here.</p>
       ) : (

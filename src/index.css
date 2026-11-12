@@ -1,194 +1,587 @@
-/* QV fits: Global Styles */
+/* QVFITS: Global Styles */
 @import "tailwindcss";
 
-/* Quivogue's stylesheet: tokens on :root, reset, layout, chrome, sections.
-   In the components layer so Tailwind utilities can still override it. */
-@import "./styles/quivogue.css" layer(components);
-
-/* The premium layer: retuned tokens and restyled shared classes. Same layer,
-   later in the cascade, so it wins over quivogue.css at equal specificity. */
-@import "./styles/theme.css" layer(components);
-@import "./styles/chrome.css" layer(components);
-
 /*
-  Tailwind tokens point at the Quivogue variables (docs/04-design-system.md),
-  so `bg-brand-500`, `text-ink-3`, `rounded-r-lg` and `shadow-sh-2` all read
-  the one source of truth in styles/quivogue.css. Never add hex here.
+  The QVFITS palette and design tokens. This block is the one source of every
+  colour on the site: Tailwind turns each token into utilities (`bg-brand-500`,
+  `text-ink-3`, `border-line`, `rounded-r-lg`, `shadow-sh-2`) and into a CSS
+  variable on :root (`--color-brand-500` …). Change a colour here and every
+  page follows. Colours come from the QVFITS brand book; the magenta to purple
+  ramp is sampled from the logo.
 */
-@theme inline {
-  --color-brand-50: var(--brand-50);
-  --color-brand-100: var(--brand-100);
-  --color-brand-200: var(--brand-200);
-  --color-brand-300: var(--brand-300);
-  --color-brand-400: var(--brand-400);
-  --color-brand-500: var(--brand-500);
-  --color-brand-600: var(--brand-600);
+@theme {
+  /* Brand: magenta to purple, from the logo */
+  --color-brand-50: #fbf4f8;
+  --color-brand-100: #f5e6ef;
+  --color-brand-200: #e9c8dc;
+  --color-brand-300: #d69cbd;
+  --color-brand-400: #b85f8e;
+  --color-brand-500: #96306e;
+  --color-brand-600: #5d2766;
 
-  --color-teal-100: var(--teal-100);
-  --color-teal-500: var(--teal-500);
+  /* The logo's own colours (brand book): the wave runs plum to rose; pink is QVFITS */
+  --color-logo-plum: #682872;
+  --color-logo-rose: #c53364;
+  --color-logo-pink: #ed1e79;
+  --color-black: #000000;
 
-  --color-sand-50: var(--sand-50);
-  --color-sand-100: var(--sand-100);
-  --color-sand-200: var(--sand-200);
-  --color-sand-300: var(--sand-300);
-  --color-sand-400: var(--sand-400);
+  /* Secondary: the golf and tennis range */
+  --color-teal-100: #dcebe7;
+  --color-teal-500: #14625a;
 
-  --color-cream: var(--cream);
-  --color-cream-2: var(--cream-2);
-  --color-beige: var(--beige);
-  --color-white: var(--white);
+  /* Warm sand: the lounge and seamless ranges */
+  --color-sand-50: #faf6f0;
+  --color-sand-100: #f2ebe0;
+  --color-sand-200: #e6dac8;
+  --color-sand-300: #d4c2a6;
+  --color-sand-400: #b08968;
 
-  /* Contrast-checked on cream; ink-4 is the lightest text tone allowed. */
-  --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-ink-3: var(--ink-3);
-  --color-ink-4: var(--ink-4);
+  /* Neutrals: surfaces */
+  --color-cream: #fbf8f3;
+  --color-cream-2: #f5f0e8;
+  --color-beige: #ece4d8;
+  --color-white: #ffffff;
 
-  --color-line: var(--line);
-  --color-line-2: var(--line-2);
+  /* Ink: contrast-checked on cream (15.6, 9.3, 6.1, 4.6 : 1).
+     ink-4 is the lightest text tone allowed. Do not lighten these. */
+  --color-ink: #17211f;
+  --color-ink-2: #3a4643;
+  --color-ink-3: #57615e;
+  --color-ink-4: #68736f;
 
-  --color-gold: var(--gold);
-  --color-star: var(--star);
-  --color-success: var(--success);
-  --color-warn: var(--warn);
+  /* Lines: borders and rules */
+  --color-line: #e9e2d7;
+  --color-line-2: #ddd4c6;
+
+  /* Accents and states. gold is shapes only (1.5 : 1); use star for text. */
+  --color-gold: #efcb68;
+  --color-star: #8e6c0f;
+  --color-success: #2f7d5f;
+  --color-warn: #b4553f;
 
   /* Third-party brand colours, for payment and contact marks only. */
   --color-mtn: #ffcb05;
   --color-airtel: #e40000;
   --color-whatsapp: #128c4a;
 
-  --font-display: var(--display);
-  --font-body: var(--body);
+  /* Type */
+  /* Luxury pairing: a geometric sans in the Futura line for the interface and text, a Didone serif
+     (the Vogue and Dior face) for headings. No script or calligraphic faces. */
+  --font-display: "Jost", "Futura", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Jost", "Futura", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Anton: the logo's QVFITS name and campaign headlines, uppercase, +0.12em */
+  --font-logo: "Anton", "Impact", sans-serif;
+  --font-serif: "Bodoni Moda", Didot, "Bodoni 72", Georgia, serif;
+  --font-didone: "Bodoni Moda", Didot, "Bodoni 72", Georgia, serif;
 
-  --radius-r-sm: var(--r-sm);
-  --radius-r-md: var(--r-md);
-  --radius-r-lg: var(--r-lg);
-  --radius-r-xl: var(--r-xl);
-  --radius-r-pill: var(--r-pill);
+  /* Shape: near-square, the luxury register */
+  --radius-r-sm: 2px;
+  --radius-r-md: 3px;
+  --radius-r-lg: 4px;
+  --radius-r-xl: 6px;
+  --radius-r-pill: 999px;
 
-  --shadow-sh-1: var(--sh-1);
-  --shadow-sh-2: var(--sh-2);
-  --shadow-sh-3: var(--sh-3);
-  --shadow-sh-4: var(--sh-4);
+  /* Elevation: neutral, never pink */
+  --shadow-sh-1: 0 2px 8px rgba(23, 33, 31, 0.05);
+  --shadow-sh-2: 0 6px 20px rgba(23, 33, 31, 0.08);
+  --shadow-sh-3: 0 14px 40px rgba(23, 33, 31, 0.12);
+  --shadow-sh-4: 0 24px 70px rgba(23, 33, 31, 0.18);
 
-  --ease-q: var(--ease);
-}
+  --ease-q: cubic-bezier(0.16, 1, 0.3, 1);
 
-@layer components {
-  /* A form control in the Quivogue look, for the account and admin forms. */
-  .input {
-    width: 100%;
-    min-height: 46px;
-    padding: 0.7em 1em;
-    border-radius: var(--r-md);
-    background: var(--white);
-    border: 1.5px solid var(--line-2);
-    color: var(--ink);
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .input:focus {
-    outline: none;
-    border-color: var(--brand-400);
-    box-shadow: 0 0 0 3px var(--brand-100);
-  }
-  .input[aria-invalid="true"] {
-    border-color: var(--warn);
-  }
+  /* Motion: `animate-fade-up` … */
+  --animate-fade-up: fade-up 0.9s var(--ease-q);
+  --animate-fade-up-quick: fade-up 0.35s var(--ease-q);
+  --animate-welcome-settle: welcome-settle 9s var(--ease-q) forwards;
+  --animate-skel: skel 1.6s linear infinite;
 
-  /* A destructive action: delete, sign out of every device. */
-  .btn--danger {
-    background: var(--warn);
-    color: #fff;
+  /* A block rising into place */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
   }
-
-  /* No rule before eyebrow labels, anywhere (client request). Covers the
-     base kicker and its campaign, phone and hero-slide variants. */
-  .kicker::before {
-    content: none;
+  /* The welcome photograph easing to rest */
+  @keyframes welcome-settle {
+    from { transform: scale(1.12); }
+    to { transform: scale(1); }
   }
-  .kicker {
-    gap: 0;
-  }
-
-  /* The bag row's name link gets the 24px box Quivogue gives .card__name;
-     the photo beside it is a second, larger link to the same piece. */
-  .cart-row__name {
-    display: inline-block;
-    padding: 4px 0;
-    min-height: 24px;
-  }
-
-  /* The filter sidebar is taller than most laptop windows (1,100px with the
-     colour list). Sticky but taller than the viewport, it re-pinned to the
-     top whenever the result count changed the grid's height, throwing the
-     price slider off screen mid-drag. Capped to the window, it scrolls on
-     its own and stays put. Below 880px it is an inline panel again. */
-  @media (min-width: 881px) {
-    /* And the window stays where it is while the grid grows and shrinks:
-       scroll anchoring otherwise chases the cards and drags the page. */
-    .shop-layout {
-      overflow-anchor: none;
-      transition: grid-template-columns 0.25s ease;
-    }
-    .shop-layout.is-full {
-      grid-template-columns: 1fr;
-    }
-    .filters {
-      max-height: calc(100dvh - 112px);
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      scrollbar-width: thin;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-  }
-
-  .grid-products.density-compact {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
-  }
-  .grid-products.density-editorial {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-  }
-
-  /* Filter chips: full 44px on touch screens. The rows sit 7px apart, so an
-     invisible touch area would overlap the next row. */
-  @media (pointer: coarse) {
-    .chip {
-      min-height: 44px;
-    }
-  }
-
-  /* Five footer columns: brand, Shop, Help, Legal, Visit. On a tablet the
-     brand takes its own row above the four link columns; Quivogue's own
-     rules stack them to two (760px) and one (440px) below that. */
-  @media (min-width: 1081px) {
-    .ftr__grid {
-      grid-template-columns: 1.4fr repeat(4, 1fr);
-    }
-  }
-  @media (max-width: 1080px) and (min-width: 761px) {
-    .ftr__grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-    .ftr__brand {
-      grid-column: 1 / -1;
-    }
+  /* The loading shimmer */
+  @keyframes skel {
+    to { background-position: -150% 0; }
   }
 }
 
 /*
-  Large desktops and TVs. Quivogue's layout caps its column at 1620px, which
-  on a 4K TV leaves type and tap targets far too small to use from a sofa.
-  Zoom scales the whole page instead: a 4K screen lays out like a 1920px
-  desktop at twice the size, a 2560px screen like a 2048px one. Breakpoints
-  still read the real width, so nothing else changes.
+  Two values that are not a single token: the logo's gradient (primary
+  buttons, the promo bar, accents; `bg-brand-grad`) and the dropdown chevron.
 */
-@media (min-width: 2400px) {
-  html {
-    zoom: 1.25;
-  }
+:root {
+  --brand-grad: linear-gradient(135deg, #c2185b, var(--color-brand-500) 55%, var(--color-brand-600));
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2317211f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
 }
-@media (min-width: 3200px) {
+
+@utility bg-brand-grad {
+  background-image: var(--brand-grad);
+}
+
+/* The display sans brings a quiet medium weight with it, as luxury type is set: never heavy,
+   never squeezed. A weight or tracking class beside it (font-normal, tracking-tight) still wins. */
+@utility font-serif {
+  font-family: var(--font-serif);
+}
+@utility font-didone {
+  font-family: var(--font-didone);
+}
+@utility font-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* Every page starts on the palette: cream ground, ink text, brand type. */
+@layer base {
   html {
-    zoom: 2;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
+  body {
+    background: var(--color-sand-100);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* A safety net against sideways scroll on phones. clip, not hidden: it trims what sticks out
+       without making the body a scroll container, so sticky headers and bars keep working. */
+    overflow-x: clip;
+  }
+  /* The same net on the root, so a closed off-screen drawer can never widen the page on a phone. */
+  html {
+    overflow-x: clip;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    color: var(--color-ink);
+    line-height: 1.12;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+  /* The admin keeps the plain sans headings; the serif is the shop's voice */
+  .admin-root :is(h1, h2, h3, h4) { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.03em; }
+  /* Brand book type scale: H1 38 to 70 px, H2 28 to 43 px, H3 18 to 23 px */
+  h1 { font-size: clamp(2rem, 4.2vw, 3.5rem); }
+  h2 { font-size: clamp(1.5rem, 2.5vw, 2.1rem); }
+  h3 { font-size: clamp(1.05rem, 1.4vw, 1.25rem); }
+  p { text-wrap: pretty; }
+  a { color: inherit; text-decoration: none; }
+  button { cursor: pointer; }
+  img { max-width: 100%; display: block; }
+  ::selection { background: var(--color-brand-600); color: var(--color-cream); }
+  :focus-visible {
+    outline: 1.5px solid var(--color-brand-500);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Large desktops and TVs: the column caps at 1440px, which on a 4K TV
+     leaves type and tap targets too small to use from a sofa. Zoom scales
+     the whole page; breakpoints still read the real width. */
+  @media (min-width: 2400px) {
+    html { zoom: 1.25; }
+  }
+  @media (min-width: 3200px) {
+    html { zoom: 2; }
+  }
+
+  /* Arabic and Chinese: scripts the brand faces do not carry, so a matching family leads */
+  html[lang="ar"] { --font-serif: "Noto Sans Arabic", "Jost", sans-serif; --font-didone: "Noto Sans Arabic", "Jost", sans-serif; --font-display: "Noto Sans Arabic", "Jost", sans-serif; --font-body: "Noto Sans Arabic", "Jost", system-ui, sans-serif; }
+  html[lang="zh"] { --font-serif: "Noto Sans SC", "PingFang SC", sans-serif; --font-didone: "Noto Sans SC", "PingFang SC", sans-serif; --font-display: "Jost", "Noto Sans SC", "PingFang SC", sans-serif; --font-body: "Jost", "Noto Sans SC", "PingFang SC", system-ui, sans-serif; }
+  html[lang="ar"] body { letter-spacing: 0; }
+}
+
+/*
+  Shared primitives. Every page uses these class names, so they carry the
+  look on any page that has not been restyled section by section. Section
+  layouts themselves are Tailwind utilities in the components.
+*/
+@layer components {
+  /* Page column */
+  .wrap {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: clamp(20px, 4vw, 56px);
+  }
+  /* The minimums are for phones: 48px (tight 32px) between sections, so two
+     stacked sections never leave a tall empty band. Wider screens are unchanged. */
+  .section { padding-block: clamp(48px, 9vw, 128px); }
+  .section--tight { padding-block: clamp(32px, 5vw, 72px); }
+
+  /* Kicker (brand book): Inter 600, 11.5 px, uppercase, +0.2em, brand-500,
+     led by a 26 px rule. The one place small capitals appear. */
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-brand-500);
+    margin-bottom: 1.1rem;
+  }
+  .kicker--light { color: var(--color-brand-200); }
+  .lede {
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    line-height: 1.7;
+    color: var(--color-ink-2);
+    max-width: 58ch;
+  }
+
+  /* Buttons: square, sentence case, quiet until hovered */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em;
+    min-height: 48px;
+    padding: 0.9em 2.2em;
+    border-radius: var(--radius-r-sm);
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    transition: filter 0.35s var(--ease-q), background-color 0.35s var(--ease-q), color 0.35s var(--ease-q), border-color 0.35s var(--ease-q);
+  }
+  .btn[disabled] { opacity: 0.45; pointer-events: none; }
+  /* Primary: the interface gradient (brand book: buttons, add to bag, promo bar) */
+  .btn--primary { background: var(--brand-grad); color: var(--color-white); }
+  .btn--primary:hover { filter: brightness(1.1); }
+  .btn--ghost { background: transparent; color: var(--color-ink); border-color: var(--color-ink); }
+  .btn--ghost:hover { background: var(--color-ink); color: var(--color-cream); }
+  .btn--soft { background: var(--color-brand-50); color: var(--color-brand-600); border-color: var(--color-brand-100); }
+  .btn--soft:hover { background: var(--color-brand-100); }
+  .btn--light { background: var(--color-cream); color: var(--color-ink); }
+  .btn--light:hover { background: var(--color-white); }
+  .btn--danger { background: var(--color-warn); color: var(--color-white); }
+  .btn--lg {
+    min-height: 54px;
+    padding-inline: 2.8em;
+    /* useMagnetic() sets --mx and --my as the pointer nears */
+    translate: var(--mx, 0px) var(--my, 0px);
+    transition-property: filter, background-color, color, border-color, translate;
+  }
+  .btn--block { width: 100%; }
+
+  /* Text link with a drawn underline */
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
+    padding-bottom: 4px;
+    transition: background-size 0.4s var(--ease-q), color 0.3s;
+  }
+  .link-arrow:hover { background-size: 30% 1px; color: var(--color-brand-600); }
+  /* On touch it keeps a full finger's height; in RTL its arrow points the other way */
+  @media (pointer: coarse) {
+    .link-arrow { min-height: 44px; }
+  }
+  html[dir="rtl"] .link-arrow svg,
+  html[dir="rtl"] .btn svg[class*="arrow"] { transform: scaleX(-1); }
+
+  /* Icon buttons in the header and drawers */
+  .icon-btn {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    color: inherit;
+    transition: background-color 0.25s, color 0.25s;
+  }
+  .icon-btn:hover { background: color-mix(in srgb, var(--color-ink) 6%, transparent); }
+  .icon-btn__count {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--color-brand-600);
+    color: var(--color-white);
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 17px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.25s, transform 0.3s var(--ease-q);
+  }
+  .icon-btn__count.is-on { opacity: 1; transform: none; }
+
+  /* Photo frame: holds its shape and shows the label until the picture loads */
+  .ph {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background: var(--color-sand-100);
+  }
+  .ph picture, .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .ph img { opacity: 0; transition: opacity 0.6s var(--ease-q); }
+  .ph.has-photo img { opacity: 1; }
+  .ph__label, .ph__note {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.78rem;
+    color: var(--color-ink-4);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .ph__label { top: calc(50% - 0.9em); }
+  .ph__note { top: calc(50% + 0.6em); font-size: 0.7rem; }
+  .ph.has-photo .ph__label, .ph.has-photo .ph__note { display: none; }
+
+  /* Drawer and overlay backdrop */
+  .sheet-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: color-mix(in srgb, var(--color-ink) 42%, transparent);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease-q);
+  }
+  .sheet-scrim.is-on { opacity: 1; pointer-events: auto; }
+
+  /* Filter and suggestion chips. Full 44px on touch screens. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid var(--color-line-2);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-ink-2);
+    font-size: 0.82rem;
+    transition: border-color 0.25s, background-color 0.25s, color 0.25s;
+  }
+  .chip:hover { border-color: var(--color-ink); color: var(--color-ink); }
+  .chip.is-on { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-cream); }
+  @media (pointer: coarse) {
+    .chip { min-height: 44px; }
+  }
+
+  /* Product grids: two across on a phone, up to four on a laptop */
+  .grid-products {
+    display: grid;
+    gap: clamp(28px, 3vw, 44px) clamp(12px, 1.6vw, 24px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 900px) {
+    .grid-products { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1200px) {
+    .grid-products { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  /* A set number per row (the shop's View control and the admin's default) */
+  .grid-products.grid-products--cols { grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); }
+  .grid-products--cols[style*="--cols: 1"] { row-gap: 56px; }
+  .grid-products--cols[style*="--cols: 5"] { column-gap: 14px; }
+
+  /* Breadcrumbs: small, quiet, above a page title */
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    margin-bottom: 1.6rem;
+    font-size: 0.8rem;
+    color: var(--color-ink-3);
+  }
+  /* Each link gets a full-height tap area without moving the line */
+  .crumbs a { display: inline-block; padding-block: 11px; margin-block: -11px; transition: color 0.2s; }
+  .crumbs a:hover { color: var(--color-ink); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* A section's heading block; --row puts a link or button at its end */
+  .section-head { margin-bottom: clamp(28px, 4vw, 48px); max-width: 60ch; }
+  .section-head--row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; max-width: none; }
+  .section-head h2 { margin: 0; }
+  /* Centred only from a tablet up: left aligned reads better on a phone */
+  @media (min-width: 40rem) {
+    .center { text-align: center; margin-inline: auto; }
+    .lede.center { margin-inline: auto; }
+  }
+
+  /* An empty state: a short title, a line, what to do next */
+  .empty { padding-block: clamp(48px, 8vw, 96px); }
+  @media (min-width: 40rem) { .empty { text-align: center; } }
+  .empty h2, .empty h1 { font-size: clamp(1.5rem, 2.6vw, 2.2rem); }
+
+  /* Chips inside a filter group */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip[disabled] { opacity: 0.35; cursor: not-allowed; }
+  /* Admin choice chips: square and quiet, the chosen one filled with ink */
+  .chip--raised { background: var(--color-white); border-color: var(--color-line); box-shadow: 0 1px 2px rgb(23 33 31 / 0.06), 0 6px 16px rgb(23 33 31 / 0.09); }
+  .chip--raised:hover { box-shadow: 0 2px 4px rgb(23 33 31 / 0.08), 0 10px 22px rgb(23 33 31 / 0.13); }
+  .chip--raised.is-on { background: var(--color-ink); border-color: var(--color-ink); box-shadow: 0 6px 16px rgb(23 33 31 / 0.22); }
+  .chip--more { border-style: dashed; color: var(--color-ink-3); }
+  .chip__n { font-size: 0.72rem; color: var(--color-ink-4); }
+  .chip.is-on .chip__n { color: color-mix(in srgb, var(--color-cream) 65%, transparent); }
+  .chip--color { display: inline-flex; align-items: center; gap: 8px; }
+  .chip--color.is-on .sw { box-shadow: 0 0 0 2px var(--color-white); }
+  .sw { display: inline-block; width: 14px; height: 14px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgb(23 33 31 / 0.15); }
+
+  /* A checkbox with its words */
+  .check-row { display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 0.92rem; cursor: pointer; }
+  .check-row input { width: 18px; height: 18px; accent-color: var(--color-brand-500); }
+
+  /* Loading placeholder: a slow shimmer on sand */
+  .skel {
+    background: linear-gradient(100deg, var(--color-sand-100) 30%, var(--color-sand-50) 50%, var(--color-sand-100) 70%) 0 0 / 300% 100%;
+    animation: var(--animate-skel);
+  }
+
+  /* Skip link: first thing a keyboard reaches */
+  .skip-link {
+    position: absolute;
+    left: 16px;
+    top: -60px;
+    z-index: 100;
+    padding: 10px 16px;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    font-size: 0.8rem;
+  }
+  .skip-link:focus { top: 12px; }
+
+
+  /* Form control: a quiet field with an ink focus line */
+  .input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.75em 1em;
+    border-radius: var(--radius-r-sm);
+    background: var(--color-white);
+    border: 1px solid var(--color-line-2);
+    color: var(--color-ink);
+    font-size: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 3px var(--color-brand-50);
+  }
+  .input[aria-invalid="true"] {
+    border-color: var(--color-warn);
+  }
+
+  /* Select: the same quiet field as .input, with its own chevron */
+  .select {
+    appearance: none;
+    min-height: 44px;
+    padding: 0.5em 2.4em 0.5em 1em;
+    border-radius: var(--radius-r-sm);
+    background: var(--color-white) var(--chevron) no-repeat right 1em center;
+    border: 1px solid var(--color-line-2);
+    color: var(--color-ink);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .select:hover { border-color: var(--color-ink-3); }
+  .select:focus { outline: none; border-color: var(--color-ink); box-shadow: 0 0 0 3px var(--color-brand-50); }
+
+  /* Eyebrow: a small label above or heading a column */
+  .eyebrow {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  /* Form fields: a small label above a quiet input */
+  .field { margin-bottom: 18px; }
+  .field > label:not(.check-row), .field > legend { display: block; margin-bottom: 6px; font-size: 0.82rem; font-weight: 500; color: var(--color-ink-3); }
+  .field input:not([type="checkbox"]):not([type="radio"]), .field textarea, .field select {
+    display: block; width: 100%; min-height: 48px; padding: 0.75em 1em; border: 1px solid var(--color-line-2); border-radius: var(--radius-r-sm);
+    background-color: var(--color-white); color: var(--color-ink); font-size: 16px; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field select {
+    appearance: none; padding-right: 2.6em; cursor: pointer;
+    background: var(--color-white) var(--chevron) no-repeat right 1em center;
+  }
+  .field textarea { resize: vertical; }
+  .field input:not([type="checkbox"]):not([type="radio"]):focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--color-ink); box-shadow: 0 0 0 3px var(--color-brand-50); }
+  .field [aria-invalid="true"] { border-color: var(--color-warn); }
+  /* Dashboards: pill buttons and softly rounded fields (switched on by useRoundedUi) */
+  html.ui-round .btn { border-radius: 999px; }
+  html.ui-round .input,
+  html.ui-round .select,
+  html.ui-round .field input:not([type="checkbox"]):not([type="radio"]),
+  html.ui-round .field select { border-radius: 14px; }
+  html.ui-round textarea.input,
+  html.ui-round .field textarea { border-radius: 16px; }
+  .field .check-row input[type="radio"], .field .check-row input[type="checkbox"] { flex: none; }
+  .field .check-row:has(input:checked) { border-color: var(--color-ink); background: var(--color-sand-50); }
+}
+
+/* Film grain: a fine, slowly shifting noise laid over the hero pictures (blended, so it grains the photo, not the words) */
+@layer utilities {
+  .grain {
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240px 240px;
+    mix-blend-mode: overlay;
+    opacity: 0.32;
+    animation: grain-shift 1s steps(6) infinite;
+  }
+  @keyframes grain-shift {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-3%, 2%); }
+    40% { transform: translate(2%, -3%); }
+    60% { transform: translate(-2%, -1%); }
+    80% { transform: translate(3%, 3%); }
+    100% { transform: translate(0, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .grain { animation: none; } }
+}
+
+/* Content guard (src/utils/contentGuard.js): pictures cannot be picked up, selected or printed, and blur while the window is not in front */
+@layer base {
+  img, video { -webkit-user-drag: none; -webkit-touch-callout: none; user-select: none; }
+  html[data-covered] main img, html[data-covered] main video { filter: blur(26px); }
+}
+@media print {
+  body { display: none !important; }
 }

@@ -1,24 +1,27 @@
 /* Search Overlay Results */
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
 
 import SearchOverlayHit from "./SearchOverlayHit";
 
 // A quick preview of up to eight hits; the full list lives on /shop?q=.
 export default function SearchOverlayResults({ term, hits, onNavigate }) {
   if (!hits.length) {
-    return <p className="mt-6 text-ink-3">Nothing matches “{term}”. Try a category: sets, bras, leggings, skorts, swim, lounge.</p>;
+    return <p className="mt-8 text-[1rem] text-ink-3">Nothing matches “{term}”. Try a category: sets, bras, leggings, skorts, swim or lounge.</p>;
   }
   return (
-    <>
-      {/* Announce the count as the shopper types. */}
-      <p className="search-ov__label" aria-live="polite">{hits.length} {hits.length === 1 ? "piece" : "pieces"}</p>
-      <div className="search-ov__grid">
+    <div className="mt-8">
+      {/* Count, announced as the shopper types */}
+      <p className="mb-4 text-[0.8rem] font-medium text-ink-3" aria-live="polite">{hits.length} {hits.length === 1 ? "piece" : "pieces"}</p>
+
+      {/* Hits */}
+      <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
         {hits.slice(0, 8).map((p) => <SearchOverlayHit key={p.id} product={p} onNavigate={onNavigate} />)}
       </div>
-      <Link className="link-arrow mt-6 inline-flex min-h-11 items-center gap-1.5" to={`/shop?q=${encodeURIComponent(term)}`} onClick={onNavigate}>
-        See all results for “{term}” <ArrowRight className="h-4 w-4" aria-hidden="true" />
+
+      {/* All results */}
+      <Link className="link-arrow mt-8" to={`/shop?q=${encodeURIComponent(term)}`} onClick={onNavigate}>
+        See all results for “{term}”
       </Link>
-    </>
+    </div>
   );
 }

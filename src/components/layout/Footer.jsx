@@ -1,107 +1,119 @@
 /* Footer */
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Clock, MapPin, Phone } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { useFacets, useNavigation, usePageCopy, useSettings } from "@/store/tanstackStore/queries/site";
+import { cn } from "@/utils/cn";
+import { usePageCopy, useSettings } from "@/store/tanstackStore/queries/site";
 import { fill, shopTokens } from "@/utils/fill";
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/ui/BrandIcons";
 import { openCookieSettings } from "@/store/consent/consent";
 import { whatsappLink } from "@/utils/whatsapp";
+import CurrencyPicker from "@/components/storefront/CurrencyPicker";
+import LanguagePicker from "@/components/storefront/LanguagePicker";
 import NewsletterForm from "@/components/storefront/NewsletterForm";
 import Logo from "./navbar/Logo";
+import { t } from "@/i18n/translate";
+
+const LINK = "inline-flex min-h-11 items-center text-[0.95rem] text-ink-3 transition-colors duration-300 hover:text-brand-600";
+const TITLE = "mb-6 font-display text-[1.15rem] text-ink";
 
 /**
- * A deep plum panel in the brand's own colours. The newsletter leads, large
- * and plain; then the logo with its social buttons, the shop and help links,
- * and the showroom with an icon per line; legal links sit in the bottom bar
- * (they were a column of their own, and repeated Delivery and Returns from
- * Help). A huge faint QVFITS bleeds off the bottom edge.
+ * The close of every page, on warm sand and kept quiet: four short columns
+ * (the client's lobby, about, styles and products, and a small newsletter
+ * sign-up) and a thin bar with the logo, copyright, social links and the
+ * language and currency. Delivery, exchange and payment terms live in the
+ * policies, not here. Every fact (phone, address) comes from Settings.
  */
 export default function Footer() {
-  const { data: settings } = useSettings();
-  const { data: facets } = useFacets();
-  const { data: nav } = useNavigation();
+  const { data: s } = useSettings();
   const { data: copy } = usePageCopy("footer");
   const { money } = useCurrency();
-  const tokens = shopTokens(settings, money);
-  // Help and Legal both list Delivery and Returns; show them once, under Help. Account is in the header.
-  const help = nav?.help.filter((l) => l.href !== "/account") ?? [];
-  const legal = nav?.legal.filter((l) => !help.some((h) => h.href === l.href)) ?? [];
+  const tokens = shopTokens(s, money);
 
   return (
-    <footer className="ftr ftr--dark">
+    <footer className="overflow-hidden border-t border-line bg-sand-100 text-ink">
       <div className="wrap">
-        {/* Newsletter: the words large on the left, the form on the right */}
-        <section className="ftr__join" aria-labelledby="ftr-news-title">
-          <div>
-            <p className="ftr__eyebrow">Members first</p>
-            <h2 id="ftr-news-title" className="ftr__headline">{copy?.newsTitle}</h2>
-            <p className="ftr__lede">{copy?.newsText}</p>
+        {/* Columns: four side by side on a laptop; on a phone, four rows that fold open */}
+        <div className="py-8 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-10 md:py-14 lg:grid-cols-4 lg:gap-10">
+          {/* Client's lobby: the ways to settle up and reach a person */}
+          <FooterGroup title={t("Client's lobby")} nav>
+            <li><Link className={LINK} to="/terms#payment">{t("Payment")}</Link></li>
+            <li><Link className={LINK} to="/about#showroom">{t("Showroom")}</Link></li>
+            <li><Link className={LINK} to="/contact">{t("Contact us")}</Link></li>
+            <li><Link className={LINK} to="/contact#faq">{t("FAQs")}</Link></li>
+            <li><Link className={LINK} to="/track-order">{t("Track an order")}</Link></li>
+          </FooterGroup>
+
+          {/* About: the house and its policies */}
+          <FooterGroup title={t("About")} nav>
+            <li><Link className={LINK} to="/about">{t("Our story")}</Link></li>
+            <li><Link className={LINK} to="/delivery">{t("Delivery")}</Link></li>
+            <li><Link className={LINK} to="/returns">{t("Returns and exchanges")}</Link></li>
+            <li><Link className={LINK} to="/terms">{t("Terms of sale")}</Link></li>
+            <li><Link className={LINK} to="/privacy">{t("Privacy policy")}</Link></li>
+            <li><button type="button" className={LINK} onClick={openCookieSettings}>{t("Cookie settings")}</button></li>
+          </FooterGroup>
+
+          {/* Styles and products */}
+          <FooterGroup title={t("Styles and products")} nav>
+            <li><Link className={LINK} to="/size-guide">{t("Style and size guide")}</Link></li>
+            <li><Link className={LINK} to="/shop">{t("Product portfolio")}</Link></li>
+            <li><Link className={LINK} to="/seen-on-you">{t("Seen on you")}</Link></li>
+          </FooterGroup>
+
+          {/* Newsletter: small and simple */}
+          <div className="max-md:border-b max-md:border-line-2 max-md:py-6 md:max-lg:col-span-2">
+            <h2 className={cn(TITLE, "max-md:mb-3")}>{t("Newsletter")}</h2>
+            {copy?.newsText && <p className="mb-4 max-w-xs text-[0.9rem] leading-relaxed text-ink-3">{copy.newsText}</p>}
+            <NewsletterForm source="footer" cta={copy?.newsCta} formId="newsForm" />
           </div>
-          <NewsletterForm source="footer" cta={copy?.newsCta} tone="brand" />
-        </section>
-
-        <div className="ftr__grid">
-          {/* Brand */}
-          <div className="ftr__brand">
-            <Logo size="lg" className="mb-[16px]" />
-            {settings && <p className="ftr__blurb">{settings.blurb} {copy?.blurbSuffix}</p>}
-            {/* Social: the shop's real accounts, as round icon buttons side by side */}
-            {settings && (
-              <ul className="ftr__social" aria-label="Follow QVFITS">
-                {settings.instagram && <li><a href={settings.instagram} target="_blank" rel="noopener noreferrer" aria-label={`Instagram ${settings.instagramHandle ?? ""}`}><InstagramIcon className="h-[18px] w-[18px]" /></a></li>}
-                {settings.tiktok && <li><a href={settings.tiktok} target="_blank" rel="noopener noreferrer" aria-label={`TikTok ${settings.tiktokHandle ?? ""}`}><TikTokIcon className="h-[18px] w-[18px]" /></a></li>}
-                {settings.whatsapp && <li><a href={whatsappLink(settings.whatsapp)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp us"><WhatsAppIcon className="h-[18px] w-[18px]" /></a></li>}
-              </ul>
-            )}
-          </div>
-
-          {/* Shop */}
-          <nav aria-label="Shop">
-            <h2 className="ftr__title">Shop</h2>
-            <ul>
-              {facets?.categoryList.map((c) => (
-                <li key={c.id}><Link to={`/shop/${c.slug}`}>{c.name}</Link></li>
-              ))}
-              <li><Link to="/shop/kits">Shop the kit</Link></li>
-            </ul>
-          </nav>
-
-          {/* Help */}
-          <nav aria-label="Help">
-            <h2 className="ftr__title">Help</h2>
-            <ul>
-              {help.map((l) => <li key={l.href}><Link to={l.href}>{l.title}</Link></li>)}
-            </ul>
-          </nav>
-
-          {/* Visit: an icon for each line, so the showroom reads at a glance */}
-          {settings && (
-            <div>
-              <h2 className="ftr__title">Visit us</h2>
-              <ul className="ftr__visit">
-                <li><MapPin aria-hidden="true" /><a href={settings.mapsUrl} target="_blank" rel="noopener noreferrer">{settings.address}{settings.addressNote && <span className="ftr__note">{settings.addressNote}</span>}</a></li>
-                <li><Clock aria-hidden="true" /><span>Opens {settings.opensAt}</span></li>
-                <li><Phone aria-hidden="true" /><a href={`tel:${settings.phone.replace(/\s/g, "")}`}>{settings.phone}</a></li>
-                <li><WhatsAppIcon className="ftr__vi" /><a href={whatsappLink(settings.whatsapp)} target="_blank" rel="noopener noreferrer">WhatsApp us</a></li>
-              </ul>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom bar: copyright and the legal links, then the tagline */}
-        <div className="ftr__bot">
-          <span>{fill(copy?.copyright, tokens)}</span>
-          <nav aria-label="Legal" className="ftr__legal">
-            {legal.map((l) => <Link key={l.href} to={l.href}>{l.title}</Link>)}
-            <button type="button" className="ftr__cookie" onClick={openCookieSettings}>Cookie settings</button>
-          </nav>
-          <span>{copy?.tagline}</span>
         </div>
       </div>
-      {/* The wordmark, huge and faint, cut off by the bottom edge */}
-      <span className="ftr__mark" aria-hidden="true">QVFITS</span>
+
+      {/* Bottom bar: copyright, social, currency. On a phone the social and settings row comes first, the
+          copyright under it, and room is left at the foot for the floating Ask Vee button. */}
+      <div className="wrap mt-7 flex flex-col gap-3 border-t border-line-2 pb-24 pt-5 text-[0.82rem] text-ink-3 sm:flex-row sm:items-center sm:justify-between sm:gap-5 sm:py-7 sm:pr-36 lg:pr-40">
+        <div className="order-2 flex flex-col gap-4 sm:order-none sm:flex-row sm:items-center sm:gap-8">
+          {/* The full colour logo, as the brand book shows it on a light ground; the header already carries it on a phone */}
+          <Logo className="max-sm:hidden" />
+          <span>{fill(copy?.copyright, tokens)}</span>
+        </div>
+        <div className="flex items-center justify-between gap-x-6 gap-y-2 sm:flex-wrap sm:justify-start">
+          {/* Social: the shop's real accounts */}
+          {s && (
+            <ul className="-ml-2.5 flex gap-1 sm:ml-0" aria-label={t("Follow Quivogue")}>
+              {s.instagram && <li><a className="grid h-10 w-10 place-items-center text-ink-2 transition-colors hover:text-ink" href={s.instagram} target="_blank" rel="noopener noreferrer" aria-label={`Instagram ${s.instagramHandle ?? ""}`}><InstagramIcon className="h-[17px] w-[17px]" /></a></li>}
+              {s.tiktok && <li><a className="grid h-10 w-10 place-items-center text-ink-2 transition-colors hover:text-ink" href={s.tiktok} target="_blank" rel="noopener noreferrer" aria-label={`TikTok ${s.tiktokHandle ?? ""}`}><TikTokIcon className="h-[17px] w-[17px]" /></a></li>}
+              {s.whatsapp && <li><a className="grid h-10 w-10 place-items-center text-ink-2 transition-colors hover:text-ink" href={whatsappLink(s.whatsapp)} target="_blank" rel="noopener noreferrer" aria-label={t("WhatsApp us")}><WhatsAppIcon className="h-[17px] w-[17px]" /></a></li>}
+            </ul>
+          )}
+          <div className="flex items-center gap-4 text-ink-2 sm:gap-6"><LanguagePicker /><CurrencyPicker /></div>
+        </div>
+      </div>
     </footer>
+  );
+}
+
+/**
+ * One footer column. On a laptop or tablet it is a heading over its links; on a
+ * phone the heading is a full-width row that folds the links open and shut, so
+ * the four columns read as four tidy rows instead of a long stack.
+ */
+function FooterGroup({ title, nav = false, children }) {
+  const [open, setOpen] = useState(false);
+  const Tag = nav ? "nav" : "div";
+  return (
+    <Tag aria-label={nav ? title : undefined} className="max-md:border-b max-md:border-line-2 max-md:first:border-t">
+      <h2 className={cn(TITLE, "max-md:hidden")}>{title}</h2>
+      <h2 className="md:hidden">
+        <button type="button" className="flex min-h-14 w-full items-center justify-between text-left font-display text-[1.05rem] text-ink" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+          {title}
+          <ChevronDown className={cn("h-4 w-4 text-ink-3 transition-transform duration-300 ease-q", open && "rotate-180")} strokeWidth={1.5} aria-hidden="true" />
+        </button>
+      </h2>
+      <ul className={cn("space-y-0.5 max-md:pb-4", !open && "max-md:hidden")}>{children}</ul>
+    </Tag>
   );
 }

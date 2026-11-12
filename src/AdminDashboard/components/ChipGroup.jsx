@@ -24,18 +24,18 @@ export default function ChipGroup({ legend, items, isOn, onPick, single = false,
 
   return (
     <fieldset className="m-0 border-0 p-0" aria-describedby={error ? errorId : undefined}>
-      <legend className="mb-2 text-sm font-semibold text-ink-2">{legend}</legend>
+      <legend className="mb-3 text-[.82rem] font-medium text-ink-3">{legend}</legend>
       {/* Search: only for long lists */}
       {items.length > searchAbove && (
-        <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${legend.toLowerCase()}`} aria-label={`Search ${legend}`} className="mb-2.5 h-9 w-full rounded-full border border-line-2 bg-white px-4 text-sm" />
+        <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${legend.toLowerCase()}`} aria-label={`Search ${legend}`} className="input mb-3 !min-h-10 text-sm" />
       )}
-      <div className="flex flex-wrap gap-1.5" role={single ? "radiogroup" : "group"} aria-label={legend}>
+      <div className="flex flex-wrap gap-2" role={single ? "radiogroup" : "group"} aria-label={legend}>
         {shown.map((i) => (
-          <button key={i.id} type="button" {...(single ? { role: "radio", "aria-checked": isOn(i) } : { "aria-pressed": isOn(i) })} className={cn("chip", isOn(i) && "is-on")} onClick={() => onPick(i)}>{i.name}</button>
+          <button key={i.id} type="button" {...(single ? { role: "radio", "aria-checked": isOn(i) } : { "aria-pressed": isOn(i) })} className={cn("chip chip--raised", isOn(i) && "is-on")} onClick={() => onPick(i)}>{i.name}</button>
         ))}
         {/* Fold control: sits in the row like a chip, but dashed so it reads as an action */}
-        {hidden > 0 && <button type="button" className="chip chip--more" onClick={() => setAll(true)}>+{hidden} more</button>}
-        {all && !searching && items.length > limit && <button type="button" className="chip chip--more" onClick={() => setAll(false)}>Show less</button>}
+        {hidden > 0 && <button type="button" className="chip chip--raised chip--more" onClick={() => setAll(true)}>+{hidden} more</button>}
+        {all && !searching && items.length > limit && <button type="button" className="chip chip--raised chip--more" onClick={() => setAll(false)}>Show less</button>}
         {searching && !matched.length && <span className="text-sm text-ink-3">Nothing matches.</span>}
       </div>
       {error && <p id={errorId} role="alert" className="m-0 mt-1.5 text-xs font-semibold text-warn">{error}</p>}

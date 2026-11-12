@@ -24,7 +24,7 @@ export default function ReturnRequest({ order, customerId }) {
   const existing = returns.find((r) => r.orderId === order.id && r.status !== "rejected");
   if (existing) {
     return (
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-r-md bg-brand-50 px-4 py-3">
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-[16px] bg-sand-100 px-4 py-3">
         <span className="text-sm">Your {existing.resolution} request</span>
         <StatusChip status={existing.status} />
       </div>

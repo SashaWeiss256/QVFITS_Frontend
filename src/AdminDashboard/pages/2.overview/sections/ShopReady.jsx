@@ -51,13 +51,13 @@ export default function ShopReady() {
   return (
     <Panel title="Get the shop ready" hint={`${done} of ${steps.length} done`}>
       <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-cream-2" role="progressbar" aria-valuenow={done} aria-valuemin={0} aria-valuemax={steps.length} aria-label="Setup progress">
-        <div className="h-full rounded-full bg-[image:var(--brand-grad)] transition-[width] duration-500 ease-q" style={{ width: `${(done / steps.length) * 100}%` }} />
+        <div className="h-full rounded-full bg-brand-grad transition-[width] duration-500 ease-q" style={{ width: `${(done / steps.length) * 100}%` }} />
       </div>
       {/* Steps: a tick when done, a number when not */}
       <ol className="m-0 grid list-none gap-1 p-0 sm:grid-cols-2">
         {steps.map((s, i) => (
           <li key={s.label}>
-            <Link to={s.to} className="group flex min-h-11 items-center gap-3 rounded-r-md px-3 outline-none transition-[background-color] duration-200 ease-q hover:bg-cream-2 focus-visible:ring-2 focus-visible:ring-brand-300">
+            <Link to={s.to} className="group flex min-h-11 items-center gap-3 rounded-[14px] px-3 outline-none transition-[background-color] duration-200 ease-q hover:bg-cream-2 focus-visible:ring-2 focus-visible:ring-brand-300">
               <span className={cn("grid h-6 w-6 shrink-0 place-items-center rounded-full text-[.72rem] font-bold", s.done ? "bg-success/15 text-success" : "border border-line-2 text-ink-3")}>
                 {s.done ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : i + 1}
               </span>

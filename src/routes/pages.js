@@ -5,6 +5,7 @@ import { lazy } from "react";
 // dashboard's own barrel (CustomerPages, AdminPages).
 
 export const HomePage = lazy(() => import("@/pages/1.home/home"));
+export const SeenOnYouPage = lazy(() => import("@/pages/1.home/seen-on-you"));
 export const ShopPage = lazy(() => import("@/pages/2.shop/shop"));
 export const ProductPage = lazy(() => import("@/pages/3.product/product"));
 export const AboutPage = lazy(() => import("@/pages/4.about/about"));

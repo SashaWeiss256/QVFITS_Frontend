@@ -73,12 +73,12 @@ export default function AttributeList({ resource, module, noun, fields, name, sw
 
       {/* List: one row each, with its detail and controls */}
       {view === "list" && (
-        <ul className="m-0 list-none divide-y divide-line overflow-hidden rounded-r-lg border border-line bg-white p-0">
+        <ul className="m-0 list-none divide-y divide-line overflow-hidden rounded-[18px] border border-line bg-white p-0">
           {list.map((x, i) => {
             const used = usage?.(x);
             return (
               <li key={x.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 transition-colors duration-150 hover:bg-cream/60">
-                {swatch ? <i className="sw h-9 w-9 shrink-0 ring-1 ring-line" style={{ background: swatch(x) }} aria-hidden="true" /> : <span className="grid h-9 min-w-9 shrink-0 place-items-center rounded-r-md bg-brand-50 px-2 font-display font-bold text-brand-600" aria-hidden="true">{name(x)}</span>}
+                {swatch ? <i className="sw h-9 w-9 shrink-0 ring-1 ring-line" style={{ background: swatch(x) }} aria-hidden="true" /> : <span className="grid h-9 min-w-9 shrink-0 place-items-center rounded-[14px] bg-brand-50 px-2 font-display font-bold text-brand-600" aria-hidden="true">{name(x)}</span>}
                 <div className="min-w-0 flex-1">
                   <strong className="block truncate font-display">{swatch ? name(x) : `Size ${name(x)}`}</strong>
                   {caption && <span className="block truncate text-xs text-ink-4">{caption(x)}</span>}
@@ -124,12 +124,12 @@ export default function AttributeList({ resource, module, noun, fields, name, sw
           const used = usage?.(x);
           const unused = used === "Not used yet";
           return (
-            <li key={x.id} className="flex flex-col gap-4 rounded-r-lg border border-line bg-white p-4 transition-[border-color,box-shadow] duration-200 hover:border-brand-200 hover:shadow-sh-1">
+            <li key={x.id} className="flex flex-col gap-4 rounded-[18px] border border-line bg-white p-4 transition-[border-color,box-shadow] duration-200 hover:border-brand-200 hover:shadow-sh-1">
               <div className="flex items-center gap-3">
                 {swatch ? (
                   <i className="sw h-12 w-12 shrink-0 ring-1 ring-line" style={{ background: swatch(x) }} aria-hidden="true" />
                 ) : (
-                  <span className="grid h-12 min-w-12 shrink-0 place-items-center rounded-r-md bg-brand-50 px-2 font-display text-lg font-bold text-brand-600" aria-hidden="true">{name(x)}</span>
+                  <span className="grid h-12 min-w-12 shrink-0 place-items-center rounded-[14px] bg-brand-50 px-2 font-display text-lg font-bold text-brand-600" aria-hidden="true">{name(x)}</span>
                 )}
                 <span className="min-w-0">
                   <strong className="block truncate font-display text-[1.05rem]">{swatch ? name(x) : `Size ${name(x)}`}</strong>
@@ -161,7 +161,7 @@ export default function AttributeList({ resource, module, noun, fields, name, sw
           <li>
             <button
               type="button"
-              className="flex h-full min-h-[8.5rem] w-full flex-col items-center justify-center gap-2 rounded-r-lg border-2 border-dashed border-line-2 text-sm font-semibold text-ink-3 outline-none transition-colors duration-200 hover:border-brand-300 hover:bg-brand-50/50 hover:text-brand-600 focus-visible:ring-2 focus-visible:ring-brand-300"
+              className="flex h-full min-h-[8.5rem] w-full flex-col items-center justify-center gap-2 rounded-[18px] border-2 border-dashed border-line-2 text-sm font-semibold text-ink-3 outline-none transition-colors duration-200 hover:border-brand-300 hover:bg-brand-50/50 hover:text-brand-600 focus-visible:ring-2 focus-visible:ring-brand-300"
               onClick={() => setEditing(blank)}
             >
               <Plus className="h-5 w-5" aria-hidden="true" /> Add {noun}
@@ -187,7 +187,7 @@ export default function AttributeList({ resource, module, noun, fields, name, sw
                 <Field key={f.key} label={f.label}>
                   {(id) => (
                     <div className="flex items-center gap-3">
-                      <input id={id} type="color" className="h-11 w-14 cursor-pointer rounded-r-sm border border-line-2" value={editing[f.key] || "#000000"} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.value })} />
+                      <input id={id} type="color" className="h-11 w-14 cursor-pointer rounded-[10px] border border-line-2" value={editing[f.key] || "#000000"} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.value })} />
                       <input className="input flex-1" aria-label={`${f.label} as hex`} value={editing[f.key] ?? ""} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.value })} placeholder="#14625a" />
                     </div>
                   )}
