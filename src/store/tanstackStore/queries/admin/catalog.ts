@@ -59,6 +59,15 @@ export const useBulkUpdateProducts = () =>
   useMutation({ mutationFn: ({ ids, patch }: { ids: Id[]; patch: Partial<ProductRecord> }) => bulkUpdateProducts(ids, patch), meta: { ...productWrite, success: "Products updated" } });
 export const useBulkRemoveProducts = () =>
   useMutation({ mutationFn: (ids: Id[]) => bulkRemoveProducts(ids), meta: { ...productWrite, success: "Products deleted" } });
+/**
+ * A new product left half-done, kept as a draft. `keepalive` lets it reach the
+ * API while the tab closes; leaving for another admin page needs no flag.
+ */
+export const useKeepProductDraft = () =>
+  useMutation({
+    mutationFn: ({ data, keepalive }: { data: NewRow<ProductRecord>; keepalive?: boolean }) => createProduct({ ...data, status: "draft" }, { keepalive }),
+    meta: { ...productWrite, success: "Kept as a draft in Products" },
+  });
 export const useDuplicateProduct = () =>
   useMutation({ mutationFn: (id: Id) => duplicateProduct(id), meta: { ...productWrite, success: "Copy saved as a draft" } });
 // Moving products to another category also refreshes the categories, since their counts change.

@@ -89,8 +89,8 @@ export function listStockMovements({ signal }: RequestOptions = {}) {
   return http.get<StockMovement[]>(A.stockMovements, { ...ADMIN, signal });
 }
 
-export async function createProduct(data: NewRow<ProductRecord>) {
-  const product = await http.post<Product>(A.products, data, ADMIN);
+export async function createProduct(data: NewRow<ProductRecord>, { keepalive }: { keepalive?: boolean } = {}) {
+  const product = await http.post<Product>(A.products, data, { ...ADMIN, keepalive });
   logActivity({ module: "products", action: "create", entityId: product.id, summary: `Added product ${product.name}` });
   return product;
 }

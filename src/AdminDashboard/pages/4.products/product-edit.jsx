@@ -1,5 +1,5 @@
 /* Admin Product Editor */
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ExternalLink, Layers, Shirt } from "lucide-react";
 
@@ -7,7 +7,7 @@ import Field from "@/components/ui/Field";
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { categoriesResource, colorsResource, groupsResource, productsResource, sizesResource, termsResource, useCollection } from "@/store/tanstackStore/queries/admin";
+import { categoriesResource, colorsResource, groupsResource, productsResource, sizesResource, termsResource, useCollection, useKeepProductDraft } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
 import ChipGroup from "@/AdminDashboard/components/ChipGroup";
 import ImageUploader from "@/AdminDashboard/components/ImageUploader";
@@ -49,6 +49,14 @@ function problems(p) {
   return out;
 }
 
+// What a draft kept on the way out carries: a kit holds no variants, and a photo still uploading is left out.
+function draftData(p) {
+  const data = { ...p, status: "draft", photos: p.photos.filter((ph) => !ph.url || ph.url.startsWith("https://")) };
+  delete data.sizes;
+  if (p.type === "kit") Object.assign(data, { variants: [], colorIds: [], termIds: [], categoryId: "" });
+  return data;
+}
+
 /** Add or edit one product. Everything saves together from the bar at the bottom. */
 export default function ProductEdit() {
   const { id } = useParams();
@@ -81,6 +89,32 @@ function Editor({ existing, products }) {
   // Each change builds on the latest draft, so several in one click don't overwrite each other.
   const patch = (obj) => set((draft) => ({ ...draft, ...(typeof obj === "function" ? obj(draft) : obj) }));
 
+  // A new product left before "Add product" is kept as a draft, once it has a name: leaving for
+  // another admin page or closing the tab both save it. Cancel discards it, as it says.
+  const keepDraft = useKeepProductDraft();
+  const latest = useRef(p);
+  useEffect(() => {
+    latest.current = p;
+  });
+  const settled = useRef(false);
+  useEffect(() => {
+    if (existing || readOnly) return;
+    const keep = (keepalive) => {
+      const d = latest.current;
+      if (settled.current || !d.name.trim()) return;
+      settled.current = true;
+      keepDraft.mutate({ data: draftData(d), keepalive });
+    };
+    const onHide = () => keep(true);
+    window.addEventListener("pagehide", onHide);
+    return () => {
+      window.removeEventListener("pagehide", onHide);
+      keep(false);
+    };
+    // Once per new product: the latest draft is read from the ref when it leaves.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const save = async () => {
     setTried(true);
     if (Object.keys(problems(p)).length) return;
@@ -90,7 +124,14 @@ function Editor({ existing, products }) {
     if (isKit) Object.assign(data, { variants: [], colorIds: [], termIds: [], categoryId: "" });
     if (existing) commit(await products.update(existing.id, data));
     else {
-      const created = await products.create(data);
+      settled.current = true;
+      let created;
+      try {
+        created = await products.create(data);
+      } catch (err) {
+        settled.current = false;
+        throw err;
+      }
       reset();
       navigate(`/admin/products/${created.id}`, { replace: true });
     }
@@ -235,7 +276,7 @@ function Editor({ existing, products }) {
         </div>
       </fieldset>
 
-      <SaveBar dirty={dirty || !existing} saving={products.isSaving} onSave={save} onReset={existing ? reset : () => navigate("/admin/products")} label={existing ? "Save product" : "Add product"} disabled={readOnly} />
+      <SaveBar dirty={dirty || !existing} saving={products.isSaving} onSave={save} onReset={existing ? reset : () => { settled.current = true; navigate("/admin/products"); }} label={existing ? "Save product" : "Add product"} disabled={readOnly} />
     </>
   );
 }

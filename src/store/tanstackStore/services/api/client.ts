@@ -11,6 +11,8 @@ export interface HttpOptions {
   signal?: AbortSignal;
   /** Skip renewing the token on a 401: for the sign-in and refresh calls themselves. */
   noRefresh?: boolean;
+  /** Let the request finish after the tab closes (a draft kept on the way out). Bodies up to 64 KB. */
+  keepalive?: boolean;
 }
 
 interface RequestInit_ extends HttpOptions {
@@ -22,7 +24,7 @@ interface RequestInit_ extends HttpOptions {
  * customer request.
  */
 async function request<T>(method: string, path: string, options: RequestInit_ = {}): Promise<Envelope<T>> {
-  const { body, params, realm = "customer", headers, signal, noRefresh } = options;
+  const { body, params, realm = "customer", headers, signal, noRefresh, keepalive } = options;
   const control = abortAfter(apiTimeout, signal);
   let response: Response;
 
@@ -31,6 +33,7 @@ async function request<T>(method: string, path: string, options: RequestInit_ = 
       method,
       signal: control.signal,
       credentials: "include",
+      keepalive,
       headers: buildHeaders({ body, headers, realm }),
       body: serialize(body),
     });
