@@ -13,7 +13,7 @@ import type { KitView } from "./productsApi";
  *                Edits, and any the admin adds (Categories page)
  *   categories   the Category group's items; a product has one
  *   terms        the items of every other group: tags that products carry
- *                (Running, High support) or edits that open a view (New)
+ *                (Running, High support) or edits that open a view (New in)
  *   colours, sizes, and how the shop's filter sidebar is laid out
  * The API makes ids and addresses from names, keeps old addresses for
  * redirects, and refuses to delete anything a product still uses.

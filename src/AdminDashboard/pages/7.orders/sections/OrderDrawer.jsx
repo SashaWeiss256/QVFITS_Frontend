@@ -67,8 +67,7 @@ export default function OrderDrawer({ order, settings, methods, onClose }) {
     >
       <div className="mb-5 flex flex-wrap items-center gap-2">
         <StatusChip status={order.status} />
-        {/* Payment status only when it says something the order status doesn't (Paid and Paid is one fact) */}
-        {order.paymentStatus !== order.status && <StatusChip status={order.paymentStatus} />}
+        <StatusChip status={order.paymentStatus} />
       </div>
 
       {/* Move it on */}

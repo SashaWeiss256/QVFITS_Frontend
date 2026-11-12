@@ -19,7 +19,6 @@ import settingsSeed from "@/data/settings.json";
 let latest = settingsSeed as ShopSettings;
 
 /** The document plus the live delivery zones. */
-// The API fills in Vee's tone, colour pairs and WhatsApp handover for a copy saved before they existed.
 export async function getSettings({ signal }: RequestOptions = {}) {
   latest = await http.get<ShopSettings>(routes.shop.settings, { signal });
   return latest;
