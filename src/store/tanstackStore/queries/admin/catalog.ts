@@ -68,6 +68,12 @@ export const useKeepProductDraft = () =>
     mutationFn: ({ data, keepalive }: { data: NewRow<ProductRecord>; keepalive?: boolean }) => createProduct({ ...data, status: "draft" }, { keepalive }),
     meta: { ...productWrite, success: "Kept as a draft in Products" },
   });
+/** Unsaved edits to a product, saved as its page is left; `keepalive` as above. */
+export const useKeepProductChanges = () =>
+  useMutation({
+    mutationFn: ({ id, data, keepalive }: { id: Id; data: Partial<Product>; keepalive?: boolean }) => updateProduct(id, data, { keepalive }),
+    meta: { ...productWrite, success: "Your changes were saved" },
+  });
 export const useDuplicateProduct = () =>
   useMutation({ mutationFn: (id: Id) => duplicateProduct(id), meta: { ...productWrite, success: "Copy saved as a draft" } });
 // Moving products to another category also refreshes the categories, since their counts change.

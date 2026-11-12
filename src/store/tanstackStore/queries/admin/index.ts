@@ -17,6 +17,7 @@ export {
   sizesResource,
   useBulkRemoveProducts,
   useBulkUpdateProducts,
+  useKeepProductChanges,
   useKeepProductDraft,
   useDuplicateProduct,
   useReassignCategory,

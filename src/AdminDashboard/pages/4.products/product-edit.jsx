@@ -7,7 +7,7 @@ import Field from "@/components/ui/Field";
 import PageLoader from "@/components/ui/PageLoader";
 import { useAdminAuth } from "@/store/context/AdminAuthContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { categoriesResource, colorsResource, groupsResource, productsResource, sizesResource, termsResource, useCollection, useKeepProductDraft } from "@/store/tanstackStore/queries/admin";
+import { categoriesResource, colorsResource, groupsResource, productsResource, sizesResource, termsResource, useCollection, useKeepProductChanges, useKeepProductDraft } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
 import ChipGroup from "@/AdminDashboard/components/ChipGroup";
 import ImageUploader from "@/AdminDashboard/components/ImageUploader";
@@ -49,9 +49,9 @@ function problems(p) {
   return out;
 }
 
-// What a draft kept on the way out carries: a kit holds no variants, and a photo still uploading is left out.
-function draftData(p) {
-  const data = { ...p, status: "draft", photos: p.photos.filter((ph) => !ph.url || ph.url.startsWith("https://")) };
+// What is saved on the way out: a kit holds no variants, and a photo still uploading is left out.
+function leavingData(p) {
+  const data = { ...p, photos: p.photos.filter((ph) => !ph.url || ph.url.startsWith("https://")) };
   delete data.sizes;
   if (p.type === "kit") Object.assign(data, { variants: [], colorIds: [], termIds: [], categoryId: "" });
   return data;
@@ -89,21 +89,29 @@ function Editor({ existing, products }) {
   // Each change builds on the latest draft, so several in one click don't overwrite each other.
   const patch = (obj) => set((draft) => ({ ...draft, ...(typeof obj === "function" ? obj(draft) : obj) }));
 
-  // A new product left before "Add product" is kept as a draft, once it has a name: leaving for
-  // another admin page or closing the tab both save it. Cancel discards it, as it says.
+  // Leaving the page (another admin page, back, refresh or closing the tab) saves what is on it:
+  // a new product, once it has a name, as a draft; an existing one, its unsaved changes.
+  // Cancel on a new product and Discard on an existing one throw the changes away, as they say.
   const keepDraft = useKeepProductDraft();
-  const latest = useRef(p);
+  const keepChanges = useKeepProductChanges();
+  const latest = useRef({ p, dirty });
   useEffect(() => {
-    latest.current = p;
+    latest.current = { p, dirty };
   });
   const settled = useRef(false);
   useEffect(() => {
-    if (existing || readOnly) return;
+    if (readOnly) return;
     const keep = (keepalive) => {
-      const d = latest.current;
+      const { p: d, dirty: changed } = latest.current;
       if (settled.current || !d.name.trim()) return;
+      if (existing) {
+        if (!changed) return;
+        settled.current = true;
+        keepChanges.mutate({ id: existing.id, data: leavingData(d), keepalive });
+        return;
+      }
       settled.current = true;
-      keepDraft.mutate({ data: draftData(d), keepalive });
+      keepDraft.mutate({ data: leavingData({ ...d, status: "draft" }), keepalive });
     };
     const onHide = () => keep(true);
     window.addEventListener("pagehide", onHide);
@@ -111,7 +119,7 @@ function Editor({ existing, products }) {
       window.removeEventListener("pagehide", onHide);
       keep(false);
     };
-    // Once per new product: the latest draft is read from the ref when it leaves.
+    // Once per page: the latest draft is read from the ref when it leaves.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

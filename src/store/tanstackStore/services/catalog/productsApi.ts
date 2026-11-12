@@ -96,8 +96,8 @@ export async function createProduct(data: NewRow<ProductRecord>, { keepalive }: 
 }
 
 // The form sends the product as it opened it, updatedAt included, so the API can tell whether stock moved since.
-export async function updateProduct(id: Id, patch: Partial<Product>) {
-  const product = await http.patch<Product>(`${A.products}/${id}`, patch, ADMIN);
+export async function updateProduct(id: Id, patch: Partial<Product>, { keepalive }: { keepalive?: boolean } = {}) {
+  const product = await http.patch<Product>(`${A.products}/${id}`, patch, { ...ADMIN, keepalive });
   logActivity({ module: "products", action: "update", entityId: id, summary: `Updated product ${product.name}` });
   return product;
 }
