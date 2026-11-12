@@ -53,9 +53,10 @@ export default function AdminSidebar({ mobileOpen, onClose, badges = {}, collaps
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-[70] flex flex-col border-r border-line bg-white transition-[transform,width] duration-300 ease-q",
+          // Above its scrim (z-80) on phones, like every sheet; beside the page on desktop.
+          "fixed inset-y-0 left-0 z-[81] flex flex-col border-r border-line bg-white transition-[transform,width] duration-300 ease-q",
           // Relative, not static: the collapse toggle anchors to the sidebar edge.
-          "lg:relative lg:translate-x-0",
+          "lg:relative lg:z-[70] lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
           // The phone drawer keeps its full width; only desktop collapses.
           collapsed ? "w-64 lg:w-[72px]" : "w-64",
