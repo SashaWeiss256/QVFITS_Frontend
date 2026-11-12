@@ -1,5 +1,10 @@
-# Send www to the bare domain
+# One address only: the Netlify address and www go to the bare domain
+https://qvfits.netlify.app/*  https://qvfits.com/:splat  301!
 https://www.qvfits.com/*  https://qvfits.com/:splat  301!
 
-# SPA fallback: let React Router handle every route
+# /index.html is the home page
+/index.html  /  301!
+
+# SPA fallback: let React Router handle every route. Pages written at build
+# (products, shop categories, fixed pages) are real files and are served first.
 /*  /index.html  200

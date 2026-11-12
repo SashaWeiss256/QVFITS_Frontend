@@ -20,6 +20,13 @@ export const PAGES = {
     priority: "0.9",
     changefreq: "daily",
   },
+  seenOnYou: {
+    path: "/seen-on-you",
+    title: "Seen on you",
+    description: "QVFITS pieces on the people who wear them, straight from our feed.",
+    priority: "0.5",
+    changefreq: "weekly",
+  },
   about: {
     path: "/about",
     title: "Our story",
