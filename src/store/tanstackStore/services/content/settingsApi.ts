@@ -3,7 +3,7 @@ import { http } from "../api/client";
 import { routes } from "../api/routes";
 import type { RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
-import type { DocumentPatch } from "../store/collectionStore";
+import type { DocumentPatch } from "../store/patches";
 import type { ShopSettings } from "../types";
 import settingsSeed from "@/data/settings.json";
 

@@ -23,12 +23,6 @@ export const apiTimeout = Number(read("VITE_API_TIMEOUT"));
 /** Everything the storefront, the account and the admin call sits under this. */
 export const apiRoot = `${apiBaseUrl}/api/${apiVersion}`;
 
-/**
- * Mocks stay on until a module is wired to the API. Services opt in one at a
- * time rather than this flag switching all of them at once.
- */
-export const useMockApi = (import.meta.env?.VITE_API_MOCKS ?? "true") !== "false";
-
 export function apiUrl(path: string, params?: Record<string, unknown>) {
   const url = `${apiRoot}/${String(path).replace(/^\/+/, "")}`;
   const query = toQuery(params);

@@ -4,7 +4,7 @@ import { routes } from "../api/routes";
 import type { RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 import { linkLookup } from "../catalog/attributesApi";
-import type { DocumentPatch } from "../store/collectionStore";
+import type { DocumentPatch } from "../store/patches";
 import type { Linked } from "../types";
 import { withHrefs, withoutHrefs } from "@/utils/shopTargets";
 

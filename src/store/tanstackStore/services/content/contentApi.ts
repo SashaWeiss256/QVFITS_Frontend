@@ -1,5 +1,4 @@
 /* Home Content Service */
-import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
 import { linkLookup, type LinkLookup } from "../catalog/attributesApi";
 import { termView } from "../catalog/categoriesApi";
@@ -101,8 +100,8 @@ function view(stored: HomeContent, lookup: LinkLookup): HomeContentView {
   };
 }
 
-// The live catalogue comes from the API; the home page document itself is still a mock.
+// The catalogue it links to comes from the API; the home page copy is part of the site's code (src/data/home.json).
 export async function getContent({ signal }: RequestOptions = {}) {
   const lookup = await linkLookup({ signal });
-  return mockApi(() => view(content, lookup), 100, signal);
+  return view(content, lookup);
 }

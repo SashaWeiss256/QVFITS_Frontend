@@ -1,5 +1,4 @@
 /* Fit Assistant Service */
-import { mockApi } from "../api/mock";
 import { getFacets } from "../catalog/categoriesApi";
 import { listLooks } from "../catalog/collectionsApi";
 import { listProducts } from "../catalog/productsApi";
@@ -89,8 +88,8 @@ export async function ask(question: string): Promise<Block[]> {
       // Storage blocked: she's remembered for this visit only.
     }
   }
-  // No staged pause: the answer is ready as soon as the data is. The chat shows its typing dots only while a slow one loads.
-  return mockApi(() => blocks, 0);
+  // The chat shows its typing dots only while slow data loads.
+  return blocks;
 }
 
 /** The greeting set in the dashboard, personal once she has said her name. */

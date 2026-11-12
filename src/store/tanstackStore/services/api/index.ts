@@ -1,5 +1,5 @@
 /* Http Layer Public Contract */
-export { apiBaseUrl, apiRoot, apiUrl, apiVersion, useMockApi } from "./config";
+export { apiBaseUrl, apiRoot, apiUrl, apiVersion } from "./config";
 export { ApiError, apiErrorFromBody, isServerError, networkError } from "./error";
 export { API_NAMESPACES, routes } from "./routes";
 export { http, setRefresher } from "./client";

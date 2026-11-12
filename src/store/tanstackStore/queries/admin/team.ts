@@ -21,7 +21,7 @@ export const staffResource: CollectionResource<StaffMember, never, Partial<Staff
 export const rolesResource = crudResource<Role>("roles", rolesCrud, { noun: "Role", list: listRoles, alsoInvalidates: [staffQueries.all()] });
 
 export const permissionModuleQueries = {
-  list: () => queryOptions({ queryKey: [...adminRoot, "permission-modules"] as const, queryFn: ({ signal }) => listPermissionModules({ signal }), staleTime: Infinity }),
+  list: () => queryOptions({ queryKey: [...adminRoot, "permission-modules"] as const, queryFn: () => listPermissionModules(), staleTime: Infinity }),
 };
 
 // Whether the shop still needs its first owner. Never cached: it closes for good the moment one is made.

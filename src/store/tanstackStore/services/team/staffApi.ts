@@ -1,6 +1,5 @@
 /* Team Service (realm: admin) */
 import { http } from "../api/client";
-import { mockApi } from "../api/mock";
 import { routes } from "../api/routes";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
@@ -21,7 +20,7 @@ export const listStaff = ({ signal }: RequestOptions = {}) => http.get<StaffMemb
 export const listRoles = ({ signal }: RequestOptions = {}) => http.get<Role[]>(routes.team.roles, { ...ADMIN, signal });
 
 // The modules are part of the code, not data, so they need no request.
-export const listPermissionModules = ({ signal }: RequestOptions = {}) => mockApi(() => PERMISSION_MODULES, 0, signal);
+export const listPermissionModules = async () => PERMISSION_MODULES;
 
 /** An invite: the person is added as `invited` and gets a link to set a password. */
 export async function inviteStaff(input: Pick<StaffMember, "name" | "email" | "roleId">) {
@@ -41,7 +40,7 @@ export async function removeStaff(id: Id) {
   logActivity({ module: "team", action: "delete", entityId: id, summary: "Removed someone from the team" });
 }
 
-/** Roles, shaped like an adminCrud so the Team page's resource stays the same. */
+/** Roles, in the same shape as the other admin tables (store/httpCrud). */
 export const rolesCrud = {
   list: listRoles,
 

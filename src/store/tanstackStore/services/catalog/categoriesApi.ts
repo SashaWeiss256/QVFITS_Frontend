@@ -3,7 +3,7 @@ import { http } from "../api/client";
 import { routes } from "../api/routes";
 import type { RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
-import type { DocumentPatch } from "../store/collectionStore";
+import type { DocumentPatch } from "../store/patches";
 import type { Category, Color, FilterConfig, Photo, ShopGroup, SizeOption, Term } from "../types";
 import { categoriesCrud, colorsCrud, groupsCrud, sizesCrud, termsCrud } from "./attributesApi";
 import { localPhoto } from "./photos";

@@ -3,7 +3,7 @@ import { http } from "../api/client";
 import { routes } from "../api/routes";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
-import type { NewRow } from "../store/collectionStore";
+import type { NewRow } from "../store/patches";
 import type { Photo, Product, ProductFilters, ProductRecord, StockMovement, StockReason } from "../types";
 
 export { photosFor } from "./photos";

@@ -1,5 +1,4 @@
 /* Reports Service (realm: admin) */
-import { mockApi } from "../api/mock";
 import type { RequestOptions } from "../api/types";
 import { assertCan } from "../auth/adminSession";
 import { listAllProducts } from "../catalog/productsApi";
@@ -48,7 +47,7 @@ export async function getOverview(days = 30, { signal }: RequestOptions = {}): P
     getSettings({ signal }),
   ]);
 
-  return mockApi(() => {
+  {
     const now = Date.now();
     const from = now - days * DAY;
     const prevFrom = from - days * DAY;
@@ -102,7 +101,7 @@ export async function getOverview(days = 30, { signal }: RequestOptions = {}): P
         messages: messages.filter((m) => m.status === "new").length,
       },
     };
-  }, 150, signal);
+  }
 }
 
 /* Reports (after belioras 2.reports) */
@@ -141,7 +140,7 @@ export async function getReports(range: ReportRange, { signal }: RequestOptions 
     listTransactions({ signal }),
     getSettings({ signal }),
   ]);
-  return mockApi(() => {
+  {
     const inRange = (iso: string) => (!range.from || dayOf(iso) >= range.from) && dayOf(iso) <= range.to;
     const paid = all.filter((o) => COUNTED.has(o.status) && inRange(o.createdAt));
     // Adds one number up across a list of orders.
@@ -243,5 +242,5 @@ export async function getReports(range: ReportRange, { signal }: RequestOptions 
         .sort((a, b) => b.spent - a.spent),
       stock,
     };
-  }, 200, signal);
+  }
 }

@@ -7,7 +7,7 @@ import { adminRoot, siteRoot } from "../keys";
 
 type ListFn<T> = (options: RequestOptions) => Promise<T[]>;
 
-/** A service's crud (services/store/adminCrud) as a resource, in one line. */
+/** A service's crud (services/store/httpCrud) as a resource, in one line. */
 export function crudResource<T extends { id: Id }>(
   name: string,
   crud: { list: ListFn<T>; create: (d: never) => Promise<unknown>; update: (id: Id, d: never) => Promise<unknown>; remove: (id: Id) => Promise<unknown>; reorder?: (ids: Id[]) => Promise<unknown> },

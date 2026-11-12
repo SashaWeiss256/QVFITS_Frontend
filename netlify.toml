@@ -1,8 +1,8 @@
-# Netlify: a preview of the site on the sample data (dev/dummy), until the
-# API is live. Then change the command to "npm run build" and remove the
-# noindex header below.
+# Netlify: the site on the live API. Set VITE_API_BASE_URL (the API's address,
+# e.g. https://api.qvfits.com) in Netlify's environment variables; Netlify has
+# no /api proxy. Remove the noindex header below at launch.
 [build]
-  command = "npm run build:dummy"
+  command = "npm run build"
   publish = "dist"
 
 [build.environment]
@@ -10,7 +10,7 @@
   # Where the site lives, for the share image, canonical links and the sitemap. Change to https://qvfits.com at launch.
   VITE_SITE_URL = "https://qvfits.netlify.app"
 
-# A preview on sample data: keep it out of search results.
+# Before launch: keep the preview out of search results.
 [[headers]]
   for = "/*"
   [headers.values]

@@ -15,7 +15,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
  * only src/routes and App.jsx see both (docs/02-folder-structure.md).
  */
 const TRANSPORT = {
-  group: ['@/store/tanstackStore/services/api/**', '**/api/client', '**/api/mock', '**/api/tokens'],
+  group: ['@/store/tanstackStore/services/api/**', '**/api/client', '**/api/tokens'],
   message: 'UI talks to a query hook, never to the transport.',
 }
 const SERVICES = {

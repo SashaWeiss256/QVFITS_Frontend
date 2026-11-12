@@ -9,9 +9,8 @@
 // the browser exactly as before. It also writes dist/sitemap.xml.
 //
 // Where the catalogue comes from:
-//   SEO_API=https://qvfits.com/api   the live API (default)
-//   SEO_DATA=dummy                   src/data/*.json, for a local run
-//   SITE_URL=https://qvfits.com      the public address
+//   SEO_API=https://api.qvfits.com/api/v1   the live API (default: VITE_API_BASE_URL, else the site's own /api)
+//   SITE_URL=https://qvfits.com             the public address (default: VITE_SITE_URL)
 // If the API cannot be reached the fixed pages and sitemap are still written
 // and the build carries on; products then show the home card until the next
 // build. Rebuild (or call this script) after the catalogue changes.
@@ -38,25 +37,14 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
-const SITE = (process.env.SITE_URL || "https://qvfits.com").replace(/\/+$/, "");
-const API = (process.env.SEO_API || `${SITE}/api`).replace(/\/+$/, "");
+const SITE = (process.env.SITE_URL || process.env.VITE_SITE_URL || "https://qvfits.com").replace(/\/+$/, "");
+const API = (process.env.SEO_API || `${(process.env.VITE_API_BASE_URL || SITE).replace(/\/+$/, "")}/api/${process.env.VITE_API_VERSION || "v1"}`).replace(/\/+$/, "");
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 /* The catalogue */
 
 async function loadCatalogue() {
-  if (process.env.SEO_DATA === "dummy") {
-    const read = async (f) => JSON.parse(await readFile(path.join(root, "src/data", f), "utf8"));
-    const [products, categories] = await Promise.all([read("products.json"), read("categories.json")]);
-    const cat = new Map(categories.map((c) => [c.id, c]));
-    return {
-      categories: categories.filter((c) => c.active !== false),
-      products: products
-        .filter((p) => p.status === "active" && p.type !== "kit")
-        .map((p) => ({ ...p, category: cat.get(p.categoryId)?.name, categorySlug: cat.get(p.categoryId)?.slug })),
-    };
-  }
   const get = async (route) => {
     const res = await fetch(`${API}/${route}`, { headers: { accept: "application/json" } });
     if (!res.ok) throw new Error(`${route}: ${res.status}`);

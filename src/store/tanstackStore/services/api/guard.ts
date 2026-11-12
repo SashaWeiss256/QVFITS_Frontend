@@ -1,5 +1,5 @@
 /* Form Guard */
-import { ApiError } from "./mock";
+import { ApiError } from "./error";
 
 /**
  * A light check on public forms (sign-up, contact, newsletter, guest

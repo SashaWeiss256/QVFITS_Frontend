@@ -4,11 +4,9 @@ import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 
 /**
- * The HTTP twin of adminCrud: list, create, update, remove and reorder for
- * one admin table on the API, in the same shape, so a resource moves from
- * mock to HTTP without its screen changing. The API checks permissions and
- * the rules; the activity log is still a mock, so each change is written to
- * it here once the API has accepted it.
+ * List, create, update, remove and reorder for one admin table on the API.
+ * The API checks permissions and the rules; each change is written to the
+ * activity log here once the API has accepted it.
  *
  *   export const colorsCrud = httpCrud<Color>(routes.adminCatalog.colors, { module: "categories", noun: "colour", label: (c) => c.name });
  */

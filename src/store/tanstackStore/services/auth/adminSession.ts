@@ -1,5 +1,5 @@
 /* Admin Session And Permissions */
-import { ApiError } from "../api/mock";
+import { ApiError } from "../api/error";
 import { accessToken } from "../api/tokens";
 import type { AdminUser, PermissionAction } from "../types";
 

@@ -4,7 +4,7 @@ import { routes } from "../api/routes";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 import { rememberDemoLink } from "../notifications/outboxApi";
-import type { DocumentPatch } from "../store/collectionStore";
+import type { DocumentPatch } from "../store/patches";
 import type { NewsletterSettings, Subscriber, SubscriberSource } from "../types";
 
 /**

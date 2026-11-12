@@ -32,11 +32,11 @@ export const contentQueries = {
       queryFn: ({ signal }) => getOffers({ signal }),
     }),
   pages: () =>
-    queryOptions({ queryKey: [...contentQueries.all(), "pages"] as const, queryFn: ({ signal }) => getPages({ signal }) }),
+    queryOptions({ queryKey: [...contentQueries.all(), "pages"] as const, queryFn: () => getPages() }),
   navigation: () =>
     queryOptions({ queryKey: [...contentQueries.all(), "navigation"] as const, queryFn: ({ signal }) => getNavigation({ signal }) }),
   faq: () =>
-    queryOptions({ queryKey: [...contentQueries.all(), "faq"] as const, queryFn: ({ signal }) => listFaq({ signal }) }),
+    queryOptions({ queryKey: [...contentQueries.all(), "faq"] as const, queryFn: () => listFaq() }),
   shippingZones: () =>
     queryOptions({ queryKey: [...contentQueries.all(), "shipping-zones"] as const, queryFn: ({ signal }) => listShippingZones({ signal }) }),
   paymentMethods: () =>

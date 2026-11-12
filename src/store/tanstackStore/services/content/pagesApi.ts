@@ -1,11 +1,10 @@
 /* Page Copy And Navigation Service */
 import { http } from "../api/client";
-import { mockApi } from "../api/mock";
 import { routes } from "../api/routes";
 import type { RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 import { localPhoto } from "../catalog/photos";
-import type { DocumentPatch } from "../store/collectionStore";
+import type { DocumentPatch } from "../store/patches";
 import { linkLookup, type LinkLookup } from "../catalog/attributesApi";
 import type { Linked, Photo } from "../types";
 import { shopMenuColumns, targetExists, topBarLinks, withHrefs, withoutHrefs } from "@/utils/shopTargets";
@@ -103,11 +102,11 @@ function navigationView(lookup: LinkLookup, feature: MenuFeature): Navigation & 
   };
 }
 
-export const getPages = ({ signal }: RequestOptions = {}) => mockApi(() => pagesSeed, 80, signal);
-// The live catalogue comes from the API; the menu tile itself is still a mock.
+export const getPages = async () => pagesSeed;
+// The catalogue and the menu tile come from the API; the fixed links are part of the site's code.
 export async function getNavigation({ signal }: RequestOptions = {}) {
   const [lookup, feature] = await Promise.all([linkLookup({ signal }), http.get<MenuFeature>(routes.site.menuFeature, { signal })]);
-  return mockApi(() => navigationView(lookup, feature), 80, signal);
+  return navigationView(lookup, feature);
 }
 
 /* Admin (realm: admin) */

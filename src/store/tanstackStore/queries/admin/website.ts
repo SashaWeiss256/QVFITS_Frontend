@@ -12,7 +12,7 @@ import { getSettings, updateSettings } from "../../services/content/settingsApi"
 import { getOffersForEdit, updateOffers, type Offers } from "../../services/marketing/offersApi";
 import { listAllPaymentMethods, paymentMethodsCrud } from "../../services/settings/paymentMethodsApi";
 import { listAllShippingZones, shippingCrud } from "../../services/settings/shippingApi";
-import type { DocumentPatch } from "../../services/store/collectionStore";
+import type { DocumentPatch } from "../../services/store/patches";
 import type { Photo, Campaign, ContactMessage, Id, VeeQuestion, NewsletterSettings, PaymentMethodOption, ShippingZone, ShopSettings, Subscriber } from "../../services/types";
 import { adminRoot, siteRoot } from "../keys";
 import { collectionQueries, crudResource, documentQueries, type DocumentResource } from "./collection";

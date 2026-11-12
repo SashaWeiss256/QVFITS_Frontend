@@ -32,7 +32,7 @@ import {
 } from "../../services/catalog/productsApi";
 import { reviewsCrud } from "../../services/catalog/reviewsApi";
 import { getSizeChart, saveSizeChart } from "../../services/catalog/sizeChartApi";
-import type { DocumentPatch, NewRow } from "../../services/store/collectionStore";
+import type { DocumentPatch, NewRow } from "../../services/store/patches";
 import type { FilterConfig, Id, Product, ProductRecord, SizeRow } from "../../services/types";
 import { adminRoot, siteRoot } from "../keys";
 import { collectionQueries, crudResource, documentQueries, type CollectionResource, type DocumentResource } from "./collection";
