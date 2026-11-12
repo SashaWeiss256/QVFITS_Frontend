@@ -1,17 +1,12 @@
 # Netlify: the site on the live API. Set VITE_API_BASE_URL (the API's address,
 # e.g. https://api.qvfits.com) in Netlify's environment variables; Netlify has
-# no /api proxy. Remove the noindex header below at launch.
+# no /api proxy.
 [build]
   command = "npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "22"
-  # Where the site lives, for the share image, canonical links and the sitemap. Change to https://qvfits.com at launch.
-  VITE_SITE_URL = "https://qvfits.netlify.app"
+  # Where the site lives, for the share image, canonical links and the sitemap. The live address.
+  VITE_SITE_URL = "https://qvfits.com"
 
-# Before launch: keep the preview out of search results.
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
