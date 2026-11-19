@@ -67,9 +67,10 @@ QVfits/
                                      6.size-guide (chart, sizes)
                                      Sales: 7.orders (tabs Orders, Returns and refunds)
                                      8.transactions 9.customers 10.messages
-                                     Marketing: 11.discounts 12.offers 13.newsletter (tabs Subscribers,
-                                     Campaigns, Welcome email, Outbox) 14.vee (Settings, Questions; Vee is a rule-based assistant, see 03)
-                                     Admin: 15.team 16.settings 17.activity
+                                     Marketing: 11.discounts 12.offers 13.home-page (tabs Hero, Shop by movement,
+                                     Seen on you) 14.newsletter (tabs Subscribers,
+                                     Campaigns, Welcome email, Outbox) 15.vee (Settings, Questions; Vee is a rule-based assistant, see 03)
+                                     Admin: 16.team 17.settings 18.activity
 ```
 
 ## Routes
