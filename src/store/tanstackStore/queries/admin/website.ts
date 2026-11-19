@@ -8,6 +8,7 @@ import { listOutbox, retryEmail } from "../../services/notifications/outboxApi";
 import { listVeeQuestions, veeQuestionsCrud } from "../../services/assistant/veeQuestionsApi";
 import { listMessages, messagesCrud } from "../../services/content/contactApi";
 import { getMenuFeatureForEdit, updateMenuFeature, type MenuFeature } from "../../services/content/pagesApi";
+import { getHomeForEdit, updateHome, type HomeForEdit } from "../../services/content/contentApi";
 import { getSettings, updateSettings } from "../../services/content/settingsApi";
 import { getOffersForEdit, updateOffers, type Offers } from "../../services/marketing/offersApi";
 import { listAllPaymentMethods, paymentMethodsCrud } from "../../services/settings/paymentMethodsApi";
@@ -24,6 +25,14 @@ export const offersResource: DocumentResource<Offers, DocumentPatch<Offers>> = {
   queries: documentQueries("offers", getOffersForEdit, "offers"),
   update: updateOffers,
   saved: "Offers saved",
+  alsoInvalidates: SITE,
+};
+
+// The home page's hero, Shop by movement and Seen on you (admin: Home page).
+export const homeResource: DocumentResource<HomeForEdit, DocumentPatch<HomeForEdit>> = {
+  queries: documentQueries("home", getHomeForEdit, "the home page"),
+  update: updateHome,
+  saved: "Home page saved",
   alsoInvalidates: SITE,
 };
 
