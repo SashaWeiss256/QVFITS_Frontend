@@ -19,6 +19,8 @@ const MODULES = [
   ["messages", "messages", P.Messages],
   ["discounts", "discounts", P.Discounts],
   ["offers", "offers", P.Offers],
+  // The home page's hero, Shop by movement and Seen on you: storefront content, so it shares the Offers permission.
+  ["home-page", "offers", P.HomePage],
   ["newsletter", "newsletter", P.Newsletter],
   ["vee", "vee", P.Vee],
   ["team", "team", P.Team],
