@@ -14,14 +14,17 @@ import { resizeToWebp } from "../lib/media";
  * the shop asks for. The first photo is the cover; arrows reorder.
  *
  *   value: Photo[]; onChange(Photo[]); `single` keeps at most one.
- *   folder: what the photos are for ("products" or "categories"), which
- *   decides the permission the upload needs.
+ *   folder: what the photos are for ("products", "categories" or "content",
+ *   the home page and offers), which decides the permission the upload needs.
+ *   maxWidth: how wide the photo is kept (1200; a full-screen hero needs more).
+ *   shape: how a photo's card is cut, "portrait" (3:4, as products show) or
+ *   "landscape" (16:10, for a wide hero picture).
  *   colors: [{ id, name, hex }] to tag a photo to a colourway; `productColors`
  *   (ids) are the colours the product lists. A photo can only be tagged to one
  *   of those, so until some are chosen the cards ask for that first, with
  *   `onChooseColours` taking the person to where they are chosen.
  */
-export default function ImageUploader({ value = [], onChange, single = false, colors, productColors, onChooseColours, label = null, folder = "products" }) {
+export default function ImageUploader({ value = [], onChange, single = false, colors, productColors, onChooseColours, label = null, folder = "products", maxWidth = 1200, shape = "portrait" }) {
   const input = useRef(null);
   const upload = useUploadPhoto();
   const [busy, setBusy] = useState(false);
@@ -35,7 +38,7 @@ export default function ImageUploader({ value = [], onChange, single = false, co
     const added = [];
     try {
       for (const file of [...files].slice(0, single ? 1 : 8)) {
-        const { blob } = await resizeToWebp(file, 1200);
+        const { blob } = await resizeToWebp(file, maxWidth);
         added.push(await upload.mutateAsync({ file: blob, folder }));
       }
     } catch (err) {
@@ -58,13 +61,13 @@ export default function ImageUploader({ value = [], onChange, single = false, co
   return (
     <div>
       {label && <p className="mb-2 text-sm font-semibold text-ink-2">{label}</p>}
-      <div className={cn("grid gap-3", single ? "grid-cols-1 sm:max-w-xs" : "grid-cols-2 sm:grid-cols-3")}>
+      <div className={cn("grid gap-3", single ? cn("grid-cols-1", shape === "portrait" && "sm:max-w-xs") : "grid-cols-2 sm:grid-cols-3")}>
         {value.map((photo, i) => {
           const colour = colors?.find((c) => c.id === photo.colorId);
           const setColour = (id) => onChange(value.map((p) => (p.id === photo.id ? { ...p, colorId: id } : p)));
           return (
             <figure key={photo.id} className="m-0 flex flex-col overflow-hidden rounded-[18px] border border-line bg-white">
-              <div className="relative aspect-[3/4]">
+              <div className={cn("relative", shape === "landscape" ? "aspect-[16/10]" : "aspect-[3/4]")}>
                 <Photo photo={photo} label={`Photo ${i + 1}`} className="absolute inset-0 h-full rounded-none" />
                 {i === 0 && !single && <span className="absolute top-2 left-2 rounded-full bg-cream px-2.5 py-1 text-[.74rem] font-medium">Cover</span>}
                 {/* The colour it belongs to, on the photo itself, so a glance shows which is which. */}
