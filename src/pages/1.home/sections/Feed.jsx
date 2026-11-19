@@ -5,8 +5,12 @@ import { ShoppingBag } from "lucide-react";
 
 import Reveal from "@/components/motion/Reveal";
 import { useSettings } from "@/store/tanstackStore/queries/site";
+import { photoSources } from "@/utils/media";
 
 // On a data-saver or 2G connection only the poster loads, never the video.
+// The responsive image attributes of a photo's sources.
+const pick = ({ src, srcSet, sizes }) => ({ src, srcSet, sizes });
+
 const lite = () => {
   const conn = navigator.connection || {};
   return conn.saveData === true || /^(slow-)?2g$/.test(conn.effectiveType || "");
@@ -15,7 +19,8 @@ const lite = () => {
 /**
  * The brand's own reels: muted, looping and inline so they autoplay on a
  * phone, each linking through to the piece. A reel plays only while it is
- * on screen.
+ * on screen. Each has a still (`photo`) and, usually, a clip (`clip`), both
+ * managed in the admin's Home page; a reel with no clip shows its still.
  */
 export default function Feed({ feed }) {
   const grid = useRef(null);
@@ -38,7 +43,7 @@ export default function Feed({ feed }) {
     );
     grid.current.querySelectorAll("video").forEach((v) => io.observe(v));
     return () => io.disconnect();
-  }, [ok]);
+  }, [ok, feed?.items]);
 
   if (!ok) return null;
   // Decided once per render, since the connection rarely changes mid-visit.
@@ -65,11 +70,11 @@ export default function Feed({ feed }) {
             <Link key={it.id} className="group block" to={it.href} aria-label={`${it.label}: shop it`}>
               {/* Reel */}
               <div className="relative aspect-[3/4] overflow-hidden bg-sand-200">
-                {saving ? (
-                  <img className="h-full w-full object-cover" src={`/photos/${it.id}.webp`} alt={it.label} loading="lazy" />
+                {saving || !it.clip ? (
+                  it.photo && <img className="h-full w-full object-cover" {...pick(photoSources(it.photo))} alt={it.label} loading="lazy" />
                 ) : (
-                  <video className="h-full w-full object-cover" poster={`/photos/${it.id}.webp`} muted loop playsInline preload="none" aria-label={it.label}>
-                    <source src={`/photos/${it.id}.mp4`} type="video/mp4" />
+                  <video className="h-full w-full object-cover" poster={it.photo ? photoSources(it.photo).src : undefined} muted loop playsInline preload="none" aria-label={it.label}>
+                    <source src={it.clip} />
                   </video>
                 )}
                 <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-cream/90 text-ink opacity-0 transition-opacity duration-500 group-hover:opacity-100" aria-hidden="true">
