@@ -44,10 +44,19 @@ Shoppers choose "Stay signed in" (on by default). Admin sessions stay per tab an
 | `payments` | gateway webhook | none | payments and refunds, always against an order |
 | `orders` (**live**) | track, cancel unpaid, ask for a return (reference + phone) | own orders, cancel unpaid, returns | list, detail, status changes (pending, paid, packed, out for delivery, delivered, cancelled, exchanged), part payments, returns and refunds, messages sent |
 | `customers` (**live**) | none | profile, addresses, wishlist, bag, recently viewed, download my data, close my account | list, detail, order history, notes and tags, erase on request |
-| `content` | shop details, delivery fees, exchange rates (the home page, page copy and FAQ are code, not API data) | none | edit settings, delivery zones, payment methods |
+| `content` | shop details, delivery fees, exchange rates; **pending:** the home page document (`GET site/home`). Page copy and FAQ are code, not API data | none | edit settings, delivery zones, payment methods; **pending:** the home page (`GET`/`PATCH admin/content/home`, Offers permission) |
 | `marketing` | active sale and promo bar, newsletter sign-up, confirm, unsubscribe | newsletter switch | offers, discount codes, subscribers, campaigns, welcome email |
 | `assistant` | fit assistant query over the live catalogue; logs each question (text and whether it was answered) | none | Vee's settings and the questions list |
 | `reports` | none | none | overview KPIs and the Reports page: sales, orders, products, codes, customers, stock, for any period |
+
+## Home page document (pending on the API)
+
+The admin's **Home page** (Marketing) edits the hero slides, Shop by movement and Seen on you. It is one document, shaped like `src/data/home.json`, read and saved like the Offers document:
+
+- `GET site/home` (public) returns the stored document. Until it exists the shop uses `src/data/home.json` whole, so a 404 is safe.
+- `GET admin/content/home` and `PATCH admin/content/home` (admin, Offers permission: `offers` view and edit). The PATCH body holds any of `heroSlides`, `movements`, `feed`, each sent whole; store them over the document and return it. Until these exist the editor shows today's content with saving switched off.
+- Pictures are stored as the `Photo` an upload returns (`image`), links as targets (`target`, never an `href`), a reel's clip as `video` (a URL, or `null` for none).
+- `POST admin/uploads` must accept `folder: content` (Offers permission) for these photos, and a short video (MP4, WebM or MOV, up to 30 MB) in the same folder, returning `{ url }`.
 
 `services/api/routes.ts` lists these as `API_NAMESPACES`. Exact paths and payloads are agreed with the API repo and added there as each goes live.
 
