@@ -27,6 +27,8 @@ import {
   setVariantStock,
   updateProduct,
   uploadPhoto,
+  uploadVideo,
+  type UploadFolder,
   type StockReason,
   listStockMovements,
 } from "../../services/catalog/productsApi";
@@ -102,7 +104,14 @@ export const useSetVariantStock = () =>
 // A photo goes to ImageKit through the API; the caller keeps the Photo it returns in its own draft.
 export const useUploadPhoto = () =>
   useMutation({
-    mutationFn: ({ file, folder }: { file: Blob; folder: "products" | "categories" }) => uploadPhoto(file, folder),
+    mutationFn: ({ file, folder }: { file: Blob; folder: UploadFolder }) => uploadPhoto(file, folder),
+    meta: { handlesErrors: true },
+  });
+
+// A Seen on you reel goes up as it is (no resizing), and comes back with its address.
+export const useUploadVideo = () =>
+  useMutation({
+    mutationFn: (file: File) => uploadVideo(file),
     meta: { handlesErrors: true },
   });
 
