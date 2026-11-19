@@ -25,6 +25,7 @@ export {
   useProductPreview,
   useStockMovements,
   useUploadPhoto,
+  useUploadVideo,
 } from "./catalog";
 export {
   customerQueries,
@@ -64,6 +65,7 @@ export {
   campaignQueries,
   newsletterSettingsResource,
   menuFeatureResource,
+  homeResource,
   useCampaigns,
   useEraseSubscriber,
   useOutbox,
