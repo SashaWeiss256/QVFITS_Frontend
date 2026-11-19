@@ -116,6 +116,7 @@ export const routes = {
   },
   site: {
     offers: "site/offers",
+    home: "site/home",
     menuFeature: "site/menu-feature",
     contact: "site/contact",
     veeQuestions: "site/vee/questions",
@@ -124,6 +125,7 @@ export const routes = {
     messages: "admin/messages",
     veeQuestions: "admin/vee/questions",
     offers: "admin/content/offers",
+    home: "admin/content/home",
     menuFeature: "admin/content/menu-feature",
     activity: "admin/activity",
   },
