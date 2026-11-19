@@ -30,10 +30,11 @@ export const Messages = lazy(() => import("./pages/10.messages/messages"));
 // Marketing
 export const Discounts = lazy(() => import("./pages/11.discounts/discounts"));
 export const Offers = lazy(() => import("./pages/12.offers/offers"));
-export const Newsletter = lazy(() => import("./pages/13.newsletter/newsletter"));
-export const Vee = lazy(() => import("./pages/14.vee/vee"));
+export const HomePage = lazy(() => import("./pages/13.home-page/home-page"));
+export const Newsletter = lazy(() => import("./pages/14.newsletter/newsletter"));
+export const Vee = lazy(() => import("./pages/15.vee/vee"));
 
 // Admin
-export const Team = lazy(() => import("./pages/15.team/team"));
-export const Settings = lazy(() => import("./pages/16.settings/settings"));
-export const ActivityLog = lazy(() => import("./pages/17.activity/activity"));
+export const Team = lazy(() => import("./pages/16.team/team"));
+export const Settings = lazy(() => import("./pages/17.settings/settings"));
+export const ActivityLog = lazy(() => import("./pages/18.activity/activity"));
