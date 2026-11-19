@@ -144,13 +144,27 @@ export async function setVariantStock(productId: Id, variantId: Id, stock: numbe
 
 /* Photos */
 
+/** What an upload is for, which decides the permission it needs: Products, Categories, or (content) Offers and the home page. */
+export type UploadFolder = "products" | "categories" | "content";
+
 /**
  * Upload one photo (already resized in the browser) to ImageKit through the
  * API. `folder` says what it is for, which decides the permission needed.
  */
-export function uploadPhoto(file: Blob, folder: "products" | "categories", fileName = "photo.webp") {
+export function uploadPhoto(file: Blob, folder: UploadFolder, fileName = "photo.webp") {
   const form = new FormData();
   form.append("folder", folder);
   form.append("file", file, fileName);
   return http.post<Photo>(routes.uploads, form, ADMIN);
+}
+
+/**
+ * Upload one short video (a Seen on you reel) to ImageKit through the API, as
+ * it is: it comes back with the address it is served from.
+ */
+export function uploadVideo(file: File) {
+  const form = new FormData();
+  form.append("folder", "content");
+  form.append("file", file, file.name || "reel.mp4");
+  return http.post<{ url: string }>(routes.uploads, form, ADMIN);
 }
