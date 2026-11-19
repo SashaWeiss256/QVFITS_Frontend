@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Mail,
   Package,
+  PanelsTopLeft,
   Ruler,
   Settings,
   Sparkles,
@@ -58,6 +59,7 @@ export const ADMIN_NAV = [
     items: [
       { to: "/admin/discounts", label: "Discount codes", icon: BadgePercent, perm: "discounts" },
       { to: "/admin/offers", label: "Offers", icon: Tags, perm: "offers" },
+      { to: "/admin/home-page", label: "Home page", icon: PanelsTopLeft, perm: "offers" },
       { to: "/admin/newsletter", label: "Newsletter", icon: Mail, perm: "newsletter" },
       { to: "/admin/vee", label: "Vee", icon: Sparkles, perm: "vee" },
     ],
