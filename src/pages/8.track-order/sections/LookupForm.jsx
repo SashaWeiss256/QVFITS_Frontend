@@ -8,7 +8,7 @@ import SubHeading from "@/components/storefront/SubHeading";
 import SummaryRow from "@/components/storefront/SummaryRow";
 import StatusChip from "@/components/ui/StatusChip";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { useCancelGuestOrder, useTrackOrder } from "@/store/tanstackStore/queries/site";
+import { useCancelGuestOrder, usePayAgain, useTrackOrder } from "@/store/tanstackStore/queries/site";
 import GuestReturn from "./GuestReturn";
 import { formatDate } from "@/utils/format";
 import { t } from "@/i18n/translate";
@@ -22,6 +22,7 @@ export default function LookupForm() {
   const [phone, setPhone] = useState("");
   const track = useTrackOrder();
   const cancel = useCancelGuestOrder();
+  const pay = usePayAgain();
   const { moneyBase } = useCurrency();
   // A cancel returns the updated order; show that over the first lookup.
   const order = cancel.data ?? track.data;
@@ -61,7 +62,15 @@ export default function LookupForm() {
             <SummaryRow key={`${l.productId}-${l.size}-${l.color}`}><span>{l.name} · {l.color} · {l.size} ×{l.qty}</span><span>{moneyBase(l.price * l.qty)}</span></SummaryRow>
           ))}
           <SummaryRow total><span>{t("Total")}</span><span>{moneyBase(order.total)}</span></SummaryRow>
-          <PaymentDue order={order} onCancel={() => cancel.mutate({ ref, phone })} cancelling={cancel.isPending} />
+          <PaymentDue
+            order={order}
+            onCancel={() => cancel.mutate({ ref, phone })}
+            cancelling={cancel.isPending}
+            // Leaves for Pesapal's page; still "paying" while the browser goes there.
+            onPay={() => pay.mutate({ ref, phone })}
+            paying={pay.isPending || pay.isSuccess}
+            payError={pay.error?.message}
+          />
           {cancel.error && <p role="alert" className="m-0 mt-2 text-sm font-semibold text-warn">{cancel.error.message}</p>}
           {["delivered", "exchanged"].includes(order.status) && <GuestReturn order={order} refCode={ref} phone={phone} />}
         </InfoCard>

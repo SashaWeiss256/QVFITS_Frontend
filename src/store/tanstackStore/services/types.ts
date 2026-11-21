@@ -267,6 +267,8 @@ export interface Currency {
 }
 
 export interface ShopSettings {
+  /** MTN, Airtel and card are paid online through Pesapal (set by the API, not edited). */
+  onlinePayments?: boolean;
   brand: string;
   wordmark: string;
   tagline: string;
@@ -426,6 +428,23 @@ export interface Order {
   /** Where it came from: the shop, or a sale staff recorded in the showroom or on WhatsApp ("manual" is older records). */
   source?: "web" | "showroom" | "whatsapp" | "manual";
   createdAt: string;
+  /**
+   * Only on the order checkout returns: where to pay it online. `redirectUrl`
+   * is Pesapal's page (MTN, Airtel or card, with online payment on); `error`
+   * means that page didn't open, though the order is placed. Absent for a
+   * WhatsApp order, or while online payment is off.
+   */
+  onlinePayment?: { redirectUrl?: string; error?: string } | null;
+}
+
+/** A Pesapal payment as the page it sends the shopper back to sees it. */
+export interface PaymentStatusView {
+  status: TransactionStatus;
+  /** Why it failed or was abandoned, in Pesapal's words. */
+  reason: string | null;
+  /** The order is paid in full. */
+  paid: boolean;
+  order: Order | null;
 }
 
 export interface CheckoutInput {

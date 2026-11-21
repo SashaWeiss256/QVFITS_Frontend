@@ -6,7 +6,7 @@ import PageLoader from "@/components/ui/PageLoader";
 import { useCart } from "@/store/context/CartContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
-import { usePaymentMethods, usePlaceOrder, useQuote, useSubscribe } from "@/store/tanstackStore/queries/site";
+import { goToPesapal, usePaymentMethods, usePlaceOrder, useQuote, useSubscribe } from "@/store/tanstackStore/queries/site";
 import { useSeo } from "@/seo/useSeo";
 import { readStored, writeStored } from "@/utils/storage";
 import { glideTop } from "@/utils/smoothScroll";
@@ -117,6 +117,13 @@ export default function CheckoutPage() {
     if (!order) return;
     // Opted in at checkout: the confirm email goes out; a failure never blocks the order.
     if (details.news && details.email) subscribe.mutate({ email: details.email, source: "checkout", name: details.name, customerId: customer?.id });
+    // MTN, Airtel or card with online payment on: on to Pesapal's page, which sends the shopper
+    // back to /order/:ref/payment. The bag is emptied first: the order already holds the pieces.
+    if (order.onlinePayment?.redirectUrl) {
+      clear();
+      goToPesapal(order.onlinePayment.redirectUrl);
+      return;
+    }
     setPlaced(order);
     clear();
     glideTop();

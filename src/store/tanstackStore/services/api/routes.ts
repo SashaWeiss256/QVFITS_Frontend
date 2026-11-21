@@ -90,6 +90,11 @@ export const routes = {
     cancel: "orders/cancel",
     return: "orders/return",
   },
+  // Online payment through Pesapal; the IPN (payments/pesapal/ipn) is Pesapal's, not the client's.
+  payments: {
+    status: "payments/status",
+    retry: "payments/retry",
+  },
   adminSales: {
     orders: "admin/orders",
     sales: "admin/orders/sales",

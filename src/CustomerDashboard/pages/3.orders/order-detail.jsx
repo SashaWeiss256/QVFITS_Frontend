@@ -8,7 +8,7 @@ import { WhatsAppIcon } from "@/components/ui/BrandIcons";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
 import { useCancelMyOrder, useMyOrder } from "@/store/tanstackStore/queries/account";
-import { useSettings } from "@/store/tanstackStore/queries/site";
+import { usePayAgain, useSettings } from "@/store/tanstackStore/queries/site";
 import PaymentDue from "@/components/storefront/PaymentDue";
 import { formatDate } from "@/utils/format";
 import { whatsappLink } from "@/utils/whatsapp";
@@ -33,6 +33,7 @@ export default function AccountOrderDetail() {
   const { data: settings } = useSettings();
   const { moneyBase } = useCurrency();
   const cancel = useCancelMyOrder(customer.id);
+  const pay = usePayAgain();
 
   if (isLoading) return <PageLoader variant="form" />;
   // Another shopper's id or a stale link lands here too, not on a crash.
@@ -84,7 +85,14 @@ export default function AccountOrderDetail() {
         {order.discount > 0 && <><dt>Discount</dt><dd className="m-0 text-right">{moneyBase(order.discount)} off</dd></>}
         <dt className="font-semibold">Total</dt><dd className="m-0 text-right font-semibold">{moneyBase(order.total)}</dd>
       </dl>
-      <PaymentDue order={order} onCancel={() => cancel.mutate(order.id)} cancelling={cancel.isPending} />
+      <PaymentDue
+        order={order}
+        onCancel={() => cancel.mutate(order.id)}
+        cancelling={cancel.isPending}
+        onPay={() => pay.mutate({ orderId: order.id })}
+        paying={pay.isPending || pay.isSuccess}
+        payError={pay.error?.message}
+      />
       {cancel.error && <p role="alert" className="m-0 mt-2 text-sm font-semibold text-warn">{cancel.error.message}</p>}
 
       {/* Help: the team answers on WhatsApp, with the reference already in the message */}

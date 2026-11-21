@@ -3,21 +3,24 @@ import { useState } from "react";
 import { Clock } from "lucide-react";
 
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { usePaymentMethods, useSettings } from "@/store/tanstackStore/queries/site";
+import { ONLINE_METHODS, usePaymentMethods, useSettings } from "@/store/tanstackStore/queries/site";
 import { formatDateTime } from "@/utils/format";
 
 /**
  * How to pay an unpaid order (gap O6): the amount in UGX (what is charged,
  * whatever currency the shop is shown in), the chosen method's steps, the
  * reference to quote, and when the pieces stop being held (gap S1). A
- * shopper may also cancel it here while nothing is paid (gap O1).
+ * shopper may also cancel it here while nothing is paid (gap O1). With
+ * online payment on and an MTN, Airtel or card order, `onPay` offers to pay
+ * it now on Pesapal's page.
  */
-export default function PaymentDue({ order, onCancel, cancelling = false }) {
+export default function PaymentDue({ order, onCancel, cancelling = false, onPay, paying = false, payError = "" }) {
   const { moneyBase, money, currency } = useCurrency();
   const { data: methods = [] } = usePaymentMethods();
   const { data: settings } = useSettings();
   const [asked, setAsked] = useState(false);
   if (!order || order.status !== "pending" || order.paymentStatus !== "unpaid") return null;
+  const payOnline = Boolean(onPay && settings?.onlinePayments && ONLINE_METHODS.has(order.payment));
 
   // The payment method the shopper picked, for its instructions.
   const method = methods.find((m) => m.id === order.payment);
@@ -33,9 +36,20 @@ export default function PaymentDue({ order, onCancel, cancelling = false }) {
         {moneyBase(order.total)}
         {currency?.code !== "UGX" && <span className="ml-2 text-sm font-normal text-ink-3">about {money(order.total)}</span>}
       </p>
-      <p className="m-0 mt-2 text-sm text-ink-2">
-        {method ? `${method.label}. ${method.instructions}` : "Pay by mobile money or at the showroom."} Quote <strong>{order.ref}</strong> as the reference so we can match it.
-      </p>
+      {payOnline ? (
+        <div className="mt-3">
+          {/* Pay Now: on to Pesapal's page for what is still due */}
+          <button type="button" className="btn btn--primary" disabled={paying} onClick={onPay}>
+            {paying ? "Opening the payment page…" : `Pay now with ${method?.short || method?.label || "mobile money or card"}`}
+          </button>
+          <p className="m-0 mt-2 text-xs text-ink-3">Paid securely through Pesapal. We never see your PIN or card number.</p>
+          {payError && <p role="alert" className="m-0 mt-2 text-sm font-semibold text-warn">{payError}</p>}
+        </div>
+      ) : (
+        <p className="m-0 mt-2 text-sm text-ink-2">
+          {method ? `${method.label}. ${method.instructions}` : "Pay by mobile money or at the showroom."} Quote <strong>{order.ref}</strong> as the reference so we can match it.
+        </p>
+      )}
       {/* Hold: pieces are kept until this time, then the order cancels itself */}
       <p className="m-0 mt-2 flex items-center gap-1.5 text-[.82rem] text-ink-3">
         <Clock className="h-3.5 w-3.5" aria-hidden="true" /> Your pieces are held until {formatDateTime(until)}. Unpaid by then, the order cancels itself.

@@ -7,7 +7,7 @@ import PaymentDue from "@/components/storefront/PaymentDue";
 import SubHeading from "@/components/storefront/SubHeading";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { notify } from "@/store/tanstackStore/notices";
-import { usePaymentMethods } from "@/store/tanstackStore/queries/site";
+import { usePayAgain, usePaymentMethods } from "@/store/tanstackStore/queries/site";
 import { zoneEta, zoneOf } from "@/utils/delivery";
 import { whatsappLink } from "@/utils/whatsapp";
 import { orderMessage } from "../orderMessage";
@@ -21,6 +21,7 @@ import { t } from "@/i18n/translate";
 export default function SendOrder({ order, settings }) {
   const currency = useCurrency();
   const { data: methods = [] } = usePaymentMethods();
+  const pay = usePayAgain();
   const zone = zoneOf(settings, order.region);
   const eta = zoneEta(zone);
   // The order as a ready-to-send message: its lines, totals, delivery and how the shopper chose to pay.
@@ -40,6 +41,8 @@ export default function SendOrder({ order, settings }) {
       {/* Order Placed */}
       <p className="m-0 inline-flex items-center gap-2 bg-brand-50 px-3.5 py-1.5 text-[0.84rem] font-medium text-brand-600"><Check className="h-4 w-4" aria-hidden="true" /> Order placed</p>
       <SubHeading className="mb-1.5 mt-4">Your reference is {order.ref}</SubHeading>
+      {/* Pesapal's page should have opened but didn't: the order stands, and paying can be tried again below */}
+      {order.onlinePayment?.error && <p role="alert" className="m-0 mb-2 text-sm font-semibold text-warn">{order.onlinePayment.error}</p>}
       <p className="text-[.9rem] text-ink-3">Send it to the team and they&apos;ll confirm stock, total and payment with you. Quote your reference and they can find your order instantly.</p>
       {/* Send It: WhatsApp, Instagram or copy. Instagram can't take pre-filled text, so the order goes on the clipboard on the way out. */}
       <div className="mt-5 flex flex-wrap gap-2.5">
@@ -50,7 +53,7 @@ export default function SendOrder({ order, settings }) {
       {/* When it should arrive, from the delivery zone */}
       {eta && <p className="m-0 mt-4 text-sm text-ink-2">{zone.collect ? `${eta} from the showroom, once paid.` : `Arrives in ${eta.toLowerCase()} once paid.`}</p>}
       {/* How to pay, and how long the pieces are held */}
-      <PaymentDue order={order} />
+      <PaymentDue order={order} onPay={() => pay.mutate({ ref: order.ref, phone: order.phone })} paying={pay.isPending || pay.isSuccess} payError={pay.error?.message} />
       <p className="mt-5 text-sm text-ink-3">
         Track it any time on <Link to="/track-order" className="text-brand-600 underline">{t("Track an order")}</Link>.
       </p>

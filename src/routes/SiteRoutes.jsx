@@ -15,6 +15,7 @@ import {
   CartPage,
   CheckoutPage,
   OrderConfirmedPage,
+  PaymentReturnPage,
   NewsletterConfirmPage,
   NewsletterUnsubscribePage,
   TrackOrderPage,
@@ -39,6 +40,8 @@ export default function siteRoutes() {
       <Route path="cart" element={<CartPage />} />
       <Route path="checkout" element={<CheckoutPage />} />
       <Route path="order/:ref" element={<OrderConfirmedPage />} />
+      {/* Where Pesapal sends the shopper back to (?OrderTrackingId=…) */}
+      <Route path="order/:ref/payment" element={<PaymentReturnPage />} />
       <Route path="track-order" element={<TrackOrderPage />} />
       <Route path="newsletter/confirm" element={<NewsletterConfirmPage />} />
       <Route path="newsletter/unsubscribe" element={<NewsletterUnsubscribePage />} />

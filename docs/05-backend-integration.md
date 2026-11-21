@@ -11,7 +11,7 @@
 | Validation | zod on every body, query and param |
 | Auth | JWT access token (15 min) per realm + httpOnly refresh cookie; bcrypt passwords; rate-limited sign-in |
 | Files | DigitalOcean Spaces + CDN; Sharp makes the 1200/800/400 WebP ladder |
-| Payments | One Ugandan gateway (Flutterwave or Pesapal): MTN MoMo, Airtel Money, cards; payment confirmed by webhook, never by the browser |
+| Payments | Pesapal: MTN MoMo, Airtel Money, cards; payment confirmed by Pesapal (its IPN, then asked directly), never by the browser |
 | Email | Resend or Brevo: order confirmation, status changes, new-order and low-stock alerts to the shop, account confirm and password reset, newsletter confirm, welcome and campaigns. Until then these wait in the mock outbox (`notifications/outboxApi.ts`, Newsletter, Outbox) |
 | Hosting | DigitalOcean Droplet, PM2, behind the same Nginx as this site (`06-deployment.md`) |
 
@@ -41,10 +41,10 @@ Shoppers choose "Stay signed in" (on by default). Admin sessions stay per tab an
 | `auth` | none | login, signup, confirm email, refresh, logout, password reset | **live:** setup (once), login, refresh, logout, me, invite, accept-invite |
 | `catalog` | **live:** products (list, filter, detail by slug, by ids), kits, facets, size chart, approved reviews, review submission | none (reviews are written by staff for now) | **live** (`admin/catalog/*`, `admin/uploads`): products and kits, variants, stock per colour/size and the stock log, photos (ImageKit), categories, groups, terms, colours, sizes, filters, reviews, draft preview |
 | `checkout` (**live**) | quote (lines, kits, delivery, discount code), create order, start payment | same, linked to the account | record a sale (showroom, WhatsApp; paid on the spot) |
-| `payments` | gateway webhook | none | payments and refunds, always against an order |
+| `payments` (**live**) | Pesapal for MTN, Airtel and card: checkout returns `onlinePayment.redirectUrl`; `POST payments/status` { ref, trackingId } for the return page `/order/:ref/payment`; `POST payments/retry` { ref, trackingId } or { ref, phone }; Pesapal's IPN `payments/pesapal/ipn` | `POST account/orders/:id/pay` | payments and refunds, always against an order; `POST admin/transactions/:reference/check` asks Pesapal now |
 | `orders` (**live**) | track, cancel unpaid, ask for a return (reference + phone) | own orders, cancel unpaid, returns | list, detail, status changes (pending, paid, packed, out for delivery, delivered, cancelled, exchanged), part payments, returns and refunds, messages sent |
 | `customers` (**live**) | none | profile, addresses, wishlist, bag, recently viewed, download my data, close my account | list, detail, order history, notes and tags, erase on request |
-| `content` | shop details, delivery fees, exchange rates; **pending:** the home page document (`GET site/home`). Page copy and FAQ are code, not API data | none | edit settings, delivery zones, payment methods; **pending:** the home page (`GET`/`PATCH admin/content/home`, Offers permission) |
+| `content` | shop details (with `onlinePayments`: whether Pesapal is on), delivery fees, exchange rates; **pending:** the home page document (`GET site/home`). Page copy and FAQ are code, not API data | none | edit settings, delivery zones, payment methods; **pending:** the home page (`GET`/`PATCH admin/content/home`, Offers permission) |
 | `marketing` | active sale and promo bar, newsletter sign-up, confirm, unsubscribe | newsletter switch | offers, discount codes, subscribers, campaigns, welcome email |
 | `assistant` | fit assistant query over the live catalogue; logs each question (text and whether it was answered) | none | Vee's settings and the questions list |
 | `reports` | none | none | overview KPIs and the Reports page: sales, orders, products, codes, customers, stock, for any period |

@@ -10,8 +10,8 @@ import type { CartLine, CheckoutInput, DeliveryRegion, Order, OrderLine, Payment
  * Prices are always worked out by the API, never trusted from the browser,
  * and always in UGX whatever currency is on screen. Placing an order takes
  * its stock at once (so the last piece can't be sold twice); payment is
- * confirmed by staff or, later, the gateway's webhook, so an order starts
- * `pending` either way.
+ * confirmed by staff (WhatsApp orders) or by Pesapal (MTN, Airtel and card,
+ * services/sales/paymentsApi), so an order starts `pending` either way.
  */
 
 export interface Quote {
@@ -36,8 +36,10 @@ export function quote(lines: CartLine[], region: DeliveryRegion, code?: string, 
 }
 
 /**
- * Honest seam: no money moves online yet. The order is recorded as
- * `pending` with its stock held, and the page offers the WhatsApp hand-off.
+ * The order is recorded as `pending` with its stock held. With online payment
+ * on and an MTN, Airtel or card order, it comes back with
+ * `onlinePayment.redirectUrl` (Pesapal's page); otherwise the page offers the
+ * WhatsApp hand-off.
  */
 export function placeOrder(input: CheckoutInput, _customerId?: Id) {
   const { kitSaving: _kitSaving, ...form } = input;

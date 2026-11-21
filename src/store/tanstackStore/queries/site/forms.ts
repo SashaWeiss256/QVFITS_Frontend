@@ -8,6 +8,9 @@ import { latestEmail } from "../../services/notifications/outboxApi";
 import type { SubscriberSource } from "../../services/types";
 import { placeOrder, quote } from "../../services/sales/checkoutApi";
 import { cancelGuestOrder, trackOrder } from "../../services/sales/ordersApi";
+import { getPaymentStatus, goToPesapal, payMyOrder, retryPayment } from "../../services/sales/paymentsApi";
+// For the UI: leaving for Pesapal after checkout, and which methods it takes.
+export { goToPesapal, ONLINE_METHODS } from "../../services/sales/paymentsApi";
 import { requestGuestReturn } from "../../services/sales/returnsApi";
 import type { CartLine, CheckoutInput, DeliveryRegion, Id } from "../../services/types";
 import { adminRoot } from "../keys";
@@ -65,6 +68,41 @@ export const useGuestReturn = () =>
   useMutation({
     mutationFn: ({ ref, phone, input }: { ref: string; phone: string; input: Parameters<typeof requestGuestReturn>[2] }) => requestGuestReturn(ref, phone, input),
     meta: { ...inline, invalidates: [[...adminRoot, "returns"]] },
+  });
+
+/*
+ * Online payment (Pesapal). The return page asks where the payment stands
+ * every few seconds while it is still open, for up to two minutes: a mobile
+ * money prompt can take a moment to be approved. After that the shopper can
+ * check again by hand.
+ */
+const POLL_MS = 3_000;
+const POLL_FOR_MS = 2 * 60_000;
+export const usePaymentStatus = (ref?: string, trackingId?: string) =>
+  useQuery({
+    queryKey: ["site", "payment", ref, trackingId],
+    queryFn: ({ signal }) => getPaymentStatus(ref!, trackingId!, { signal }),
+    enabled: Boolean(ref && trackingId),
+    retry: 1,
+    refetchInterval: (q) => (q.state.data?.status === "pending" && Date.now() - firstSeen(q.queryHash) < POLL_FOR_MS ? POLL_MS : false),
+  });
+// When each payment was first asked about, so polling stops after POLL_FOR_MS.
+const seen = new Map<string, number>();
+const firstSeen = (hash: string) => {
+  if (!seen.has(hash)) seen.set(hash, Date.now());
+  return seen.get(hash)!;
+};
+
+/**
+ * Open Pesapal for what is still due, and go there: with the last attempt's
+ * tracking id or the order's phone (a guest), or as the signed-in owner.
+ */
+export const usePayAgain = () =>
+  useMutation({
+    mutationFn: (key: { ref: string; trackingId: string } | { ref: string; phone: string } | { orderId: Id }) =>
+      "orderId" in key ? payMyOrder(key.orderId) : retryPayment(key),
+    onSuccess: ({ redirectUrl }) => goToPesapal(redirectUrl),
+    meta: inline,
   });
 
 export const useAskAssistant = () => useMutation({ mutationFn: (question: string) => ask(question), meta: inline });
