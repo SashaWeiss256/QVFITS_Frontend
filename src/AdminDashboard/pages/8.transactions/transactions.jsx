@@ -1,71 +1,71 @@
 /* Admin Transactions */
-import { useNavigate } from "react-router-dom";
-import { ArrowDownLeft, ArrowUpRight, Scale } from "lucide-react";
+import { useMemo } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-import StatusChip from "@/components/ui/StatusChip";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { paymentMethodsResource, transactionsResource, useCollection } from "@/store/tanstackStore/queries/admin";
-import { formatDateTime } from "@/utils/format";
+import { paymentMethodsResource, transactionsResource, useCollection, useOrders } from "@/store/tanstackStore/queries/admin";
 import DataTable from "@/AdminDashboard/components/DataTable";
 import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
-import StatCard from "@/AdminDashboard/components/StatCard";
+import Tabs from "@/AdminDashboard/components/Tabs";
+import TxTotals from "./sections/TxTotals";
+import { txColumns } from "./sections/txColumns";
+import { TX_STATUS, abandonedFromOrders } from "./sections/txFields";
 
 /**
  * Money in and out, each tied to its order: a payment when an order is
  * paid (by staff now, by the payment gateway later), a refund when a
- * return is refunded. Nothing is added or changed here, so the books
- * always match the orders; open a row to see its order. Staff who handle
- * orders but not the money don't see this page (Transactions, in Team and
- * roles).
+ * return is refunded, and what never landed: failed, abandoned or reversed
+ * at the gateway. Shop orders cancelled while unpaid show as abandoned until
+ * the gateway reports those itself. Nothing is added or changed here, so the
+ * books always match the orders; open a row to see its order. Deep link:
+ * ?status=succeeded|pending|failed|abandoned|reversed.
  */
 export default function AdminTransactions() {
   const tx = useCollection(transactionsResource);
   const methods = useCollection(paymentMethodsResource);
+  const { data: orders = [], isLoading: ordersLoading } = useOrders();
   const { moneyBase } = useCurrency();
   const navigate = useNavigate();
-  const label = (id) => (id === "cash" ? "Cash" : methods.items.find((m) => m.id === id)?.short ?? id);
+  const [params, setParams] = useSearchParams();
+  const methodLabel = (id) => (id === "cash" ? "Cash" : methods.items.find((m) => m.id === id)?.short ?? id);
 
-  const done = tx.items.filter((t) => t.status === "succeeded");
-  const inflow = done.filter((t) => t.type === "payment").reduce((n, t) => n + t.amount, 0);
-  const outflow = done.filter((t) => t.type === "refund").reduce((n, t) => n + t.amount, 0);
+  const all = useMemo(() => [...tx.items, ...abandonedFromOrders(orders, tx.items)], [tx.items, orders]);
+  // Status lives in the URL so other pages can link straight to a tab; an unknown one means All.
+  const status = params.get("status") in TX_STATUS ? params.get("status") : "all";
+  const rows = status === "all" ? all : all.filter((t) => t.status === status);
+  const tabs = [{ id: "all", label: "All", count: all.length }, ...Object.entries(TX_STATUS).map(([id, label]) => ({ id, label, count: all.filter((t) => t.status === id).length }))];
+  const setStatus = (next) =>
+    setParams((p) => {
+      const out = new URLSearchParams(p);
+      next === "all" ? out.delete("status") : out.set("status", next);
+      return out;
+    }, { replace: true });
 
-  const columns = [
-    { key: "createdAt", label: "When", sort: (t) => t.createdAt, render: (t) => formatDateTime(t.createdAt) },
-    { key: "orderRef", label: "Order", render: (t) => <strong className="font-display">{t.orderRef}</strong> },
-    { key: "type", label: "Type", render: (t) => (t.type === "refund" ? "Refund" : "Payment") },
-    { key: "method", label: "Method", render: (t) => label(t.method) },
-    { key: "reference", label: "Reference", render: (t) => t.reference || <span className="text-ink-4">None</span> },
-    { key: "status", label: "Status", render: (t) => <StatusChip status={t.status} /> },
-    { key: "amount", label: "Amount", align: "right", sort: (t) => t.amount, render: (t) => <span className={t.type === "refund" ? "text-warn" : ""}>{t.type === "refund" ? "-" : ""}{moneyBase(t.amount)}</span> },
-  ];
+  const loading = tx.isLoading || ordersLoading;
 
   return (
     <>
-      <PageHeader lede="Every payment in and refund out, in UGX, each tied to its order. Record payments and refunds on the order itself." />
-      <section aria-label="Totals" className="mb-6 grid gap-4 sm:grid-cols-3">
-        <StatCard label="Taken" icon={ArrowDownLeft} value={moneyBase(inflow)} note={`${done.filter((t) => t.type === "payment").length} payments`} />
-        <StatCard label="Refunded" icon={ArrowUpRight} value={moneyBase(outflow)} note={`${done.filter((t) => t.type === "refund").length} refunds`} />
-        <StatCard label="Net" icon={Scale} value={moneyBase(inflow - outflow)} />
-      </section>
+      <PageHeader lede="Every payment in and refund out, in UGX, each tied to its order, and every payment that failed or was abandoned. Record payments and refunds on the order itself." />
+      <TxTotals rows={rows} money={moneyBase} loading={loading} />
+      <Tabs tabs={tabs} value={status} onChange={setStatus} />
       <Panel>
         <DataTable
           filterDrawer
-          rows={tx.items}
-          loading={tx.isLoading}
-          columns={columns}
+          rows={rows}
+          loading={loading}
+          columns={txColumns({ methodLabel, money: moneyBase })}
           initialSort={{ key: "createdAt", dir: "desc" }}
-          search={(t) => `${t.orderRef} ${t.reference}`}
-          searchLabel="Search order or reference"
+          search={(t) => `${t.orderRef} ${t.reference} ${t.reason ?? ""}`}
+          searchLabel="Search order, reference or reason"
           filters={[
             { id: "type", label: "Type", options: [{ value: "payment", label: "Payments" }, { value: "refund", label: "Refunds" }], test: (t, v) => t.type === v },
             { id: "method", label: "Method", options: [{ value: "cash", label: "Cash" }, ...methods.items.map((m) => ({ value: m.id, label: m.short }))], test: (t, v) => t.method === v },
-            { id: "status", label: "Status", options: [{ value: "succeeded", label: "Succeeded" }, { value: "pending", label: "Pending" }, { value: "failed", label: "Failed" }], test: (t, v) => t.status === v },
           ]}
           onRowClick={(t) => navigate(`/admin/orders?order=${t.orderId}`)}
-          exportName="payments"
-          exportRow={(t) => ({ date: t.createdAt, order: t.orderRef, type: t.type, method: t.method, reference: t.reference, status: t.status, amount: t.type === "refund" ? -t.amount : t.amount })}
-          empty="No payments yet. Recording a payment on an order adds one."
+          exportName={status === "all" ? "payments" : `payments-${status}`}
+          exportRow={(t) => ({ date: t.createdAt, order: t.orderRef, type: t.type, method: t.method, reference: t.reference, status: t.status, reason: t.reason ?? "", amount: t.type === "refund" ? -t.amount : t.amount })}
+          empty={status === "all" ? "No payments yet. Recording a payment on an order adds one." : `No ${TX_STATUS[status].toLowerCase()} payments.`}
         />
       </Panel>
     </>
