@@ -23,6 +23,8 @@ const OTHER = {
   part_paid: "Part paid",
   succeeded: "Succeeded",
   failed: "Failed",
+  abandoned: "Abandoned",
+  reversed: "Reversed",
   draft: "Draft",
   active: "Active",
   archived: "Archived",

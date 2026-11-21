@@ -443,7 +443,12 @@ export interface CheckoutInput {
 }
 
 export type TransactionType = "payment" | "refund";
-export type TransactionStatus = "pending" | "succeeded" | "failed";
+/**
+ * As the gateway reports it. `abandoned`: closed unpaid (the shopper left the
+ * payment page or the order's hold ran out), not a failure. `reversed`: paid,
+ * then refunded or charged back by the gateway.
+ */
+export type TransactionStatus = "pending" | "succeeded" | "failed" | "abandoned" | "reversed";
 
 export interface Transaction {
   id: Id;
@@ -456,6 +461,10 @@ export interface Transaction {
   /** The gateway's or mobile money reference. */
   reference: string;
   note?: string;
+  /** Why it failed or was abandoned, in the gateway's words or the order's. */
+  reason?: string;
+  /** Built on screen from an order cancelled unpaid, not stored as a transaction. */
+  derived?: boolean;
   createdAt: string;
 }
 

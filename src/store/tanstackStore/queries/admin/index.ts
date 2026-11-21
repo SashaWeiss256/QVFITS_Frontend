@@ -41,6 +41,7 @@ export {
   returnWindow,
   transactionsResource,
   useAddOrderNote,
+  useCheckTransaction,
   useOpenReturn,
   useOrderEmails,
   useRecordSale,

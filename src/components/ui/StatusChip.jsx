@@ -14,7 +14,7 @@ const TONE = {
   pending: WAITING, unpaid: WAITING, requested: WAITING, draft: WAITING, new: MOVING, invited: WAITING,
   paid: MOVING, packed: MOVING, approved: MOVING, received: MOVING, read: WAITING,
   out_for_delivery: DONE, delivered: DONE, succeeded: DONE, active: DONE, replied: DONE,
-  cancelled: ENDED, exchanged: ENDED, refunded: ENDED, partially_refunded: ENDED, archived: ENDED, hidden: ENDED, inactive: ENDED,
+  cancelled: ENDED, exchanged: ENDED, refunded: ENDED, partially_refunded: ENDED, archived: ENDED, hidden: ENDED, inactive: ENDED, abandoned: ENDED, reversed: ENDED,
   rejected: BAD, failed: BAD, suspended: BAD,
   // Emails in the Outbox.
   queued: MOVING, sent: DONE, held: WAITING, no_email: ENDED,

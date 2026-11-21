@@ -10,7 +10,7 @@ import { addOrderNote, listOrders, markOrderPaid, NEXT_STATUS, updateOrderStatus
 import { getOverview, getReports, type ReportRange } from "../../services/sales/reportsApi";
 import { listOrderEmails } from "../../services/sales/ordersApi";
 import { listReturns, NEXT_RETURN_STATUS, openReturn, refundDue, returnWindow, updateReturnStatus } from "../../services/sales/returnsApi";
-import { listTransactions, transactionsCrud } from "../../services/sales/transactionsApi";
+import { checkTransaction, listTransactions, transactionsCrud } from "../../services/sales/transactionsApi";
 import { listenLive } from "../../services/realtime/liveApi";
 import type { CheckoutInput, Customer, Discount, Id, Order, OrderStatus, PaymentMethod, ReturnRequest, ReturnStatus, Transaction } from "../../services/types";
 import { adminRoot, siteRoot } from "../keys";
@@ -70,6 +70,12 @@ export const useMarkOrderPaid = () =>
   useMutation({
     mutationFn: ({ id, method, reference, amount }: { id: Id; method: PaymentMethod; reference: string; amount?: number }) => markOrderPaid(id, { method, reference, amount }),
     meta: { invalidates: orderWrite, success: "Payment recorded" },
+  });
+// Transactions › Check: a payment the gateway confirms pays its order, so money, stock and the overview refresh.
+export const useCheckTransaction = () =>
+  useMutation({
+    mutationFn: (reference: string) => checkTransaction(reference),
+    meta: { invalidates: orderWrite, success: (r) => (r as { message?: string }).message ?? "Payment checked" },
   });
 // A note changes only the order list, not money or stock.
 export const useAddOrderNote = () =>
