@@ -5,12 +5,15 @@ import { ArrowLeft, ArrowRight, Check, ImagePlus, Palette, Trash2 } from "lucide
 import Photo from "@/components/storefront/Photo";
 import { useUploadPhoto } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
-import { resizeToWebp } from "../lib/media";
+import { resizePhoto } from "../lib/media";
+
+// The photo as picked. It is shrunk before it is sent, so what goes up stays well under 1 MB.
+const MAX_ORIGINAL_MB = 20;
 
 /**
  * Photos for a product, a slide or a tile. Each file is shrunk to a 1200px
- * WebP in the browser first, so a 4 MB phone photo lands at well under
- * 200 KB, then uploaded to ImageKit through the API, which serves every size
+ * WebP in the browser first (JPEG in Safari, which can't make WebP), so a
+ * 4 MB phone photo lands at well under 200 KB, then uploaded to ImageKit through the API, which serves every size
  * the shop asks for. The first photo is the cover; arrows reorder.
  *
  *   value: Photo[]; onChange(Photo[]); `single` keeps at most one.
@@ -38,8 +41,9 @@ export default function ImageUploader({ value = [], onChange, single = false, co
     const added = [];
     try {
       for (const file of [...files].slice(0, single ? 1 : 8)) {
-        const { blob } = await resizeToWebp(file, maxWidth);
-        added.push(await upload.mutateAsync({ file: blob, folder }));
+        if (file.size > MAX_ORIGINAL_MB * 1024 * 1024) throw new Error(`That photo is over ${MAX_ORIGINAL_MB} MB. Pick a smaller one.`);
+        const { blob, ext } = await resizePhoto(file, maxWidth);
+        added.push(await upload.mutateAsync({ file: blob, folder, fileName: `photo.${ext}` }));
       }
     } catch (err) {
       setError(err.message);

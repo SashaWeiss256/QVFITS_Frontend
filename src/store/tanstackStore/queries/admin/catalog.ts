@@ -104,7 +104,7 @@ export const useSetVariantStock = () =>
 // A photo goes to ImageKit through the API; the caller keeps the Photo it returns in its own draft.
 export const useUploadPhoto = () =>
   useMutation({
-    mutationFn: ({ file, folder }: { file: Blob; folder: UploadFolder }) => uploadPhoto(file, folder),
+    mutationFn: ({ file, folder, fileName }: { file: Blob; folder: UploadFolder; fileName?: string }) => uploadPhoto(file, folder, fileName),
     meta: { handlesErrors: true },
   });
 

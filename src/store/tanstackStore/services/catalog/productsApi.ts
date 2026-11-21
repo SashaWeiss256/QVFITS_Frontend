@@ -155,7 +155,8 @@ export function uploadPhoto(file: Blob, folder: UploadFolder, fileName = "photo.
   const form = new FormData();
   form.append("folder", folder);
   form.append("file", file, fileName);
-  return http.post<Photo>(routes.uploads, form, ADMIN);
+  // A photo is small once resized, but a slow line plus the hop to ImageKit can outlast the usual 15 s.
+  return http.post<Photo>(routes.uploads, form, { ...ADMIN, timeout: 60_000 });
 }
 
 /**
@@ -166,5 +167,6 @@ export function uploadVideo(file: File) {
   const form = new FormData();
   form.append("folder", "content");
   form.append("file", file, file.name || "reel.mp4");
-  return http.post<{ url: string }>(routes.uploads, form, ADMIN);
+  // A clip goes up as it is, up to 30 MB.
+  return http.post<{ url: string }>(routes.uploads, form, { ...ADMIN, timeout: 180_000 });
 }

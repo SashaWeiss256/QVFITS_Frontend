@@ -13,6 +13,8 @@ export interface HttpOptions {
   noRefresh?: boolean;
   /** Let the request finish after the tab closes (a draft kept on the way out). Bodies up to 64 KB. */
   keepalive?: boolean;
+  /** Milliseconds before giving up; uploads need longer than the usual call. */
+  timeout?: number;
 }
 
 interface RequestInit_ extends HttpOptions {
@@ -24,8 +26,8 @@ interface RequestInit_ extends HttpOptions {
  * customer request.
  */
 async function request<T>(method: string, path: string, options: RequestInit_ = {}): Promise<Envelope<T>> {
-  const { body, params, realm = "customer", headers, signal, noRefresh, keepalive } = options;
-  const control = abortAfter(apiTimeout, signal);
+  const { body, params, realm = "customer", headers, signal, noRefresh, keepalive, timeout = apiTimeout } = options;
+  const control = abortAfter(timeout, signal);
   let response: Response;
 
   try {
