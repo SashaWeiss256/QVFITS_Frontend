@@ -20,14 +20,20 @@ export function printOrder(order, { settings, moneyBase, zoneName, slip = false 
     <style>body{font:14px/1.5 system-ui,sans-serif;color:#17211f;margin:40px}h1{font-size:22px;margin:0 0 4px}table{width:100%;border-collapse:collapse;margin-top:24px}
     td{padding:8px 0;border-bottom:1px solid #e9e2d7;vertical-align:top}.n{text-align:right}.t td{font-weight:700;border-bottom:0}small{color:#57615e}
     .head{display:flex;justify-content:space-between;gap:24px}.muted{color:#57615e}</style></head><body>
-    <div class="head"><div><img src="/logo/qvfits-logo.svg" alt="Quivogue (QVFITS)" height="56"><p class="muted">${esc(settings?.address)}<br>${esc(settings?.phone)} · ${esc(settings?.email)}</p></div>
+    <div class="head"><div><img src="${window.location.origin}/logo/qvfits-logo.svg" alt="Quivogue (QVFITS)" height="56"><p class="muted">${esc(settings?.address)}<br>${esc(settings?.phone)} · ${esc(settings?.email)}</p></div>
     <div><h1>${slip ? "Packing slip" : "Invoice"}</h1><p>${esc(order.ref)}<br>${new Date(order.createdAt).toLocaleDateString("en-UG")}</p></div></div>
     <p><strong>${esc(order.name)}</strong><br>${esc(order.phone)}${order.email ? `<br>${esc(order.email)}` : ""}<br>${esc(zoneName)}${order.address ? `: ${esc(order.address)}` : ""}</p>
     <table><thead><tr><td><strong>Item</strong></td><td class="n"><strong>Qty</strong></td>${slip ? "" : '<td class="n"><strong>Amount</strong></td>'}</tr></thead><tbody>${rows}${totals}</tbody></table>
     ${order.note ? `<p class="muted">Note: ${esc(order.note)}</p>` : ""}
     <script>window.onload=()=>window.print()</script></body></html>`;
-  const w = window.open("", "_blank", "noopener,width=800,height=900");
-  if (!w) return false;
+  // Not "noopener": with it the browser hands back no window, so a blank tab opened and the
+  // invoice was never written into it. The link back to this tab is cut once it is open.
+  const w = window.open("", "_blank", "width=800,height=900");
+  if (!w) {
+    window.alert("Your browser blocked the invoice window. Allow pop-ups for this site, then try again.");
+    return false;
+  }
+  w.opener = null;
   w.document.write(html);
   w.document.close();
   return true;
