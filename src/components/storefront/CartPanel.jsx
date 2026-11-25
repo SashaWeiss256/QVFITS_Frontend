@@ -7,6 +7,7 @@ import { useCart } from "@/store/context/CartContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useOffers, useProductsByIds, useSettings, useStyleWith } from "@/store/tanstackStore/queries/site";
 import { saleOf } from "@/utils/stockLevel";
+import LineSize from "./LineSize";
 import OutfitCard from "./OutfitCard";
 import Photo from "./Photo";
 import { t } from "@/i18n/translate";
@@ -64,7 +65,7 @@ export default function CartPanel() {
         {/* Pieces: a photograph, the name and details, a quantity, the price */}
         <ul>
           {rows.map(({ line, product: p }) => (
-            <li key={`${p.id}-${line.size}-${line.color}`} className="grid grid-cols-[84px_minmax(0,1fr)] gap-5 border-b border-line py-6">
+            <li key={`${p.id}-${line.size}-${line.color}-${line.kitId ?? ""}`} className="grid grid-cols-[84px_minmax(0,1fr)] gap-5 border-b border-line py-6">
               <Link to={`/product/${p.slug}`} className="relative block aspect-[3/4] overflow-hidden bg-beige">
                 <Photo photo={p.photos[0]} label={p.name} />
               </Link>
@@ -73,7 +74,7 @@ export default function CartPanel() {
                   <Link to={`/product/${p.slug}`} className="font-display text-[1.02rem] leading-snug hover:text-brand-600">{p.name}</Link>
                   <span className="shrink-0 text-[0.92rem] font-semibold tabular-nums">{money(priceOf(p) * line.qty)}</span>
                 </div>
-                <p className="mt-1 text-[0.84rem] text-ink-3">{line.color}, size {line.size}</p>
+                <LineSize line={line} product={p} className="mt-1" />
                 <div className="mt-auto flex items-center justify-between pt-4">
                   <div className="inline-flex items-center border border-line">
                     <button type="button" className="grid h-9 w-9 place-items-center text-ink-2 transition-colors hover:bg-ink/5 disabled:opacity-30" aria-label={`Fewer ${p.name}`} disabled={line.qty <= 1} onClick={() => setQty(line, line.qty - 1)}>

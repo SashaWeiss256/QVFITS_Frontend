@@ -3,20 +3,20 @@ import { Link } from "react-router-dom";
 
 import Photo from "@/components/storefront/Photo";
 import Reveal from "@/components/motion/Reveal";
-import { useCart } from "@/store/context/CartContext";
+import { useSizeChooser } from "@/store/context/SizeChooserContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useLooks, usePageCopy } from "@/store/tanstackStore/queries/site";
-import { addKit } from "@/utils/kits";
+import { kitPieces } from "@/utils/kits";
 
 /**
- * Full kits already put together. "Add all to bag" takes the first colour
- * and size in stock of each piece and says so; the lines carry the kit's id,
+ * Full kits already put together. "Add all to bag" asks for each piece's
+ * size first (the shopper always picks it); the lines carry the kit's id,
  * so checkout charges the kit price while the whole set is in the bag.
  */
 export default function Kits({ products }) {
   const { data: looks = [] } = useLooks();
   const { data: copy } = usePageCopy("shop");
-  const { add } = useCart();
+  const { choose } = useSizeChooser();
   const { money } = useCurrency();
   if (!products.length) return null;
   if (!looks.length) return null;
@@ -24,7 +24,7 @@ export default function Kits({ products }) {
   // A look may name a piece that has left the catalogue; those are dropped.
   const byId = (id) => products.find((p) => p.id === id);
 
-  const addAll = (look) => addKit(look, look.items.map(byId).filter(Boolean), add);
+  const addAll = (look) => choose(kitPieces(look, look.items.map(byId).filter(Boolean)), { title: `Sizes for ${look.title}` });
 
   return (
     <section className="section section--tight scroll-mt-24" id="kits">

@@ -1,7 +1,4 @@
 /* Kits */
-import { notify } from "@/store/tanstackStore/notices";
-import { firstAvailable } from "./stockLevel";
-
 /**
  * A live kit as one item of the shop grid, beside the pieces: its own
  * price and photo, and the pieces it is made of so the filters can look
@@ -27,22 +24,8 @@ export function kitItem(look, products) {
 }
 
 /**
- * Every piece of a kit into the bag, each in the first colour and size in
- * stock, and says so. The lines carry the kit's id, so checkout charges the
- * kit price while the whole set is in the bag.
+ * A kit's pieces for the size dialog (useSizeChooser): every piece carries
+ * the kit's id, so checkout charges the kit price while the whole set is in
+ * the bag. The shopper picks each size; sold-out pieces are left out there.
  */
-export function addKit(kit, pieces, add) {
-  let added = 0;
-  const skipped = [];
-  for (const p of pieces) {
-    const pick = firstAvailable(p);
-    if (!pick) skipped.push(p.name);
-    else {
-      add({ productId: p.id, ...pick, qty: 1, kitId: kit.id });
-      added++;
-    }
-  }
-  if (added) notify(`${added} piece${added === 1 ? "" : "s"} added. Check sizes in your bag.`, { tone: "success" });
-  // Name the first skipped piece; one notice is enough to send them to check.
-  if (skipped.length) notify(`${skipped[0]} is sold out, so I left it out.`);
-}
+export const kitPieces = (kit, pieces) => pieces.map((product) => ({ product, kitId: kit.id }));

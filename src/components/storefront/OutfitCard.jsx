@@ -2,9 +2,8 @@
 import { Link } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 
-import { useCart } from "@/store/context/CartContext";
+import { useSizeChooser } from "@/store/context/SizeChooserContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { notify } from "@/store/tanstackStore/notices";
 import Photo from "./Photo";
 
 /**
@@ -15,14 +14,12 @@ import Photo from "./Photo";
  */
 export default function OutfitCard({ outfit: o, onLeave, skip = [] }) {
   const { money } = useCurrency();
-  const { add } = useCart();
+  const { choose } = useSizeChooser();
   const toAdd = o.pieces.filter((pc) => !skip.includes(pc.product.id));
 
-  // Every piece goes in as its own line; a kit's lines carry its id so checkout charges the kit price.
-  const addAll = () => {
-    for (const pc of toAdd) add({ productId: pc.product.id, size: pc.size, color: pc.color, qty: 1, ...(o.kitId ? { kitId: o.kitId } : {}) });
-    notify(`${toAdd.length} ${toAdd.length === 1 ? "piece" : "pieces"} added. Check the sizes in your bag.`, { tone: "success" });
-  };
+  // Every piece goes in as its own line, in the outfit's colours, once the shopper has picked each size.
+  // A kit's lines carry its id so checkout charges the kit price.
+  const addAll = () => choose(toAdd.map((pc) => ({ product: pc.product, color: pc.color, ...(o.kitId ? { kitId: o.kitId } : {}) })), { title: o.title });
 
   return (
     <article className="flex h-full flex-col border border-line bg-white/60 p-5" aria-label={o.title}>
@@ -41,7 +38,7 @@ export default function OutfitCard({ outfit: o, onLeave, skip = [] }) {
               <span className="relative block aspect-[3/4] w-12 shrink-0 overflow-hidden bg-beige"><Photo photo={pc.product.photos[0]} label={pc.product.name} /></span>
               <span className="min-w-0">
                 <span className="block truncate text-[0.9rem] group-hover:text-brand-600">{pc.product.name}</span>
-                <span className="block text-[0.78rem] text-ink-3">{pc.color}, {pc.size}{skip.includes(pc.product.id) ? ", in your bag" : ""}</span>
+                <span className="block text-[0.78rem] text-ink-3">{pc.color}{skip.includes(pc.product.id) ? ", in your bag" : ""}</span>
               </span>
             </Link>
           </li>

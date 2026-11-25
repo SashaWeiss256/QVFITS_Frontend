@@ -2,12 +2,12 @@
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 
-import { useCart } from "@/store/context/CartContext";
+import { useSizeChooser } from "@/store/context/SizeChooserContext";
 import { useWishlist } from "@/store/context/WishlistContext";
 import { useOffers, useFacets, useSettings } from "@/store/tanstackStore/queries/site";
 import { notify } from "@/store/tanstackStore/notices";
 import { cn } from "@/utils/cn";
-import { anyInStock, firstAvailable, saleOf } from "@/utils/stockLevel";
+import { anyInStock, saleOf } from "@/utils/stockLevel";
 import Photo from "./Photo";
 import PriceTag from "./PriceTag";
 import { t } from "@/i18n/translate";
@@ -20,7 +20,7 @@ import { t } from "@/i18n/translate";
  * small in the photo's corner. The heart saves the piece.
  */
 export default function ProductCard({ product: p, tag, plain = false }) {
-  const { add } = useCart();
+  const { choose } = useSizeChooser();
   const wishlist = useWishlist();
   const { data: offers } = useOffers();
   const { data: facets } = useFacets();
@@ -38,14 +38,8 @@ export default function ProductCard({ product: p, tag, plain = false }) {
   // A rail names its own tag (New, Best seller) and shows only that; elsewhere: sold out, then sale, then the piece's own.
   const label = sold ? "Sold out" : tag ?? (sale ? `${sale.pct}% off` : p.badge);
 
-  // Adds the first colour and size in stock, then says which: the shopper
-  // can change both in the bag.
-  const quickAdd = () => {
-    const pick = firstAvailable(p);
-    if (!pick) return notify(`${p.name} is sold out`);
-    add({ productId: p.id, ...pick, qty: 1 });
-    notify(`${p.name} (${pick.color}, ${pick.size}) added. Change size in your bag.`, { tone: "success" });
-  };
+  // Never picks a size for the shopper: the size dialog asks first.
+  const quickAdd = () => (sold ? notify(`${p.name} is sold out`) : choose([{ product: p }]));
 
   const toggleWish = () => {
     wishlist.toggle(p.id);

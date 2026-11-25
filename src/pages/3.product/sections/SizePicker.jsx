@@ -8,7 +8,7 @@ import { t } from "@/i18n/translate";
 
 // Sold-out sizes stay visible but struck through and disabled, so the shop
 // is honest about what is gone. The note under the row says how many are left.
-export default function SizePicker({ product, chosen, onChoose }) {
+export default function SizePicker({ product, chosen, onChoose, error = false }) {
   // Units left in the chosen size; null until a size is picked so no note shows.
   const n = chosen ? product.stock[chosen] || 0 : null;
   // "Only N left" from the threshold set in Settings, the same one the admin's low stock uses.
@@ -26,7 +26,14 @@ export default function SizePicker({ product, chosen, onChoose }) {
       </div>
 
       {/* Sizes */}
-      <div className="grid auto-cols-fr grid-flow-col gap-2" role="radiogroup" aria-label={t("Size")}>
+      {/* Nothing is chosen for the shopper; tapping Add without a size outlines the row and says so. */}
+      <div
+        className={cn("grid auto-cols-fr grid-flow-col gap-2", error && "outline outline-2 outline-offset-4 outline-warn")}
+        role="radiogroup"
+        aria-label={t("Size")}
+        aria-invalid={error || undefined}
+        aria-describedby="sizeNote"
+      >
         {productSizes(product).map((s) => {
           const out = !inStock(product, s);
           return (
@@ -51,8 +58,8 @@ export default function SizePicker({ product, chosen, onChoose }) {
       </div>
 
       {/* Stock note: announced as the size changes */}
-      <p className={cn("mt-3 min-h-[1.4em] text-[0.85rem]", n !== null && n <= low ? "text-warn" : "text-success")} aria-live="polite">
-        {n === null ? "" : n === 0 ? `Sold out in ${chosen}` : n <= low ? `Only ${n} left in ${chosen}` : ""}
+      <p id="sizeNote" className={cn("mt-3 min-h-[1.4em] text-[0.85rem]", error || (n !== null && n <= low) ? "text-warn" : "text-success")} aria-live="polite">
+        {error ? "Choose your size to add it to your bag." : n === null ? "" : n === 0 ? `Sold out in ${chosen}` : n <= low ? `Only ${n} left in ${chosen}` : ""}
       </p>
     </div>
   );

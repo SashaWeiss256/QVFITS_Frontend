@@ -33,9 +33,15 @@ export function forColor(product, colorId) {
   return { ...product, stock };
 }
 
+/** The product as one colour (by its name, as a bag line keeps it) sees it. */
+export const forColorName = (product, name) => forColor(product, product.colorIds?.[product.colors.indexOf(name)]);
+
+/** The colours with at least one size in stock, in the product's order. */
+export const colorsInStock = (product) => product.colors.filter((c) => anyInStock(forColorName(product, c)));
+
 /**
- * The first colour and size that can actually be sold, for one-tap adds
- * (the card's Add, a whole kit). Colours keep the product's order; a
+ * The first colour and size that can actually be sold. Only the colour is
+ * ever used to start a choice: a size is always picked by the shopper. Colours keep the product's order; a
  * product's colour names and ids line up one to one.
  */
 export function firstAvailable(product) {

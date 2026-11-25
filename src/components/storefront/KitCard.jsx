@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { useCart } from "@/store/context/CartContext";
+import { useSizeChooser } from "@/store/context/SizeChooserContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import Modal from "@/components/ui/Modal";
-import { addKit } from "@/utils/kits";
+import { kitPieces } from "@/utils/kits";
 import Photo from "./Photo";
 
 /**
@@ -18,7 +18,8 @@ import Photo from "./Photo";
  * price against buying them one by one, and Add all.
  */
 export default function KitCard({ kit }) {
-  const { add } = useCart();
+  const { choose } = useSizeChooser();
+  const addAll = () => choose(kitPieces(kit, kit.pieces), { title: `Sizes for ${kit.name}` });
   const { money } = useCurrency();
   // What buying the pieces one by one would cost beyond the kit price; nothing is shown when the kit isn't cheaper.
   const saving = kit.separate - kit.price;
@@ -35,7 +36,7 @@ export default function KitCard({ kit }) {
         </span>
         <button
           type="button"
-          onClick={() => addKit(kit, kit.pieces, add)}
+          onClick={addAll}
           aria-label={`Add all of ${kit.name} to bag`}
           className="absolute inset-x-3 bottom-3 min-h-11 bg-cream/95 text-[0.85rem] font-medium text-ink backdrop-blur transition-[opacity,transform,background-color] duration-500 ease-q hover:bg-ink hover:text-cream [@media(hover:hover)]:translate-y-3 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/card:translate-y-0 [@media(hover:hover)]:group-hover/card:opacity-100 focus-visible:translate-y-0 focus-visible:opacity-100"
         >
@@ -88,7 +89,7 @@ export default function KitCard({ kit }) {
                 <b className="font-display text-[1.3rem] text-brand-600">{money(kit.price)}</b>
                 {saving > 0 && <span className="mt-0.5 block text-[0.8rem] text-brand-600">You save {money(saving)}</span>}
               </p>
-              <button type="button" className="btn btn--primary" onClick={() => { addKit(kit, kit.pieces, add); setOpen(false); }}>Add all to bag</button>
+              <button type="button" className="btn btn--primary" onClick={() => { setOpen(false); addAll(); }}>Add all to bag</button>
             </div>
           </div>
         </div>

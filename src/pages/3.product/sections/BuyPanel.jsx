@@ -9,7 +9,7 @@ import { notify } from "@/store/tanstackStore/notices";
 import { useFacets } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
 import { glideTo } from "@/utils/smoothScroll";
-import { anyInStock, forColor, inStock, productSizes } from "@/utils/stockLevel";
+import { anyInStock, forColor, inStock } from "@/utils/stockLevel";
 import ColorPicker from "./ColorPicker";
 import { VIEWS_ID } from "./Gallery";
 import MobileAddBar from "./MobileAddBar";
@@ -17,23 +17,29 @@ import Details from "./Details";
 import ShareProduct from "./ShareProduct";
 import SizePicker from "./SizePicker";
 
-// The first colour and the first size in stock are chosen to start, so one
-// tap adds to the bag. Sizes show the stock of the colour picked.
+// The first colour in stock is shown to start, but never a size: the shopper
+// always picks their own. Sizes show the stock of the colour picked.
 export default function BuyPanel({ product: p, onColor }) {
   const { data: facets } = useFacets();
   const idOf = (name) => facets?.colors.find((c) => c.name === name)?.id;
   const [color, setColor] = useState(() => p.colors.find((c) => anyInStock(forColor(p, idOf(c)))) ?? p.colors[0]);
   const shown = forColor(p, idOf(color));
-  const [size, setSize] = useState(() => productSizes(shown).find((s) => inStock(shown, s)) ?? null);
+  const [size, setSize] = useState(null);
+  // Set when Add to bag is tapped without a size; cleared once one is picked.
+  const [sizeError, setSizeError] = useState(false);
+  const pickSize = (s) => {
+    setSize(s);
+    setSizeError(false);
+  };
   const { add } = useCart();
   const wishlist = useWishlist();
 
-  // A new colour keeps the size if that colour has it, otherwise the first it has.
+  // A new colour keeps the size if that colour has it; otherwise the size is cleared, never re-picked.
   const chooseColor = (c) => {
     setColor(c);
     onColor?.(idOf(c));
     const next = forColor(p, idOf(c));
-    if (!size || !inStock(next, size)) setSize(productSizes(next).find((s) => inStock(next, s)) ?? null);
+    if (size && !inStock(next, size)) setSize(null);
     showViews();
   };
   // Below a laptop the photos sit above the swatches, so a new colour would change out of sight:
@@ -59,8 +65,11 @@ export default function BuyPanel({ product: p, onColor }) {
   const addToBag = () => {
     if (size && !inStock(shown, size)) return notify(`${color} is sold out in ${size}. Try another size or colour.`);
     if (!size) {
+      setSizeError(true);
       sizes.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-      return notify("Pick a size first");
+      // Focus the first size that can be picked, so the keyboard lands on the choice.
+      sizes.current?.querySelector('[role="radio"]:not([disabled])')?.focus({ preventScroll: true });
+      return;
     }
     add({ productId: p.id, size, color, qty: 1 });
     notify(`${p.name} (${color}, ${size}) is in your bag`, { tone: "success" });
@@ -80,7 +89,7 @@ export default function BuyPanel({ product: p, onColor }) {
       <div className="mt-8 space-y-7 border-t border-line pt-7">
         <ColorPicker colors={p.colors} chosen={color} onChoose={chooseColor} swatch={swatch} />
         <div ref={sizes}>
-          <SizePicker product={shown} chosen={size} onChoose={setSize} />
+          <SizePicker product={shown} chosen={size} onChoose={pickSize} error={sizeError} />
         </div>
       </div>
 

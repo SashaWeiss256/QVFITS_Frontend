@@ -4,6 +4,7 @@ import { BrowserRouter, Routes } from "react-router-dom";
 
 import AppProviders from "./AppProviders";
 import ScrollToTop from "./components/layout/ScrollToTop";
+import { SizeChooserProvider } from "./store/context/SizeChooserContext";
 import PageLoader from "./components/ui/PageLoader";
 import adminRoutes from "./routes/AdminRoutes";
 import authRoutes from "./routes/AuthRoutes";
@@ -16,14 +17,17 @@ function App() {
       <BrowserRouter>
         <ScrollToTop />
 
-        {/* Catches chunks rendered outside a layout: the sign-in doors and the admin shell */}
-        <Suspense fallback={<PageLoader className="min-h-dvh" />}>
-          <Routes>
-            {adminRoutes()}
-            {authRoutes()}
-            {siteRoutes()}
-          </Routes>
-        </Suspense>
+        {/* Inside the router: the size dialog links to products and the size guide */}
+        <SizeChooserProvider>
+          {/* Catches chunks rendered outside a layout: the sign-in doors and the admin shell */}
+          <Suspense fallback={<PageLoader className="min-h-dvh" />}>
+            <Routes>
+              {adminRoutes()}
+              {authRoutes()}
+              {siteRoutes()}
+            </Routes>
+          </Suspense>
+        </SizeChooserProvider>
       </BrowserRouter>
     </AppProviders>
   );

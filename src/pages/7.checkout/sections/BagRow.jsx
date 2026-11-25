@@ -2,11 +2,14 @@
 import { Link } from "react-router-dom";
 import { Minus, Plus } from "lucide-react";
 
+import LineSize from "@/components/storefront/LineSize";
 import Photo from "@/components/storefront/Photo";
 import { useCart } from "@/store/context/CartContext";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { notify } from "@/store/tanstackStore/notices";
+import { lineKey } from "@/utils/bagCheck";
 import { cn } from "@/utils/cn";
+import { forColorName } from "@/utils/stockLevel";
 import { t } from "@/i18n/translate";
 
 const META = "mt-0.5 text-[0.86rem] text-ink-3";
@@ -19,21 +22,23 @@ export default function BagRow({ row }) {
   const { line, product: p, total } = row;
   const { setQty, remove } = useCart();
   const { money } = useCurrency();
-  // Units left in this size; a missing size counts as none.
-  const max = p.stock[line.size] || 0;
+  // Units left in this size and colour; a missing size counts as none.
+  const max = line.size ? forColorName(p, line.color).stock[line.size] || 0 : 0;
 
   // Explain the cap instead of silently ignoring the tap.
   const more = () => (line.qty + 1 > max ? notify(`That's all we have in ${line.size}`) : setQty(line, line.qty + 1));
 
   return (
     // On a phone the price and Remove share a line under the item, so the name has the width beside the photo.
-    <div className="grid grid-cols-[96px_minmax(0,1fr)] gap-x-4 gap-y-3 border-b border-line py-6 sm:grid-cols-[124px_minmax(0,1fr)_auto] sm:gap-7">
+    <div id={`bag-${lineKey(line)}`} className="grid scroll-mt-28 grid-cols-[96px_minmax(0,1fr)] gap-x-4 gap-y-3 border-b border-line py-6 sm:grid-cols-[124px_minmax(0,1fr)_auto] sm:gap-7">
       <Link className="relative block aspect-[3/4] overflow-hidden bg-beige max-sm:row-span-2 max-sm:self-start" to={`/product/${p.slug}`}><Photo photo={p.photos[0]} label={p.name} /></Link>
       <div>
         {/* The name gets a 24px tap box; the photo beside it links to the same piece. */}
         <Link className="inline-block min-h-6 py-1 font-display text-[1.08rem] font-normal leading-[1.3] tracking-normal transition-colors duration-200 hover:text-brand-600" to={`/product/${p.slug}`}>{p.name}</Link>
-        <div className={META}>{line.color} · Size {line.size}</div>
-        <div className={cn(META, max <= 2 ? "text-warn" : "text-ink-4")}>{max <= 2 ? `Only ${max} left in ${line.size}` : "In stock"}</div>
+        <LineSize line={line} product={p} className="mt-1" />
+        <div className={cn(META, max <= 2 ? "text-warn" : "text-ink-4")}>
+          {!line.size ? "Choose a size to continue" : max === 0 ? `Sold out in ${line.size}. Choose another size.` : max <= 2 ? `Only ${max} left in ${line.size}` : "In stock"}
+        </div>
         <div className="mt-2 inline-flex items-center border border-line-2 bg-white">
           {/* Going below one removes the line (see CartContext.setQty). */}
           <button type="button" className={STEP} aria-label={`One less ${p.name}`} onClick={() => setQty(line, line.qty - 1)}><Minus className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" /></button>

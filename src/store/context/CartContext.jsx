@@ -60,6 +60,16 @@ export function CartProvider({ children }) {
     );
   }, []);
 
+  // A new size for a line; if the bag already holds that size, the two become one line.
+  const setSize = useCallback((line, size) => {
+    setLines((current) => {
+      const moved = { ...line, size };
+      const twin = current.find((l) => same(l, moved));
+      if (twin) return current.filter((l) => !same(l, line)).map((l) => (same(l, moved) ? { ...l, qty: Math.min(MAX_QTY, l.qty + line.qty) } : l));
+      return current.map((l) => (same(l, line) ? moved : l));
+    });
+  }, []);
+
   const remove = useCallback((line) => setLines((current) => current.filter((l) => !same(l, line))), []);
   const clear = useCallback(() => setLines([]), []);
   const closeDrawer = useCallback(() => setDrawer(null), []);
@@ -70,13 +80,14 @@ export function CartProvider({ children }) {
       count: lines.reduce((n, l) => n + l.qty, 0),
       add,
       setQty,
+      setSize,
       remove,
       clear,
       drawer,
       openDrawer: setDrawer,
       closeDrawer,
     }),
-    [lines, add, setQty, remove, clear, drawer, closeDrawer],
+    [lines, add, setQty, setSize, remove, clear, drawer, closeDrawer],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
