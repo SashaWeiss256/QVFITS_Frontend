@@ -2,13 +2,14 @@
 import SubHeading from "@/components/storefront/SubHeading";
 import SummaryRow from "@/components/storefront/SummaryRow";
 import { useCurrency } from "@/store/context/CurrencyContext";
-import { zoneOf } from "@/utils/delivery";
+import { deliveryChoice } from "@/utils/delivery";
 import { t } from "@/i18n/translate";
 
 // The running total beside every step, with the bar to free delivery.
+// `region` is the area id, or the whole choice ({ region, zoneRegion, fulfilment, collectionPoint }), or a placed order.
 export default function OrderSummary({ bag, region = "kampala", children }) {
   const { money, currency } = useCurrency();
-  const zone = zoneOf(bag.settings, region);
+  const { zone, area, point, collect } = deliveryChoice(bag.settings, typeof region === "string" ? { region } : region);
   const threshold = zone?.freeOver ?? bag.settings?.freeShippingOver ?? 0;
   const left = threshold - bag.subtotal;
   // Guard against a zero threshold before settings load.
@@ -19,7 +20,7 @@ export default function OrderSummary({ bag, region = "kampala", children }) {
       <div className="bg-sand-100 p-[clamp(22px,3vw,34px)]">
         <SubHeading>{t("Order summary")}</SubHeading>
         {/* Free delivery means nothing for a collection, so hide the bar. */}
-        {!zone?.collect && (
+        {!collect && (
           <>
             <div className="mb-2.5 mt-1 h-[3px] overflow-hidden bg-line-2" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={t("Progress to free delivery")}>
               <div className="h-full bg-brand-grad transition-[width] duration-[600ms] ease-q" style={{ width: `${pct}%` }} />
@@ -31,7 +32,7 @@ export default function OrderSummary({ bag, region = "kampala", children }) {
         )}
         <SummaryRow><span>{t("Subtotal")}</span><span>{money(bag.subtotal)}</span></SummaryRow>
         <SummaryRow>
-          <span>Delivery{zone ? ` (${zone.name})` : ""}</span>
+          <span>{point ? `Collection (${point.name})` : `Delivery${zone ? ` (${[zone.name, area?.name].filter(Boolean).join(" · ")})` : ""}`}</span>
           <span>{bag.delivery === 0 ? "Free" : money(bag.delivery)}</span>
         </SummaryRow>
         {bag.kitSaving > 0 && (

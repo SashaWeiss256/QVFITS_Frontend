@@ -11,6 +11,16 @@ import { STATUTORY, UPDATED, contactLine, ugx } from "./shop";
 //   risk passes on handover (for any courier parcel, if delivery widens beyond Kampala); s.45: a buyer
 //   who delays taking delivery bears the resulting costs.
 // The waiting and holding times below are proposals for the client to confirm.
+// Every active collection point, with where it is, its hours and what collecting there costs.
+function collectionTable(s) {
+  const rows = (s.zones ?? []).flatMap((z) =>
+    (z.regions ?? []).filter((r) => r.active !== false).flatMap((r) =>
+      (r.points ?? []).filter((p) => p.active !== false).map((p) => [`${p.name}, ${p.address}${p.hours ? ` (${p.hours})` : ""}`, `${z.name}, ${r.name}`, p.fee ? ugx(p.fee) : "Free"]),
+    ),
+  );
+  return rows.length ? ["You can also collect your order from one of these points; pick it at checkout.", { table: { head: ["Collection point", "Area", "Fee"], rows } }] : [];
+}
+
 export const delivery = (s) => ({
   title: "Delivery",
   lede: "Where we deliver, what it costs, when it arrives, and what happens if no one is home.",
@@ -23,10 +33,21 @@ export const delivery = (s) => ({
         { table: {
           head: ["Option", "Fee"],
           rows: [
-            ...(s.zones ?? []).map((z) => [z.etaDays ? `${z.name} (${z.etaDays} days)` : z.name, z.fee ? ugx(z.fee) : "Free"]),
+            // An area split into regions lists each region with its own fee; others show as one row.
+            ...(s.zones ?? []).flatMap((z) => {
+              const regions = (z.regions ?? []).filter((r) => r.active !== false);
+              if (!regions.length) return [[z.etaDays ? `${z.name} (${z.etaDays} days)` : z.name, z.fee ? ugx(z.fee) : "Free"]];
+              return regions.map((r) => {
+                const days = r.etaDays || z.etaDays;
+                const fee = r.fee ?? z.fee;
+                return [`${z.name}, ${r.name}${days ? ` (${days} days)` : ""}`, fee ? ugx(fee) : "Free"];
+              });
+            }),
             [`Orders over ${ugx(s.freeShippingOver)}`, "Free delivery"],
           ],
         } },
+        // Collection points, when the shop has set any up.
+        ...collectionTable(s),
         "The full delivery fee is shown at checkout before you pay. For now we deliver within Kampala only. If you are outside Kampala, you are welcome to collect from the showroom, or message us and we will see what we can arrange, at your cost and risk.",
       ],
     },

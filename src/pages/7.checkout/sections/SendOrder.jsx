@@ -8,7 +8,7 @@ import SubHeading from "@/components/storefront/SubHeading";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { notify } from "@/store/tanstackStore/notices";
 import { usePayAgain, usePaymentMethods } from "@/store/tanstackStore/queries/site";
-import { zoneEta, zoneOf } from "@/utils/delivery";
+import { deliveryChoice, orderPoint, zoneEta } from "@/utils/delivery";
 import { whatsappLink } from "@/utils/whatsapp";
 import { orderMessage } from "../orderMessage";
 import { t } from "@/i18n/translate";
@@ -22,8 +22,9 @@ export default function SendOrder({ order, settings }) {
   const currency = useCurrency();
   const { data: methods = [] } = usePaymentMethods();
   const pay = usePayAgain();
-  const zone = zoneOf(settings, order.region);
-  const eta = zoneEta(zone);
+  const choice = deliveryChoice(settings, order);
+  const point = orderPoint(settings, order);
+  const eta = zoneEta(choice);
   // The order as a ready-to-send message: its lines, totals, delivery and how the shopper chose to pay.
   const message = orderMessage(order, { ...currency, settings, methods });
   // Copy to the clipboard; a quiet copy (before the Instagram jump) says nothing, and a blocked clipboard is explained.
@@ -51,7 +52,8 @@ export default function SendOrder({ order, settings }) {
         <button type="button" className="btn btn--soft" onClick={() => copy(false)}>Copy order</button>
       </div>
       {/* When it should arrive, from the delivery zone */}
-      {eta && <p className="m-0 mt-4 text-sm text-ink-2">{zone.collect ? `${eta} from the showroom, once paid.` : `Arrives in ${eta.toLowerCase()} once paid.`}</p>}
+      {point && <p className="m-0 mt-4 text-sm text-ink-2">Collect from <strong>{point.name}</strong>, {point.address}{point.hours ? ` (${point.hours})` : ""}.</p>}
+      {eta && <p className="m-0 mt-2 text-sm text-ink-2">{choice.collect ? `${eta} ${point ? "" : "from the showroom "}once paid.` : `Arrives in ${eta.toLowerCase()} once paid.`}</p>}
       {/* How to pay, and how long the pieces are held */}
       <PaymentDue order={order} onPay={() => pay.mutate({ ref: order.ref, phone: order.phone })} paying={pay.isPending || pay.isSuccess} payError={pay.error?.message} />
       <p className="mt-5 text-sm text-ink-3">

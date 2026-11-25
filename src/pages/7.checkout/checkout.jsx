@@ -1,6 +1,6 @@
 /* Checkout Page, Steps 2 And 3 (port of Quivogue cart.html) */
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 import PageLoader from "@/components/ui/PageLoader";
 import { useCart } from "@/store/context/CartContext";
@@ -8,6 +8,7 @@ import { useCurrency } from "@/store/context/CurrencyContext";
 import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
 import { goToPesapal, usePaymentMethods, usePlaceOrder, useQuote, useSubscribe } from "@/store/tanstackStore/queries/site";
 import { useSeo } from "@/seo/useSeo";
+import { bagProblems } from "@/utils/bagCheck";
 import { readStored, writeStored } from "@/utils/storage";
 import { glideTop } from "@/utils/smoothScroll";
 import BagEmpty from "./sections/BagEmpty";
@@ -42,13 +43,21 @@ export default function CheckoutPage() {
       phone: saved.phone ?? customer?.phone ?? home?.phone ?? "",
       email: saved.email ?? customer?.email ?? "",
       region: saved.region ?? home?.region ?? "kampala",
+      // The region inside the area, and delivery or a collection point; the form drops any no longer offered.
+      zoneRegion: saved.zoneRegion ?? home?.zoneRegion ?? "",
+      fulfilment: saved.fulfilment ?? "delivery",
+      collectionPoint: saved.collectionPoint ?? "",
       address: saved.address ?? home?.address ?? "",
       note: "",
       news: false,
       payment: saved.payment ?? "mtn",
     };
   });
-  const [region, setRegion] = useState(details.region);
+  // Where it is going: the area, its region, and delivery or a collection point (reported by the form).
+  const [choice, setChoice] = useState(() => ({ region: details.region, zoneRegion: details.zoneRegion || undefined, fulfilment: details.fulfilment, collectionPoint: details.collectionPoint || undefined }));
+  const region = choice;
+  // One string for the effect below, so a new but equal choice doesn't price the bag again.
+  const choiceKey = JSON.stringify(choice);
   const [step, setStep] = useState(2);
   const [placed, setPlaced] = useState(null);
   const bag = useCheckoutBag(region);
@@ -85,7 +94,8 @@ export default function CheckoutPage() {
         }
       })
       .catch(() => {});
-  }, [region, appliedCode, lines, customer?.id, requote]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- choiceKey stands for region
+  }, [choiceKey, appliedCode, lines, customer?.id, requote]);
   const priced = server
     ? { ...bag, subtotal: server.subtotal, kitSaving: server.kitSaving, discount: server.discount, discountCode: server.discountCode, delivery: server.delivery, total: server.total }
     : bag;
@@ -96,13 +106,15 @@ export default function CheckoutPage() {
       <Shell step={4}>
         <CartLayout>
           <SendOrder order={placed} settings={bag.settings} />
-          <OrderSummary bag={{ ...placed, settings: bag.settings }} region={placed.region} />
+          <OrderSummary bag={{ ...placed, settings: bag.settings }} region={placed} />
         </CartLayout>
       </Shell>
     );
   }
   if (!lines.length) return <Shell><BagEmpty /></Shell>;
   if (bag.isLoading || !bag.settings) return <Shell><PageLoader variant="form" /></Shell>;
+  // A line without a size the shopper chose (or sold out since) goes back to the bag to be fixed.
+  if (bagProblems(bag.rows).length) return <Navigate to="/cart" replace />;
 
   const review = (values) => {
     setDetails(values);
@@ -113,6 +125,8 @@ export default function CheckoutPage() {
   };
 
   const place = async () => {
+    // Last guard: stock can change between review and placing.
+    if (bagProblems(bag.rows).length) return navigate("/cart");
     const order = await placeOrder.mutateAsync({ input: { ...details, lines, discountCode: appliedCode }, customerId: customer?.id }).catch(() => null);
     if (!order) return;
     // Opted in at checkout: the confirm email goes out; a failure never blocks the order.
@@ -145,7 +159,7 @@ export default function CheckoutPage() {
               settings={bag.settings}
               methods={methods}
               subtotal={bag.subtotal}
-              onRegion={setRegion}
+              onChoice={setChoice}
               onSubmit={review}
               onBack={() => navigate("/cart")}
             />

@@ -7,11 +7,12 @@ import Field from "@/components/ui/Field";
 import { useCurrency } from "@/store/context/CurrencyContext";
 import { useRecordSale } from "@/store/tanstackStore/queries/admin";
 import { cn } from "@/utils/cn";
+import { pointsOf, regionOf, regionsOf } from "@/utils/delivery";
 import Drawer from "@/AdminDashboard/components/Drawer";
 import PieceSearch from "./PieceSearch";
 
 // An empty customer form. The mobile money reference is kept in the same form but sent separately from the order details.
-const BLANK = { name: "", phone: "", email: "", region: "", address: "", note: "", discountCode: "", reference: "" };
+const BLANK = { name: "", phone: "", email: "", region: "", zoneRegion: "", fulfilment: "delivery", collectionPoint: "", address: "", note: "", discountCode: "", reference: "" };
 // Where the sale happened. Online orders aren't here: they only come from the shop's checkout.
 const SOURCES = [
   { id: "showroom", label: "In the showroom", hint: "Paid at the counter, taken away now." },
@@ -44,7 +45,14 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
   // A showroom sale is collected at the counter, so it starts on the collection zone.
   const counter = zones.find((z) => z.collect)?.id;
   const region = form.region || (source === "showroom" ? counter : undefined) || zones[0]?.id || "";
-  const collect = zones.find((z) => z.id === region)?.collect;
+  // Inside the area: its region, then delivery or one of the region's collection points.
+  const zone = zones.find((z) => z.id === region);
+  const regions = regionsOf(zone);
+  const area = regionOf(zone, form.zoneRegion);
+  const points = pointsOf(area);
+  const collecting = form.fulfilment === "collect" && points.length > 0;
+  const collect = zone?.collect || collecting;
+  const placed = (!regions.length || Boolean(area)) && (!collecting || points.some((p) => p.id === form.collectionPoint));
 
   // Adds the piece in the first size that has stock, in its first colour; both can be changed on the line.
   const addPiece = (p) => {
@@ -55,12 +63,13 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
   // A guide for the person at the till; the service works out the real total (sale prices, kits, codes, delivery) when the sale is recorded.
   const subtotal = lines.reduce((n, l) => n + (live.find((p) => p.id === l.productId)?.price ?? 0) * l.qty, 0);
   // Mobile money always has a reference; cash doesn't need one.
-  const ready = form.name.trim() && form.phone.trim() && lines.length && (collect || form.address.trim()) && (method === "cash" || form.reference.trim());
+  const ready = form.name.trim() && form.phone.trim() && lines.length && placed && (collect || form.address.trim()) && (method === "cash" || form.reference.trim());
 
   // The reference is a payment detail, so it goes alongside the order rather than inside it. A refused sale (for example, not enough stock) keeps the form open.
   const submit = async () => {
     const { reference, ...input } = form;
-    const order = await create.mutateAsync({ input: { ...input, region, payment: method, lines }, source, method, reference }).catch(() => null);
+    const where = { zoneRegion: area?.id, fulfilment: collecting ? "collect" : "delivery", collectionPoint: collecting ? input.collectionPoint : undefined };
+    const order = await create.mutateAsync({ input: { ...input, ...where, region, payment: method, lines }, source, method, reference }).catch(() => null);
     if (!order) return;
     setForm(BLANK);
     setLines([]);
@@ -120,7 +129,16 @@ export default function RecordSale({ open, onClose, products, settings, onCreate
           <Field label="Name" value={form.name} onChange={(e) => set({ name: e.target.value })} />
           <Field label="Phone" inputMode="tel" value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
           <Field label="Email (optional)" type="email" value={form.email} onChange={(e) => set({ email: e.target.value })} />
-          <Field label="Delivery" options={zones.map((z) => ({ value: z.id, label: z.name }))} value={region} onChange={(e) => set({ region: e.target.value })} />
+          <Field label="Delivery" options={zones.map((z) => ({ value: z.id, label: z.name }))} value={region} onChange={(e) => set({ region: e.target.value, zoneRegion: "", collectionPoint: "", fulfilment: "delivery" })} />
+          {regions.length > 0 && (
+            <Field label="Region" options={[{ value: "", label: "Choose a region" }, ...regions.map((r) => ({ value: r.id, label: r.name }))]} value={form.zoneRegion} onChange={(e) => set({ zoneRegion: e.target.value, collectionPoint: "" })} />
+          )}
+          {points.length > 0 && (
+            <Field label="Deliver or collect" options={[{ value: "delivery", label: "Deliver to them" }, { value: "collect", label: "They collect" }]} value={form.fulfilment} onChange={(e) => set({ fulfilment: e.target.value })} />
+          )}
+          {collecting && (
+            <Field label="Collection point" options={[{ value: "", label: "Choose a point" }, ...points.map((p) => ({ value: p.id, label: `${p.name}, ${p.address}` }))]} value={form.collectionPoint} onChange={(e) => set({ collectionPoint: e.target.value })} />
+          )}
           {!collect && <Field label="Address" className="sm:col-span-2" value={form.address} onChange={(e) => set({ address: e.target.value })} />}
           <Field label="Paid by" options={METHODS.map((m) => ({ value: m.id, label: m.label }))} value={method} onChange={(e) => setMethod(e.target.value)} />
           {method !== "cash" && <Field label="Mobile money reference" value={form.reference} onChange={(e) => set({ reference: e.target.value })} hint="The transaction ID from the payment message." />}

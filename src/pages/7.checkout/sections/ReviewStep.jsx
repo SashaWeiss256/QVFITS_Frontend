@@ -12,8 +12,11 @@ import { t } from "@/i18n/translate";
 export default function ReviewStep({ bag, details, money, address, onPlace, onBack, placing, error }) {
   const { data: methods = [] } = usePaymentMethods();
   const payLabel = methods.find((p) => p.id === details.payment)?.label;
-  const collect = bag.zone?.collect;
-  const eta = zoneEta(bag.zone);
+  // The point chosen, or a legacy showroom area (collected at the shop's address).
+  const choice = bag.choice ?? { zone: bag.zone, collect: bag.zone?.collect };
+  const collect = choice.collect;
+  const point = choice.point;
+  const eta = zoneEta(choice);
   const { currency, moneyBase } = useCurrency();
 
   return (
@@ -37,8 +40,11 @@ export default function ReviewStep({ bag, details, money, address, onPlace, onBa
         <SummaryRow><span>Phone</span><span>{details.phone}</span></SummaryRow>
         <SummaryRow>
           <span>{collect ? "Collection" : "Delivery"}</span>
-          <span className="max-w-[60%] text-right">{collect ? `From the showroom, ${address}` : details.address}</span>
+          <span className="max-w-[60%] text-right">
+            {point ? <>{point.name}<span className="block text-ink-3">{point.address}{point.hours ? ` · ${point.hours}` : ""}</span></> : collect ? `From the showroom, ${address}` : details.address}
+          </span>
         </SummaryRow>
+        {choice.area && !point && <SummaryRow><span>Region</span><span>{[choice.zone?.name, choice.area.name].filter(Boolean).join(" · ")}</span></SummaryRow>}
         {eta && <SummaryRow><span>{collect ? "Ready" : "Arrives in"}</span><span>{eta.replace(/^Ready /, "")}</span></SummaryRow>}
         <SummaryRow><span>Payment</span><span className="text-right">{payLabel}</span></SummaryRow>
         {details.news && details.email && <SummaryRow><span>Newsletter</span><span>We&apos;ll email {details.email} to confirm</span></SummaryRow>}

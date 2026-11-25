@@ -12,6 +12,7 @@ import { formatDateTime } from "@/utils/format";
 import { statusLabel } from "@/utils/orderStatus";
 import { whatsappLink } from "@/utils/whatsapp";
 import Drawer from "@/AdminDashboard/components/Drawer";
+import { deliveryLabel, orderPoint } from "@/utils/delivery";
 import { printOrder } from "./printInvoice";
 import OpenReturn from "./OpenReturn";
 
@@ -44,7 +45,9 @@ export default function OrderDrawer({ order, settings, methods, onClose }) {
   const returns = allReturns.filter((r) => r.orderId === order.id);
   const openReturnAllowed = canEdit && ["delivered", "exchanged"].includes(order.status) && !returns.some((r) => !["rejected", "refunded", "exchanged"].includes(r.status));
   const zone = settings?.zones?.find((z) => z.id === order.region);
-  const zoneName = zone?.name ?? order.region;
+  // "Kampala · Nakawa" or "Collect at Ntinda Complex (Kampala · Nakawa)"; the order's own snapshot of a point wins.
+  const zoneName = deliveryLabel(settings, order) || order.region;
+  const point = orderPoint(settings, order);
   const method = methods.find((m) => m.id === order.payment)?.label ?? order.payment;
   // Marking paid records money, so only staff who may record payments see it.
   const next = (NEXT_STATUS[order.status] ?? []).filter((s) => s !== "paid" || canPay);
@@ -116,8 +119,11 @@ export default function OrderDrawer({ order, settings, methods, onClose }) {
           </a>
         </div>
         <div>
-          <h3 className="mb-1 text-base">{zone?.collect ? "Collection" : "Delivery"}</h3>
-          <p className="m-0 text-sm">{zoneName}{order.address && <><br />{order.address}</>}</p>
+          <h3 className="mb-1 text-base">{point || zone?.collect ? "Collection" : "Delivery"}</h3>
+          <p className="m-0 text-sm">
+            {zoneName}
+            {point ? <><br />{point.address}{point.hours && <><br /><span className="text-ink-3">{point.hours}</span></>}</> : order.address && <><br />{order.address}</>}
+          </p>
           {order.note && <p className="mt-2 mb-0 text-sm text-ink-3">“{order.note}”</p>}
         </div>
       </section>

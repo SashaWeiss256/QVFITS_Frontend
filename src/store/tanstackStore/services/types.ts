@@ -326,6 +326,53 @@ export interface ShippingZone {
   etaDays: string;
   active: boolean;
   position: number;
+  /**
+   * Places inside the area (Kampala: Central, Nakawa…), each priced by how
+   * far it is, each with its own collection points. Empty or missing: the
+   * area works as one place, as before.
+   */
+  regions?: ZoneRegion[];
+}
+
+/** A region inside a delivery area. */
+export interface ZoneRegion {
+  id: Id;
+  name: string;
+  /** Delivery to an address here; null uses the area's fee. */
+  fee: number | null;
+  /** Empty uses the area's. */
+  etaDays?: string;
+  active: boolean;
+  points: CollectionPoint[];
+}
+
+/** Somewhere in a region a shopper can collect their order. */
+export interface CollectionPoint {
+  id: Id;
+  name: string;
+  address: string;
+  /** "Mon to Sat, 9am to 7pm" */
+  hours?: string;
+  /** A Google Maps link. */
+  mapUrl?: string;
+  phone?: string;
+  /** Charged for collecting here; null is free. */
+  fee: number | null;
+  /** "Same day" */
+  etaDays?: string;
+  active: boolean;
+}
+
+/** Brought to an address, or collected from a point. */
+export type Fulfilment = "delivery" | "collect";
+
+/** Where an order goes, past the area (`region`, which keeps meaning the area's id). */
+export interface DeliveryChoice {
+  /** The region inside the area. */
+  zoneRegion?: Id;
+  fulfilment?: Fulfilment;
+  /** When collecting: the point's id. */
+  collectionPoint?: Id;
 }
 
 export interface PaymentMethodOption {
@@ -409,6 +456,11 @@ export interface Order {
   phone: string;
   email?: string;
   region: DeliveryRegion;
+  zoneRegion?: Id;
+  fulfilment?: Fulfilment;
+  collectionPoint?: Id;
+  /** The point as it was when the order was placed (set by the API), so it still reads right after the point is edited. */
+  collectionPointSnapshot?: { name: string; address: string; hours?: string };
   address?: string;
   note?: string;
   lines: OrderLine[];
@@ -452,6 +504,9 @@ export interface CheckoutInput {
   phone: string;
   email?: string;
   region: DeliveryRegion;
+  zoneRegion?: Id;
+  fulfilment?: Fulfilment;
+  collectionPoint?: Id;
   address?: string;
   note?: string;
   payment: PaymentMethod;
@@ -510,6 +565,7 @@ export interface Address {
   id: Id;
   label: string;
   region: DeliveryRegion;
+  zoneRegion?: Id;
   address: string;
   phone: string;
 }

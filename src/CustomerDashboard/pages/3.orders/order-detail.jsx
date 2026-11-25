@@ -10,6 +10,7 @@ import { useCustomerAuth } from "@/store/context/CustomerAuthContext";
 import { useCancelMyOrder, useMyOrder } from "@/store/tanstackStore/queries/account";
 import { usePayAgain, useSettings } from "@/store/tanstackStore/queries/site";
 import PaymentDue from "@/components/storefront/PaymentDue";
+import { deliveryLabel, orderPoint } from "@/utils/delivery";
 import { formatDate } from "@/utils/format";
 import { whatsappLink } from "@/utils/whatsapp";
 import { cn } from "@/utils/cn";
@@ -78,10 +79,21 @@ export default function AccountOrderDetail() {
           </li>
         ))}
       </ul>
+      {/* Where it goes: the area and region, or the collection point with its address and hours */}
+      {(() => {
+        const point = orderPoint(settings, order);
+        const label = deliveryLabel(settings, order);
+        if (!point && !label) return null;
+        return (
+          <p className="m-0 mt-4 text-sm text-ink-2">
+            {point ? <>Collect from <strong>{point.name}</strong>, {point.address}{point.hours ? ` (${point.hours})` : ""}</> : <>Delivering to {label}{order.address ? `: ${order.address}` : ""}</>}
+          </p>
+        );
+      })()}
       {/* Totals */}
       <dl className="mt-4 grid grid-cols-[1fr_auto] gap-1 text-[.95rem]">
         {order.kitSaving > 0 && <><dt>Kit saving</dt><dd className="m-0 text-right">{moneyBase(order.kitSaving)} off</dd></>}
-        <dt>Delivery</dt><dd className="m-0 text-right">{moneyBase(order.delivery)}</dd>
+        <dt>{orderPoint(settings, order) ? "Collection" : "Delivery"}</dt><dd className="m-0 text-right">{order.delivery ? moneyBase(order.delivery) : "Free"}</dd>
         {order.discount > 0 && <><dt>Discount</dt><dd className="m-0 text-right">{moneyBase(order.discount)} off</dd></>}
         <dt className="font-semibold">Total</dt><dd className="m-0 text-right font-semibold">{moneyBase(order.total)}</dd>
       </dl>

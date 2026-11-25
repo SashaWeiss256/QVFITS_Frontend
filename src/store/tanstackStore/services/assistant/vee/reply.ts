@@ -60,8 +60,17 @@ export function reply(raw: string, ctx: VeeContext): Block[] {
 
   /* Delivery, exchanges, orders, payment */
   if (has(t, ["delivery", "deliver", "shipping", "ship", "how long", "arrive"])) {
-    const fees = (s.zones ?? []).filter((z) => !z.collect).map((z) => `${z.name} ${ugx(z.fee)}`).join(", ");
-    return [text(`Delivery is ${fees}. Anything over ${ugx(s.freeShippingOver)} ships free, or collect from the showroom for nothing.`, "The team confirms the timing when they confirm your order."), link("Delivery details", "/delivery")];
+    // An area with regions quotes from its cheapest to its dearest region.
+    const fees = (s.zones ?? []).filter((z) => !z.collect).map((z) => {
+      const regionFees = (z.regions ?? []).filter((r) => r.active !== false).map((r) => r.fee ?? z.fee);
+      if (!regionFees.length) return `${z.name} ${ugx(z.fee)}`;
+      const lo = Math.min(...regionFees);
+      const hi = Math.max(...regionFees);
+      return lo === hi ? `${z.name} ${ugx(lo)}` : `${z.name} ${ugx(lo)} to ${ugx(hi)} depending on the area`;
+    }).join(", ");
+    const points = (s.zones ?? []).flatMap((z) => (z.regions ?? []).filter((r) => r.active !== false).flatMap((r) => (r.points ?? []).filter((p) => p.active !== false).map((p) => p.name)));
+    const collect = points.length ? `, or collect from ${points.slice(0, 3).join(", ")}${points.length > 3 ? " and more" : ""}` : ", or collect from the showroom for nothing";
+    return [text(`Delivery is ${fees}. Anything over ${ugx(s.freeShippingOver)} ships free${collect}.`, "The team confirms the timing when they confirm your order."), link("Delivery details", "/delivery")];
   }
   if (has(t, ["return", "exchange", "refund", "swap it", "doesn't fit", "does not fit"])) {
     return [text(`We exchange anything unworn with its tags on within ${s.exchangeDays} days. Swim only if the liner is intact: hygiene rules.`, "Want me to help you pick a better size instead? Tell me your bust, waist and hip and I'll do the maths."), link("Exchanges policy", "/returns")];

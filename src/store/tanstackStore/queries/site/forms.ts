@@ -6,13 +6,13 @@ import { sendMessage, type ContactInput } from "../../services/content/contactAp
 import { confirmSubscription, getNewsletterConsent, subscribe, unsubscribe } from "../../services/marketing/subscribersApi";
 import { latestEmail } from "../../services/notifications/outboxApi";
 import type { SubscriberSource } from "../../services/types";
-import { placeOrder, quote } from "../../services/sales/checkoutApi";
+import { placeOrder, quote, type Destination } from "../../services/sales/checkoutApi";
 import { cancelGuestOrder, trackOrder } from "../../services/sales/ordersApi";
 import { getPaymentStatus, goToPesapal, payMyOrder, retryPayment } from "../../services/sales/paymentsApi";
 // For the UI: leaving for Pesapal after checkout, and which methods it takes.
 export { goToPesapal, ONLINE_METHODS } from "../../services/sales/paymentsApi";
 import { requestGuestReturn } from "../../services/sales/returnsApi";
-import type { CartLine, CheckoutInput, DeliveryRegion, Id } from "../../services/types";
+import type { CartLine, CheckoutInput, Id } from "../../services/types";
 import { adminRoot } from "../keys";
 
 // Each form shows its own result and error inline, so none raises the
@@ -44,7 +44,7 @@ export const useUnsubscribe = () => useMutation({ mutationFn: (token: string) =>
 // Prices the bag on the server side (delivery and any code), so the shown total matches the order.
 export const useQuote = () =>
   useMutation({
-    mutationFn: ({ lines, region, code, customerId }: { lines: CartLine[]; region: DeliveryRegion; code?: string; customerId?: Id }) =>
+    mutationFn: ({ lines, region, code, customerId }: { lines: CartLine[]; region: Destination; code?: string; customerId?: Id }) =>
       quote(lines, region, code, { customerId }),
     meta: inline,
   });

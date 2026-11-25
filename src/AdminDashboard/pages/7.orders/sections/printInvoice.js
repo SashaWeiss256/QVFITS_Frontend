@@ -1,4 +1,5 @@
 /* Printable Invoice */
+import { orderPoint } from "@/utils/delivery";
 
 // The address customers write to about an order, whatever the shop's general email is in Settings.
 const SALES_EMAIL = "sales@qvfits.com";
@@ -12,6 +13,8 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
  * this admin page's link); the padding gives the margin instead.
  */
 export function printOrder(order, { settings, moneyBase, zoneName, slip = false }) {
+  // Collected from a point: its address goes on the slip instead of a delivery address.
+  const point = orderPoint(settings, order);
   const rows = order.lines
     .map((l) => `<tr><td>${esc(l.name)}<br><small>${esc(l.color)}, ${esc(l.size)}</small></td><td class="n">${l.qty}</td>${slip ? "" : `<td class="n">${moneyBase(l.price * l.qty)}</td>`}</tr>`)
     .join("");
@@ -27,7 +30,7 @@ export function printOrder(order, { settings, moneyBase, zoneName, slip = false 
     .head{display:flex;justify-content:space-between;gap:24px}.muted{color:#57615e}</style></head><body>
     <div class="head"><div><img src="${window.location.origin}/logo/qvfits-logo.svg" alt="Quivogue (QVFITS)" height="56"><p class="muted">${esc(settings?.address)}<br>${esc(settings?.phone)} · ${SALES_EMAIL}</p></div>
     <div><h1>${slip ? "Packing slip" : "Invoice"}</h1><p>${esc(order.ref)}<br>${new Date(order.createdAt).toLocaleDateString("en-UG")}</p></div></div>
-    <p><strong>${esc(order.name)}</strong><br>${esc(order.phone)}${order.email ? `<br>${esc(order.email)}` : ""}<br>${esc(zoneName)}${order.address ? `: ${esc(order.address)}` : ""}</p>
+    <p><strong>${esc(order.name)}</strong><br>${esc(order.phone)}${order.email ? `<br>${esc(order.email)}` : ""}<br>${esc(zoneName)}${point ? `<br>${esc(point.address)}${point.hours ? ` · ${esc(point.hours)}` : ""}` : order.address ? `: ${esc(order.address)}` : ""}</p>
     <table><thead><tr><td><strong>Item</strong></td><td class="n"><strong>Qty</strong></td>${slip ? "" : '<td class="n"><strong>Amount</strong></td>'}</tr></thead><tbody>${rows}${totals}</tbody></table>
     ${order.note ? `<p class="muted">Note: ${esc(order.note)}</p>` : ""}
     <script>window.onload=()=>window.print()</script></body></html>`;

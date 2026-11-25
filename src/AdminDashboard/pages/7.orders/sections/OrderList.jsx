@@ -13,6 +13,7 @@ import { ORDER_STATUSES } from "@/utils/orderStatus";
 import DataTable from "@/AdminDashboard/components/DataTable";
 import PageHeader from "@/AdminDashboard/components/PageHeader";
 import Panel from "@/AdminDashboard/components/Panel";
+import { areaPoints } from "@/utils/delivery";
 import RecordSale from "./RecordSale";
 import OrderDrawer from "./OrderDrawer";
 
@@ -42,6 +43,7 @@ export default function OrderList() {
   const open = orders.find((o) => o.id === openId) ?? null;
   // The delivery zones, for the Delivery filter.
   const zones = settings?.zones ?? [];
+  const points = zones.flatMap((z) => areaPoints(z));
 
   // The table's columns: the order, when, who, how many pieces, its state, its payment and the total.
   const columns = [
@@ -78,6 +80,8 @@ export default function OrderList() {
             { id: "status", label: "Status", options: ORDER_STATUSES.map((s) => ({ value: s.id, label: s.label })), test: (o, v) => o.status === v },
             { id: "payment", label: "Payment", options: PAYMENT, test: (o, v) => o.paymentStatus === v },
             { id: "zone", label: "Delivery", options: zones.map((z) => ({ value: z.id, label: z.name })), test: (o, v) => o.region === v },
+            // Collection points across every area: which orders are waiting at which point.
+            ...(points.length ? [{ id: "point", label: "Collect at", options: points.map(({ point }) => ({ value: point.id, label: point.name })), test: (o, v) => o.fulfilment === "collect" && o.collectionPoint === v }] : []),
             { id: "source", label: "From", options: SOURCE, test: (o, v) => (o.source ?? "web") === v },
           ]}
           onRowClick={(o) => setOpenId(o.id)}

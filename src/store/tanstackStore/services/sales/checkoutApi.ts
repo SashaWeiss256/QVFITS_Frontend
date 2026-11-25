@@ -4,7 +4,7 @@ import { routes } from "../api/routes";
 import type { Id, RequestOptions } from "../api/types";
 import { logActivity } from "../admin/activityApi";
 import { accessToken } from "../api/tokens";
-import type { CartLine, CheckoutInput, DeliveryRegion, Order, OrderLine, PaymentMethod } from "../types";
+import type { CartLine, CheckoutInput, DeliveryChoice, DeliveryRegion, Order, OrderLine, PaymentMethod } from "../types";
 
 /**
  * Prices are always worked out by the API, never trusted from the browser,
@@ -30,9 +30,18 @@ export interface Quote {
 // A signed-in shopper's token rides along so one-per-shopper codes count their account; a guest checks out without one.
 const asShopper = () => (accessToken("customer") ? { realm: "customer" as const } : {});
 
+/** Where it goes: the area's id alone (as before), or the area with its region and collection point. */
+export type Destination = DeliveryRegion | (DeliveryChoice & { region: DeliveryRegion });
+
 // The one place a bag is priced: sale prices, kit prices, the code and delivery, so what is shown is what is charged.
-export function quote(lines: CartLine[], region: DeliveryRegion, code?: string, { signal, phone }: RequestOptions & { customerId?: Id; phone?: string } = {}) {
-  return http.post<Quote>(routes.checkout.quote, { lines, region, code: code || undefined, phone }, { ...asShopper(), signal });
+// The region and point ride along; an API that doesn't know them yet prices the area as before.
+export function quote(lines: CartLine[], where: Destination, code?: string, { signal, phone }: RequestOptions & { customerId?: Id; phone?: string } = {}) {
+  const to = typeof where === "string" ? { region: where } : where;
+  return http.post<Quote>(
+    routes.checkout.quote,
+    { lines, region: to.region, zoneRegion: to.zoneRegion || undefined, fulfilment: to.fulfilment || undefined, collectionPoint: to.collectionPoint || undefined, code: code || undefined, phone },
+    { ...asShopper(), signal },
+  );
 }
 
 /**
@@ -43,7 +52,13 @@ export function quote(lines: CartLine[], region: DeliveryRegion, code?: string, 
  */
 export function placeOrder(input: CheckoutInput, _customerId?: Id) {
   const { kitSaving: _kitSaving, ...form } = input;
-  return http.post<Order>(routes.checkout.orders, { ...form, discountCode: form.discountCode || undefined }, asShopper());
+  // Only a collection carries a point; a delivery carries its address.
+  const collect = form.fulfilment === "collect";
+  return http.post<Order>(
+    routes.checkout.orders,
+    { ...form, zoneRegion: form.zoneRegion || undefined, fulfilment: form.fulfilment || undefined, collectionPoint: collect ? form.collectionPoint : undefined, discountCode: form.discountCode || undefined },
+    asShopper(),
+  );
 }
 
 /* Admin (realm: admin) */

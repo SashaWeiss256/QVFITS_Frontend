@@ -1,6 +1,8 @@
 /* Checkout Schema */
 import { z } from "zod";
 
+import { pointOf, regionOf, regionsOf, zoneOf } from "@/utils/delivery";
+
 // Ugandan numbers: 07XX XXX XXX or +256 7XX XXX XXX, spaces allowed.
 const phone = z
   .string()
@@ -9,8 +11,9 @@ const phone = z
   .refine((v) => /^(\+?256|0)7\d{8}$/.test(v.replace(/[\s-]/g, "")), "Enter a Ugandan mobile number, e.g. 0758 981 959");
 
 // Zones and payment methods are the admin's, so the schema is built from
-// them: only an offered zone or method passes, and a collection zone needs
-// no address.
+// them: only an offered zone or method passes. An area split into regions
+// needs one; collecting needs a point in that region and no address; a
+// delivery needs an address.
 export const deliverySchema = (zones = [], methods = []) => z
   .object({
     name: z.string().trim().min(2, "Enter your name"),
@@ -18,10 +21,15 @@ export const deliverySchema = (zones = [], methods = []) => z
     // Optional: an empty field passes, anything typed must be a real email.
     email: z.union([z.literal(""), z.string().trim().email("Enter a valid email")]).optional(),
     region: z.string().refine((v) => zones.some((zone) => zone.id === v), "Pick where it is going"),
+    zoneRegion: z.string().optional(),
+    fulfilment: z.enum(["delivery", "collect"]).optional(),
+    collectionPoint: z.string().optional(),
     // Required for delivery only; the refine below enforces it.
     address: z.string().trim().optional(),
     note: z.string().trim().max(300).optional(),
     news: z.boolean().optional(),
     payment: z.string().refine((v) => methods.some((m) => m.id === v), "Pick how you'd like to pay"),
   })
-  .refine((v) => zones.find((zone) => zone.id === v.region)?.collect || (v.address ?? "").length > 3, { message: "Where should we deliver it?", path: ["address"] });
+  .refine((v) => !regionsOf(zoneOf({ zones }, v.region)).length || Boolean(regionOf(zoneOf({ zones }, v.region), v.zoneRegion)), { message: "Choose your region", path: ["zoneRegion"] })
+  .refine((v) => v.fulfilment !== "collect" || Boolean(pointOf(regionOf(zoneOf({ zones }, v.region), v.zoneRegion), v.collectionPoint)), { message: "Choose where you'll collect it", path: ["collectionPoint"] })
+  .refine((v) => zones.find((zone) => zone.id === v.region)?.collect || v.fulfilment === "collect" || (v.address ?? "").length > 3, { message: "Where should we deliver it?", path: ["address"] });
