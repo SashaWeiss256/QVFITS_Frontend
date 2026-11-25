@@ -6,14 +6,22 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
 import Reveal from "@/components/motion/Reveal";
+import Photo from "@/components/storefront/Photo";
+import { useHomeContent } from "@/store/tanstackStore/queries/site";
 import { cn } from "@/utils/cn";
 import { STORY } from "../story";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-/** One About picture: local WebP and JPEG, the QV icon already on the clothes, and the same film grain as the home hero. `drift` lets GSAP slide the photograph inside its frame. */
-function Pic({ id, alt, className, eager = false, drift = false, sizes = "(max-width: 700px) 80vw, 560px" }) {
-  const img = (
+/**
+ * One About picture: the one uploaded in the admin (About page), else the
+ * shoot's local WebP and JPEG, with the same film grain as the home hero.
+ * `drift` lets GSAP slide the photograph inside its frame.
+ */
+function Pic({ id, photo, alt, className, eager = false, drift = false, sizes = "(max-width: 700px) 80vw, 560px" }) {
+  const img = photo ? (
+    <Photo photo={photo} label={alt} eager={eager} wide className="!absolute inset-0 h-full w-full [&_img]:h-full [&_img]:w-full [&_img]:object-cover" />
+  ) : (
     <picture>
       <source type="image/webp" srcSet={`/photos/${id}-640.webp 640w, /photos/${id}.webp 1024w`} sizes={sizes} />
       <img className="absolute inset-0 h-full w-full object-cover" src={`/photos/${id}.jpg`} width="1024" height="1024" alt={alt} loading={eager ? "eager" : "lazy"} decoding="async" fetchPriority={eager ? "high" : undefined} />
@@ -55,6 +63,9 @@ const TEXTS = TILES.filter((t) => t.text);
 export default function Story() {
   const { vision, name } = STORY;
   const root = useRef(null);
+  // Pictures uploaded in the admin's About page; any slot without one keeps the shoot's photo.
+  const { data: content } = useHomeContent();
+  const uploaded = content?.aboutPhotos ?? {};
 
   // The tiles rise in one after another as the mosaic comes into view, and each photograph
   // drifts a little inside its frame as you scroll. Nothing moves for anyone who asks for less motion.
@@ -83,7 +94,7 @@ export default function Story() {
       {/* Hero: short and quiet, in the home page's manner. The studio portrait full bleed under a dark
           grade, one line of headline, one sentence, one way on. */}
       <section className="relative isolate flex min-h-[min(68svh,560px)] items-end overflow-hidden bg-ink lg:min-h-[min(72svh,640px)]">
-        <Pic id="about-1" alt="A QVFITs pink zip top and leggings in a sunlit Kampala studio" eager sizes="100vw" className="!absolute inset-0 -z-10 [&_img]:object-[60%_28%] lg:[&_img]:object-[60%_8%]" />
+        <Pic id="about-1" photo={uploaded.hero} alt="A QVFITs pink zip top and leggings in a sunlit Kampala studio" eager sizes="100vw" className="!absolute inset-0 -z-10 [&_img]:object-[60%_28%] lg:[&_img]:object-[60%_8%]" />
         <div className="absolute inset-0 -z-10 bg-linear-to-t from-ink/80 via-ink/25 to-transparent lg:bg-linear-to-r lg:from-ink/70 lg:via-ink/20" aria-hidden="true" />
         <div className="wrap w-full pb-12 pt-40 lg:pb-16">
           <div className="max-w-2xl">
@@ -102,7 +113,7 @@ export default function Story() {
           {TILES.map((t, i) =>
             t.pic ? (
               <div key={i} data-tile className={cn("min-w-0", t.at)}>
-                <Pic id={PICS[t.pic].id} alt={PICS[t.pic].alt} drift className={cn("w-full rounded-[1rem] md:rounded-[1.5rem]", t.wide ? "aspect-[4/3] md:aspect-[16/10] lg:h-full lg:min-h-[22rem] lg:aspect-auto" : "aspect-[4/3] md:aspect-[4/5] lg:aspect-auto lg:h-full lg:min-h-[28rem]")} />
+                <Pic id={PICS[t.pic].id} photo={uploaded[t.pic]} alt={PICS[t.pic].alt} drift className={cn("w-full rounded-[1rem] md:rounded-[1.5rem]", t.wide ? "aspect-[4/3] md:aspect-[16/10] lg:h-full lg:min-h-[22rem] lg:aspect-auto" : "aspect-[4/3] md:aspect-[4/5] lg:aspect-auto lg:h-full lg:min-h-[28rem]")} />
               </div>
             ) : (
               // On a phone the words read like a journal: numbered, on a hairline, no box; from a tablet up, the tinted tile.

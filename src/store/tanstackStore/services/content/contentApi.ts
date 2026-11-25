@@ -72,6 +72,15 @@ export interface FeedItem extends Linked {
   video?: string | null;
 }
 
+/**
+ * The About page's pictures, by where they sit: the opening picture, the
+ * three in the story mosaic, and the showroom. Only uploads are stored; a
+ * slot with none (or null) keeps the shoot's own photo.
+ */
+export const ABOUT_SLOTS = ["hero", "home", "court", "pool", "showroom"] as const;
+export type AboutSlot = (typeof ABOUT_SLOTS)[number];
+export type AboutPictures = Partial<Record<AboutSlot, Photo | null>>;
+
 export interface HomeContent {
   heroSlides: HeroSlide[];
   rails: { newReleases: Rail; bestSellers: Rail };
@@ -79,6 +88,8 @@ export interface HomeContent {
   campaign: Linked & { live: boolean; kicker: string; title: string; text: string; cta: string; image?: Picture };
   feed: { live: boolean; kicker: string; title: string; items: FeedItem[] };
   newsletter: { kicker: string; title: string; text: string; cta: string; placeholder: string; perks: { icon: "sparkles" | "bell" | "gift"; title: string; text: string }[] };
+  /** The About page's uploaded pictures (kept in the same document, so the API needs one more key, not a new endpoint). */
+  about?: AboutPictures;
 }
 
 const seed = homeSeed as unknown as HomeContent;
@@ -95,9 +106,15 @@ export type HomeContentView = HomeContent & {
   movements: HomeContent["movements"] & { items: (MovementTile & { label: string; href: string; photo?: Photo })[] };
   feed: HomeContent["feed"] & { items: (FeedItem & { href: string; photo?: Photo; clip?: string })[] };
   campaign: HomeContent["campaign"] & { photo?: Photo };
-  /** The studio photo on the About page. */
+  /** The studio photo on the About page: the uploaded one, else the shoot's. */
   aboutPhoto?: Photo;
+  /** The About page's uploaded pictures; a missing slot keeps the shoot's photo. */
+  aboutPhotos: AboutPictures;
 };
+
+// Only real uploads count; anything else (an old id, a bad value) keeps the shoot's photo.
+const uploadedAbout = (about?: AboutPictures): AboutPictures =>
+  Object.fromEntries(ABOUT_SLOTS.map((k) => [k, about?.[k] && typeof about[k] === "object" ? about[k] : null]).filter(([, v]) => v)) as AboutPictures;
 
 // Every link gets its href from the live slugs. A tile with no label or picture
 // of its own borrows the first term it opens.
@@ -121,7 +138,8 @@ function view(stored: HomeContent, lookup: LinkLookup): HomeContentView {
     },
     feed: { ...doc.feed, items: (doc.feed.items as (FeedItem & { href: string })[]).map((it) => ({ ...it, photo: resolve(it.image, it.id), clip: reelVideo(it) })) },
     campaign: { ...doc.campaign, photo: resolve(doc.campaign.image, "banner-campaign") },
-    aboutPhoto: localPhoto("about"),
+    aboutPhoto: uploadedAbout(doc.about).showroom ?? localPhoto("about"),
+    aboutPhotos: uploadedAbout(doc.about),
   };
 }
 
@@ -148,8 +166,8 @@ export async function getContent({ signal }: RequestOptions = {}) {
 
 /* Admin (realm: admin) */
 
-/** What the admin's Home page edits: the hero, Shop by movement and Seen on you. */
-export type HomeEditable = Pick<HomeContent, "heroSlides" | "movements" | "feed">;
+/** What the admin edits: the hero, Shop by movement and Seen on you (Home page), and the About page's pictures. */
+export type HomeEditable = Pick<HomeContent, "heroSlides" | "movements" | "feed"> & { about: AboutPictures };
 /** The same, with each picture (and reel clip) resolved so the editor can show it. Never saved. */
 export type HomeForEdit = HomeEditable & { onServer: boolean };
 
@@ -158,6 +176,7 @@ const forEdit = (doc: HomeContent, onServer: boolean): HomeForEdit => ({
   heroSlides: doc.heroSlides.map((s) => ({ ...s, photo: resolve(s.image, s.id) })),
   movements: { ...doc.movements, items: doc.movements.items.map((t) => ({ ...t, photo: resolve(t.image, `movement-${t.id}`) })) },
   feed: { ...doc.feed, items: doc.feed.items.map((it) => ({ ...it, photo: resolve(it.image, it.id), clip: reelVideo(it) })) },
+  about: uploadedAbout(doc.about),
 });
 
 // Only what is stored goes back: the resolved photo and clip, and every href, are worked out again on each read.
@@ -168,6 +187,8 @@ function strip(patch: DocumentPatch<HomeForEdit>) {
   if (rest.heroSlides) out.heroSlides = clean(rest.heroSlides as HeroSlide[]);
   if (rest.movements) out.movements = { ...(rest.movements as HomeContent["movements"]), items: clean((rest.movements as HomeContent["movements"]).items) ?? [] };
   if (rest.feed) out.feed = { ...(rest.feed as HomeContent["feed"]), items: clean((rest.feed as HomeContent["feed"]).items) ?? [] };
+  // Every slot is sent, null for "use the shoot's photo", so a removed upload is removed on the server too.
+  if (rest.about) out.about = Object.fromEntries(ABOUT_SLOTS.map((k) => [k, (rest.about as AboutPictures)[k] ?? null])) as AboutPictures;
   return withoutHrefs(out) as DocumentPatch<HomeEditable>;
 }
 
@@ -177,7 +198,7 @@ export async function getHomeForEdit({ signal }: RequestOptions = {}) {
   return forEdit(doc, onServer);
 }
 
-const PARTS: Record<keyof HomeEditable, string> = { heroSlides: "hero", movements: "Shop by movement", feed: "Seen on you" };
+const PARTS: Record<keyof HomeEditable, string> = { heroSlides: "hero", movements: "Shop by movement", feed: "Seen on you", about: "About page pictures" };
 
 export async function updateHome(patch: DocumentPatch<HomeForEdit>) {
   const body = strip(patch);

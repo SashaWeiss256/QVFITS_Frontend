@@ -31,6 +31,7 @@ export const Messages = lazy(() => import("./pages/10.messages/messages"));
 export const Discounts = lazy(() => import("./pages/11.discounts/discounts"));
 export const Offers = lazy(() => import("./pages/12.offers/offers"));
 export const HomePage = lazy(() => import("./pages/13.home-page/home-page"));
+export const AboutPage = lazy(() => import("./pages/13.home-page/about-page"));
 export const Newsletter = lazy(() => import("./pages/14.newsletter/newsletter"));
 export const Vee = lazy(() => import("./pages/15.vee/vee"));
 

@@ -21,6 +21,8 @@ const MODULES = [
   ["offers", "offers", P.Offers],
   // The home page's hero, Shop by movement and Seen on you: storefront content, so it shares the Offers permission.
   ["home-page", "offers", P.HomePage],
+  // The About page's pictures, kept in the same content document as the home page.
+  ["about-page", "offers", P.AboutPage],
   ["newsletter", "newsletter", P.Newsletter],
   ["vee", "vee", P.Vee],
   ["team", "team", P.Team],
